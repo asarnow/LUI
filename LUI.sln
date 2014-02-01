@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LUI", "LUI\LUI.csproj", "{18D52F80-ED9C-4C1A-BD2F-1E138DD3D9B5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HardwarePoll", "HardwarePoll\HardwarePoll.csproj", "{1731A795-7E69-4D4C-9523-BB8FAF5CB595}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lasercom", "lasercom\lasercom.csproj", "{F77054EF-38F5-4303-9E65-AA033A17E215}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{18D52F80-ED9C-4C1A-BD2F-1E138DD3D9B5}.Debug|x86.ActiveCfg = Debug|x86
+		{18D52F80-ED9C-4C1A-BD2F-1E138DD3D9B5}.Debug|x86.Build.0 = Debug|x86
+		{18D52F80-ED9C-4C1A-BD2F-1E138DD3D9B5}.Release|x86.ActiveCfg = Release|x86
+		{18D52F80-ED9C-4C1A-BD2F-1E138DD3D9B5}.Release|x86.Build.0 = Release|x86
+		{1731A795-7E69-4D4C-9523-BB8FAF5CB595}.Debug|x86.ActiveCfg = Debug|x86
+		{1731A795-7E69-4D4C-9523-BB8FAF5CB595}.Debug|x86.Build.0 = Debug|x86
+		{1731A795-7E69-4D4C-9523-BB8FAF5CB595}.Release|x86.ActiveCfg = Release|x86
+		{1731A795-7E69-4D4C-9523-BB8FAF5CB595}.Release|x86.Build.0 = Release|x86
+		{F77054EF-38F5-4303-9E65-AA033A17E215}.Debug|x86.ActiveCfg = Debug|x86
+		{F77054EF-38F5-4303-9E65-AA033A17E215}.Debug|x86.Build.0 = Debug|x86
+		{F77054EF-38F5-4303-9E65-AA033A17E215}.Release|x86.ActiveCfg = Release|x86
+		{F77054EF-38F5-4303-9E65-AA033A17E215}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
