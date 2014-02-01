@@ -1,0 +1,14 @@
+***ANDOR***
+
+ATMCD32CS.dll
+atmcd32d.dll
+ATMCD64CS.dll
+atmcd64d.dll
+
+atmcdwdm.sys
+atmcdwdm64.sys
+
+***NATIONAL INSTRUMENTS***
+
+NationalInstruments.Common.dll
+NationalInstruments.NI4882.dll
