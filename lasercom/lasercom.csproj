@@ -58,6 +58,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commander.cs" />
     <Compile Include="GUI.cs" />
     <Compile Include="ControlForm.cs">
       <SubType>Form</SubType>
@@ -75,12 +76,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LUI\LUI.csproj">
-      <Project>{18D52F80-ED9C-4C1A-BD2F-1E138DD3D9B5}</Project>
-      <Name>LUI</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
@@ -90,6 +85,12 @@
     <EmbeddedResource Include="OptionsForm.resx">
       <DependentUpon>OptionsForm.cs</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LUI\LUI.csproj">
+      <Project>{18d52f80-ed9c-4c1a-bd2f-1e138dd3d9b5}</Project>
+      <Name>LUI</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

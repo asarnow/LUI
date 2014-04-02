@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend4 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -48,15 +48,16 @@
             this.documentationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutLUIToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.StatusBox = new System.Windows.Forms.GroupBox();
             this.CommandsBox = new System.Windows.Forms.GroupBox();
-            this.Start = new System.Windows.Forms.Button();
-            this.Abort = new System.Windows.Forms.Button();
-            this.Collect = new System.Windows.Forms.Button();
-            this.Averages = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
+            this.Averages = new System.Windows.Forms.NumericUpDown();
+            this.Collect = new System.Windows.Forms.Button();
+            this.Abort = new System.Windows.Forms.Button();
+            this.Start = new System.Windows.Forms.Button();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
             this.tableLayoutPanel1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Chart1)).BeginInit();
@@ -116,6 +117,7 @@
             this.loadTimesToolStripMenuItem.Name = "loadTimesToolStripMenuItem";
             this.loadTimesToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.loadTimesToolStripMenuItem.Text = "Load times...";
+            this.loadTimesToolStripMenuItem.Click += new System.EventHandler(this.loadTimesToolStripMenuItem_Click);
             // 
             // loadCalibrationToolStripMenuItem
             // 
@@ -155,25 +157,25 @@
             // timesToolStripMenuItem
             // 
             this.timesToolStripMenuItem.Name = "timesToolStripMenuItem";
-            this.timesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.timesToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
             this.timesToolStripMenuItem.Text = "Times";
             // 
             // flowToolStripMenuItem
             // 
             this.flowToolStripMenuItem.Name = "flowToolStripMenuItem";
-            this.flowToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.flowToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
             this.flowToolStripMenuItem.Text = "Flow";
             // 
             // calibrationToolStripMenuItem
             // 
             this.calibrationToolStripMenuItem.Name = "calibrationToolStripMenuItem";
-            this.calibrationToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.calibrationToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
             this.calibrationToolStripMenuItem.Text = "Calibration";
             // 
             // singleShotToolStripMenuItem
             // 
             this.singleShotToolStripMenuItem.Name = "singleShotToolStripMenuItem";
-            this.singleShotToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.singleShotToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
             this.singleShotToolStripMenuItem.Text = "Single shot";
             // 
             // helpToolStripMenuItem
@@ -199,36 +201,23 @@
             // 
             // Chart1
             // 
-            chartArea4.Name = "ChartArea1";
-            this.Chart1.ChartAreas.Add(chartArea4);
+            chartArea3.Name = "ChartArea1";
+            this.Chart1.ChartAreas.Add(chartArea3);
             this.tableLayoutPanel1.SetColumnSpan(this.Chart1, 3);
-            legend4.Enabled = false;
-            legend4.Name = "Legend1";
-            this.Chart1.Legends.Add(legend4);
+            legend3.Enabled = false;
+            legend3.Name = "Legend1";
+            this.Chart1.Legends.Add(legend3);
             this.Chart1.Location = new System.Drawing.Point(3, 29);
             this.Chart1.Name = "Chart1";
             this.tableLayoutPanel1.SetRowSpan(this.Chart1, 2);
-            series4.ChartArea = "ChartArea1";
-            series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series4.Legend = "Legend1";
-            series4.Name = "Series1";
-            this.Chart1.Series.Add(series4);
+            series3.ChartArea = "ChartArea1";
+            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series3.Legend = "Legend1";
+            series3.Name = "Series1";
+            this.Chart1.Series.Add(series3);
             this.Chart1.Size = new System.Drawing.Size(738, 314);
             this.Chart1.TabIndex = 1;
             this.Chart1.Text = "chart1";
-            // 
-            // openFileDialog1
-            // 
-            this.openFileDialog1.FileName = "openFileDialog1";
-            this.openFileDialog1.Filter = "TIM Files (*.tim)|*.tim|CAL Files (*.cal)|*.cal|TXT Files (*.txt)|*.txt|All Files" +
-    " (*.*)|*.*";
-            this.openFileDialog1.Title = "Open";
-            // 
-            // saveFileDialog1
-            // 
-            this.saveFileDialog1.Filter = "TIM Files (*.tim)|*.tim|CAL Files (*.cal)|*.cal|TXT Files (*.txt)|*.txt|All Files" +
-    " (*.*)|*.*";
-            this.saveFileDialog1.Title = "Save";
             // 
             // StatusBox
             // 
@@ -253,32 +242,15 @@
             this.CommandsBox.TabStop = false;
             this.CommandsBox.Text = "Commands";
             // 
-            // Start
+            // label1
             // 
-            this.Start.Location = new System.Drawing.Point(7, 19);
-            this.Start.Name = "Start";
-            this.Start.Size = new System.Drawing.Size(51, 23);
-            this.Start.TabIndex = 0;
-            this.Start.Text = "Start";
-            this.Start.UseVisualStyleBackColor = true;
-            // 
-            // Abort
-            // 
-            this.Abort.Location = new System.Drawing.Point(7, 50);
-            this.Abort.Name = "Abort";
-            this.Abort.Size = new System.Drawing.Size(51, 23);
-            this.Abort.TabIndex = 1;
-            this.Abort.Text = "Abort";
-            this.Abort.UseVisualStyleBackColor = true;
-            // 
-            // Collect
-            // 
-            this.Collect.Location = new System.Drawing.Point(64, 19);
-            this.Collect.Name = "Collect";
-            this.Collect.Size = new System.Drawing.Size(51, 23);
-            this.Collect.TabIndex = 2;
-            this.Collect.Text = "Collect";
-            this.Collect.UseVisualStyleBackColor = true;
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(163, 25);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(52, 13);
+            this.label1.TabIndex = 4;
+            this.label1.Text = "Averages";
+            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // Averages
             // 
@@ -302,15 +274,50 @@
             0,
             0});
             // 
-            // label1
+            // Collect
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(163, 25);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(52, 13);
-            this.label1.TabIndex = 4;
-            this.label1.Text = "Averages";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
+            this.Collect.Location = new System.Drawing.Point(64, 19);
+            this.Collect.Name = "Collect";
+            this.Collect.Size = new System.Drawing.Size(51, 23);
+            this.Collect.TabIndex = 2;
+            this.Collect.Text = "Collect";
+            this.Collect.UseVisualStyleBackColor = true;
+            this.Collect.Click += new System.EventHandler(this.Collect_Click);
+            // 
+            // Abort
+            // 
+            this.Abort.Location = new System.Drawing.Point(7, 50);
+            this.Abort.Name = "Abort";
+            this.Abort.Size = new System.Drawing.Size(51, 23);
+            this.Abort.TabIndex = 1;
+            this.Abort.Text = "Abort";
+            this.Abort.UseVisualStyleBackColor = true;
+            // 
+            // Start
+            // 
+            this.Start.Location = new System.Drawing.Point(7, 19);
+            this.Start.Name = "Start";
+            this.Start.Size = new System.Drawing.Size(51, 23);
+            this.Start.TabIndex = 0;
+            this.Start.Text = "Start";
+            this.Start.UseVisualStyleBackColor = true;
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.FileName = "openFileDialog1";
+            this.openFileDialog1.Filter = "TIM Files (*.tim)|*.tim|CAL Files (*.cal)|*.cal|TXT Files (*.txt)|*.txt|All Files" +
+    " (*.*)|*.*";
+            this.openFileDialog1.Title = "Open";
+            // 
+            // saveFileDialog1
+            // 
+            this.saveFileDialog1.Filter = "TIM Files (*.tim)|*.tim|CAL Files (*.cal)|*.cal|TXT Files (*.txt)|*.txt|All Files" +
+    " (*.*)|*.*";
+            this.saveFileDialog1.Title = "Save";
+            // 
+            // openFileDialog2
+            // 
+            this.openFileDialog2.FileName = "openFileDialog2";
             // 
             // ControlForm
             // 
@@ -361,5 +368,6 @@
         private System.Windows.Forms.Button Abort;
         private System.Windows.Forms.NumericUpDown Averages;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.OpenFileDialog openFileDialog2;
     }
 }
