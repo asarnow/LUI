@@ -13,5 +13,6 @@ namespace LUI
         void GetImage();
 
         void Close();
+
     }
 }
