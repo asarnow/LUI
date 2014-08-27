@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace lasercom
+namespace LUI
 {
     public partial class ControlForm : Form
     {

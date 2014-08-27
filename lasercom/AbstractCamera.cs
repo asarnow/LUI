@@ -32,7 +32,7 @@ namespace LUI
             AndorSdk.FreeInternalMemory();
         }
 
-        public void GetCountsFvb()
+        public int[] GetCountsFvb()
         {
             throw new NotImplementedException();
         }

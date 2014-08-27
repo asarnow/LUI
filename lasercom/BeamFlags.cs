@@ -30,23 +30,23 @@ namespace LUI
         public readonly string CloseLaserAndFlashCommand;
         private readonly SerialPort _port;
 
-        //public BeamFlags(string openFlashCommand,
-        //                 string closeFlashCommand,
-        //                 string openLaserCommand,
-        //                 string closeLaserCommand,
-        //                 string openLaserAndFlashCommand,
-        //                 string closeLaserAndFlashCommand,
-        //                 String portName)
-        //{            
-        //    OpenFlashCommand = openFlashCommand;
-        //    CloseFlashCommand = closeFlashCommand;
-        //    OpenLaserCommand = openLaserCommand;
-        //    CloseLaserCommand = closeLaserCommand;
-        //    OpenLaserAndFlashCommand = openLaserAndFlashCommand;
-        //    CloseLaserAndFlashCommand = closeLaserAndFlashCommand;
-        //    _port = new SerialPort(portName);
-        //    CloseLaserAndFlash();
-        //}
+        public BeamFlags(string openFlashCommand,
+                         string closeFlashCommand,
+                         string openLaserCommand,
+                         string closeLaserCommand,
+                         string openLaserAndFlashCommand,
+                         string closeLaserAndFlashCommand,
+                         String portName)
+        {
+            OpenFlashCommand = openFlashCommand;
+            CloseFlashCommand = closeFlashCommand;
+            OpenLaserCommand = openLaserCommand;
+            CloseLaserCommand = closeLaserCommand;
+            OpenLaserAndFlashCommand = openLaserAndFlashCommand;
+            CloseLaserAndFlashCommand = closeLaserAndFlashCommand;
+            _port = new SerialPort(portName);
+            CloseLaserAndFlash();
+        }
 
         public BeamFlags(String portName)
         {

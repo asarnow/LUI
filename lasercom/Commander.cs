@@ -9,6 +9,8 @@ using ATMCD64CS;
 using ATMCD32CS;
 #endif
 
+using NationalInstruments.NI4882;
+
 using LUI;
 
 namespace lasercom

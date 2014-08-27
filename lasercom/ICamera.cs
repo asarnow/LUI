@@ -8,7 +8,7 @@ namespace LUI
     public interface ICamera
     {        
 
-        void GetCountsFvb();
+        int[] GetCountsFvb();
 
         void GetImage();
 

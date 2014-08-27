@@ -43,6 +43,11 @@ namespace LUI
             AndorSdk.ShutDown();
         }
 
+        public int[] GetCountsFvb()
+        {
+            return acquire();
+        }
+
         public int[] acquire()
         {
             uint npx;

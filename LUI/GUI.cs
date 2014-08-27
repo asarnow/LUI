@@ -13,7 +13,7 @@ using ATMCD32CS;
 
 using LUI;
 
-namespace lasercom
+namespace LUI
 {
     class GUI
     {

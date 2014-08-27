@@ -1,4 +1,4 @@
-﻿namespace lasercom
+﻿namespace LUI
 {
     partial class ControlForm
     {

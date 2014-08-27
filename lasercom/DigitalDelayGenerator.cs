@@ -10,12 +10,12 @@ namespace LUI
     class DigitalDelayGenerator
     {
         public Address Address;
-        private readonly Board _board;
+        private Device Device;
 
-        public DigitalDelayGenerator(int address, Board board)
+        public DigitalDelayGenerator(int boardNumber, int address)
         {
             Address = new Address((byte) address);
-            _board = board;
+            Device = new Device(0, Address);
         }
 
         public void SetADelay(double delay)
