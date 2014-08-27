@@ -42,7 +42,8 @@ namespace PumpToggle
         {
             DisposePort();
             String portName = "COM" + comPort.Text;
-            _port = new SerialPort(portName) { RtsEnable = true };
+            // _port = new SerialPort(portName) { RtsEnable = true };
+            _port = new SerialPort(portName) { DtrEnable = true };
             SetClosed();
         }
 
@@ -70,7 +71,8 @@ namespace PumpToggle
         private void Form1_Load(object sender, EventArgs e)
         {
             String portName = "COM" + comPort.Text;
-            _port = new SerialPort(portName) { RtsEnable = true };
+            // _port = new SerialPort(portName) { RtsEnable = true };
+            _port = new SerialPort(portName) { DtrEnable = true };
             SetClosed();
         }
 
