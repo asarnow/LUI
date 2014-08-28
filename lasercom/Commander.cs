@@ -11,16 +11,14 @@ using ATMCD32CS;
 
 using NationalInstruments.NI4882;
 
-using LUI;
-
-namespace lasercom
+namespace LUI
 {
 
     class Commander
     {
         private ICamera Camera { public get; private set; }
         private BeamFlags BeamFlags { public get; private set; }
-        private DigitalDelayGenerator DDG { public get; private set; }
+        private IDigitalDelayGenerator DDG { public get; private set; }
         private Pump Pump { public get; private set; }
         private List<Double> Delays { public get; public set; }
         private int[] Calibration { public get; public set; }
@@ -30,7 +28,7 @@ namespace lasercom
             Camera = new CameraTempControlled(".");
             BeamFlags = new BeamFlags("COM1");
             int address = 0;
-            DDG = new DigitalDelayGenerator(address, new Board());
+            DDG = new DDG535(address);
 
         }
 
