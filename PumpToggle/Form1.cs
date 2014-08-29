@@ -48,18 +48,24 @@ namespace PumpToggle
         public void CreatePort()
         {
             String portName = "COM" + comPort.Text;
-            if (rtsCheck.Checked && dtrCheck.Checked)
+            var Handshaking = Handshake.None;
+
+            if (rtsHandshakeCheck.Checked && xonxoffCheck.Checked)
             {
-                _port = new SerialPort(portName) { RtsEnable = true, DtrEnable = true };
+                Handshaking = Handshake.RequestToSendXOnXOff;
             }
-            else if (rtsCheck.Checked)
+            else if (rtsHandshakeCheck.Checked)
             {
-                _port = new SerialPort(portName) { RtsEnable = true };
+                Handshaking = Handshake.RequestToSendXOnXOff;
             }
-            else if (dtrCheck.Checked)
+            else if (xonxoffCheck.Checked)
             {
-                _port = new SerialPort(portName) { DtrEnable = true };
+                Handshaking = Handshake.XOnXOff;
             }
+
+            var RtsEnable = rtsCheck.Checked;
+            var DtrEnable = dtrCheck.Checked;                
+            _port = new SerialPort(portName) { RtsEnable = RtsEnable, DtrEnable = DtrEnable, Handshake = Handshaking };
         }
 
         public void DisposePort()
