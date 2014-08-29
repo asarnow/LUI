@@ -12,3 +12,6 @@ atmcdwdm64.sys
 
 NationalInstruments.Common.dll
 NationalInstruments.NI4882.dll
+
+***LOG4NET***
+log4net.dll

@@ -8,7 +8,7 @@
     <ProjectGuid>{F77054EF-38F5-4303-9E65-AA033A17E215}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>lasercom</RootNamespace>
+    <RootNamespace>LUI</RootNamespace>
     <AssemblyName>lasercom</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>
@@ -38,6 +38,10 @@
     <Reference Include="ATMCD32CS">
       <HintPath>..\LUI\lib\ATMCD32CS.dll</HintPath>
     </Reference>
+    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\LUI\lib\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="NationalInstruments.Common, Version=9.1.40.159, Culture=neutral, PublicKeyToken=dc6ad606294fc298, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\LUI\lib\NationalInstruments.Common.dll</HintPath>
@@ -58,39 +62,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AbstractCamera.cs" />
+    <Compile Include="BeamFlags.cs" />
+    <Compile Include="CameraTempControlled.cs" />
+    <Compile Include="DDG535.cs" />
+    <Compile Include="IDigitalDelayGenerator.cs" />
     <Compile Include="Commander.cs" />
-    <Compile Include="GUI.cs" />
-    <Compile Include="ControlForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ControlForm.Designer.cs">
-      <DependentUpon>ControlForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="OptionsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="OptionsForm.Designer.cs">
-      <DependentUpon>OptionsForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Program.cs" />
+    <Compile Include="Constants.cs" />
+    <Compile Include="AbstractDigitalDelayGenerator.cs" />
+    <Compile Include="ICamera.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Pump.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ControlForm.resx">
-      <DependentUpon>ControlForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="OptionsForm.resx">
-      <DependentUpon>OptionsForm.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\LUI\LUI.csproj">
-      <Project>{18d52f80-ed9c-4c1a-bd2f-1e138dd3d9b5}</Project>
-      <Name>LUI</Name>
-    </ProjectReference>
+    <Content Include="log4net.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

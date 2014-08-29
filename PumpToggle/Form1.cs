@@ -41,10 +41,31 @@ namespace PumpToggle
         private void comPort_TextChanged(object sender, EventArgs e)
         {
             DisposePort();
-            String portName = "COM" + comPort.Text;
-            // _port = new SerialPort(portName) { RtsEnable = true };
-            _port = new SerialPort(portName) { DtrEnable = true };
+            CreatePort();
             SetClosed();
+        }
+
+        public void CreatePort()
+        {
+            String portName = "COM" + comPort.Text;
+            var Handshaking = Handshake.None;
+
+            if (rtsHandshakeCheck.Checked && xonxoffCheck.Checked)
+            {
+                Handshaking = Handshake.RequestToSendXOnXOff;
+            }
+            else if (rtsHandshakeCheck.Checked)
+            {
+                Handshaking = Handshake.RequestToSendXOnXOff;
+            }
+            else if (xonxoffCheck.Checked)
+            {
+                Handshaking = Handshake.XOnXOff;
+            }
+
+            var RtsEnable = rtsCheck.Checked;
+            var DtrEnable = dtrCheck.Checked;                
+            _port = new SerialPort(portName) { RtsEnable = RtsEnable, DtrEnable = DtrEnable, Handshake = Handshaking };
         }
 
         public void DisposePort()
@@ -57,22 +78,20 @@ namespace PumpToggle
         public void SetOpen()
         {
             CurrentState = State.Open;
-            button1.Text = "Close";
+            toggleButton.Text = "Close";
             _port.Open(); //TODO Which is which?
         }
 
         public void SetClosed()
         {
             CurrentState = State.Closed;
-            button1.Text = "Open";
+            toggleButton.Text = "Open";
             _port.Close();
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            String portName = "COM" + comPort.Text;
-            // _port = new SerialPort(portName) { RtsEnable = true };
-            _port = new SerialPort(portName) { DtrEnable = true };
+            CreatePort();
             SetClosed();
         }
 
@@ -80,5 +99,6 @@ namespace PumpToggle
         {
             DisposePort();
         }
+
     }
 }
