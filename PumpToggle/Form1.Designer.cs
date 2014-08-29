@@ -40,10 +40,9 @@
             // 
             // comPort
             // 
-            this.comPort.Location = new System.Drawing.Point(99, 127);
-            this.comPort.Margin = new System.Windows.Forms.Padding(4);
+            this.comPort.Location = new System.Drawing.Point(74, 103);
             this.comPort.Name = "comPort";
-            this.comPort.Size = new System.Drawing.Size(20, 22);
+            this.comPort.Size = new System.Drawing.Size(16, 20);
             this.comPort.TabIndex = 0;
             this.comPort.Text = "1";
             this.comPort.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -51,10 +50,9 @@
             // 
             // toggleButton
             // 
-            this.toggleButton.Location = new System.Drawing.Point(124, 124);
-            this.toggleButton.Margin = new System.Windows.Forms.Padding(4);
+            this.toggleButton.Location = new System.Drawing.Point(93, 101);
             this.toggleButton.Name = "toggleButton";
-            this.toggleButton.Size = new System.Drawing.Size(87, 28);
+            this.toggleButton.Size = new System.Drawing.Size(65, 23);
             this.toggleButton.TabIndex = 1;
             this.toggleButton.Text = "Open";
             this.toggleButton.UseVisualStyleBackColor = true;
@@ -63,10 +61,9 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(28, 129);
-            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label1.Location = new System.Drawing.Point(21, 105);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(69, 17);
+            this.label1.Size = new System.Drawing.Size(53, 13);
             this.label1.TabIndex = 2;
             this.label1.Text = "COM Port";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -74,58 +71,66 @@
             // rtsCheck
             // 
             this.rtsCheck.AutoSize = true;
-            this.rtsCheck.Location = new System.Drawing.Point(12, 12);
+            this.rtsCheck.Location = new System.Drawing.Point(9, 10);
+            this.rtsCheck.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.rtsCheck.Name = "rtsCheck";
-            this.rtsCheck.Size = new System.Drawing.Size(106, 21);
+            this.rtsCheck.Size = new System.Drawing.Size(84, 17);
             this.rtsCheck.TabIndex = 3;
             this.rtsCheck.Text = "Enable RTS";
             this.rtsCheck.UseVisualStyleBackColor = true;
+            this.rtsCheck.CheckedChanged += new System.EventHandler(this.rtsCheck_CheckedChanged);
             // 
             // dtrCheck
             // 
             this.dtrCheck.AutoSize = true;
-            this.dtrCheck.Location = new System.Drawing.Point(124, 12);
+            this.dtrCheck.Location = new System.Drawing.Point(93, 10);
+            this.dtrCheck.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.dtrCheck.Name = "dtrCheck";
-            this.dtrCheck.Size = new System.Drawing.Size(107, 21);
+            this.dtrCheck.Size = new System.Drawing.Size(85, 17);
             this.dtrCheck.TabIndex = 4;
             this.dtrCheck.Text = "Enable DTR";
             this.dtrCheck.UseVisualStyleBackColor = true;
+            this.dtrCheck.CheckedChanged += new System.EventHandler(this.dtrCheck_CheckedChanged);
             // 
             // xonxoffCheck
             // 
             this.xonxoffCheck.AutoSize = true;
-            this.xonxoffCheck.Location = new System.Drawing.Point(12, 73);
+            this.xonxoffCheck.Location = new System.Drawing.Point(9, 59);
+            this.xonxoffCheck.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.xonxoffCheck.Name = "xonxoffCheck";
-            this.xonxoffCheck.Size = new System.Drawing.Size(86, 21);
+            this.xonxoffCheck.Size = new System.Drawing.Size(68, 17);
             this.xonxoffCheck.TabIndex = 5;
             this.xonxoffCheck.Text = "XOnXOff";
             this.xonxoffCheck.UseVisualStyleBackColor = true;
+            this.xonxoffCheck.CheckedChanged += new System.EventHandler(this.xonxoffCheck_CheckedChanged);
             // 
             // rtsHandshakeCheck
             // 
             this.rtsHandshakeCheck.AutoSize = true;
-            this.rtsHandshakeCheck.Location = new System.Drawing.Point(124, 73);
+            this.rtsHandshakeCheck.Location = new System.Drawing.Point(93, 59);
+            this.rtsHandshakeCheck.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.rtsHandshakeCheck.Name = "rtsHandshakeCheck";
-            this.rtsHandshakeCheck.Size = new System.Drawing.Size(58, 21);
+            this.rtsHandshakeCheck.Size = new System.Drawing.Size(48, 17);
             this.rtsHandshakeCheck.TabIndex = 6;
             this.rtsHandshakeCheck.Text = "RTS";
             this.rtsHandshakeCheck.UseVisualStyleBackColor = true;
+            this.rtsHandshakeCheck.CheckedChanged += new System.EventHandler(this.rtsHandshakeCheck_CheckedChanged);
             // 
             // HandshakePanelLabel
             // 
             this.HandshakePanelLabel.AutoSize = true;
-            this.HandshakePanelLabel.Location = new System.Drawing.Point(7, 53);
+            this.HandshakePanelLabel.Location = new System.Drawing.Point(5, 43);
+            this.HandshakePanelLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.HandshakePanelLabel.Name = "HandshakePanelLabel";
-            this.HandshakePanelLabel.Size = new System.Drawing.Size(91, 17);
+            this.HandshakePanelLabel.Size = new System.Drawing.Size(70, 13);
             this.HandshakePanelLabel.TabIndex = 8;
             this.HandshakePanelLabel.Text = "Handshaking";
-            this.HandshakePanelLabel.Click += new System.EventHandler(this.label2_Click);
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(239, 161);
+            this.ClientSize = new System.Drawing.Size(203, 131);
             this.Controls.Add(this.rtsHandshakeCheck);
             this.Controls.Add(this.HandshakePanelLabel);
             this.Controls.Add(this.xonxoffCheck);
@@ -134,7 +139,6 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.dtrCheck);
             this.Controls.Add(this.rtsCheck);
-            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
             this.Text = "PumpToggle";
             this.Load += new System.EventHandler(this.Form1_Load);

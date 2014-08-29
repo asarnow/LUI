@@ -100,5 +100,33 @@ namespace PumpToggle
             DisposePort();
         }
 
+        private void rtsCheck_CheckedChanged(object sender, EventArgs e)
+        {
+            DisposePort();
+            CreatePort();
+            SetClosed();
+        }
+
+        private void dtrCheck_CheckedChanged(object sender, EventArgs e)
+        {
+            DisposePort();
+            CreatePort();
+            SetClosed();
+        }
+
+        private void xonxoffCheck_CheckedChanged(object sender, EventArgs e)
+        {
+            DisposePort();
+            CreatePort();
+            SetClosed();
+        }
+
+        private void rtsHandshakeCheck_CheckedChanged(object sender, EventArgs e)
+        {
+            DisposePort();
+            CreatePort();
+            SetClosed();
+        }
+
     }
 }
