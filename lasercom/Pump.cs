@@ -17,9 +17,8 @@ namespace LUI
 
         public Pump(String portName)
         {
-            // RtsEnable causes RTS pin to go high on port open
-            _port = new SerialPort(portName) { RtsEnable = true };
-            //_port = new SerialPort(portName) { DtrEnable = true };            
+            // DtrEnable causes DTR pin to go high on port open
+            _port = new SerialPort(portName) { DtrEnable = true };            
             SetClosed();
         }
 
