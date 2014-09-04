@@ -38,9 +38,8 @@
     <Reference Include="ATMCD32CS">
       <HintPath>..\LUI\lib\ATMCD32CS.dll</HintPath>
     </Reference>
-    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\LUI\lib\log4net.dll</HintPath>
+    <Reference Include="log4net">
+      <HintPath>lib\log4net.dll</HintPath>
     </Reference>
     <Reference Include="NationalInstruments.Common, Version=9.1.40.159, Culture=neutral, PublicKeyToken=dc6ad606294fc298, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

@@ -15,19 +15,19 @@ namespace LUI
         private Address Address {public get; private set; }
         private Device Device { private get; private set; }
 
-        public AbstractDigitalDelayGenerator(int address, int boardNumber)
+        public AbstractDigitalDelayGenerator(int address, int boardNumber = Constants.BoardNumber)
         {
             Address = new Address((byte)address);
             Device = new Device(boardNumber, Address);
         }
 
-        public AbstractDigitalDelayGenerator(int address)
-        {
-            Address = new Address((byte) address);
-            Device = new Device(Constants.BoardNumber, Address);
-        }
+        //public AbstractDigitalDelayGenerator(int address)
+        //{
+        //    Address = new Address((byte) address);
+        //    Device = new Device(Constants.BoardNumber, Address);
+        //}
 
-        public void LoggedWrite(String command)
+        public void LoggedWrite(string command)
         {
             log.Info("GPIB Command: " + command);
             try
@@ -43,6 +43,30 @@ namespace LUI
                 log.Error(e.InnerException.Message);
             }
             
+        }
+
+        public string LoggedWriteRead(string command)
+        {
+            log.Info("GPIB Command: " + command);
+
+            try
+            {
+                Device.Write(command);
+            }
+            catch (GpibException e)
+            {
+                log.Error(e.Message);
+                return null;
+            }
+            catch (InvalidOperationException e)
+            {
+                log.Error(e.InnerException.Message);
+                return null;
+            }
+
+            string response = Device.ReadString();
+            log.Info("GPIB Response: " + response);
+            return response;
         }
 
     }
