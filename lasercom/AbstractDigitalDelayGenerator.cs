@@ -15,6 +15,12 @@ namespace LUI
         private Address Address {public get; private set; }
         private Device Device { private get; private set; }
 
+        public AbstractDigitalDelayGenerator(int address, int boardNumber)
+        {
+            Address = new Address((byte)address);
+            Device = new Device(boardNumber, Address);
+        }
+
         public AbstractDigitalDelayGenerator(int address)
         {
             Address = new Address((byte) address);
