@@ -1,31 +1,17 @@
 ﻿using System;
-using System.IO.Ports;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 //  <summary>
-//      Represents the syringe pump.
+//      AbstractPump is an abstract class for concrete Pump objects to inherit.
 //  </summary>
-
 namespace LUI
 {
-    class Pump
+    public abstract class AbstractPump
     {
-
-        public enum State{Open, Closed}
-
+        public enum State { Open, Closed }
         public State CurrentState;
-        private readonly SerialPort _port;
-
-        public Pump(String portName)
-        {
-            // DtrEnable causes DTR pin to go high on port open
-            _port = new SerialPort(portName) { DtrEnable = true };            
-            SetClosed();
-        }
-
-        public String GetPortName()
-        {
-            return _port.PortName;
-        }
 
         public State Toggle()
         {
@@ -44,13 +30,12 @@ namespace LUI
         public void SetOpen()
         {
             CurrentState = State.Open;
-            _port.Open(); //TODO Which is which?
+            //TODO Which is which?
         }
 
         public void SetClosed()
         {
             CurrentState = State.Closed;
-            _port.Close();
         }
 
         public State GetState()

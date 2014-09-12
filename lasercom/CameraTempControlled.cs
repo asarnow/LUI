@@ -17,7 +17,7 @@ using ATMCD32CS;
 namespace LUI
 {
 
-    public class CameraTempControlled:AbstractCamera
+    public class CameraTempControlled:AndorCamera
     {
 
         public CameraTempControlled(String dir):base(dir)
@@ -45,10 +45,10 @@ namespace LUI
 
         public int[] GetCountsFvb()
         {
-            return acquire();
+            return Acquire();
         }
 
-        public int[] acquire()
+        public int[] Acquire()
         {
             uint npx;
             if (this.ReadMode == Constants.ReadModeFVB)
@@ -65,6 +65,7 @@ namespace LUI
             uint ret = AndorSdk.GetAcquiredData(data, npx);
             return data;
         }
+ 
     }
 
 }

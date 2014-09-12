@@ -2,10 +2,17 @@
 //      Constants used in LUI.
 //  </summary>    
 
+using System;
+
 namespace LUI
 {
     public static class Constants
     {
+        // Library constants
+        public const Double GroundState = double.PositiveInfinity;
+        public const Double DarkState = double.NegativeInfinity;
+
+        // Default option values
         public const float DefaultTemperatureF = 20F;
         public const int DefaultTemperature = 20;
         public const float TemperatureEps = 0.1F;

@@ -12,7 +12,7 @@ using ATMCD32CS;
 
 namespace LUI
 {
-    public abstract class AbstractCamera:ICamera
+    public class AndorCamera:ICamera
     {
         public uint InitVal;
         public AndorSDK AndorSdk = new AndorSDK();
@@ -25,7 +25,7 @@ namespace LUI
         public uint Height;
         public uint Width;
 
-        public AbstractCamera(String dir)
+        public AndorCamera(String dir)
         {
             InitVal = AndorSdk.Initialize(dir);
             AndorSdk.GetCapabilities(ref Capabilities);

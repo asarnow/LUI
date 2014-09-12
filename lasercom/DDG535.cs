@@ -8,9 +8,9 @@ using NationalInstruments.NI4882;
 
 namespace LUI
 {
-    public class DDG535:AbstractDigitalDelayGenerator
+    public class DDG535:StanfordDigitalDelayGenerator
     {
-        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public const string SetDelayTimeCommand = "DT ";
         public const string TriggerInput = "0";
@@ -22,23 +22,23 @@ namespace LUI
         public const string DOutput = "6";
         public const string CDOutput = "7";
 
-        private double T0Delay { public get; public set; }
+        public double T0Delay { get; set; }
 
-        private double ADelay { public get; private set; }
-        //private Delay ARelative { public get; private set; }
+        public double ADelay { get; set; }
+        //public Delay ARelative { get; set; }
 
-        private double BDelay { public get; private set; }
-        //private Delay BRelative { public get; private set; }
+        public double BDelay { get; set; }
+        //public Delay BRelative { get; set; }
 
-        private double ABDelay { public get; private set; }
+        public double ABDelay { get; set; }
         
-        private double CDelay { public get; private set; }
-        //private Delay CRelative { public get; private set; }
+        public double CDelay { get; set; }
+        //public Delay CRelative { get; set; }
 
-        private double DDelay { public get; private set; }
-        //private Delay DRelative { public get; private set; }
+        public double DDelay { get; set; }
+        //public Delay DRelative { get; set; }
 
-        private double CDDelay { public get; private set; }
+        public double CDDelay { get; set; }
 
         //public enum Delay { T0, A, B, AB, C, D, CD }
 

@@ -6,7 +6,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{F77054EF-38F5-4303-9E65-AA033A17E215}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>LUI</RootNamespace>
     <AssemblyName>lasercom</AssemblyName>
@@ -34,9 +34,12 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="ATMCD32CS">
-      <HintPath>..\LUI\lib\ATMCD32CS.dll</HintPath>
+      <HintPath>lib\ATMCD32CS.dll</HintPath>
     </Reference>
     <Reference Include="log4net">
       <HintPath>lib\log4net.dll</HintPath>
@@ -61,23 +64,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AbstractCamera.cs" />
+    <Compile Include="AndorCamera.cs" />
+    <Compile Include="AbstractPump.cs" />
     <Compile Include="BeamFlags.cs" />
     <Compile Include="CameraTempControlled.cs" />
+    <Compile Include="DarkJob.cs" />
+    <Compile Include="DataPoint.cs" />
+    <Compile Include="IJob.cs" />
+    <Compile Include="OAJob.cs" />
+    <Compile Include="TROAJob.cs" />
     <Compile Include="DDG535.cs" />
     <Compile Include="IDigitalDelayGenerator.cs" />
     <Compile Include="Commander.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="AbstractDigitalDelayGenerator.cs" />
+    <Compile Include="StanfordDigitalDelayGenerator.cs" />
     <Compile Include="ICamera.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Pump.cs" />
+    <Compile Include="HarvardPump.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="log4net.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
