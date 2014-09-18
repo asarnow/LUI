@@ -22,10 +22,13 @@ namespace LUI
         static void Main(String[] args)
         {
 
+            // Get preferences
+
+            Commander Commander = new Commander();
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new ControlForm());
+            Application.Run(new ControlForm(Commander));
         }
 
     }

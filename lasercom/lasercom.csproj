@@ -81,6 +81,7 @@
     <Compile Include="ICamera.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="HarvardPump.cs" />
+    <Compile Include="Util.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
