@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.specGraph = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.imageBox = new System.Windows.Forms.PictureBox();
             this.specButton = new System.Windows.Forms.Button();
@@ -44,22 +44,22 @@
             // 
             // specGraph
             // 
-            chartArea1.AxisX.IntervalAutoMode = System.Windows.Forms.DataVisualization.Charting.IntervalAutoMode.VariableCount;
-            chartArea1.AxisX.Maximum = 1023D;
-            chartArea1.AxisX.Minimum = 0D;
-            chartArea1.AxisY.IntervalAutoMode = System.Windows.Forms.DataVisualization.Charting.IntervalAutoMode.VariableCount;
-            chartArea1.AxisY.IntervalOffsetType = System.Windows.Forms.DataVisualization.Charting.DateTimeIntervalType.Number;
-            chartArea1.AxisY.IntervalType = System.Windows.Forms.DataVisualization.Charting.DateTimeIntervalType.Number;
-            chartArea1.AxisY.Maximum = 65536D;
-            chartArea1.AxisY.Minimum = 0D;
-            chartArea1.Name = "specArea";
-            this.specGraph.ChartAreas.Add(chartArea1);
+            chartArea2.AxisX.IntervalAutoMode = System.Windows.Forms.DataVisualization.Charting.IntervalAutoMode.VariableCount;
+            chartArea2.AxisX.Maximum = 1023D;
+            chartArea2.AxisX.Minimum = 0D;
+            chartArea2.AxisY.IntervalAutoMode = System.Windows.Forms.DataVisualization.Charting.IntervalAutoMode.VariableCount;
+            chartArea2.AxisY.IntervalOffsetType = System.Windows.Forms.DataVisualization.Charting.DateTimeIntervalType.Number;
+            chartArea2.AxisY.IntervalType = System.Windows.Forms.DataVisualization.Charting.DateTimeIntervalType.Number;
+            chartArea2.AxisY.Maximum = 65536D;
+            chartArea2.AxisY.Minimum = 0D;
+            chartArea2.Name = "specArea";
+            this.specGraph.ChartAreas.Add(chartArea2);
             this.specGraph.Location = new System.Drawing.Point(12, 12);
             this.specGraph.Name = "specGraph";
-            series1.ChartArea = "specArea";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series1.Name = "spec";
-            this.specGraph.Series.Add(series1);
+            series2.ChartArea = "specArea";
+            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series2.Name = "spec";
+            this.specGraph.Series.Add(series2);
             this.specGraph.Size = new System.Drawing.Size(818, 366);
             this.specGraph.TabIndex = 0;
             this.specGraph.Text = "chart1";

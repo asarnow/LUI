@@ -99,6 +99,11 @@ namespace DetectorTester
             blank = null;
         }
 
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            base.OnFormClosing(e);
+            Commander.Camera.Close();
+        }
 
     }
 }
