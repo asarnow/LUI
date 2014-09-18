@@ -7,7 +7,7 @@ using log4net;
 
 namespace LUI
 {
-    class Util
+    public class Util
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -45,6 +45,15 @@ namespace LUI
 
 
             return data;
+        }
+
+        public static void normalizeArray(int[] arr, int maxval)
+        {
+            int max = arr.Max();
+            for (int i = 0; i < arr.Length; i++ )
+            {
+                arr[i] = arr[i] / max * maxval;
+            }
         }
     }
 }

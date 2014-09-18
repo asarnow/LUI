@@ -53,13 +53,13 @@ namespace LUI
             return null;
         }
 
-        private int[] Dark()
+        public int[] Dark()
         {
             BeamFlags.CloseLaserAndFlash();
             return Camera.GetCountsFvb();
         }
 
-        private int[] Flash()
+        public int[] Flash()
         {
             BeamFlags.CloseLaserAndFlash();
             BeamFlags.OpenFlash();
@@ -71,7 +71,7 @@ namespace LUI
             return data;
         }
 
-        private int[] Trans()
+        public int[] Trans()
         {
             BeamFlags.OpenLaserAndFlash();
 

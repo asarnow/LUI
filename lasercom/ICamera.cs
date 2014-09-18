@@ -10,7 +10,7 @@ namespace LUI
 
         int[] GetCountsFvb();
 
-        void GetImage();
+        int[] GetImage();
 
         void Close();
 

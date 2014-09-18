@@ -29,6 +29,10 @@ namespace LUI
 
         // Andor constants and commands
         public const int ReadModeFVB = 0;
+        public const int ReadModeMultiTrack = 1;
+        public const int ReadModeRandomTrack = 2;
+        public const int ReadModeSingleTrack = 3;
+        public const int ReadModeImage = 4;
 
         public const int AcqModeSingle = 1;
         public const int AcqModeAccumulate = 2;

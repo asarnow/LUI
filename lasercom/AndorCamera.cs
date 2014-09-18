@@ -30,6 +30,9 @@ namespace LUI
             InitVal = AndorSdk.Initialize(dir);
             AndorSdk.GetCapabilities(ref Capabilities);
             AndorSdk.FreeInternalMemory();
+
+            Width = 1024; //TODO detect these values
+            Height = 256;
         }
 
         public int[] GetCountsFvb()
@@ -42,10 +45,23 @@ namespace LUI
             AndorSdk.ShutDown();
         }
 
-
-        public void GetImage()
+        public int[] GetImage()
         {
-            throw new NotImplementedException();
+            return GetFullResolutionImage();
+        }
+
+        public int[] GetFullResolutionImage()
+        {
+            uint npx = Width * Height;
+            int[] data = new int[npx];
+            SetReadMode(Constants.ReadModeImage);
+            AndorSdk.SetImage(1,1,1,(int)Width,1,(int)Height);
+            SetAcquisitionMode(Constants.AcqModeSingle);
+            SetTriggerMode(Constants.TrigModeExternalExposure);
+            AndorSdk.StartAcquisition();
+            AndorSdk.WaitForAcquisition();
+            uint ret = AndorSdk.GetAcquiredData(data, npx);
+            return data;
         }
 
         public void SetReadMode(int readMode)
