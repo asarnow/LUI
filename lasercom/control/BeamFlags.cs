@@ -9,7 +9,7 @@ using System.IO.Ports;
 
 namespace LUI
 {
-    public class BeamFlags
+    public class BeamFlags:AbstractBeamFlags
     {
 
         public enum State { Open, Closed }

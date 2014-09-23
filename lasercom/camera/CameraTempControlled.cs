@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 
-#if x64
+//#if x64
 using ATMCD64CS;
-#else
-using ATMCD32CS;
-#endif
+//#else
+//using ATMCD32CS;
+//#endif
 
 //  <summary>
 //      Temperature controlled camera.

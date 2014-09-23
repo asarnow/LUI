@@ -1,9 +1,9 @@
 ﻿using System;
-#if x64
+//#if x64
 using ATMCD64CS;
-#else
-using ATMCD32CS;
-#endif
+//#else
+//using ATMCD32CS;
+//#endif
 
 //  <summary>
 //      Abstract class representing a camera. Any camera class implementation
