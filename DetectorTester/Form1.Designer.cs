@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.specGraph = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.imageBox = new System.Windows.Forms.PictureBox();
             this.specButton = new System.Windows.Forms.Button();
@@ -44,39 +44,42 @@
             // 
             // specGraph
             // 
-            chartArea2.AxisX.IntervalAutoMode = System.Windows.Forms.DataVisualization.Charting.IntervalAutoMode.VariableCount;
-            chartArea2.AxisX.Maximum = 1023D;
-            chartArea2.AxisX.Minimum = 0D;
-            chartArea2.AxisY.IntervalAutoMode = System.Windows.Forms.DataVisualization.Charting.IntervalAutoMode.VariableCount;
-            chartArea2.AxisY.IntervalOffsetType = System.Windows.Forms.DataVisualization.Charting.DateTimeIntervalType.Number;
-            chartArea2.AxisY.IntervalType = System.Windows.Forms.DataVisualization.Charting.DateTimeIntervalType.Number;
-            chartArea2.AxisY.Maximum = 65536D;
-            chartArea2.AxisY.Minimum = 0D;
-            chartArea2.Name = "specArea";
-            this.specGraph.ChartAreas.Add(chartArea2);
-            this.specGraph.Location = new System.Drawing.Point(12, 12);
+            chartArea1.AxisX.IntervalAutoMode = System.Windows.Forms.DataVisualization.Charting.IntervalAutoMode.VariableCount;
+            chartArea1.AxisX.Maximum = 1023D;
+            chartArea1.AxisX.Minimum = 0D;
+            chartArea1.AxisY.IntervalAutoMode = System.Windows.Forms.DataVisualization.Charting.IntervalAutoMode.VariableCount;
+            chartArea1.AxisY.IntervalOffsetType = System.Windows.Forms.DataVisualization.Charting.DateTimeIntervalType.Number;
+            chartArea1.AxisY.IntervalType = System.Windows.Forms.DataVisualization.Charting.DateTimeIntervalType.Number;
+            chartArea1.AxisY.Maximum = 65536D;
+            chartArea1.AxisY.Minimum = 0D;
+            chartArea1.Name = "specArea";
+            this.specGraph.ChartAreas.Add(chartArea1);
+            this.specGraph.Location = new System.Drawing.Point(9, 10);
+            this.specGraph.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.specGraph.Name = "specGraph";
-            series2.ChartArea = "specArea";
-            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series2.Name = "spec";
-            this.specGraph.Series.Add(series2);
-            this.specGraph.Size = new System.Drawing.Size(818, 366);
+            series1.ChartArea = "specArea";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series1.Name = "spec";
+            this.specGraph.Series.Add(series1);
+            this.specGraph.Size = new System.Drawing.Size(614, 297);
             this.specGraph.TabIndex = 0;
             this.specGraph.Text = "chart1";
             // 
             // imageBox
             // 
-            this.imageBox.Location = new System.Drawing.Point(12, 384);
+            this.imageBox.Location = new System.Drawing.Point(9, 312);
+            this.imageBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.imageBox.Name = "imageBox";
-            this.imageBox.Size = new System.Drawing.Size(1024, 256);
+            this.imageBox.Size = new System.Drawing.Size(768, 208);
             this.imageBox.TabIndex = 1;
             this.imageBox.TabStop = false;
             // 
             // specButton
             // 
-            this.specButton.Location = new System.Drawing.Point(14, 67);
+            this.specButton.Location = new System.Drawing.Point(10, 54);
+            this.specButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.specButton.Name = "specButton";
-            this.specButton.Size = new System.Drawing.Size(83, 30);
+            this.specButton.Size = new System.Drawing.Size(62, 24);
             this.specButton.TabIndex = 2;
             this.specButton.Text = "Capture";
             this.specButton.UseVisualStyleBackColor = true;
@@ -84,9 +87,10 @@
             // 
             // imageButton
             // 
-            this.imageButton.Location = new System.Drawing.Point(14, 31);
+            this.imageButton.Location = new System.Drawing.Point(10, 25);
+            this.imageButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.imageButton.Name = "imageButton";
-            this.imageButton.Size = new System.Drawing.Size(83, 30);
+            this.imageButton.Size = new System.Drawing.Size(62, 24);
             this.imageButton.TabIndex = 3;
             this.imageButton.Text = "Image";
             this.imageButton.UseVisualStyleBackColor = true;
@@ -94,9 +98,10 @@
             // 
             // darkButton
             // 
-            this.darkButton.Location = new System.Drawing.Point(103, 31);
+            this.darkButton.Location = new System.Drawing.Point(77, 25);
+            this.darkButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.darkButton.Name = "darkButton";
-            this.darkButton.Size = new System.Drawing.Size(83, 30);
+            this.darkButton.Size = new System.Drawing.Size(62, 24);
             this.darkButton.TabIndex = 4;
             this.darkButton.Text = "Dark";
             this.darkButton.UseVisualStyleBackColor = true;
@@ -108,18 +113,21 @@
             this.groupBox1.Controls.Add(this.imageButton);
             this.groupBox1.Controls.Add(this.specButton);
             this.groupBox1.Controls.Add(this.darkButton);
-            this.groupBox1.Location = new System.Drawing.Point(836, 12);
+            this.groupBox1.Location = new System.Drawing.Point(627, 10);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(200, 366);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Size = new System.Drawing.Size(150, 297);
             this.groupBox1.TabIndex = 5;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Commands";
             // 
             // blankButton
             // 
-            this.blankButton.Location = new System.Drawing.Point(103, 67);
+            this.blankButton.Location = new System.Drawing.Point(77, 54);
+            this.blankButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.blankButton.Name = "blankButton";
-            this.blankButton.Size = new System.Drawing.Size(83, 30);
+            this.blankButton.Size = new System.Drawing.Size(62, 24);
             this.blankButton.TabIndex = 5;
             this.blankButton.Text = "Blank";
             this.blankButton.UseVisualStyleBackColor = true;
@@ -127,14 +135,15 @@
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1043, 649);
+            this.ClientSize = new System.Drawing.Size(782, 527);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.imageBox);
             this.Controls.Add(this.specGraph);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "b";
             ((System.ComponentModel.ISupportInitialize)(this.specGraph)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.imageBox)).EndInit();
             this.groupBox1.ResumeLayout(false);
