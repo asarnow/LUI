@@ -62,7 +62,7 @@ namespace DetectorTester
             {
                 for (int i = 0; i < counts.Length; i++)
                 {
-                    counts[i] -= dark[i];
+                    blank[i] -= dark[i];
                 }
             }
         }
@@ -103,6 +103,11 @@ namespace DetectorTester
         {
             base.OnFormClosing(e);
             Commander.Camera.Close();
+        }
+
+        private void clearButton_Click(object sender, EventArgs e)
+        {
+            specGraph.Series["spec"].Points.Clear();
         }
 
     }

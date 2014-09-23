@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-#if x64
+//#if x64
 using ATMCD64CS;
-#else
-using ATMCD32CS;
-#endif
+//#else
+//using ATMCD32CS;
+//#endif
 
 using log4net;
 using NationalInstruments.NI4882;
@@ -18,7 +18,7 @@ namespace LUI
     public class Commander
     {
         public CameraTempControlled Camera { get; set; }
-        public BeamFlags BeamFlags { get; set; }
+        public AbstractBeamFlags BeamFlags { get; set; }
         public IDigitalDelayGenerator DDG { get; set; }
         public AbstractPump Pump { get; set; }
         public List<Double> Delays { get; set; }
@@ -31,10 +31,12 @@ namespace LUI
         public Commander()
         {
             Camera = new CameraTempControlled(".");
-            BeamFlags = new BeamFlags("COM1");
+            //BeamFlags = new BeamFlags("COM1");
+            BeamFlags = new DummyBeamFlags();
             int address = 0;
-            DDG = new DDG535(address);
-            Pump = new HarvardPump("COM3");
+            //DDG = new DDG535(address);
+            DDG = new DummyDigitalDelayGenerator();
+            //Pump = new HarvardPump("COM3");
             Data = new Dictionary<double, DataPoint>();
         }
 

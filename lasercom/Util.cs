@@ -52,7 +52,8 @@ namespace LUI
             int max = arr.Max();
             for (int i = 0; i < arr.Length; i++ )
             {
-                arr[i] = arr[i] / max * maxval;
+                int denom = max * maxval;
+                arr[i] = denom == 0 ? 0 : arr[i] / denom;
             }
         }
     }

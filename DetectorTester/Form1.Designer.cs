@@ -37,6 +37,7 @@
             this.darkButton = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.blankButton = new System.Windows.Forms.Button();
+            this.clearButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.specGraph)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.imageBox)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -55,7 +56,7 @@
             chartArea1.Name = "specArea";
             this.specGraph.ChartAreas.Add(chartArea1);
             this.specGraph.Location = new System.Drawing.Point(9, 10);
-            this.specGraph.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.specGraph.Margin = new System.Windows.Forms.Padding(2);
             this.specGraph.Name = "specGraph";
             series1.ChartArea = "specArea";
             series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
@@ -68,7 +69,7 @@
             // imageBox
             // 
             this.imageBox.Location = new System.Drawing.Point(9, 312);
-            this.imageBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.imageBox.Margin = new System.Windows.Forms.Padding(2);
             this.imageBox.Name = "imageBox";
             this.imageBox.Size = new System.Drawing.Size(768, 208);
             this.imageBox.TabIndex = 1;
@@ -77,7 +78,7 @@
             // specButton
             // 
             this.specButton.Location = new System.Drawing.Point(10, 54);
-            this.specButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.specButton.Margin = new System.Windows.Forms.Padding(2);
             this.specButton.Name = "specButton";
             this.specButton.Size = new System.Drawing.Size(62, 24);
             this.specButton.TabIndex = 2;
@@ -88,7 +89,7 @@
             // imageButton
             // 
             this.imageButton.Location = new System.Drawing.Point(10, 25);
-            this.imageButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.imageButton.Margin = new System.Windows.Forms.Padding(2);
             this.imageButton.Name = "imageButton";
             this.imageButton.Size = new System.Drawing.Size(62, 24);
             this.imageButton.TabIndex = 3;
@@ -99,7 +100,7 @@
             // darkButton
             // 
             this.darkButton.Location = new System.Drawing.Point(77, 25);
-            this.darkButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.darkButton.Margin = new System.Windows.Forms.Padding(2);
             this.darkButton.Name = "darkButton";
             this.darkButton.Size = new System.Drawing.Size(62, 24);
             this.darkButton.TabIndex = 4;
@@ -109,14 +110,15 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.clearButton);
             this.groupBox1.Controls.Add(this.blankButton);
             this.groupBox1.Controls.Add(this.imageButton);
             this.groupBox1.Controls.Add(this.specButton);
             this.groupBox1.Controls.Add(this.darkButton);
             this.groupBox1.Location = new System.Drawing.Point(627, 10);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
             this.groupBox1.Size = new System.Drawing.Size(150, 297);
             this.groupBox1.TabIndex = 5;
             this.groupBox1.TabStop = false;
@@ -125,13 +127,23 @@
             // blankButton
             // 
             this.blankButton.Location = new System.Drawing.Point(77, 54);
-            this.blankButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.blankButton.Margin = new System.Windows.Forms.Padding(2);
             this.blankButton.Name = "blankButton";
             this.blankButton.Size = new System.Drawing.Size(62, 24);
             this.blankButton.TabIndex = 5;
             this.blankButton.Text = "Blank";
             this.blankButton.UseVisualStyleBackColor = true;
             this.blankButton.Click += new System.EventHandler(this.blankButton_Click);
+            // 
+            // clearButton
+            // 
+            this.clearButton.Location = new System.Drawing.Point(10, 83);
+            this.clearButton.Name = "clearButton";
+            this.clearButton.Size = new System.Drawing.Size(62, 24);
+            this.clearButton.TabIndex = 6;
+            this.clearButton.Text = "Clear";
+            this.clearButton.UseVisualStyleBackColor = true;
+            this.clearButton.Click += new System.EventHandler(this.clearButton_Click);
             // 
             // Form1
             // 
@@ -141,9 +153,9 @@
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.imageBox);
             this.Controls.Add(this.specGraph);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Form1";
-            this.Text = "b";
+            this.Text = "DetectorTester";
             ((System.ComponentModel.ISupportInitialize)(this.specGraph)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.imageBox)).EndInit();
             this.groupBox1.ResumeLayout(false);
@@ -160,6 +172,7 @@
         private System.Windows.Forms.Button darkButton;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Button blankButton;
+        private System.Windows.Forms.Button clearButton;
     }
 }
 
