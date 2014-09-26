@@ -5,12 +5,6 @@ using System.Windows.Forms;
 using System.Threading.Tasks;
 using NDesk.Options;
 
-#if x64
-using ATMCD64CS;
-#else
-using ATMCD32CS;
-#endif
-
 using LUI;
 
 namespace LUI

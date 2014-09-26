@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using NDesk.Options;
 
-#if x64
-using ATMCD64CS;
-#else
-using ATMCD32CS;
-#endif
+//#if x64
+//using ATMCD64CS;
+//#else
+//using ATMCD32CS;
+//#endif
 
 using LUI;
 
@@ -18,6 +18,8 @@ namespace LUI
 
         static void Main(string[] args)
         {
+            Commander Commander = new Commander();
+
             int N = 1;
             string mode = "ACCUM";
             bool show_help = false;
@@ -55,7 +57,7 @@ namespace LUI
                 return;
             }
 
-            CameraTempControlled camera = new CameraTempControlled(dir);
+            CameraTempControlled camera = Commander.Camera;
             camera.EquilibrateTemperature(temp);
 
             BeamFlags beamflags = new BeamFlags(flagPort);
@@ -63,12 +65,12 @@ namespace LUI
             switch (mode.ToUpper())
             {
                 case "ACCUM":
-                    camera.SetReadMode(Constants.ReadModeFVB);
-                    camera.SetAcquisitionMode(Constants.AcquisitionModeAccumulate);
-                    camera.SetNumberAccumulations(N);
-                    camera.SetTriggerMode(Constants.TriggerModeExternalExposure);
+                    camera.ReadMode = Constants.ReadModeFVB;
+                    camera.AcquisitionMode = Constants.AcquisitionModeAccumulate;
+                    camera.NumberAccumulations = N;
+                    camera.TriggerMode = Constants.TriggerModeExternalExposure;
                     beamflags.OpenFlash();
-                    int[] data = camera.acquire();
+                    int[] data = camera.Acquire();
                     beamflags.CloseFlash();
 
                     for (int i = 0; i < data.Length; i++) data[i] /= N;
@@ -88,25 +90,25 @@ namespace LUI
                     writer.Close();
                     break;
                 case "SPEC":
-                    camera.SetReadMode(Constants.ReadModeFVB);
-                    camera.SetAcquisitionMode(Constants.AcquisitionModeAccumulate);
-                    camera.SetNumberAccumulations(N);
-                    camera.SetTriggerMode(Constants.TriggerModeExternalExposure);
+                    camera.ReadMode = Constants.ReadModeFVB;
+                    camera.AcquisitionMode = Constants.AcquisitionModeAccumulate;
+                    camera.NumberAccumulations = N;
+                    camera.TriggerMode = Constants.TriggerModeExternalExposure;
 
                     Console.WriteLine("Press any key to collect dark current");
                     Console.ReadKey(true);
-                    int[] dark = camera.acquire();
+                    int[] dark = camera.Acquire();
 
                     Console.WriteLine("Press any key to collect blank");
                     Console.ReadKey(true);
                     beamflags.OpenFlash();
-                    int[] blank = camera.acquire();
+                    int[] blank = camera.Acquire();
                     beamflags.CloseFlash();
 
                     Console.WriteLine("Press any key to collect sample spectrum");
                     Console.ReadKey(true);
                     beamflags.OpenFlash();
-                    int[] sample = camera.acquire();
+                    int[] sample = camera.Acquire();
                     beamflags.OpenFlash();
 
                     for (int i = 0; i < dark.Length; i++) dark[i] /= N;

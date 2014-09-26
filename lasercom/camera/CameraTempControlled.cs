@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 
-//#if x64
+#if x64
 using ATMCD64CS;
-//#else
-//using ATMCD32CS;
-//#endif
+#else
+using ATMCD32CS;
+#endif
 
 //  <summary>
 //      Temperature controlled camera.
@@ -43,34 +43,6 @@ namespace LUI
             AndorSdk.ShutDown();
         }
 
-        public int[] GetCountsFvb()
-        {
-            return Acquire();
-        }
-
-        public int[] Acquire()
-        {
-            uint npx;
-            if (this.ReadMode == Constants.ReadModeFVB)
-            {
-                npx = this.Width;
-            }
-            else if (this.ReadMode == Constants.ReadModeImage)
-            {
-                npx = this.Width * this.Height;
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
-
-            int[] data = new int[npx];
-            AndorSdk.StartAcquisition();
-            AndorSdk.WaitForAcquisition();
-            uint ret = AndorSdk.GetAcquiredData(data, npx);
-            return data;
-        }
- 
     }
 
 }

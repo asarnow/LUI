@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 #if x64
 using ATMCD64CS;
 #else
 using ATMCD32CS;
-using System.Runtime.InteropServices;
 #endif
 
 namespace LUI

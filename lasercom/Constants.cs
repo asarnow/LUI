@@ -15,7 +15,7 @@ namespace LUI
         // Default option values
         public const float DefaultTemperatureF = 20F;
         public const int DefaultTemperature = 20;
-        public const float TemperatureEps = 0.1F;
+        public const float TemperatureEps = 3F;
 
         // Serial constants and commands
         public const string OpenFlashCommand = "!0SO1";
@@ -39,6 +39,12 @@ namespace LUI
 
         public const int TriggerModeExternal = 1;
         public const int TriggerModeExternalExposure = 7;
+
+        public const int TriggerInvertRising = 0;
+        public const int TriggerInvertFalling = 1;
+
+        public const float DefaultTriggerLevel = 3.9F;
+        public const int DefaultMCPGain = 500;
 
         // NI constants and GPIB commands
         public const int BoardNumber = 0;

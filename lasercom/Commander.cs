@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-//#if x64
+#if x64
 using ATMCD64CS;
-//#else
-//using ATMCD32CS;
-//#endif
+#else
+using ATMCD32CS;
+#endif
 
 using log4net;
 using NationalInstruments.NI4882;
@@ -50,7 +50,7 @@ namespace LUI
         {
             for (int i = 0; i < n; i++)
             {
-                Camera.GetCountsFvb();
+                Camera.CountsFvb();
             }
             return null;
         }
@@ -58,58 +58,23 @@ namespace LUI
         public int[] Dark()
         {
             BeamFlags.CloseLaserAndFlash();
-            return Camera.GetCountsFvb();
+            return Camera.Acquire();
         }
 
         public int[] Flash()
         {
             BeamFlags.CloseLaserAndFlash();
             BeamFlags.OpenFlash();
-
-            int[] data = Camera.GetCountsFvb();
-
+            int[] data = Camera.Acquire();
             BeamFlags.CloseLaserAndFlash();
-
             return data;
         }
 
         public int[] Trans()
         {
             BeamFlags.OpenLaserAndFlash();
-
-            int[] data = Camera.GetCountsFvb();
-
+            int[] data = Camera.Acquire();
             BeamFlags.CloseLaserAndFlash();
-
-            return data;
-        }
-
-        public int[] DarkImage()
-        {
-            BeamFlags.CloseLaserAndFlash();
-            return Camera.FullResolutionImage();
-        }
-
-        public int[] FlashImage()
-        {
-            BeamFlags.CloseLaserAndFlash();
-            BeamFlags.OpenFlash();
-
-            int[] data = Camera.FullResolutionImage();
-
-            BeamFlags.CloseLaserAndFlash();
-
-            return data;
-        }
-
-        public int[] TransImage()
-        {
-            BeamFlags.OpenLaserAndFlash();
-
-            int[] data = Camera.FullResolutionImage();
-
-            BeamFlags.CloseLaserAndFlash();
-
             return data;
         }
 
