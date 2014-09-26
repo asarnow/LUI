@@ -59,22 +59,22 @@ namespace DetectorTester
 
         private void imageButton_Click(object sender, EventArgs e)
         {
-            ShowImage( Commander.Camera.GetFullResolutionImage() );
+            ShowImage( Commander.Camera.FullResolutionImage() );
         }
 
         private void darkButton_Click(object sender, EventArgs e)
         {
-            Commander.Camera.SetAcquisitionMode(Constants.AcqModeSingle);
-            Commander.Camera.SetTriggerMode(Constants.TrigModeExternalExposure);
-            Commander.Camera.SetReadMode(Constants.ReadModeFVB);
+            Commander.Camera.AcquisitionMode = Constants.AcquisitionModeSingle;
+            Commander.Camera.TriggerMode = Constants.TriggerModeExternalExposure;
+            Commander.Camera.ReadMode = Constants.ReadModeFVB;
             dark = Commander.Dark();
         }
 
         private void blankButton_Click(object sender, EventArgs e)
         {
-            Commander.Camera.SetAcquisitionMode(Constants.AcqModeSingle);
-            Commander.Camera.SetTriggerMode(Constants.TrigModeExternalExposure);
-            Commander.Camera.SetReadMode(Constants.ReadModeFVB);
+            Commander.Camera.AcquisitionMode = Constants.AcquisitionModeSingle;
+            Commander.Camera.TriggerMode = Constants.TriggerModeExternalExposure;
+            Commander.Camera.ReadMode = Constants.ReadModeFVB;
             blank = Commander.Flash();
             ApplyDark(blank);
         }
@@ -111,9 +111,9 @@ namespace DetectorTester
 
         private void specButton_Click(object sender, EventArgs e)
         {
-            Commander.Camera.SetAcquisitionMode(Constants.AcqModeSingle);
-            Commander.Camera.SetTriggerMode(Constants.TrigModeExternalExposure);
-            Commander.Camera.SetReadMode(Constants.ReadModeFVB);
+            Commander.Camera.AcquisitionMode = Constants.AcquisitionModeSingle;
+            Commander.Camera.TriggerMode = Constants.TriggerModeExternalExposure;
+            Commander.Camera.ReadMode = Constants.ReadModeFVB;
             counts = Commander.Flash();
             ApplyDark(counts);
             ApplyBlank(counts);
@@ -145,7 +145,7 @@ namespace DetectorTester
             if (result == DialogResult.OK)
             {
                 if (readMode == Constants.ReadModeFVB) blank = Commander.Flash();
-                else if (readMode == Constants.ReadModeImage) blank = Commander.Camera.GetFullResolutionImage();
+                else if (readMode == Constants.ReadModeImage) blank = Commander.FlashImage();
             }
             else
             {
@@ -176,11 +176,11 @@ namespace DetectorTester
             image = null;
 
             WorkParameters parameters = new WorkParameters();
-            parameters.AcqMode = Constants.AcqModeSingle;
-            parameters.TriggerMode = Constants.TrigModeExternalExposure;
+            parameters.AcqMode = Constants.AcquisitionModeSingle;
+            parameters.TriggerMode = Constants.TriggerModeExternalExposure;
 
-            Commander.Camera.SetAcquisitionMode(parameters.AcqMode);
-            Commander.Camera.SetTriggerMode(parameters.TriggerMode);
+            Commander.Camera.AcquisitionMode = parameters.AcqMode;
+            Commander.Camera.TriggerMode = parameters.TriggerMode;
 
             parameters.Excite = exciteCheck.Checked;
 
@@ -193,7 +193,7 @@ namespace DetectorTester
                 parameters.ReadMode = Constants.ReadModeImage;
             }
 
-            Commander.Camera.SetReadMode(parameters.ReadMode);
+            Commander.Camera.ReadMode = parameters.ReadMode;
 
             if (!BlankDialog(parameters.ReadMode)) return;
 
@@ -207,46 +207,64 @@ namespace DetectorTester
 
         private void KineticSeriesAsync(object sender, DoWorkEventArgs e)
         {
-
             WorkParameters parameters = (WorkParameters)e.Argument;
-
-            dark = Commander.Dark();
-
             int nsteps = parameters.NSteps;
             int cnt = 0;
 
-            if (parameters.Excite)
+            if (parameters.ReadMode == Constants.ReadModeFVB)
             {
-                int[] counts = Commander.Trans();
-                ApplyDark(counts);
-                ApplyBlank(counts);
-                worker.ReportProgress(parameters.ReadMode);
-            }
-
-            while (cnt <= nsteps)
-            {
-                if (worker.CancellationPending)
+                dark = Commander.Dark();
+                
+                if (parameters.Excite)
                 {
-                    e.Cancel = true;
-                    return;
+                    int[] counts = Commander.Trans();
+                    ApplyDark(counts);
+                    ApplyBlank(counts);
+                    worker.ReportProgress(parameters.ReadMode);
                 }
 
-                if (parameters.ReadMode == Constants.ReadModeFVB)
+                while (cnt <= nsteps)
                 {
+                    if (worker.CancellationPending)
+                    {
+                        e.Cancel = true;
+                        return;
+                    }
                     counts = Commander.Flash();
                     ApplyDark(counts);
                     ApplyBlank(counts);
+                    worker.ReportProgress(parameters.ReadMode);
+                    cnt++;
                 }
-                else if (parameters.ReadMode == Constants.ReadModeImage)
-                {
-                    image = Commander.Camera.GetFullResolutionImage();
-                    ApplyDark(image);
-                }
-
-                worker.ReportProgress(parameters.ReadMode);
-
-                cnt++;
             }
+            else if (parameters.ReadMode == Constants.ReadModeImage)
+            {
+                dark = Commander.DarkImage();
+                
+                if (parameters.Excite)
+                {
+                    int[] image = Commander.TransImage();
+                    ApplyDark(image);
+                    worker.ReportProgress(parameters.ReadMode);
+                    ApplyBlank(image);
+                }
+
+                while (cnt <= nsteps)
+                {
+                    if (worker.CancellationPending)
+                    {
+                        e.Cancel = true;
+                        return;
+                    }
+                    image = Commander.FlashImage();
+                    ApplyDark(image);
+                    worker.ReportProgress(parameters.ReadMode);
+                    ApplyBlank(image);
+                    cnt++;
+                }
+            }
+
+            
 
         }
 

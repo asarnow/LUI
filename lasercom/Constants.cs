@@ -34,11 +34,11 @@ namespace LUI
         public const int ReadModeSingleTrack = 3;
         public const int ReadModeImage = 4;
 
-        public const int AcqModeSingle = 1;
-        public const int AcqModeAccumulate = 2;
+        public const int AcquisitionModeSingle = 1;
+        public const int AcquisitionModeAccumulate = 2;
 
-        public const int TrigModeExternal = 1;
-        public const int TrigModeExternalExposure = 7;
+        public const int TriggerModeExternal = 1;
+        public const int TriggerModeExternalExposure = 7;
 
         // NI constants and GPIB commands
         public const int BoardNumber = 0;

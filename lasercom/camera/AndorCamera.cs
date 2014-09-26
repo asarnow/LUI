@@ -18,10 +18,42 @@ namespace LUI
         public AndorSDK AndorSdk = new AndorSDK();
         public AndorSDK.AndorCapabilities Capabilities;
 
-        public int ReadMode;
-        public int AcqMode;
-        public int TrigMode;
-        public int NumberAccumulations;
+        public int ReadMode
+        {
+            get { return ReadMode; }
+            set
+            {
+                ReadMode = value;
+                AndorSdk.SetReadMode(value);
+            }
+        }
+        public int AcquisitionMode
+        {
+            get { return AcquisitionMode; }
+            set
+            {
+                AcquisitionMode = value;
+                AndorSdk.SetAcquisitionMode(value);
+            }
+        }
+        public int TriggerMode
+        {
+            get { return TriggerMode; }
+            set
+            {
+                TriggerMode = value;
+                AndorSdk.SetTriggerMode(value);
+            }
+        }
+        public int NumberAccumulations
+        {
+            get { return NumberAccumulations; }
+            set
+            {
+                NumberAccumulations = value;
+                AndorSdk.SetNumberAccumulations(value);
+            }
+        }
         public uint Height;
         public uint Width;
 
@@ -47,45 +79,21 @@ namespace LUI
 
         public int[] GetImage()
         {
-            return GetFullResolutionImage();
+            return FullResolutionImage();
         }
 
-        public int[] GetFullResolutionImage()
+        public int[] FullResolutionImage()
         {
             uint npx = Width * Height;
             int[] data = new int[npx];
-            SetReadMode(Constants.ReadModeImage);
-            AndorSdk.SetImage(1,1,1,(int)Width,1,(int)Height);
-            SetAcquisitionMode(Constants.AcqModeSingle);
-            SetTriggerMode(Constants.TrigModeExternalExposure);
+            ReadMode = Constants.ReadModeImage;
+            AndorSdk.SetImage(1, 1, 1, (int)Width, 1, (int)Height);
+            AcquisitionMode = Constants.AcquisitionModeSingle;
+            TriggerMode = Constants.TriggerModeExternalExposure;
             AndorSdk.StartAcquisition();
             AndorSdk.WaitForAcquisition();
             uint ret = AndorSdk.GetAcquiredData(data, npx);
             return data;
-        }
-
-        public void SetReadMode(int readMode)
-        {
-            this.ReadMode = readMode;
-            AndorSdk.SetReadMode(readMode);
-        }
-
-        public void SetAcquisitionMode(int acqMode)
-        {
-            this.AcqMode = acqMode;
-            AndorSdk.SetAcquisitionMode(acqMode);
-        }
-
-        public void SetTriggerMode(int trigMode)
-        {
-            this.TrigMode = trigMode;
-            AndorSdk.SetTriggerMode(trigMode);
-        }
-
-        public void SetNumberAccumulations(int n)
-        {
-            this.NumberAccumulations = n;
-            AndorSdk.SetNumberAccumulations(n);
         }
     }
 }

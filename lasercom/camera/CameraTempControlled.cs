@@ -31,7 +31,7 @@ namespace LUI
             AndorSdk.SetTemperature(targetTemperature);
             float currentTemperature = 0;
             AndorSdk.GetTemperatureF(ref currentTemperature);
-            while ( (currentTemperature - targetTemperature) > Constants.TemperatureEps )
+            while ( Math.Abs(currentTemperature - targetTemperature) > Constants.TemperatureEps )
             {
                 AndorSdk.GetTemperatureF(ref currentTemperature);
             }
@@ -55,10 +55,15 @@ namespace LUI
             {
                 npx = this.Width;
             }
-            else
+            else if (this.ReadMode == Constants.ReadModeImage)
             {
                 npx = this.Width * this.Height;
             }
+            else
+            {
+                throw new NotImplementedException();
+            }
+
             int[] data = new int[npx];
             AndorSdk.StartAcquisition();
             AndorSdk.WaitForAcquisition();

@@ -84,11 +84,40 @@ namespace LUI
             return data;
         }
 
+        public int[] DarkImage()
+        {
+            BeamFlags.CloseLaserAndFlash();
+            return Camera.FullResolutionImage();
+        }
+
+        public int[] FlashImage()
+        {
+            BeamFlags.CloseLaserAndFlash();
+            BeamFlags.OpenFlash();
+
+            int[] data = Camera.FullResolutionImage();
+
+            BeamFlags.CloseLaserAndFlash();
+
+            return data;
+        }
+
+        public int[] TransImage()
+        {
+            BeamFlags.OpenLaserAndFlash();
+
+            int[] data = Camera.FullResolutionImage();
+
+            BeamFlags.CloseLaserAndFlash();
+
+            return data;
+        }
+
         public void RunJobs()
         {
-            Camera.SetAcquisitionMode(Constants.AcqModeSingle);
-            Camera.SetTriggerMode(Constants.TrigModeExternalExposure);
-            Camera.SetReadMode(Constants.ReadModeFVB);
+            Camera.AcquisitionMode = Constants.AcquisitionModeSingle;
+            Camera.TriggerMode = Constants.TriggerModeExternalExposure;
+            Camera.ReadMode = Constants.ReadModeFVB;
 
             while (JobStack.Count > 0)
             {

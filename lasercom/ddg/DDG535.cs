@@ -53,6 +53,7 @@ namespace LUI
             string response = LoggedWriteRead(command);
             if (response != null)
             {
+                // e.g. "1,+0.001000000000"
                 string[] tok = response.Split('+');
                 double ADelay = double.Parse( tok[1] );
                 string relative = tok[0];

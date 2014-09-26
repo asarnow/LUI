@@ -64,9 +64,9 @@ namespace LUI
             {
                 case "ACCUM":
                     camera.SetReadMode(Constants.ReadModeFVB);
-                    camera.SetAcquisitionMode(Constants.AcqModeAccumulate);
+                    camera.SetAcquisitionMode(Constants.AcquisitionModeAccumulate);
                     camera.SetNumberAccumulations(N);
-                    camera.SetTriggerMode(Constants.TrigModeExternalExposure);
+                    camera.SetTriggerMode(Constants.TriggerModeExternalExposure);
                     beamflags.OpenFlash();
                     int[] data = camera.acquire();
                     beamflags.CloseFlash();
@@ -89,9 +89,9 @@ namespace LUI
                     break;
                 case "SPEC":
                     camera.SetReadMode(Constants.ReadModeFVB);
-                    camera.SetAcquisitionMode(Constants.AcqModeAccumulate);
+                    camera.SetAcquisitionMode(Constants.AcquisitionModeAccumulate);
                     camera.SetNumberAccumulations(N);
-                    camera.SetTriggerMode(Constants.TrigModeExternalExposure);
+                    camera.SetTriggerMode(Constants.TriggerModeExternalExposure);
 
                     Console.WriteLine("Press any key to collect dark current");
                     Console.ReadKey(true);

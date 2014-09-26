@@ -1,0 +1,15 @@
+DT 3
+    1,+0.001000000000
+    
+DDG2 (primary)
+
+T           high Z  +1.00V  slope + ext
+A to DDG    high Z  TTL +
+B to lamp   50 ohm  TTL +
+C gate      high Z  TTL +
+CD gate     50 ohm  TTL +
+
+DDG1
+ 
+T           high Z  +2.00V  slope + ext
+AB          50 ohm  TTL -
