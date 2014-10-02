@@ -90,7 +90,9 @@
     <Compile Include="control\AbstractPump.cs" />
     <Compile Include="control\BeamFlags.cs" />
     <Compile Include="camera\CameraTempControlled.cs" />
+    <Compile Include="Data.cs" />
     <Compile Include="ddg\DummyDigitalDelayGenerator.cs" />
+    <Compile Include="io\MatFile.cs" />
     <Compile Include="job\DarkJob.cs" />
     <Compile Include="DataPoint.cs" />
     <Compile Include="control\DummyBeamFlags.cs" />
@@ -110,9 +112,7 @@
   <ItemGroup>
     <None Include="app.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="io\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

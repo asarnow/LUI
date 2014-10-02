@@ -74,9 +74,22 @@ namespace LUI
         }
 
         private uint _Height;
-        public uint Height { get; }
+        public uint Height
+        {
+            get
+            {
+                return _Height;
+            }
+        }
+
         private uint _Width;
-        public uint Width { get; }
+        public uint Width
+        { 
+            get
+            {
+                return _Width; 
+            } 
+        }
 
         public class ImageArea
         {
@@ -193,7 +206,7 @@ namespace LUI
 
         public void ResetNumberAccumulations()
         {
-            if (NumberAccumulations != null) AndorSdk.SetNumberAccumulations(NumberAccumulations);
+            AndorSdk.SetNumberAccumulations(NumberAccumulations);
         }
 
         public void ResetImage()

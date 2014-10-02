@@ -1,9 +1,11 @@
 ﻿using LUI;
+using LUI.io;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -20,6 +22,10 @@ namespace DetectorTester
         private int[] image;
 
         private BackgroundWorker worker;
+        private BackgroundWorker ioWorker;
+        //private Queue<int[]> ioQueue;
+
+        private MatFile OutFile;
 
         struct WorkParameters
         {
@@ -39,12 +45,16 @@ namespace DetectorTester
             worker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.KineticSeriesAsync);
             worker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.ReportProgress);
 
+            ioWorker = new BackgroundWorker();
+            ioWorker.WorkerSupportsCancellation = true;
+            ioWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.WriteDataAsync);
+            
             InitializeComponent();
         }
 
         private void ShowImage(int[] image)
         {
-            Util.normalizeArray(image, 255);
+            Data.NormalizeArray(image, 255);
             Bitmap picture = new Bitmap(1024, 256);
             for (int x = 0; x < picture.Width; x++)
             {
@@ -169,6 +179,7 @@ namespace DetectorTester
 
         private void startButton_Click(object sender, EventArgs e)
         {
+
             WorkParameters parameters = new WorkParameters();
             parameters.AcqMode = Constants.AcquisitionModeSingle;
             parameters.TriggerMode = Constants.TriggerModeExternalExposure;
@@ -189,6 +200,8 @@ namespace DetectorTester
 
             Commander.Camera.ReadMode = parameters.ReadMode;
 
+            parameters.NSteps = (int)seriesLength.Value;
+
             if (!BlankDialog(parameters.ReadMode)) return;
 
             worker.RunWorkerAsync(parameters);
@@ -197,10 +210,17 @@ namespace DetectorTester
         private void KineticSeriesAsync(object sender, DoWorkEventArgs e)
         {
             WorkParameters parameters = (WorkParameters)e.Argument;
+
+            string tempFile = Path.GetTempFileName();
+            OutFile = new MatFile(tempFile, "int32", parameters.NSteps, (int)Commander.Camera.Width);
+
             int nsteps = parameters.NSteps;
             int cnt = 0;
 
+            ioWorker.RunWorkerAsync(blank);
+
             dark = Commander.Dark();
+            ioWorker.RunWorkerAsync(dark);
 
             if (worker.CancellationPending)
             {
@@ -211,9 +231,10 @@ namespace DetectorTester
             if (parameters.Excite)
             {
                 int[] data = Commander.Trans();
-
+                
                 if (parameters.ReadMode == Constants.ReadModeFVB)
                 {
+                    ioWorker.RunWorkerAsync(data);
                     ApplyDark(data);
                     ApplyBlank(data);
                     counts = data;
@@ -237,9 +258,10 @@ namespace DetectorTester
                 }
 
                 int[] data = Commander.Flash();
-
+                
                 if (parameters.ReadMode == Constants.ReadModeFVB)
                 {
+                    ioWorker.RunWorkerAsync(data);
                     ApplyDark(data);
                     ApplyBlank(data);
                     counts = data;
@@ -259,6 +281,12 @@ namespace DetectorTester
             dark = null;
             counts = null;
             image = null;
+            OutFile.Close();
+        }
+
+        private void WriteDataAsync(object data, DoWorkEventArgs e)
+        {
+            OutFile.WriteRow((int[])data);
         }
 
     }

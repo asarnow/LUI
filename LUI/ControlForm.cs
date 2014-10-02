@@ -32,14 +32,14 @@ namespace LUI
             openFileDialog.Multiselect = false;
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                Commander.setDelays(openFileDialog.FileName);
+                Commander.SetDelays(openFileDialog.FileName);
 
             }
         }
 
         private void Collect_Click(object sender, EventArgs e)
         {
-            Commander.collect((int)Averages.Value);
+            Commander.Collect((int)Averages.Value);
         }
     }
 }

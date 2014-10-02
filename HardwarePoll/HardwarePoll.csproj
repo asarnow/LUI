@@ -53,10 +53,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ATMCD32CS">
-      <HintPath>..\LUI\lib\ATMCD32CS.dll</HintPath>
+      <HintPath>..\lasercom\lib\ATMCD32CS.dll</HintPath>
     </Reference>
     <Reference Include="ATMCD64CS">
-      <HintPath>..\LUI\lib\ATMCD64CS.dll</HintPath>
+      <HintPath>..\lasercom\lib\ATMCD64CS.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

@@ -37,24 +37,5 @@ namespace LUI
             }
         }
 
-        public static int[] DummySpectrum(double t)
-        {
-            int[] data = new int[1024];
-
-
-
-
-            return data;
-        }
-
-        public static void normalizeArray(int[] arr, int maxval)
-        {
-            int max = arr.Max();
-            for (int i = 0; i < arr.Length; i++ )
-            {
-                int denom = max * maxval;
-                arr[i] = denom == 0 ? 0 : arr[i] / denom;
-            }
-        }
     }
 }
