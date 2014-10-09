@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using System.Windows.Threading;
 
 namespace LUI
 {
@@ -15,6 +16,7 @@ namespace LUI
         private Commander Commander;
         private BackgroundWorker worker;
         private BackgroundWorker ioWorker;
+        private Dispatcher Dispatcher;
 
         private enum Dialog { BLANK, SAMPLE, PROGRESS, PROGRESS_BLANK, PROGRESS_DARK, PROGRESS_DATA, 
             PROGRESS_CALC, PROGRESS_TRANS, PROGRESS_GROUND };
@@ -90,6 +92,26 @@ namespace LUI
             }
         }
 
+        private void OpenLaser_Click(object sender, EventArgs e)
+        {
+            Commander.BeamFlags.OpenLaser();
+        }
+
+        private void CloseLaser_Click(object sender, EventArgs e)
+        {
+            Commander.BeamFlags.CloseLaser();
+        }
+
+        private void OpenLamp_Click(object sender, EventArgs e)
+        {
+            Commander.BeamFlags.OpenFlash();
+        }
+
+        private void CloseLamp_Click(object sender, EventArgs e)
+        {
+            Commander.BeamFlags.CloseFlash();
+        }
+
         private bool BlankDialog()
         {
             DialogResult result = MessageBox.Show("Please insert blank",
@@ -97,6 +119,18 @@ namespace LUI
                 MessageBoxButtons.OKCancel);
             if (result == DialogResult.Cancel) return false;
             return true;
+        }
+
+        private void BlockingBlankDialog(Boolean wait)
+        {
+            DialogResult result = MessageBox.Show("Please insert blank",
+                "Blank",
+                MessageBoxButtons.OKCancel);
+            if (result == DialogResult.Cancel)
+            {
+                worker.CancelAsync();
+            }
+            wait = false;
         }
 
         private bool SampleDialog()
@@ -120,6 +154,8 @@ namespace LUI
             worker = new BackgroundWorker();
             worker.DoWork += new System.ComponentModel.DoWorkEventHandler(AbsorbanceSpectrumWork);
             worker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(AbsorbanceSpectrumProgress);
+            worker.WorkerSupportsCancellation = true;
+            worker.WorkerReportsProgress = true;
             worker.RunWorkerAsync(N);
         }
 
@@ -128,9 +164,9 @@ namespace LUI
             Commander.Camera.AcquisitionMode = Constants.AcquisitionModeSingle;
             Commander.Camera.TriggerMode = Constants.TriggerModeExternalExposure;
             Commander.Camera.ReadMode = Constants.ReadModeFVB;
-            int N = (int)sender;
+            int N = (int)e.Argument;
 
-            worker.ReportProgress(0, Dialog.BLANK);
+            worker.ReportProgress(0, Dialog.BLANK.ToString());
 
             int[] BlankBuffer = Commander.Flash();
             for (int i = 0; i < N; i++)
@@ -141,10 +177,14 @@ namespace LUI
                     return;
                 }
                 Data.Accumulate(BlankBuffer, Commander.Flash());
-                worker.ReportProgress((i / N) * 33, Dialog.PROGRESS_BLANK);
+                worker.ReportProgress((i / N) * 33, Dialog.PROGRESS_BLANK.ToString());
             }
 
-            worker.ReportProgress(33, Dialog.SAMPLE);
+            worker.ReportProgress(33, Dialog.SAMPLE.ToString());
+
+            Boolean wait = true;
+            Dispatcher.BeginInvoke(new Action(BlockingBlankDialog), new Boolean[]{wait});
+            while (wait);
 
             int[] DarkBuffer = Commander.Dark();
             for (int i = 0; i < N; i++)
@@ -155,10 +195,10 @@ namespace LUI
                     return;
                 }
                 Data.Accumulate(DarkBuffer, Commander.Dark());
-                worker.ReportProgress(33 + (i / N) * 33, Dialog.PROGRESS_DARK);
+                worker.ReportProgress(33 + (i / N) * 33, Dialog.PROGRESS_DARK.ToString());
             }
 
-            worker.ReportProgress(66, Dialog.PROGRESS);
+            worker.ReportProgress(66, Dialog.PROGRESS.ToString());
 
             int[] DataBuffer = Commander.Flash();
             for (int i = 0; i < N; i++)
@@ -169,15 +209,15 @@ namespace LUI
                     return;
                 }
                 Data.Accumulate(DataBuffer, Commander.Flash());
-                worker.ReportProgress(66 + (i / N) * 33, Dialog.PROGRESS_DATA);
+                worker.ReportProgress(66 + (i / N) * 33, Dialog.PROGRESS_DATA.ToString());
             }
             e.Result = Data.OpticalDensity(DataBuffer, BlankBuffer, DarkBuffer);
-            worker.ReportProgress(99, Dialog.PROGRESS_CALC);
+            worker.ReportProgress(99, Dialog.PROGRESS_CALC.ToString());
         }
 
         public void AbsorbanceSpectrumProgress(object sender, ProgressChangedEventArgs e)
         {
-            Dialog operation = (Dialog)sender;
+            Dialog operation = (Dialog)Enum.Parse(typeof(Dialog), (string)e.UserState);
             switch (operation)
             {
                 case Dialog.BLANK:
@@ -245,6 +285,8 @@ namespace LUI
         {
             worker = new BackgroundWorker();
             worker.DoWork += new System.ComponentModel.DoWorkEventHandler(TROAWork);
+            worker.WorkerSupportsCancellation = true;
+            worker.WorkerReportsProgress = true;
 
             TROAParameters parameters = new TROAParameters();
             parameters.N = (int)Averages.Value;
@@ -260,13 +302,13 @@ namespace LUI
 
         public void TROAWork(object sender, DoWorkEventArgs e)
         {
-            TROAParameters parameters = (TROAParameters)sender;
+            TROAParameters parameters = (TROAParameters)e.Argument;
 
             Commander.Camera.AcquisitionMode = Constants.AcquisitionModeSingle;
             Commander.Camera.TriggerMode = Constants.TriggerModeExternalExposure;
             Commander.Camera.ReadMode = Constants.ReadModeFVB;
 
-            worker.ReportProgress(0, Dialog.PROGRESS_DARK);
+            worker.ReportProgress(0, Dialog.PROGRESS_DARK.ToString());
 
             int[] DarkBuffer = Commander.Dark();
             for (int i = 0; i < parameters.N; i++)
@@ -277,7 +319,7 @@ namespace LUI
                     return;
                 }
                 Data.Accumulate(DarkBuffer, Commander.Dark());
-                worker.ReportProgress((i / parameters.N) * 33, Dialog.PROGRESS_DARK);
+                worker.ReportProgress((i / parameters.N) * 33, Dialog.PROGRESS_DARK.ToString());
             }
 
 

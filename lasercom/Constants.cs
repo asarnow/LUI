@@ -24,8 +24,8 @@ namespace LUI
         public const string OpenLaserCommand = "!0SO2";
         public const string CloseLaserCommand = "!0SO000";
 
-        public const string OpenLaserAndFlashCommand = "!0S03";
-        public const string CloseLaserAndFlashCommand = "!SO000";
+        public const string OpenLaserAndFlashCommand = "!0SO3";
+        public const string CloseLaserAndFlashCommand = "!0SO000";
 
         // Andor constants and commands
         public const int ReadModeFVB = 0;

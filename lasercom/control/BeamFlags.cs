@@ -11,17 +11,6 @@ namespace LUI
 {
     public class BeamFlags:AbstractBeamFlags
     {
-
-        public enum State { Open, Closed }
-
-        /*        public struct State
-                {
-                    public readonly string StateCommand;
-                    public readonly StateName Name;
-                }*/
-
-        public State FlashState;
-        public State LaserState;
         public readonly string OpenFlashCommand;
         public readonly string CloseFlashCommand;
         public readonly string OpenLaserCommand;
@@ -65,7 +54,7 @@ namespace LUI
             return _port.PortName;
         }
 
-        public State ToggleLaser()
+        public override State ToggleLaser()
         {
             switch (LaserState)
             {
@@ -79,7 +68,7 @@ namespace LUI
             return LaserState;
         }
 
-        public void OpenLaser()
+        public override void OpenLaser()
         {
             _port.Open();
             _port.Write(OpenLaserCommand);
@@ -87,20 +76,21 @@ namespace LUI
             LaserState = State.Open;
         }
 
-        public void CloseLaser()
+        public override void CloseLaser()
         {
             _port.Open();
-            _port.Write(CloseLaserCommand);
+            _port.Write(CloseLaserAndFlashCommand);
             _port.Close();
             LaserState = State.Closed;
+            if (FlashState == State.Open) OpenFlash();
         }
 
-        public State GetLaserState()
+        public override State GetLaserState()
         {
             return LaserState;
         }
 
-        public State ToggleFlash()
+        public override State ToggleFlash()
         {
             switch (FlashState)
             {
@@ -114,7 +104,7 @@ namespace LUI
             return FlashState;
         }
 
-        public void OpenFlash()
+        public override void OpenFlash()
         {
             _port.Open();
             _port.Write(OpenFlashCommand);
@@ -122,26 +112,27 @@ namespace LUI
             FlashState = State.Open;
         }
 
-        public void CloseFlash()
+        public override void CloseFlash()
         {
             _port.Open();
-            _port.Write(CloseFlashCommand);
+            _port.Write(CloseLaserAndFlashCommand);
             _port.Close();
             FlashState = State.Closed;
+            if (LaserState == State.Open) OpenLaser();
         }
 
-        public State GetFlashState()
+        public override State GetFlashState()
         {
             return FlashState;
         }
 
-        public void ToggleLaserAndFlash()
+        public override void ToggleLaserAndFlash()
         {
             ToggleFlash();
             ToggleLaser();
         }
 
-        public void OpenLaserAndFlash()
+        public override void OpenLaserAndFlash()
         {
             _port.Open();
             _port.Write(OpenLaserAndFlashCommand);
@@ -150,7 +141,7 @@ namespace LUI
             FlashState = State.Open;
         }
 
-        public void CloseLaserAndFlash()
+        public override void CloseLaserAndFlash()
         {
             _port.Open();
             _port.Write(CloseLaserAndFlashCommand);

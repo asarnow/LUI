@@ -63,5 +63,50 @@ namespace LUI
             return response;
         }
 
+
+        void IDigitalDelayGenerator.LoggedWrite(string command)
+        {
+            throw new NotImplementedException();
+        }
+
+        void IDigitalDelayGenerator.SetADelay(double delay)
+        {
+            throw new NotImplementedException();
+        }
+
+        void IDigitalDelayGenerator.SetBDelay(double delay)
+        {
+            throw new NotImplementedException();
+        }
+
+        void IDigitalDelayGenerator.SetCDelay(double delay)
+        {
+            throw new NotImplementedException();
+        }
+
+        void IDigitalDelayGenerator.SetDDelay(double delay)
+        {
+            throw new NotImplementedException();
+        }
+
+        double IDigitalDelayGenerator.GetADelay()
+        {
+            throw new NotImplementedException();
+        }
+
+        double IDigitalDelayGenerator.GetBDelay()
+        {
+            throw new NotImplementedException();
+        }
+
+        double IDigitalDelayGenerator.GetCDelay()
+        {
+            throw new NotImplementedException();
+        }
+
+        double IDigitalDelayGenerator.GetDDelay()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

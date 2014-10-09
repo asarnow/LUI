@@ -7,18 +7,12 @@ using LUI;
 namespace LUI
 {
     public abstract class AbstractBeamFlags
-    {        public enum State { Open, Closed }
-
-        /*        public struct State
-                {
-                    public readonly string StateCommand;
-                    public readonly StateName Name;
-                }*/
-
+    {        
+        public enum State { Open, Closed }
         public State FlashState;
         public State LaserState;
 
-        public State ToggleLaser()
+        virtual public State ToggleLaser()
         {
             switch (LaserState)
             {
@@ -32,22 +26,22 @@ namespace LUI
             return LaserState;
         }
 
-        public void OpenLaser()
+        virtual public void OpenLaser()
         {
             LaserState = State.Open;
         }
 
-        public void CloseLaser()
+        virtual public void CloseLaser()
         {
             LaserState = State.Closed;
         }
 
-        public State GetLaserState()
+        virtual public State GetLaserState()
         {
             return LaserState;
         }
 
-        public State ToggleFlash()
+        virtual public State ToggleFlash()
         {
             switch (FlashState)
             {
@@ -61,34 +55,34 @@ namespace LUI
             return FlashState;
         }
 
-        public void OpenFlash()
+        virtual public void OpenFlash()
         {
             FlashState = State.Open;
         }
 
-        public void CloseFlash()
+        virtual public void CloseFlash()
         {
             FlashState = State.Closed;
         }
 
-        public State GetFlashState()
+        virtual public State GetFlashState()
         {
             return FlashState;
         }
 
-        public void ToggleLaserAndFlash()
+        virtual public void ToggleLaserAndFlash()
         {
             ToggleFlash();
             ToggleLaser();
         }
 
-        public void OpenLaserAndFlash()
+        virtual public void OpenLaserAndFlash()
         {
             LaserState = State.Open;
             FlashState = State.Open;
         }
 
-        public void CloseLaserAndFlash()
+        virtual public void CloseLaserAndFlash()
         {
             LaserState = State.Closed;
             FlashState = State.Closed;

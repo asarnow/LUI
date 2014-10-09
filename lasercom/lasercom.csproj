@@ -56,22 +56,28 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ATMCD64CS">
-      <HintPath>lib\ATMCD64CS.dll</HintPath>
+    <Reference Include="ATMCD32CS">
+      <HintPath>..\lib\ATMCD32CS.dll</HintPath>
     </Reference>
-    <Reference Include="HDF5DotNet-x64">
-      <HintPath>lib\HDF5DotNet-x64.dll</HintPath>
+    <Reference Include="ATMCD64CS, Version=2.97.30007.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib64\ATMCD64CS.dll</HintPath>
     </Reference>
-    <Reference Include="log4net">
-      <HintPath>lib\log4net.dll</HintPath>
+    <Reference Include="HDF5DotNet-x64, Version=1.8.9.0, Culture=neutral, PublicKeyToken=a4952c8df86d6e8c, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib64\HDF5DotNet-x64.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\log4net.dll</HintPath>
     </Reference>
     <Reference Include="NationalInstruments.Common, Version=9.1.40.159, Culture=neutral, PublicKeyToken=dc6ad606294fc298, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\LUI\lib\NationalInstruments.Common.dll</HintPath>
+      <HintPath>..\lib\NationalInstruments.Common.dll</HintPath>
     </Reference>
     <Reference Include="NationalInstruments.NI4882, Version=9.0.40.157, Culture=neutral, PublicKeyToken=dc6ad606294fc298, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\LUI\lib\NationalInstruments.NI4882.dll</HintPath>
+      <HintPath>..\lib\NationalInstruments.NI4882.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -113,6 +119,10 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /Y /S "$(SolutionDir)common\*" "$(TargetDir)"
+xcopy /Y /S "$(SolutionDir)lib64\*.dll" "$(TargetDir)"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

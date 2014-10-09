@@ -57,7 +57,7 @@ namespace LUI
                 return;
             }
 
-            CameraTempControlled camera = Commander.Camera;
+            CameraTempControlled camera = (CameraTempControlled)Commander.Camera;
             camera.EquilibrateTemperature(temp);
 
             BeamFlags beamflags = new BeamFlags(flagPort);
