@@ -15,19 +15,11 @@ namespace LUI
         public Address Address {get; set; }
         public Device Device { get; set; }
 
-        
-
         public StanfordDigitalDelayGenerator(int address, int boardNumber = Constants.BoardNumber)
         {
             Address = new Address((byte)address);
             Device = new Device(boardNumber, Address);
         }
-
-        //public AbstractDigitalDelayGenerator(int address)
-        //{
-        //    Address = new Address((byte) address);
-        //    Device = new Device(Constants.BoardNumber, Address);
-        //}
 
         public void LoggedWrite(string command)
         {

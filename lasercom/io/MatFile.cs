@@ -95,6 +95,32 @@ namespace LUI.io
             File.Copy(tempfile, filename, true);
         }
 
+        public void WriteColumn(int[] data)
+        {
+            long[] start = { 0, ColCursor };
+            long[] count = { M, 1 };
+            H5S.selectHyperslab(SpaceId, H5S.SelectOperator.SET, start, count);
+            long[] memDims = { M, 1 };
+            H5DataSpaceId memSpaceId = H5S.create_simple(2, memDims);
+            H5PropertyListId propListId = H5P.create(H5P.PropertyListClass.DATASET_XFER);
+            H5D.write(DataSetId, TypeId, memSpaceId, SpaceId, propListId, new H5Array<int>(data));
+            ColCursor++;
+            RowCursor = 0;
+        }
+
+        public void WriteColumn(double[] data)
+        {
+            long[] start = { 0, ColCursor };
+            long[] count = { M, 1 };
+            H5S.selectHyperslab(SpaceId, H5S.SelectOperator.SET, start, count);
+            long[] memDims = { M, 1 };
+            H5DataSpaceId memSpaceId = H5S.create_simple(2, memDims);
+            H5PropertyListId propListId = H5P.create(H5P.PropertyListClass.DATASET_XFER);
+            H5D.write(DataSetId, TypeId, memSpaceId, SpaceId, propListId, new H5Array<double>(data));
+            ColCursor++;
+            RowCursor = 0;
+        }
+
         public void WriteRow(int[] data)
         {
             long[] start = { RowCursor, 0 };

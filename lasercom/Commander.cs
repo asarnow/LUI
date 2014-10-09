@@ -22,7 +22,6 @@ namespace LUI
         public IDigitalDelayGenerator DDG { get; set; }
         public AbstractPump Pump { get; set; }
         public List<Double> Delays { get; set; }
-        public Dictionary<Double, DataPoint> Data { get; set; }
         public int[] Calibration { get; set; }
         public Stack<IJob> JobStack = new Stack<IJob>();
 
@@ -37,7 +36,6 @@ namespace LUI
             //DDG = new DDG535(address);
             DDG = new DummyDigitalDelayGenerator();
             //Pump = new HarvardPump("COM3");
-            Data = new Dictionary<double, DataPoint>();
         }
 
         public void SetDelays(string file)
@@ -78,78 +76,78 @@ namespace LUI
             return data;
         }
 
-        public void RunJobs()
-        {
-            Camera.AcquisitionMode = Constants.AcquisitionModeSingle;
-            Camera.TriggerMode = Constants.TriggerModeExternalExposure;
-            Camera.ReadMode = Constants.ReadModeFVB;
+        //public void RunJobs()
+        //{
+        //    Camera.AcquisitionMode = Constants.AcquisitionModeSingle;
+        //    Camera.TriggerMode = Constants.TriggerModeExternalExposure;
+        //    Camera.ReadMode = Constants.ReadModeFVB;
 
-            while (JobStack.Count > 0)
-            {
-                IJob job = JobStack.Pop();
-                if (job == null)
-                {
-                    Log.Warn("Manual abort triggered");
-                    break; // Abort
-                }
+        //    while (JobStack.Count > 0)
+        //    {
+        //        IJob job = JobStack.Pop();
+        //        if (job == null)
+        //        {
+        //            Log.Warn("Manual abort triggered");
+        //            break; // Abort
+        //        }
 
-                if (job is DarkJob)
-                {
-                    RunDarkJob(job as DarkJob);
-                }
+        //        if (job is DarkJob)
+        //        {
+        //            RunDarkJob(job as DarkJob);
+        //        }
 
-                if (job is OAJob)
-                {
-                    RunOAJob(job as OAJob);
-                }
+        //        if (job is OAJob)
+        //        {
+        //            RunOAJob(job as OAJob);
+        //        }
 
-                if (job is TROAJob)
-                {
-                    RunTROAJob(job as TROAJob);
-                }
+        //        if (job is TROAJob)
+        //        {
+        //            RunTROAJob(job as TROAJob);
+        //        }
                 
-            }
-        }
+        //    }
+        //}
 
-        private void RunDarkJob(DarkJob job)
-        {
-            Log.Info("Dark job");
+        //private void RunDarkJob(DarkJob job)
+        //{
+        //    Log.Info("Dark job");
 
-            StoreData( Constants.DarkState, Dark()) ;
-        }
+        //    StoreData( Constants.DarkState, Dark()) ;
+        //}
 
-        private void RunOAJob(OAJob job)
-        {
-            Log.Info("OA Job");
+        //private void RunOAJob(OAJob job)
+        //{
+        //    Log.Info("OA Job");
 
-            StoreData( Constants.GroundState, Flash() );
+        //    StoreData( Constants.GroundState, Flash() );
 
-        }
+        //}
 
-        private void RunTROAJob(TROAJob job)
-        {
-            Log.Info("TROA Job: " + job.GetDelay().ToString() + " s");
+        //private void RunTROAJob(TROAJob job)
+        //{
+        //    Log.Info("TROA Job: " + job.GetDelay().ToString() + " s");
 
-            DDG.SetBDelay( job.GetDelay() );
+        //    DDG.SetBDelay( job.GetDelay() );
 
-            StoreData( job.GetDelay(), Trans() );
-        }
+        //    StoreData( job.GetDelay(), Trans() );
+        //}
 
 
-        private void StoreData(Double delay, int[] data)
-        {
-            DataPoint value;
-            if (Data.TryGetValue(delay, out value))
-            {
-                value.Store(data);
-            } 
-            else
-            {
-                Data[delay] = new DataPoint(delay, (int)Camera.Width);
-                Data[delay].Store(data);
-            }
+        //private void StoreData(Double delay, int[] data)
+        //{
+        //    DataPoint value;
+        //    if (DataStore.TryGetValue(delay, out value))
+        //    {
+        //        value.Store(data);
+        //    } 
+        //    else
+        //    {
+        //        DataStore[delay] = new DataPoint(delay, (int)Camera.Width);
+        //        DataStore[delay].Store(data);
+        //    }
 
-        }
+        //}
 
         public void Abort()
         {

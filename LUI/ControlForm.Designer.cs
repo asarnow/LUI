@@ -28,11 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.MenuStrip = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadTimesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadCalibrationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -50,6 +50,7 @@
             this.SpecGraph = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.StatusBox = new System.Windows.Forms.GroupBox();
             this.CommandsBox = new System.Windows.Forms.GroupBox();
+            this.Clear = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.Averages = new System.Windows.Forms.NumericUpDown();
             this.Collect = new System.Windows.Forms.Button();
@@ -58,9 +59,13 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
+            this.TROA = new System.Windows.Forms.Button();
+            this.StatusProgress = new System.Windows.Forms.ProgressBar();
+            this.ProgressLabel = new System.Windows.Forms.Label();
             this.tableLayoutPanel1.SuspendLayout();
-            this.menuStrip1.SuspendLayout();
+            this.MenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SpecGraph)).BeginInit();
+            this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Averages)).BeginInit();
             this.SuspendLayout();
@@ -72,7 +77,7 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel1.Controls.Add(this.menuStrip1);
+            this.tableLayoutPanel1.Controls.Add(this.MenuStrip);
             this.tableLayoutPanel1.Controls.Add(this.SpecGraph, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.StatusBox, 3, 1);
             this.tableLayoutPanel1.Controls.Add(this.CommandsBox, 3, 2);
@@ -89,18 +94,18 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(1323, 821);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
-            // menuStrip1
+            // MenuStrip
             // 
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.toolsToolStripMenuItem,
             this.helpToolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Padding = new System.Windows.Forms.Padding(8, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(330, 28);
-            this.menuStrip1.TabIndex = 0;
-            this.menuStrip1.Text = "menuStrip1";
+            this.MenuStrip.Location = new System.Drawing.Point(0, 0);
+            this.MenuStrip.Name = "MenuStrip";
+            this.MenuStrip.Padding = new System.Windows.Forms.Padding(8, 2, 0, 2);
+            this.MenuStrip.Size = new System.Drawing.Size(330, 28);
+            this.MenuStrip.TabIndex = 0;
+            this.MenuStrip.Text = "menuStrip1";
             // 
             // fileToolStripMenuItem
             // 
@@ -203,33 +208,35 @@
             // 
             // SpecGraph
             // 
-            chartArea1.AxisX.IntervalAutoMode = System.Windows.Forms.DataVisualization.Charting.IntervalAutoMode.VariableCount;
-            chartArea1.AxisX.Maximum = 1023D;
-            chartArea1.AxisX.Minimum = 0D;
-            chartArea1.AxisY.IntervalAutoMode = System.Windows.Forms.DataVisualization.Charting.IntervalAutoMode.VariableCount;
-            chartArea1.AxisY.Maximum = 65536D;
-            chartArea1.AxisY.Minimum = 0D;
-            chartArea1.Name = "MainChart";
-            this.SpecGraph.ChartAreas.Add(chartArea1);
+            chartArea3.AxisX.IntervalAutoMode = System.Windows.Forms.DataVisualization.Charting.IntervalAutoMode.VariableCount;
+            chartArea3.AxisX.Maximum = 1023D;
+            chartArea3.AxisX.Minimum = 0D;
+            chartArea3.AxisY.IntervalAutoMode = System.Windows.Forms.DataVisualization.Charting.IntervalAutoMode.VariableCount;
+            chartArea3.AxisY.Maximum = 65536D;
+            chartArea3.AxisY.Minimum = 0D;
+            chartArea3.Name = "MainChart";
+            this.SpecGraph.ChartAreas.Add(chartArea3);
             this.tableLayoutPanel1.SetColumnSpan(this.SpecGraph, 3);
-            legend1.Enabled = false;
-            legend1.Name = "Legend1";
-            this.SpecGraph.Legends.Add(legend1);
+            legend3.Enabled = false;
+            legend3.Name = "Legend1";
+            this.SpecGraph.Legends.Add(legend3);
             this.SpecGraph.Location = new System.Drawing.Point(4, 36);
             this.SpecGraph.Margin = new System.Windows.Forms.Padding(4);
             this.SpecGraph.Name = "SpecGraph";
             this.tableLayoutPanel1.SetRowSpan(this.SpecGraph, 2);
-            series1.ChartArea = "MainChart";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series1.Legend = "Legend1";
-            series1.Name = "Series1";
-            this.SpecGraph.Series.Add(series1);
+            series3.ChartArea = "MainChart";
+            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series3.Legend = "Legend1";
+            series3.Name = "Series1";
+            this.SpecGraph.Series.Add(series3);
             this.SpecGraph.Size = new System.Drawing.Size(982, 386);
             this.SpecGraph.TabIndex = 1;
             this.SpecGraph.Text = "chart1";
             // 
             // StatusBox
             // 
+            this.StatusBox.Controls.Add(this.ProgressLabel);
+            this.StatusBox.Controls.Add(this.StatusProgress);
             this.StatusBox.Location = new System.Drawing.Point(994, 36);
             this.StatusBox.Margin = new System.Windows.Forms.Padding(4);
             this.StatusBox.Name = "StatusBox";
@@ -241,6 +248,8 @@
             // 
             // CommandsBox
             // 
+            this.CommandsBox.Controls.Add(this.TROA);
+            this.CommandsBox.Controls.Add(this.Clear);
             this.CommandsBox.Controls.Add(this.label1);
             this.CommandsBox.Controls.Add(this.Averages);
             this.CommandsBox.Controls.Add(this.Collect);
@@ -255,19 +264,29 @@
             this.CommandsBox.TabStop = false;
             this.CommandsBox.Text = "Commands";
             // 
+            // Clear
+            // 
+            this.Clear.Location = new System.Drawing.Point(9, 154);
+            this.Clear.Name = "Clear";
+            this.Clear.Size = new System.Drawing.Size(102, 28);
+            this.Clear.TabIndex = 1;
+            this.Clear.Text = "Clear Graph";
+            this.Clear.UseVisualStyleBackColor = true;
+            this.Clear.Click += new System.EventHandler(this.Clear_Click);
+            // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(217, 31);
+            this.label1.Location = new System.Drawing.Point(251, 28);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(68, 17);
+            this.label1.Size = new System.Drawing.Size(47, 17);
             this.label1.TabIndex = 4;
-            this.label1.Text = "Averages";
+            this.label1.Text = "Scans";
             // 
             // Averages
             // 
-            this.Averages.Location = new System.Drawing.Point(161, 26);
+            this.Averages.Location = new System.Drawing.Point(195, 26);
             this.Averages.Margin = new System.Windows.Forms.Padding(4);
             this.Averages.Maximum = new decimal(new int[] {
             127,
@@ -293,9 +312,9 @@
             this.Collect.Location = new System.Drawing.Point(85, 23);
             this.Collect.Margin = new System.Windows.Forms.Padding(4);
             this.Collect.Name = "Collect";
-            this.Collect.Size = new System.Drawing.Size(68, 28);
+            this.Collect.Size = new System.Drawing.Size(102, 28);
             this.Collect.TabIndex = 2;
-            this.Collect.Text = "Collect";
+            this.Collect.Text = "Collect UV/vis";
             this.Collect.UseVisualStyleBackColor = true;
             this.Collect.Click += new System.EventHandler(this.Collect_Click);
             // 
@@ -308,6 +327,7 @@
             this.Abort.TabIndex = 1;
             this.Abort.Text = "Abort";
             this.Abort.UseVisualStyleBackColor = true;
+            this.Abort.Click += new System.EventHandler(this.Abort_Click);
             // 
             // Start
             // 
@@ -336,21 +356,50 @@
             // 
             this.openFileDialog2.FileName = "openFileDialog2";
             // 
+            // TROA
+            // 
+            this.TROA.Location = new System.Drawing.Point(85, 62);
+            this.TROA.Name = "TROA";
+            this.TROA.Size = new System.Drawing.Size(102, 28);
+            this.TROA.TabIndex = 5;
+            this.TROA.Text = "Collect TROA";
+            this.TROA.UseVisualStyleBackColor = true;
+            this.TROA.Click += new System.EventHandler(this.TROA_Click);
+            // 
+            // StatusProgress
+            // 
+            this.StatusProgress.Location = new System.Drawing.Point(9, 109);
+            this.StatusProgress.Name = "StatusProgress";
+            this.StatusProgress.Size = new System.Drawing.Size(204, 28);
+            this.StatusProgress.TabIndex = 4;
+            // 
+            // ProgressLabel
+            // 
+            this.ProgressLabel.AutoSize = true;
+            this.ProgressLabel.Font = new System.Drawing.Font("Quartz", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ProgressLabel.Location = new System.Drawing.Point(5, 87);
+            this.ProgressLabel.Name = "ProgressLabel";
+            this.ProgressLabel.Size = new System.Drawing.Size(46, 19);
+            this.ProgressLabel.TabIndex = 5;
+            this.ProgressLabel.Text = "Idle";
+            // 
             // ControlForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1323, 821);
             this.Controls.Add(this.tableLayoutPanel1);
-            this.MainMenuStrip = this.menuStrip1;
+            this.MainMenuStrip = this.MenuStrip;
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "ControlForm";
             this.Text = "LUI 3.0 Control";
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
-            this.menuStrip1.ResumeLayout(false);
-            this.menuStrip1.PerformLayout();
+            this.MenuStrip.ResumeLayout(false);
+            this.MenuStrip.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SpecGraph)).EndInit();
+            this.StatusBox.ResumeLayout(false);
+            this.StatusBox.PerformLayout();
             this.CommandsBox.ResumeLayout(false);
             this.CommandsBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Averages)).EndInit();
@@ -361,7 +410,7 @@
         #endregion
 
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.MenuStrip MenuStrip;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadTimesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadCalibrationToolStripMenuItem;
@@ -387,5 +436,9 @@
         private System.Windows.Forms.NumericUpDown Averages;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.OpenFileDialog openFileDialog2;
+        private System.Windows.Forms.Button Clear;
+        private System.Windows.Forms.Button TROA;
+        private System.Windows.Forms.ProgressBar StatusProgress;
+        private System.Windows.Forms.Label ProgressLabel;
     }
 }

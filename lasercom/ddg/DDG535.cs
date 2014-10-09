@@ -22,20 +22,6 @@ namespace LUI
         public const string DOutput = "6";
         public const string CDOutput = "7";
 
-        //private string _T0Delay;
-        //public string T0Delay
-        //{
-        //    get
-        //    {
-        //        return _T0Delay;
-        //    }
-        //    set
-        //    {
-        //        _T0Delay = value;
-        //        SetT0Delay();
-        //    }
-        //}
-
         private string _ADelay;
         public string ADelay
         {

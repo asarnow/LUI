@@ -94,7 +94,6 @@
     <Compile Include="ddg\DummyDigitalDelayGenerator.cs" />
     <Compile Include="io\MatFile.cs" />
     <Compile Include="job\DarkJob.cs" />
-    <Compile Include="DataPoint.cs" />
     <Compile Include="control\DummyBeamFlags.cs" />
     <Compile Include="job\IJob.cs" />
     <Compile Include="job\OAJob.cs" />

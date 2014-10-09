@@ -18,6 +18,18 @@ namespace LUI
             }
         }
 
+        public static void Accumulate(int[] a, int[] b)
+        {
+            for (int i = 0; i < a.Length; i++)
+                a[i] += b[i];
+        }
+
+        public static void Dissipate(int[] a, int[] b)
+        {
+            for (int i = 0; i < a.Length; i++) 
+                a[i] -= b[i];
+        }
+
         public static int[] DummySpectrum(double t)
         {
             int[] data = new int[1024];
@@ -32,5 +44,29 @@ namespace LUI
             return curmax;
         }
 
+
+        public static void DivideArray(int[] arr, int N)
+        {
+            for (int i = 0; i < arr.Length; i++)
+            {
+                arr[i] /= N;
+            }
+        }
+
+        public static double[] OpticalDensity(int[] Data, int[] Blank, int[] Dark)
+        {
+            double[] OD = new double[Data.Length];
+            for (int i = 0; i < OD.Length; i++)
+                OD[i] = Math.Log10((double)(Data[i] - Dark[i]) / (double)(Blank[i] - Dark[i]));
+            return OD;
+        }
+
+        public static double[] DeltaOD(int[] Ground, int[] Trans, int[] Dark)
+        {
+            double[] OD = new double[Ground.Length];
+            for (int i = 0; i < OD.Length; i++)
+                OD[i] = Math.Log10((double)(Ground[i] - Dark[i]) / (double)(Trans[i] - Dark[i]));
+            return OD;
+        }
     }
 }
