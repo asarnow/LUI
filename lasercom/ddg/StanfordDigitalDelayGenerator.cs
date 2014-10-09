@@ -47,7 +47,7 @@ namespace LUI
             
         }
 
-        public string LoggedWriteRead(string command)
+        public string LoggedQuery(string command)
         {
             Log.Debug("GPIB Command: " + command);
 
@@ -71,46 +71,5 @@ namespace LUI
             return response;
         }
 
-
-
-        public void SetADelay(double delay)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetBDelay(double delay)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetCDelay(double delay)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetDDelay(double delay)
-        {
-            throw new NotImplementedException();
-        }
-
-        public double GetADelay()
-        {
-            throw new NotImplementedException();
-        }
-
-        public double GetBDelay()
-        {
-            throw new NotImplementedException();
-        }
-
-        public double GetCDelay()
-        {
-            throw new NotImplementedException();
-        }
-
-        public double GetDDelay()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

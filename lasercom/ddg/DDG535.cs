@@ -22,82 +22,157 @@ namespace LUI
         public const string DOutput = "6";
         public const string CDOutput = "7";
 
-        public double T0Delay { get; set; }
+        //private string _T0Delay;
+        //public string T0Delay
+        //{
+        //    get
+        //    {
+        //        return _T0Delay;
+        //    }
+        //    set
+        //    {
+        //        _T0Delay = value;
+        //        SetT0Delay();
+        //    }
+        //}
 
-        public double ADelay { get; set; }
-        //public Delay ARelative { get; set; }
+        private string _ADelay;
+        public string ADelay
+        {
+            get
+            {
+                return _ADelay;
+            }
+            set
+            {
+                _ADelay = value;
+                SetDelay(AOutput, _ADelay);
+            }
+        }
 
-        public double BDelay { get; set; }
-        //public Delay BRelative { get; set; }
+        private string _BDelay;
+        public string BDelay
+        {
+            get
+            {
+                return _BDelay;
+            }
+            set
+            {
+                _BDelay = value;
+                SetDelay(BOutput, _BDelay);
+            }
+        }
 
-        public double ABDelay { get; set; }
-        
-        public double CDelay { get; set; }
-        //public Delay CRelative { get; set; }
+        private string _CDelay;
+        public string CDelay
+        {
+            get
+            {
+                return _CDelay;
+            }
+            set
+            {
+                _CDelay = value;
+                SetDelay(COutput, _CDelay);
+            }
+        }
 
-        public double DDelay { get; set; }
-        //public Delay DRelative { get; set; }
-
-        public double CDDelay { get; set; }
-
-        //public enum Delay { T0, A, B, AB, C, D, CD }
+        private string _DDelay;
+        public string DDelay
+        {
+            get
+            {
+                return _DDelay;
+            }
+            set
+            {
+                _DDelay = value;
+                SetDelay(DOutput, _DDelay);
+            }
+        }
 
         public DDG535(int address):base(address)
         {
-            
+            ReadAllDelays();
         }
 
-        private void ReadAllDelays()
+        private void SetDelay(string DelayOutput, string setting)
         {
-            string command = SetDelayTimeCommand + AOutput;
-            string response = LoggedWriteRead(command);
-            if (response != null)
-            {
-                // e.g. "1,+0.001000000000"
-                string[] tok = response.Split('+');
-                double ADelay = double.Parse( tok[1] );
-                string relative = tok[0];
-            }
+            string command = SetDelayTimeCommand + DelayOutput + "," + setting;
+            LoggedWrite(command);
         }
 
         public void SetADelay(double delay, string relative = T0Output)
         {
-            ADelay = delay;
-            string command = SetDelayTimeCommand +
-                AOutput + "," +
-                relative + "," +
-                delay.ToString();
-            LoggedWrite(command);
+            ADelay = relative + "," + delay.ToString();
         }
 
         public void SetBDelay(double delay, string relative = T0Output)
         {
-            BDelay = delay;
-            string command = SetDelayTimeCommand +
-                BOutput + "," +
-                relative + "," +
-                delay.ToString();
-            LoggedWrite(command);
+            BDelay = relative + "," + delay.ToString();
         }
 
         public void SetCDelay(double delay, string relative = T0Output)
         {
-            CDelay = delay;
-            string command = SetDelayTimeCommand +
-                COutput + "," +
-                relative + "," +
-                delay.ToString();
-            LoggedWrite(command);
+            CDelay = relative + "," + delay.ToString();
         }
 
         public void SetDDelay(double delay, string relative = T0Output)
         {
-            DDelay = delay;
-            string command = SetDelayTimeCommand +
-                DOutput + "," +
-                relative + "," +
-                delay.ToString();
-            LoggedWrite(command);
+            DDelay = relative + "," + delay.ToString();
+        }
+
+        private void ReadAllDelays()
+        {
+            ReadADelay();
+            ReadBDelay();
+            ReadCDelay();
+            ReadDDelay();
+        }
+
+        private void ReadADelay()
+        {
+            string command = SetDelayTimeCommand + AOutput;
+            // e.g. "1,+0.001000000000"
+            string response = LoggedQuery(command);
+            if (response != null && response.StartsWith(AOutput + ","))
+            {
+                _ADelay = response;
+            }
+        }
+
+        private void ReadBDelay()
+        {
+            string command = SetDelayTimeCommand + BOutput;
+            // e.g. "1,+0.001000000000"
+            string response = LoggedQuery(command);
+            if (response != null && response.StartsWith(BOutput + ","))
+            {
+                _BDelay = response;
+            }
+        }
+
+        private void ReadCDelay()
+        {
+            string command = SetDelayTimeCommand + COutput;
+            // e.g. "1,+0.001000000000"
+            string response = LoggedQuery(command);
+            if (response != null && response.StartsWith(COutput + ","))
+            {
+                _CDelay = response;
+            }
+        }
+
+        private void ReadDDelay()
+        {
+            string command = SetDelayTimeCommand + DOutput;
+            // e.g. "1,+0.001000000000"
+            string response = LoggedQuery(command);
+            if (response != null && response.StartsWith(DOutput + ","))
+            {
+                _DDelay = response;
+            }
         }
     }
 }
