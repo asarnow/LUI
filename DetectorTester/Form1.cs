@@ -78,6 +78,7 @@ namespace DetectorTester
         {
             Commander.Camera.AcquisitionMode = Constants.AcquisitionModeSingle;
             Commander.Camera.TriggerMode = Constants.TriggerModeExternalExposure;
+            Commander.Camera.DDGTriggerMode = Constants.DDGTriggerModeExternal;
             Commander.Camera.ReadMode = Constants.ReadModeFVB;
             dark = Commander.Dark();
         }
@@ -86,6 +87,7 @@ namespace DetectorTester
         {
             Commander.Camera.AcquisitionMode = Constants.AcquisitionModeSingle;
             Commander.Camera.TriggerMode = Constants.TriggerModeExternalExposure;
+            Commander.Camera.DDGTriggerMode = Constants.DDGTriggerModeExternal;
             Commander.Camera.ReadMode = Constants.ReadModeFVB;
             blank = Commander.Flash();
             ApplyDark(blank);
@@ -143,7 +145,8 @@ namespace DetectorTester
         private void specButton_Click(object sender, EventArgs e)
         {
             Commander.Camera.AcquisitionMode = Constants.AcquisitionModeSingle;
-            Commander.Camera.TriggerMode = Constants.TriggerModeExternalExposure;
+            Commander.Camera.TriggerMode = Constants.TriggerModeExternal;
+            Commander.Camera.DDGTriggerMode = Constants.DDGTriggerModeExternal;
             Commander.Camera.ReadMode = Constants.ReadModeFVB;
             counts = Commander.Flash();
             ApplyDark(counts);

@@ -16,7 +16,8 @@ namespace DetectorTester
         {
             AndorCamera Camera = new CameraTempControlled(".");
             BeamFlags BeamFlags = new BeamFlags("COM1");
-            IDigitalDelayGenerator DDG = new DDG535(15);
+            //IDigitalDelayGenerator DDG = new DDG535(15);
+            IDigitalDelayGenerator DDG = new DummyDigitalDelayGenerator();
 
             Commander Commander = new Commander(Camera, BeamFlags, DDG);
 

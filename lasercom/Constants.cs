@@ -37,13 +37,20 @@ namespace LUI
         public const int AcquisitionModeSingle = 1;
         public const int AcquisitionModeAccumulate = 2;
 
+        public const int GatingModeSMBOnly = 2;
+
+        public const int DDGTriggerModeInternal = 0;
+        public const int DDGTriggerModeExternal = 1;
+
         public const int TriggerModeExternal = 1;
         public const int TriggerModeExternalExposure = 7;
 
         public const int TriggerInvertRising = 0;
         public const int TriggerInvertFalling = 1;
-
         public const float DefaultTriggerLevel = 3.9F;
+
+        public const int MCPGatingOff = 0;
+        public const int MCPGatingOn = 1;
         public const int DefaultMCPGain = 500;
 
         // NI constants and GPIB commands

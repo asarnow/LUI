@@ -203,7 +203,8 @@ namespace LUI
             worker.ReportProgress(33, Dialog.SAMPLE.ToString());
 
             wait = true;
-            Dispatcher.BeginInvoke(new Action(BlockingBlankDialog), new bool[]{ wait });
+            bool[] waitparam = { wait };
+            Dispatcher.BeginInvoke(new Action(BlockingBlankDialog), waitparam);
             while (wait);
 
             worker.ReportProgress(33, Dialog.PROGRESS_DARK.ToString());

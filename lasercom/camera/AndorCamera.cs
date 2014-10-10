@@ -51,6 +51,17 @@ namespace LUI
             }
         }
 
+        private int _DDGTriggerMode;
+        public int DDGTriggerMode
+        {
+            get { return _DDGTriggerMode; }
+            set
+            {
+                _DDGTriggerMode = value;
+                AndorSdk.SetDDGTriggerMode(value);
+            }
+        }
+
         private int _NumberAccumulations;
         public int NumberAccumulations
         {
@@ -121,9 +132,12 @@ namespace LUI
 
             Image = new ImageArea(1, 1, 1, (int)Width, 1, (int)Height);
 
-            AndorSdk.SetTriggerInvert(Constants.TriggerInvertRising);
-            AndorSdk.SetTriggerLevel(Constants.DefaultTriggerLevel); // TTL signal is 4.0V
-            AndorSdk.SetMCPGain(Constants.DefaultMCPGain);
+            AndorSdk.SetGateMode(Constants.GatingModeSMBOnly); //TODO Property
+            AndorSdk.SetMCPGating(Constants.MCPGatingOn); //TODO Property
+
+            //AndorSdk.SetTriggerInvert(Constants.TriggerInvertRising);
+            //AndorSdk.SetTriggerLevel(Constants.DefaultTriggerLevel); // TTL signal is 4.0V
+            AndorSdk.SetMCPGain(Constants.DefaultMCPGain); // Property
         }
 
         public virtual void Close()
@@ -185,6 +199,7 @@ namespace LUI
             ResetAcquisitionMode();
             ResetReadMode();
             ResetTriggerMode();
+            ResetDDGTriggerMode();
             ResetNumberAccumulations();
             ResetImage();
         }
@@ -192,6 +207,11 @@ namespace LUI
         public void ResetTriggerMode()
         {
             AndorSdk.SetTriggerMode(TriggerMode);
+        }
+
+        public void ResetDDGTriggerMode()
+        {
+            AndorSdk.SetDDGTriggerMode(DDGTriggerMode);
         }
 
         public void ResetAcquisitionMode()

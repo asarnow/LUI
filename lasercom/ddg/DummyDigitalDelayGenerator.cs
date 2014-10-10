@@ -5,7 +5,7 @@ using System.Text;
 
 namespace LUI
 {
-    class DummyDigitalDelayGenerator:IDigitalDelayGenerator
+    public class DummyDigitalDelayGenerator:IDigitalDelayGenerator
     {
 
         public DummyDigitalDelayGenerator()
