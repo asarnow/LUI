@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace DetectorTester
 {
@@ -42,6 +43,7 @@ namespace DetectorTester
 
             worker = new BackgroundWorker();
             worker.WorkerSupportsCancellation = true;
+            worker.WorkerReportsProgress = true;
             worker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.KineticSeriesAsync);
             worker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.ReportProgress);
 
@@ -117,6 +119,25 @@ namespace DetectorTester
                 specGraph.Series["spec"].Points.AddXY(i, data[i]);
 
             specGraph.Series["spec"].ChartArea = "specArea";
+
+            RescaleChart();
+        }
+
+        private void RescaleChart()
+        {
+            double max = Double.MinValue;
+            //double min = Double.MaxValue;
+            foreach (Series s in specGraph.Series)
+            {
+                foreach (DataPoint p in s.Points)
+                {
+                    max = p.YValues[0] > max ? p.YValues[0] : max;
+                    //min = p.YValues[0] < min ? p.YValues[0] : min;
+                }
+            }
+            ChartArea MainChart = specGraph.ChartAreas.FindByName("specArea");
+            //MainChart.AxisY.Minimum = min;
+            MainChart.AxisY.Maximum = max;
         }
 
         private void specButton_Click(object sender, EventArgs e)
@@ -172,7 +193,7 @@ namespace DetectorTester
 
         private void ReportProgress(object sender, ProgressChangedEventArgs e)
         {
-            int readMode = (int)sender;
+            int readMode = (int)e.UserState;
             if (readMode == Constants.ReadModeFVB) AddSpec(counts);
             else if (readMode == Constants.ReadModeImage) ShowImage(image);
         }
@@ -211,16 +232,16 @@ namespace DetectorTester
         {
             WorkParameters parameters = (WorkParameters)e.Argument;
 
-            string tempFile = Path.GetTempFileName();
-            OutFile = new MatFile(tempFile, "int32", parameters.NSteps, (int)Commander.Camera.Width);
+            //string tempFile = Path.GetTempFileName();
+            //OutFile = new MatFile(tempFile, "int32", parameters.NSteps, (int)Commander.Camera.Width);
 
             int nsteps = parameters.NSteps;
             int cnt = 0;
 
-            ioWorker.RunWorkerAsync(blank);
+            //ioWorker.RunWorkerAsync(blank);
 
             dark = Commander.Dark();
-            ioWorker.RunWorkerAsync(dark);
+            //ioWorker.RunWorkerAsync(dark);
 
             if (worker.CancellationPending)
             {
@@ -234,17 +255,17 @@ namespace DetectorTester
                 
                 if (parameters.ReadMode == Constants.ReadModeFVB)
                 {
-                    ioWorker.RunWorkerAsync(data);
+                    //ioWorker.RunWorkerAsync(data);
                     ApplyDark(data);
                     ApplyBlank(data);
                     counts = data;
-                    worker.ReportProgress(parameters.ReadMode);
+                    worker.ReportProgress(0, parameters.ReadMode);
                 }
                 else if (parameters.ReadMode == Constants.ReadModeImage)
                 {
                     ApplyDark(data);
                     image = data;
-                    worker.ReportProgress(parameters.ReadMode);
+                    worker.ReportProgress(0, parameters.ReadMode);
                     ApplyBlank(data);
                 }
             }
@@ -261,17 +282,17 @@ namespace DetectorTester
                 
                 if (parameters.ReadMode == Constants.ReadModeFVB)
                 {
-                    ioWorker.RunWorkerAsync(data);
+                    //ioWorker.RunWorkerAsync(data);
                     ApplyDark(data);
                     ApplyBlank(data);
                     counts = data;
-                    worker.ReportProgress(parameters.ReadMode);
+                    worker.ReportProgress(0, parameters.ReadMode);
                 }
                 else if (parameters.ReadMode == Constants.ReadModeImage)
                 {
                     ApplyDark(data);
                     image = data;
-                    worker.ReportProgress(parameters.ReadMode);
+                    worker.ReportProgress(0, parameters.ReadMode);
                     ApplyBlank(data);
                 }
                 

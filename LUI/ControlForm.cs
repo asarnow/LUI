@@ -17,6 +17,7 @@ namespace LUI
         private BackgroundWorker worker;
         private BackgroundWorker ioWorker;
         private Dispatcher Dispatcher;
+        bool wait;
 
         private enum Dialog { BLANK, SAMPLE, PROGRESS, PROGRESS_BLANK, PROGRESS_DARK, PROGRESS_DATA, 
             PROGRESS_CALC, PROGRESS_TRANS, PROGRESS_GROUND };
@@ -26,6 +27,7 @@ namespace LUI
         {
             Commander = commander;
             InitializeComponent();
+            //Dispatcher = new Dispatcher();
             InitChart();
         }
 
@@ -37,6 +39,12 @@ namespace LUI
             Series series = SpecGraph.Series.Add("dummySeries");
             series.MarkerStyle = MarkerStyle.None;
             series.Points.AddXY(0, 0);
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            base.OnFormClosing(e);
+            Commander.Camera.Close();
         }
 
         private void loadTimesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -121,7 +129,7 @@ namespace LUI
             return true;
         }
 
-        private void BlockingBlankDialog(Boolean wait)
+        private void BlockingBlankDialog()
         {
             DialogResult result = MessageBox.Show("Please insert blank",
                 "Blank",
@@ -140,6 +148,18 @@ namespace LUI
                     MessageBoxButtons.OKCancel);
             if (result == DialogResult.Cancel) return false;
             return true;
+        }
+
+        private void BlockingSampleDialog()
+        {
+            DialogResult result = MessageBox.Show("Please insert sample",
+                    "Continue",
+                    MessageBoxButtons.OKCancel);
+            if (result == DialogResult.Cancel)
+            {
+                worker.CancelAsync();
+            }
+            wait = false;
         }
 
         private void Abort_Click(object sender, EventArgs e)
@@ -169,7 +189,7 @@ namespace LUI
             worker.ReportProgress(0, Dialog.BLANK.ToString());
 
             int[] BlankBuffer = Commander.Flash();
-            for (int i = 0; i < N; i++)
+            for (int i = 0; i < N-1; i++)
             {
                 if (worker.CancellationPending)
                 {
@@ -182,12 +202,20 @@ namespace LUI
 
             worker.ReportProgress(33, Dialog.SAMPLE.ToString());
 
-            Boolean wait = true;
-            Dispatcher.BeginInvoke(new Action(BlockingBlankDialog), new Boolean[]{wait});
+            wait = true;
+            Dispatcher.BeginInvoke(new Action(BlockingBlankDialog), new bool[]{ wait });
             while (wait);
 
+            worker.ReportProgress(33, Dialog.PROGRESS_DARK.ToString());
+
+            if (worker.CancellationPending)
+            {
+                e.Cancel = true;
+                return;
+            }
+
             int[] DarkBuffer = Commander.Dark();
-            for (int i = 0; i < N; i++)
+            for (int i = 0; i < N-1; i++)
             {
                 if (worker.CancellationPending)
                 {
@@ -199,9 +227,20 @@ namespace LUI
             }
 
             worker.ReportProgress(66, Dialog.PROGRESS.ToString());
+            wait = true;
+            Dispatcher.BeginInvoke(new Action(BlockingSampleDialog), new bool[] { wait });
+            while (wait);
+
+            if (worker.CancellationPending)
+            {
+                e.Cancel = true;
+                return;
+            }
+
+            worker.ReportProgress(66, Dialog.PROGRESS_DATA.ToString());
 
             int[] DataBuffer = Commander.Flash();
-            for (int i = 0; i < N; i++)
+            for (int i = 0; i < N-1; i++)
             {
                 if (worker.CancellationPending)
                 {
@@ -211,8 +250,8 @@ namespace LUI
                 Data.Accumulate(DataBuffer, Commander.Flash());
                 worker.ReportProgress(66 + (i / N) * 33, Dialog.PROGRESS_DATA.ToString());
             }
-            e.Result = Data.OpticalDensity(DataBuffer, BlankBuffer, DarkBuffer);
             worker.ReportProgress(99, Dialog.PROGRESS_CALC.ToString());
+            e.Result = Data.OpticalDensity(DataBuffer, BlankBuffer, DarkBuffer);
         }
 
         public void AbsorbanceSpectrumProgress(object sender, ProgressChangedEventArgs e)
@@ -221,10 +260,12 @@ namespace LUI
             switch (operation)
             {
                 case Dialog.BLANK:
-                    if (!BlankDialog()) worker.CancelAsync();
+                    StatusProgress.Value = e.ProgressPercentage;
+                    ProgressLabel.Text = "Waiting";
                     break;
                 case Dialog.SAMPLE:
-                    if (!SampleDialog()) worker.CancelAsync();
+                    StatusProgress.Value = e.ProgressPercentage;
+                    ProgressLabel.Text = "Waiting";
                     break;
                 case Dialog.PROGRESS:
                     StatusProgress.Value = e.ProgressPercentage;
@@ -285,6 +326,8 @@ namespace LUI
         {
             worker = new BackgroundWorker();
             worker.DoWork += new System.ComponentModel.DoWorkEventHandler(TROAWork);
+            worker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(TROAProgress);
+            worker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(TROAComplete);
             worker.WorkerSupportsCancellation = true;
             worker.WorkerReportsProgress = true;
 
@@ -308,10 +351,10 @@ namespace LUI
             Commander.Camera.TriggerMode = Constants.TriggerModeExternalExposure;
             Commander.Camera.ReadMode = Constants.ReadModeFVB;
 
+            // Dark
             worker.ReportProgress(0, Dialog.PROGRESS_DARK.ToString());
-
             int[] DarkBuffer = Commander.Dark();
-            for (int i = 0; i < parameters.N; i++)
+            for (int i = 0; i < parameters.N-1; i++)
             {
                 if (worker.CancellationPending)
                 {
@@ -319,15 +362,70 @@ namespace LUI
                     return;
                 }
                 Data.Accumulate(DarkBuffer, Commander.Dark());
-                worker.ReportProgress((i / parameters.N) * 33, Dialog.PROGRESS_DARK.ToString());
+                worker.ReportProgress((i / parameters.N) * 20, Dialog.PROGRESS_DARK.ToString());
             }
 
-
+            // Ground part 1
+            worker.ReportProgress(20, Dialog.PROGRESS_GROUND.ToString());
             int[] GroundBuffer = Commander.Flash();
+            // If N is odd the extra scan is done in the second ground stage.
+            int niter = (parameters.N - 1) / 2 + 1;
+            for (int i = 0; i < niter; i++)
+            {
+                if (worker.CancellationPending)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+                Data.Accumulate(GroundBuffer, Commander.Flash());
+                worker.ReportProgress(20 + (i / niter) * 20, Dialog.PROGRESS_GROUND.ToString());
+            }
 
-            int[] TransBuffer = Commander.Trans();
+            // Trans
+            worker.ReportProgress(40, Dialog.PROGRESS_TRANS.ToString());
 
-            double[] DifferenceBuffer = Data.DeltaOD(GroundBuffer, TransBuffer, DarkBuffer);
+            for (int ti = 0; ti < parameters.TROADelays.Count; ti++)
+            {
+                ((DDG535)Commander.DDG).BDelay = parameters.TROADelays[ti];
+                int[] TransBuffer = Commander.Trans();
+                niter = parameters.N - 1;
+                for (int i = 0; i < niter; i++)
+                {
+                    if (worker.CancellationPending)
+                    {
+                        e.Cancel = true;
+                        return;
+                    }
+                    Data.Accumulate(TransBuffer, Commander.Trans());
+                    worker.ReportProgress(40 + (i / niter) * 40, Dialog.PROGRESS_TRANS.ToString());
+                }
+                double[] DifferenceBuffer = Data.DeltaOD(GroundBuffer, TransBuffer, DarkBuffer);
+            }
+
+            // Ground part 2
+            worker.ReportProgress(80, Dialog.PROGRESS_GROUND.ToString());
+            niter = (parameters.N - 1) / 2 + 1;
+            for (int i = 0; i < niter; i++)
+            {
+                if (worker.CancellationPending)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+                Data.Accumulate(GroundBuffer, Commander.Flash());
+                worker.ReportProgress(80 + (i / niter) * 20, Dialog.PROGRESS_GROUND.ToString());
+            }
+            
+        }
+
+        public void TROAProgress(object sender, ProgressChangedEventArgs e)
+        {
+
+        }
+
+        public void TROAComplete(object sender, RunWorkerCompletedEventArgs e)
+        {
+
         }
 
     }

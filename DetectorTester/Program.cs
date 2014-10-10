@@ -14,8 +14,11 @@ namespace DetectorTester
         [STAThread]
         static void Main()
         {
+            AndorCamera Camera = new CameraTempControlled(".");
+            BeamFlags BeamFlags = new BeamFlags("COM1");
+            IDigitalDelayGenerator DDG = new DDG535(15);
 
-            Commander Commander = new Commander();
+            Commander Commander = new Commander(Camera, BeamFlags, DDG);
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
