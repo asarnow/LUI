@@ -17,15 +17,8 @@ namespace LUI
         public const int DefaultTemperature = 20;
         public const float TemperatureEps = 3F;
 
-        // Serial constants and commands
-        public const string OpenFlashCommand = "!0SO1";
-        public const string CloseFlashCommand = "!0SO000";
-
-        public const string OpenLaserCommand = "!0SO2";
-        public const string CloseLaserCommand = "!0SO000";
-
-        public const string OpenLaserAndFlashCommand = "!0SO3";
-        public const string CloseLaserAndFlashCommand = "!0SO000";
+        // BeamFlags constants and commands
+        public const int DefaultBeamFlagsCommandDelay = 150;
 
         // Andor constants and commands
         public const int ReadModeFVB = 0;

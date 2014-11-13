@@ -11,6 +11,7 @@ namespace LUI
         public enum State { Open, Closed }
         public State FlashState;
         public State LaserState;
+        public int Delay { get; set; } // Time in miliseconds to sleep between commands.
 
         virtual public State ToggleLaser()
         {

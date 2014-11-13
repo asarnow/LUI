@@ -11,40 +11,20 @@ namespace LUI
 {
     public class BeamFlags:AbstractBeamFlags
     {
-        public readonly string OpenFlashCommand;
-        public readonly string CloseFlashCommand;
-        public readonly string OpenLaserCommand;
-        public readonly string CloseLaserCommand;
-        public readonly string OpenLaserAndFlashCommand;
-        public readonly string CloseLaserAndFlashCommand;
-        private readonly SerialPort _port;
+        public const string OpenFlashCommand = "!0SO1";
+        public const string CloseFlashCommand = "!0SO000";
 
-        public BeamFlags(string openFlashCommand,
-                         string closeFlashCommand,
-                         string openLaserCommand,
-                         string closeLaserCommand,
-                         string openLaserAndFlashCommand,
-                         string closeLaserAndFlashCommand,
-                         String portName)
-        {
-            OpenFlashCommand = openFlashCommand;
-            CloseFlashCommand = closeFlashCommand;
-            OpenLaserCommand = openLaserCommand;
-            CloseLaserCommand = closeLaserCommand;
-            OpenLaserAndFlashCommand = openLaserAndFlashCommand;
-            CloseLaserAndFlashCommand = closeLaserAndFlashCommand;
-            _port = new SerialPort(portName);
-            CloseLaserAndFlash();
-        }
+        public const string OpenLaserCommand = "!0SO2";
+        public const string CloseLaserCommand = "!0SO000";
+
+        public const string OpenLaserAndFlashCommand = "!0SO3";
+        public const string CloseLaserAndFlashCommand = "!0SO000";
+
+        private readonly SerialPort _port;
 
         public BeamFlags(String portName)
         {
-            OpenFlashCommand = Constants.OpenFlashCommand;
-            CloseFlashCommand = Constants.CloseFlashCommand;
-            OpenLaserCommand = Constants.OpenLaserCommand;
-            CloseLaserCommand = Constants.CloseLaserCommand;
-            OpenLaserAndFlashCommand = Constants.OpenLaserAndFlashCommand;
-            CloseLaserAndFlashCommand = Constants.CloseLaserAndFlashCommand;
+            Delay = Constants.DefaultBeamFlagsCommandDelay;
             _port = new SerialPort(portName);
             CloseLaserAndFlash();
         }

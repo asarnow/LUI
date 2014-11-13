@@ -23,7 +23,6 @@ namespace LUI
         public AbstractPump Pump { get; set; }
         public List<Double> Delays { get; set; }
         public int[] Calibration { get; set; }
-        public Stack<IJob> JobStack = new Stack<IJob>();
 
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -71,6 +70,7 @@ namespace LUI
             BeamFlags.CloseLaserAndFlash();
             BeamFlags.OpenFlash();
             int[] data = Camera.Acquire();
+            System.Threading.Thread.Sleep(BeamFlags.Delay);
             BeamFlags.CloseLaserAndFlash();
             return data;
         }
@@ -79,86 +79,9 @@ namespace LUI
         {
             BeamFlags.OpenLaserAndFlash();
             int[] data = Camera.Acquire();
+            System.Threading.Thread.Sleep(BeamFlags.Delay);
             BeamFlags.CloseLaserAndFlash();
             return data;
-        }
-
-        //public void RunJobs()
-        //{
-        //    Camera.AcquisitionMode = Constants.AcquisitionModeSingle;
-        //    Camera.TriggerMode = Constants.TriggerModeExternalExposure;
-        //    Camera.ReadMode = Constants.ReadModeFVB;
-
-        //    while (JobStack.Count > 0)
-        //    {
-        //        IJob job = JobStack.Pop();
-        //        if (job == null)
-        //        {
-        //            Log.Warn("Manual abort triggered");
-        //            break; // Abort
-        //        }
-
-        //        if (job is DarkJob)
-        //        {
-        //            RunDarkJob(job as DarkJob);
-        //        }
-
-        //        if (job is OAJob)
-        //        {
-        //            RunOAJob(job as OAJob);
-        //        }
-
-        //        if (job is TROAJob)
-        //        {
-        //            RunTROAJob(job as TROAJob);
-        //        }
-                
-        //    }
-        //}
-
-        //private void RunDarkJob(DarkJob job)
-        //{
-        //    Log.Info("Dark job");
-
-        //    StoreData( Constants.DarkState, Dark()) ;
-        //}
-
-        //private void RunOAJob(OAJob job)
-        //{
-        //    Log.Info("OA Job");
-
-        //    StoreData( Constants.GroundState, Flash() );
-
-        //}
-
-        //private void RunTROAJob(TROAJob job)
-        //{
-        //    Log.Info("TROA Job: " + job.GetDelay().ToString() + " s");
-
-        //    DDG.SetBDelay( job.GetDelay() );
-
-        //    StoreData( job.GetDelay(), Trans() );
-        //}
-
-
-        //private void StoreData(Double delay, int[] data)
-        //{
-        //    DataPoint value;
-        //    if (DataStore.TryGetValue(delay, out value))
-        //    {
-        //        value.Store(data);
-        //    } 
-        //    else
-        //    {
-        //        DataStore[delay] = new DataPoint(delay, (int)Camera.Width);
-        //        DataStore[delay].Store(data);
-        //    }
-
-        //}
-
-        public void Abort()
-        {
-            JobStack.Push(null);
         }
 
     }
