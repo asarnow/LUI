@@ -5,13 +5,13 @@ using ATMCD64CS;
 using ATMCD32CS;
 #endif
 
-//  <summary>
-//      Class representing a generic Andor camera.
-//      Specific Andor camera types should inherit from this class.
-//  </summary>
 
 namespace LUI
 {
+    /// <summary>
+    /// Class representing a generic Andor camera.
+    /// Specific Andor camera types should inherit from this class.
+    /// </summary>
     public class AndorCamera:ICamera
     {
         public uint InitVal;
@@ -51,6 +51,28 @@ namespace LUI
             }
         }
 
+        private int _TriggerInvert;
+        public int TriggerInvert
+        {
+            get { return _TriggerInvert; }
+            set
+            {
+                _TriggerInvert = value;
+                AndorSdk.SetTriggerInvert(value);
+            }
+        }
+
+        private float _TriggerLevel;
+        public float TriggerLevel
+        {
+            get { return _TriggerLevel; }
+            set
+            {
+                _TriggerLevel = value;
+                AndorSdk.SetTriggerLevel(value);
+            }
+        }
+
         private int _DDGTriggerMode;
         public int DDGTriggerMode
         {
@@ -59,6 +81,39 @@ namespace LUI
             {
                 _DDGTriggerMode = value;
                 AndorSdk.SetDDGTriggerMode(value);
+            }
+        }
+
+        private int _GateMode;
+        public int GateMode
+        {
+            get { return _GateMode; }
+            set
+            {
+                _GateMode = value;
+                AndorSdk.SetGateMode(value);
+            }
+        }
+
+        private int _MCPGating;
+        public int MCPGating
+        {
+            get { return _MCPGating; }
+            set
+            {
+                _MCPGating = value;
+                AndorSdk.SetMCPGating(value);
+            }
+        }
+
+        private int _MCPGain;
+        public int MCPGain
+        {
+            get { return _MCPGain; }
+            set
+            {
+                _MCPGain = value;
+                AndorSdk.SetMCPGain(value);
             }
         }
 
@@ -132,12 +187,12 @@ namespace LUI
 
             Image = new ImageArea(1, 1, 1, (int)Width, 1, (int)Height);
 
-            AndorSdk.SetGateMode(Constants.GatingModeSMBOnly); //TODO Property
-            AndorSdk.SetMCPGating(Constants.MCPGatingOn); //TODO Property
+            GateMode = Constants.GatingModeSMBOnly;
+            MCPGating = Constants.MCPGatingOn;
 
-            //AndorSdk.SetTriggerInvert(Constants.TriggerInvertRising);
-            //AndorSdk.SetTriggerLevel(Constants.DefaultTriggerLevel); // TTL signal is 4.0V
-            AndorSdk.SetMCPGain(Constants.DefaultMCPGain); // Property
+            //TriggerInvert = Constants.TriggerInvertRising;
+            //TriggerLevel = Constants.DefaultTriggerLevel; // TTL signal is 4.0V
+            MCPGain = Constants.DefaultMCPGain;
         }
 
         public virtual void Close()
