@@ -12,9 +12,9 @@ namespace LUI
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         // Might throw IOException
-        public static List<IJob> ReadTimesFile(String filename)
+        public static List<string> ReadTimesFile(String filename)
         {
-            List<IJob> times = new List<IJob>();
+            List<string> times = new List<string>();
             foreach (string line in ReadLines(filename))
             {
                 line.Trim();

@@ -18,15 +18,18 @@ namespace LUI
 
             // Get preferences
 
+#if DUMMY
+            Commander Commander = new Commander();            
+#else
             AndorCamera Camera = new CameraTempControlled(".");
             BeamFlags BeamFlags = new BeamFlags("COM1");
             IDigitalDelayGenerator DDG = new DDG535(15);
-
             Commander Commander = new Commander(Camera, BeamFlags, DDG);
+#endif
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new ControlForm(Commander));
+            Application.Run(new ParentForm(Commander));
         }
 
     }

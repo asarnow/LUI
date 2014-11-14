@@ -6,7 +6,7 @@ using log4net;
 //      Represents a Stanford DDG.
 //  </summary>
 
-namespace LUI
+namespace LUI.ddg
 {
     public abstract class StanfordDigitalDelayGenerator:IDigitalDelayGenerator
     {

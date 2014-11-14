@@ -5,7 +5,7 @@ using System.IO.Ports;
 //      Represents the syringe pump.
 //  </summary>
 
-namespace LUI
+namespace LUI.control
 {
     class HarvardPump:AbstractPump
     {

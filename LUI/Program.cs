@@ -10,6 +10,7 @@ using NDesk.Options;
 //#endif
 
 using LUI;
+using LUI.control;
 
 namespace LUI
 {

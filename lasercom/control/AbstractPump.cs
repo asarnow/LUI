@@ -6,7 +6,7 @@ using System.Text;
 //  <summary>
 //      AbstractPump is an abstract class for concrete Pump objects to inherit.
 //  </summary>
-namespace LUI
+namespace LUI.control
 {
     public abstract class AbstractPump
     {

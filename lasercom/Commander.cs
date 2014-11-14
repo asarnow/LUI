@@ -11,6 +11,10 @@ using ATMCD32CS;
 
 using log4net;
 using NationalInstruments.NI4882;
+using LUI.camera;
+using LUI.control;
+using LUI.ddg;
+using LUI.io;
 
 namespace LUI
 {
@@ -35,7 +39,7 @@ namespace LUI
 
         public Commander()
         {
-            Camera = new CameraTempControlled(".");
+            Camera = new DummyAndorCamera();
             //BeamFlags = new BeamFlags("COM1");
             BeamFlags = new DummyBeamFlags();
             //int address = 0;

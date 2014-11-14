@@ -55,6 +55,24 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dummy|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Dummy\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dummy|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Dummy\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;x64</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="ATMCD32CS">
       <HintPath>..\lib\ATMCD32CS.dll</HintPath>
@@ -91,6 +109,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="camera\DummyAndorCamera.cs" />
+    <Compile Include="camera\DummyCamera.cs" />
     <Compile Include="control\AbstractBeamFlags.cs" />
     <Compile Include="camera\AndorCamera.cs" />
     <Compile Include="control\AbstractPump.cs" />
@@ -99,11 +119,7 @@
     <Compile Include="Data.cs" />
     <Compile Include="ddg\DummyDigitalDelayGenerator.cs" />
     <Compile Include="io\MatFile.cs" />
-    <Compile Include="job\DarkJob.cs" />
     <Compile Include="control\DummyBeamFlags.cs" />
-    <Compile Include="job\IJob.cs" />
-    <Compile Include="job\OAJob.cs" />
-    <Compile Include="job\TROAJob.cs" />
     <Compile Include="ddg\DDG535.cs" />
     <Compile Include="ddg\IDigitalDelayGenerator.cs" />
     <Compile Include="Commander.cs" />

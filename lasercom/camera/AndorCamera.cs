@@ -200,7 +200,7 @@ namespace LUI
             AndorSdk.ShutDown();
         }
 
-        public int[] FullResolutionImage()
+        public virtual int[] FullResolutionImage()
         {
             uint npx = Width * Height;
             int[] data = new int[npx];
@@ -214,7 +214,7 @@ namespace LUI
             return data;
         }
 
-        public int[] CountsFvb()
+        public virtual int[] CountsFvb()
         {
             uint npx = Width;
             AndorSdk.SetReadMode(Constants.ReadModeFVB);
@@ -226,7 +226,7 @@ namespace LUI
             return data;
         }
 
-        public int[] Acquire()
+        public virtual int[] Acquire()
         {
             uint npx;
             if (this.ReadMode == Constants.ReadModeFVB)

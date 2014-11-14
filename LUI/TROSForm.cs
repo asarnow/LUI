@@ -9,9 +9,11 @@ using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using System.Windows.Threading;
 
+using LUI.ddg; //TODO use command transient delay for DDG classes & remove this line.
+
 namespace LUI
 {
-    public partial class ControlForm : Form
+    public partial class TROSForm : Form
     {
         private Commander Commander;
         private BackgroundWorker worker;
@@ -23,7 +25,7 @@ namespace LUI
             PROGRESS_CALC, PROGRESS_TRANS, PROGRESS_GROUND };
         private enum TROAPattern { SEPARATED }
 
-        public ControlForm(Commander commander)
+        public TROSForm(Commander commander)
         {
             Commander = commander;
             InitializeComponent();

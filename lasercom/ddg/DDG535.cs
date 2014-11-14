@@ -6,7 +6,7 @@ using System.Text;
 using log4net;
 using NationalInstruments.NI4882;
 
-namespace LUI
+namespace LUI.ddg
 {
     public class DDG535:StanfordDigitalDelayGenerator
     {

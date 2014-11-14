@@ -7,7 +7,7 @@ using System.IO.Ports;
 //      class should be added for the beam flags classes to inherit from.
 //  </summary>
 
-namespace LUI
+namespace LUI.control
 {
     public class BeamFlags:AbstractBeamFlags
     {
