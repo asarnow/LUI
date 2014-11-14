@@ -30,14 +30,26 @@
         {
             this.Tabs = new System.Windows.Forms.TabControl();
             this.TROSPage = new System.Windows.Forms.TabPage();
-            this.CalibratePage = new System.Windows.Forms.TabPage();
+            this.CalibrationPage = new System.Windows.Forms.TabPage();
+            this.HomePage = new System.Windows.Forms.TabPage();
+            this.SpecPage = new System.Windows.Forms.TabPage();
+            this.ResidualsPage = new System.Windows.Forms.TabPage();
+            this.PowerPage = new System.Windows.Forms.TabPage();
+            this.AlignPage = new System.Windows.Forms.TabPage();
+            this.OptionsPage = new System.Windows.Forms.TabPage();
             this.Tabs.SuspendLayout();
             this.SuspendLayout();
             // 
             // Tabs
             // 
+            this.Tabs.Controls.Add(this.HomePage);
+            this.Tabs.Controls.Add(this.SpecPage);
             this.Tabs.Controls.Add(this.TROSPage);
-            this.Tabs.Controls.Add(this.CalibratePage);
+            this.Tabs.Controls.Add(this.AlignPage);
+            this.Tabs.Controls.Add(this.ResidualsPage);
+            this.Tabs.Controls.Add(this.CalibrationPage);
+            this.Tabs.Controls.Add(this.PowerPage);
+            this.Tabs.Controls.Add(this.OptionsPage);
             this.Tabs.Location = new System.Drawing.Point(0, 0);
             this.Tabs.Name = "Tabs";
             this.Tabs.SelectedIndex = 0;
@@ -54,15 +66,69 @@
             this.TROSPage.TabIndex = 0;
             this.TROSPage.Text = "TROS";
             // 
-            // CalibratePage
+            // CalibrationPage
             // 
-            this.CalibratePage.BackColor = System.Drawing.SystemColors.Control;
-            this.CalibratePage.Location = new System.Drawing.Point(4, 25);
-            this.CalibratePage.Name = "CalibratePage";
-            this.CalibratePage.Padding = new System.Windows.Forms.Padding(3);
-            this.CalibratePage.Size = new System.Drawing.Size(1471, 795);
-            this.CalibratePage.TabIndex = 1;
-            this.CalibratePage.Text = "Calibrate";
+            this.CalibrationPage.BackColor = System.Drawing.SystemColors.Control;
+            this.CalibrationPage.Location = new System.Drawing.Point(4, 25);
+            this.CalibrationPage.Name = "CalibrationPage";
+            this.CalibrationPage.Padding = new System.Windows.Forms.Padding(3);
+            this.CalibrationPage.Size = new System.Drawing.Size(1471, 795);
+            this.CalibrationPage.TabIndex = 1;
+            this.CalibrationPage.Text = "Calibration";
+            // 
+            // HomePage
+            // 
+            this.HomePage.BackColor = System.Drawing.SystemColors.Control;
+            this.HomePage.Location = new System.Drawing.Point(4, 25);
+            this.HomePage.Name = "HomePage";
+            this.HomePage.Size = new System.Drawing.Size(1471, 795);
+            this.HomePage.TabIndex = 2;
+            this.HomePage.Text = "Home";
+            // 
+            // SpecPage
+            // 
+            this.SpecPage.BackColor = System.Drawing.SystemColors.Control;
+            this.SpecPage.Location = new System.Drawing.Point(4, 25);
+            this.SpecPage.Name = "SpecPage";
+            this.SpecPage.Size = new System.Drawing.Size(1471, 795);
+            this.SpecPage.TabIndex = 3;
+            this.SpecPage.Text = "Spectrum";
+            // 
+            // ResidualsPage
+            // 
+            this.ResidualsPage.BackColor = System.Drawing.SystemColors.Control;
+            this.ResidualsPage.Location = new System.Drawing.Point(4, 25);
+            this.ResidualsPage.Name = "ResidualsPage";
+            this.ResidualsPage.Size = new System.Drawing.Size(1471, 795);
+            this.ResidualsPage.TabIndex = 4;
+            this.ResidualsPage.Text = "Residuals";
+            // 
+            // PowerPage
+            // 
+            this.PowerPage.BackColor = System.Drawing.SystemColors.Control;
+            this.PowerPage.Location = new System.Drawing.Point(4, 25);
+            this.PowerPage.Name = "PowerPage";
+            this.PowerPage.Size = new System.Drawing.Size(1471, 795);
+            this.PowerPage.TabIndex = 5;
+            this.PowerPage.Text = "Laser Power";
+            // 
+            // AlignPage
+            // 
+            this.AlignPage.BackColor = System.Drawing.SystemColors.Control;
+            this.AlignPage.Location = new System.Drawing.Point(4, 25);
+            this.AlignPage.Name = "AlignPage";
+            this.AlignPage.Size = new System.Drawing.Size(1471, 795);
+            this.AlignPage.TabIndex = 6;
+            this.AlignPage.Text = "Alignment";
+            // 
+            // OptionsPage
+            // 
+            this.OptionsPage.BackColor = System.Drawing.SystemColors.Control;
+            this.OptionsPage.Location = new System.Drawing.Point(4, 25);
+            this.OptionsPage.Name = "OptionsPage";
+            this.OptionsPage.Size = new System.Drawing.Size(1471, 795);
+            this.OptionsPage.TabIndex = 7;
+            this.OptionsPage.Text = "Options";
             // 
             // ParentForm
             // 
@@ -81,6 +147,12 @@
 
         private System.Windows.Forms.TabControl Tabs;
         private System.Windows.Forms.TabPage TROSPage;
-        private System.Windows.Forms.TabPage CalibratePage;
+        private System.Windows.Forms.TabPage CalibrationPage;
+        private System.Windows.Forms.TabPage HomePage;
+        private System.Windows.Forms.TabPage SpecPage;
+        private System.Windows.Forms.TabPage AlignPage;
+        private System.Windows.Forms.TabPage ResidualsPage;
+        private System.Windows.Forms.TabPage PowerPage;
+        private System.Windows.Forms.TabPage OptionsPage;
     }
 }
