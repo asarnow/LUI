@@ -156,7 +156,8 @@ namespace LUI.camera
 
         public DummyAndorCamera()
         {
-
+            _Width = 1024;
+            _Height = 256;
         }
 
         public override int[] FullResolutionImage()

@@ -11,15 +11,14 @@ namespace LUI
 {
     public partial class ParentForm : Form
     {
+        Commander Commander;
 
-        TROSForm TROSForm;
-
-        public ParentForm(Commander Commander)
+        public ParentForm(Commander commander)
         {
             InitializeComponent();
-            TROSForm = new TROSForm(Commander);
-            MakeEmebeddable(TROSForm);
-            TROSPage.Controls.Add(TROSForm);
+            Commander = commander;
+            TROSControl TROSControl = new TROSControl(Commander);
+            TROSPage.Controls.Add(TROSControl);
         }
 
         private static void MakeEmebeddable(Form Form)
@@ -29,5 +28,12 @@ namespace LUI
             Form.FormBorderStyle = FormBorderStyle.None;
             Form.Dock = DockStyle.Fill;
         }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            base.OnFormClosing(e);
+            Commander.Camera.Close();
+        }
+
     }
 }

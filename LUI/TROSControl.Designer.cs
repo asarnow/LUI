@@ -1,6 +1,6 @@
 ﻿namespace LUI
 {
-    partial class TROSForm
+    partial class TROSControl
     {
         /// <summary>
         /// Required designer variable.

@@ -9,13 +9,11 @@ using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using System.Windows.Threading;
 
-using LUI.ddg; //TODO use command transient delay for DDG classes & remove this line.
-
 namespace LUI
 {
-    public partial class TROSForm : Form
+    public partial class TROSControl : UserControl
     {
-        private Commander Commander;
+        public Commander Commander { get; set; }
         private BackgroundWorker worker;
         private BackgroundWorker ioWorker;
         private Dispatcher Dispatcher;
@@ -25,7 +23,7 @@ namespace LUI
             PROGRESS_CALC, PROGRESS_TRANS, PROGRESS_GROUND };
         private enum TROAPattern { SEPARATED }
 
-        public TROSForm(Commander commander)
+        public TROSControl(Commander commander)
         {
             Commander = commander;
             InitializeComponent();
@@ -41,12 +39,6 @@ namespace LUI
             Series series = SpecGraph.Series.Add("dummySeries");
             series.MarkerStyle = MarkerStyle.None;
             series.Points.AddXY(0, 0);
-        }
-
-        protected override void OnFormClosing(FormClosingEventArgs e)
-        {
-            base.OnFormClosing(e);
-            Commander.Camera.Close();
         }
 
         private void loadTimesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -389,7 +381,7 @@ namespace LUI
 
             for (int ti = 0; ti < parameters.TROADelays.Count; ti++)
             {
-                ((DDG535)Commander.DDG).BDelay = parameters.TROADelays[ti];
+                ((ddg.DDG535)Commander.DDG).BDelay = parameters.TROADelays[ti];
                 int[] TransBuffer = Commander.Trans();
                 niter = parameters.N - 1;
                 for (int i = 0; i < niter; i++)
