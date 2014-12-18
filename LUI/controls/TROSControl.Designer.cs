@@ -32,7 +32,6 @@
             System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.SpecGraph = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.StatusBox = new System.Windows.Forms.GroupBox();
             this.ProgressLabel = new System.Windows.Forms.Label();
             this.StatusProgress = new System.Windows.Forms.ProgressBar();
@@ -49,15 +48,16 @@
             this.OpenLamp = new System.Windows.Forms.Button();
             this.CloseLaser = new System.Windows.Forms.Button();
             this.OpenLaser = new System.Windows.Forms.Button();
+            this.SpecGraph = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
             this.tableLayoutPanel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.SpecGraph)).BeginInit();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Averages)).BeginInit();
             this.BeamFlagBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.SpecGraph)).BeginInit();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -82,33 +82,6 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(1476, 821);
             this.tableLayoutPanel1.TabIndex = 0;
-            // 
-            // SpecGraph
-            // 
-            chartArea1.AxisX.IntervalAutoMode = System.Windows.Forms.DataVisualization.Charting.IntervalAutoMode.VariableCount;
-            chartArea1.AxisX.Maximum = 1023D;
-            chartArea1.AxisX.Minimum = 0D;
-            chartArea1.AxisY.IntervalAutoMode = System.Windows.Forms.DataVisualization.Charting.IntervalAutoMode.VariableCount;
-            chartArea1.AxisY.Maximum = 65536D;
-            chartArea1.AxisY.Minimum = 0D;
-            chartArea1.Name = "MainChart";
-            this.SpecGraph.ChartAreas.Add(chartArea1);
-            this.tableLayoutPanel1.SetColumnSpan(this.SpecGraph, 3);
-            legend1.Enabled = false;
-            legend1.Name = "Legend1";
-            this.SpecGraph.Legends.Add(legend1);
-            this.SpecGraph.Location = new System.Drawing.Point(4, 4);
-            this.SpecGraph.Margin = new System.Windows.Forms.Padding(4);
-            this.SpecGraph.Name = "SpecGraph";
-            this.tableLayoutPanel1.SetRowSpan(this.SpecGraph, 2);
-            series1.ChartArea = "MainChart";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series1.Legend = "Legend1";
-            series1.Name = "Series1";
-            this.SpecGraph.Series.Add(series1);
-            this.SpecGraph.Size = new System.Drawing.Size(1099, 422);
-            this.SpecGraph.TabIndex = 1;
-            this.SpecGraph.Text = "chart1";
             // 
             // StatusBox
             // 
@@ -305,6 +278,33 @@
             this.OpenLaser.UseVisualStyleBackColor = true;
             this.OpenLaser.Click += new System.EventHandler(this.OpenLaser_Click);
             // 
+            // SpecGraph
+            // 
+            chartArea1.AxisX.IntervalAutoMode = System.Windows.Forms.DataVisualization.Charting.IntervalAutoMode.VariableCount;
+            chartArea1.AxisX.Maximum = 1023D;
+            chartArea1.AxisX.Minimum = 0D;
+            chartArea1.AxisY.IntervalAutoMode = System.Windows.Forms.DataVisualization.Charting.IntervalAutoMode.VariableCount;
+            chartArea1.AxisY.Maximum = 65536D;
+            chartArea1.AxisY.Minimum = 0D;
+            chartArea1.Name = "MainChart";
+            this.SpecGraph.ChartAreas.Add(chartArea1);
+            this.tableLayoutPanel1.SetColumnSpan(this.SpecGraph, 3);
+            legend1.Enabled = false;
+            legend1.Name = "Legend1";
+            this.SpecGraph.Legends.Add(legend1);
+            this.SpecGraph.Location = new System.Drawing.Point(4, 4);
+            this.SpecGraph.Margin = new System.Windows.Forms.Padding(4);
+            this.SpecGraph.Name = "SpecGraph";
+            this.tableLayoutPanel1.SetRowSpan(this.SpecGraph, 2);
+            series1.ChartArea = "MainChart";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            this.SpecGraph.Series.Add(series1);
+            this.SpecGraph.Size = new System.Drawing.Size(1099, 522);
+            this.SpecGraph.TabIndex = 1;
+            this.SpecGraph.Text = "chart1";
+            // 
             // openFileDialog1
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
@@ -322,23 +322,22 @@
             // 
             this.openFileDialog2.FileName = "openFileDialog2";
             // 
-            // TROSForm
+            // TROSControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1476, 821);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Margin = new System.Windows.Forms.Padding(4);
-            this.Name = "TROSForm";
-            this.Text = "LUI 3.0 Control";
+            this.Name = "TROSControl";
+            this.Size = new System.Drawing.Size(1476, 821);
             this.tableLayoutPanel1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.SpecGraph)).EndInit();
             this.StatusBox.ResumeLayout(false);
             this.StatusBox.PerformLayout();
             this.CommandsBox.ResumeLayout(false);
             this.CommandsBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Averages)).EndInit();
             this.BeamFlagBox.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.SpecGraph)).EndInit();
             this.ResumeLayout(false);
 
         }

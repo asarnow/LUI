@@ -8,6 +8,8 @@ using System.Text;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using System.Windows.Threading;
+using lasercom;
+using lasercom.ddg;
 
 namespace LUI
 {
@@ -175,9 +177,9 @@ namespace LUI
 
         public void AbsorbanceSpectrumWork(object sender, DoWorkEventArgs e)
         {
-            Commander.Camera.AcquisitionMode = Constants.AcquisitionModeSingle;
-            Commander.Camera.TriggerMode = Constants.TriggerModeExternalExposure;
-            Commander.Camera.ReadMode = Constants.ReadModeFVB;
+            Commander.Camera.AcquisitionMode = AndorCamera.AcquisitionModeSingle;
+            Commander.Camera.TriggerMode = AndorCamera.TriggerModeExternalExposure;
+            Commander.Camera.ReadMode = AndorCamera.ReadModeFVB;
             int N = (int)e.Argument;
 
             worker.ReportProgress(0, Dialog.BLANK.ToString());
@@ -332,7 +334,7 @@ namespace LUI
             parameters.TROADelays = new List<string>();
             foreach (double d in Commander.Delays)
             {
-                parameters.TROADelays.Add(Constants.DDG535.BOutput + "," + d.ToString());
+                parameters.TROADelays.Add(lasercom.Constants.DDG535.BOutput + "," + d.ToString());
             }
 
             worker.RunWorkerAsync(parameters);
@@ -342,9 +344,9 @@ namespace LUI
         {
             TROAParameters parameters = (TROAParameters)e.Argument;
 
-            Commander.Camera.AcquisitionMode = Constants.AcquisitionModeSingle;
-            Commander.Camera.TriggerMode = Constants.TriggerModeExternalExposure;
-            Commander.Camera.ReadMode = Constants.ReadModeFVB;
+            Commander.Camera.AcquisitionMode = AndorCamera.AcquisitionModeSingle;
+            Commander.Camera.TriggerMode = AndorCamera.TriggerModeExternalExposure;
+            Commander.Camera.ReadMode = AndorCamera.ReadModeFVB;
 
             // Dark
             worker.ReportProgress(0, Dialog.PROGRESS_DARK.ToString());
@@ -381,7 +383,7 @@ namespace LUI
 
             for (int ti = 0; ti < parameters.TROADelays.Count; ti++)
             {
-                ((ddg.DDG535)Commander.DDG).BDelay = parameters.TROADelays[ti];
+                ((DDG535)Commander.DDG).BDelay = parameters.TROADelays[ti];
                 int[] TransBuffer = Commander.Trans();
                 niter = parameters.N - 1;
                 for (int i = 0; i < niter; i++)
