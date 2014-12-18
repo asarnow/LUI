@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using System.Threading.Tasks;
 using NDesk.Options;
 
+using lasercom;
 using LUI;
 
 namespace LUI

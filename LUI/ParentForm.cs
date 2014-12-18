@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using lasercom;
 
 namespace LUI
 {
@@ -17,8 +18,12 @@ namespace LUI
         {
             InitializeComponent();
             Commander = commander;
+
             TROSControl TROSControl = new TROSControl(Commander);
             TROSPage.Controls.Add(TROSControl);
+
+            CalibrateControl CalibrateControl = new CalibrateControl(Commander);
+            CalibrationPage.Controls.Add(CalibrateControl);
         }
 
         private static void MakeEmebeddable(Form Form)

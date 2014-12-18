@@ -27,8 +27,9 @@ namespace LUI
 
         public CalibrateControl(Commander commander)
         {
-            Commander = commander;
             InitializeComponent();
+            Commander = commander;
+            Graph.MouseClick += new MouseEventHandler(Graph_Click);
         }
 
         #region dialogs
@@ -204,6 +205,33 @@ namespace LUI
         {
             Graph.Clear();
             Graph.Invalidate();
+        }
+
+        private void Graph_Click(object sender, MouseEventArgs e)
+        {
+            PointF p = Graph.ScreenToData(new Point(e.X, e.Y));
+            //textBox1.Text = e.X.ToString("d") + ", " + e.Y.ToString("d");
+            //textBox2.Text = p.X.ToString("n2") + ", " + p.Y.ToString("n4");
+            //if (!persistentLine.Checked)
+            //{
+            //    Graph.ClearAnnotation();
+            //}
+            //Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.MarkerColor, p.X);
+            //Graph.Invalidate();
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            switch (keyData)
+            {
+                case Keys.Left:
+                    break;
+                case Keys.Right:
+                    break;
+                case Keys.Enter:
+                    break;
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
         }
     }
 }

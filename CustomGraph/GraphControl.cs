@@ -14,18 +14,20 @@ namespace LUI.controls
 {
     public partial class GraphControl : UserControl
     {
-        Action<float,float> RescaleHandler;
+        Action<float, float> RescaleHandler;
 
         PointF Origin;
         PointF XAxisRight;
         PointF YAxisTop;
 
-        Bitmap Bitmap;
+        Bitmap CanvasBitmap;
+        Bitmap DataBitmap;
         Graphics BitmapGraphics;
         Bitmap AxesBitmap;
+        Bitmap AnnotationBitmap;
         Region _Region;
         Rectangle Bound;
-        
+
         RectangleF Axes;
         RectangleF AxesPadding;
         RectangleF Canvas;
@@ -77,7 +79,7 @@ namespace LUI.controls
         private SizeF MarkerOffset;
         private Font _MarkerFont;
         public Font MarkerFont
-        { 
+        {
             get
             {
                 return _MarkerFont;
@@ -110,6 +112,11 @@ namespace LUI.controls
         }
 
         const string MARKERDEFAULT = "*";
+
+        public enum Annotation
+        {
+            VERTLINE
+        }
 
         public GraphControl()
         {
@@ -146,17 +153,15 @@ namespace LUI.controls
             YLabelFormat = "n3";
         }
 
-        void InitBitmap()
+        void InitCanvasBitmap()
         {
             // Bound and region of the control.
             Bound = new Rectangle(new Point(0, 0), Size);
             _Region = new Region(Bound);
-            Bitmap = new Bitmap(Bound.Width, Bound.Height);
-            Clear(Bitmap);
-            Bitmap.MakeTransparent(BackColor);
-            BitmapGraphics = Graphics.FromImage(Bitmap);
+            CanvasBitmap = new Bitmap(Bound.Width, Bound.Height);
+            Clear(CanvasBitmap);
             // Total area available for drawing.
-            Canvas = new RectangleF(Bound.Location, Bound.Size);            
+            Canvas = new RectangleF(Bound.Location, Bound.Size);
             // Axes area w/ padding.
             AxesPadding = new RectangleF(
                 Canvas.Left + Canvas.Width * YAxisWidth,
@@ -166,10 +171,18 @@ namespace LUI.controls
             );
             // Axes area inside padding.
             Axes = new RectangleF(
-                AxesPadding.Left + AxesPadding.Width*PadLeft,
-                AxesPadding.Top + AxesPadding.Height*PadTop,
-                AxesPadding.Width - AxesPadding.Width*PadRight,
-                AxesPadding.Height - AxesPadding.Height*PadBottom);
+                AxesPadding.Left + AxesPadding.Width * PadLeft,
+                AxesPadding.Top + AxesPadding.Height * PadTop,
+                AxesPadding.Width - AxesPadding.Width * PadRight,
+                AxesPadding.Height - AxesPadding.Height * PadBottom);
+        }
+
+        void InitDataBitmap()
+        {
+            DataBitmap = new Bitmap(Bound.Width, Bound.Height);
+            Clear(DataBitmap);
+            DataBitmap.MakeTransparent(BackColor);
+            BitmapGraphics = Graphics.FromImage(DataBitmap);
         }
 
         void InitAxesBitmap()
@@ -180,6 +193,13 @@ namespace LUI.controls
             if (YMax != float.NegativeInfinity) DrawYLabels(AxesBitmap);
             if (XMax != float.NegativeInfinity) DrawXLabels(AxesBitmap);
             AxesBitmap.MakeTransparent(BackColor);
+        }
+
+        void InitAnnotationBitmap()
+        {
+            AnnotationBitmap = new Bitmap(Bound.Width, Bound.Height);
+            Clear(AnnotationBitmap);
+            AnnotationBitmap.MakeTransparent(BackColor);
         }
 
         void Rescale(float _Min, float _Max)
@@ -208,19 +228,19 @@ namespace LUI.controls
                         G.InterpolationMode = InterpolationMode.High;
                         G.CompositingQuality = CompositingQuality.HighQuality;
                         G.SmoothingMode = SmoothingMode.AntiAlias;
-                        G.DrawImage(Bitmap, NewAxes, Axes, GraphicsUnit.Pixel);
+                        G.DrawImage(DataBitmap, NewAxes, Axes, GraphicsUnit.Pixel);
                     }
-                    Bitmap.Dispose();
-                    Bitmap = ScaledBitmap;
-                    Bitmap.MakeTransparent(BackColor);
+                    DataBitmap.Dispose();
+                    DataBitmap = ScaledBitmap;
+                    DataBitmap.MakeTransparent(BackColor);
 
 
                     BitmapGraphics.Dispose();
-                    BitmapGraphics = Graphics.FromImage(Bitmap);
+                    BitmapGraphics = Graphics.FromImage(DataBitmap);
                     //BitmapGraphics.CompositingMode = CompositingMode.SourceOver;
                 }
-                AxesBitmap.Dispose();
-                AxesBitmap = null;
+                InvalidateAxes();
+                InvalidateCanvas();
                 YMin = _Min;
                 YMax = _Max;
                 ScaleHeight = NewScaleHeight;
@@ -277,12 +297,40 @@ namespace LUI.controls
         }
 
         void DrawPoint(Graphics G, Brush B, Font F, RectangleF Axes, float x, float y)
-        {           
+        {
             float X = Axes.Left + Axes.Width * x - MarkerOffset.Width;
             float Y = Axes.Top + Axes.Height * y - MarkerOffset.Height;
             PointF Point = new PointF(X, Y);
             G.DrawString(Marker, F, B, Point);
             //TextRenderer.DrawText(G, Marker, MarkerFont, new Point((int)X, (int)Y), MarkerColor);
+        }
+
+        public void Annotate(Annotation A, params object[] args)
+        {
+            switch (A)
+            {
+                case Annotation.VERTLINE:
+                    DrawVerticalLine(AnnotationBitmap, (Color)args[0], (float)args[1]);
+                    break;
+            }
+        }
+
+        void DrawVerticalLine(Image Image, Color C, double x)
+        {
+            DrawVerticalLine(Image, C, (float)x);
+        }
+
+        void DrawVerticalLine(Image Image, Color C, float x)
+        {
+            using (Graphics G = Graphics.FromImage(Image))
+            {
+                float X = Axes.Left + Axes.Width * x / XMax;
+                //G.CompositingMode = CompositingMode.SourceOver;
+                using (Pen Pen = new Pen(C))
+                {
+                    G.DrawLine(Pen, X, Axes.Bottom, X, Axes.Top);
+                }
+            }
         }
 
         void DrawAxes(Image Image)
@@ -313,11 +361,11 @@ namespace LUI.controls
                 {
                     for (float i = 0; i <= NYTicks; i++)
                     {
-                        float YVal = YMax - i/NYTicks*ScaleHeight;
+                        float YVal = YMax - i / NYTicks * ScaleHeight;
                         string TickLabel = YVal.ToString(YLabelFormat);
                         SizeF TickLabelOffset = G.MeasureString(TickLabel, AxesFont);
                         float X = AxesPadding.Left - TickLabelOffset.Width;
-                        float Y = Axes.Top + Axes.Height*i/NYTicks - TickLabelOffset.Height/2;
+                        float Y = Axes.Top + Axes.Height * i / NYTicks - TickLabelOffset.Height / 2;
                         G.DrawString(TickLabel, AxesFont, B, new PointF(X, Y));
                     }
                 }
@@ -337,7 +385,7 @@ namespace LUI.controls
                         float XVal = XMin + i / NXTicks * (float)XMaxRound;
                         string TickLabel = XVal.ToString(XLabelFormat);
                         SizeF TickLabelOffset = G.MeasureString(TickLabel, AxesFont);
-                        float X = Axes.Left + Axes.Width * XVal/XMax - TickLabelOffset.Width/2;
+                        float X = Axes.Left + Axes.Width * XVal / XMax - TickLabelOffset.Width / 2;
                         float Y = AxesPadding.Bottom + TickLabelOffset.Height;
                         G.DrawString(TickLabel, AxesFont, B, new PointF(X, Y));
                     }
@@ -353,36 +401,66 @@ namespace LUI.controls
             }
         }
 
-        public void ClearData()
+        void InvalidateCanvas()
+        {
+            CanvasBitmap.Dispose();
+            CanvasBitmap = null;
+        }
+
+        void InvalidateData()
         {
             BitmapGraphics.Dispose();
-            Bitmap.Dispose();
-            Bitmap = null;
+            DataBitmap.Dispose();
+            DataBitmap = null;
+        }
+
+        void InvalidateAxes()
+        {
+            AxesBitmap.Dispose();
+            AxesBitmap = null;
+        }
+
+        void InvalidateAnnotation()
+        {
+            AnnotationBitmap.Dispose();
+            AnnotationBitmap = null;
         }
 
         public void Clear()
         {
-            BitmapGraphics.Dispose();
-            Bitmap.Dispose();
-            AxesBitmap.Dispose();
-            Bitmap = null;
-            AxesBitmap = null;
+            InvalidateCanvas();
+            InvalidateAxes();
+            InvalidateData();
+            InvalidateAnnotation();
             YMax = InitialYMax;
             YMin = InitialYMin;
             ScaleHeight = InitialScaleHeight;
         }
 
+        public void ClearData()
+        {
+            InvalidateData();
+            InvalidateCanvas();
+        }
+
+        public void ClearAnnotation()
+        {
+            InvalidateAnnotation();
+            InitAnnotationBitmap();
+            InvalidateCanvas();
+        }
+
         public void Draw()
         {
-            DrawAxes(Bitmap);
-            DrawPoints(Bitmap, new double[] { 100, 100, 300, 500, 700 }, new double[] { 0.1, 0.2, 0.4, 0.6, 0.8 });
+            DrawAxes(DataBitmap);
+            DrawPoints(DataBitmap, new double[] { 100, 100, 300, 500, 700 }, new double[] { 0.1, 0.2, 0.4, 0.6, 0.8 });
         }
 
         public PointF ScreenToData(Point p)
         {
             return new PointF(
-                XMin + (p.X - Axes.X)/Axes.Width * XMax,
-                YMax - (p.Y - Axes.Y)/Axes.Height * ScaleHeight
+                XMin + (p.X - Axes.X) / Axes.Width * XMax,
+                YMax - (p.Y - Axes.Y) / Axes.Height * ScaleHeight
                 );
         }
 
@@ -402,17 +480,21 @@ namespace LUI.controls
 
         protected override void OnPaint(PaintEventArgs pe)
         {
-            if (Bitmap == null) InitBitmap();
+            if (CanvasBitmap == null) InitCanvasBitmap();
+            if (DataBitmap == null) InitDataBitmap();
             if (AxesBitmap == null) InitAxesBitmap();
+            if (AnnotationBitmap == null) InitAnnotationBitmap();
             pe.Graphics.CompositingMode = CompositingMode.SourceOver;
             pe.Graphics.CompositingQuality = CompositingQuality.GammaCorrected;
-            using (Graphics G = Graphics.FromImage(AxesBitmap))
+            using (Graphics G = Graphics.FromImage(CanvasBitmap))
             {
-                G.DrawImage(Bitmap, new Point(0,0));
+                G.DrawImage(AxesBitmap, new Point(0, 0));
+                G.DrawImage(DataBitmap, new Point(0, 0));
+                G.DrawImage(AnnotationBitmap, new Point(0, 0));
             }
-            pe.Graphics.DrawImage(AxesBitmap, Bound);
+            pe.Graphics.DrawImage(CanvasBitmap, Bound);
         }
 
-        
+
     }
 }

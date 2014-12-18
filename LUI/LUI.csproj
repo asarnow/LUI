@@ -118,9 +118,16 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Config\Config.cs" />
-    <Compile Include="Config\GPIBDevice.cs" />
-    <Compile Include="Config\SerialDevice.cs" />
+    <Compile Include="Constants.cs" />
+    <Compile Include="controls\CalibrateControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="controls\CalibrateControl.Designer.cs">
+      <DependentUpon>CalibrateControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="config\Config.cs" />
+    <Compile Include="config\GPIBDevice.cs" />
+    <Compile Include="config\SerialDevice.cs" />
     <Compile Include="ParentForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -142,11 +149,11 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Settings.cs" />
-    <Compile Include="TROSControl.cs">
+    <Compile Include="controls\TROSControl.cs">
       <SubType>UserControl</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
-    <Compile Include="TROSControl.Designer.cs">
+    <Compile Include="controls\TROSControl.Designer.cs">
       <DependentUpon>TROSControl.cs</DependentUpon>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
@@ -159,18 +166,25 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="controls\CalibrateControl.resx">
+      <DependentUpon>CalibrateControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ParentForm.resx">
       <DependentUpon>ParentForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="OptionsForm.resx">
       <DependentUpon>OptionsForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="TROSControl.resx">
+    <EmbeddedResource Include="controls\TROSControl.resx">
       <DependentUpon>TROSControl.cs</DependentUpon>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CustomGraph\CustomGraph.csproj">
+      <Project>{c539c69e-8b11-43f7-b807-1c998bf6d779}</Project>
+      <Name>CustomGraph</Name>
+    </ProjectReference>
     <ProjectReference Include="..\lasercom\lasercom.csproj">
       <Project>{f77054ef-38f5-4303-9e65-aa033a17e215}</Project>
       <Name>lasercom</Name>

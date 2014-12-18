@@ -110,5 +110,27 @@ namespace lasercom
                 OD[i] = Math.Log10((double)(Ground[i]) / (double)(Trans[i]));
             return OD;
         }
+
+        double[] Gaussian(int n, double scale, double mean, double sigma)
+        {
+            double[] g = new double[n];
+            for (int i = 0; i < g.Length; i++)
+            {
+                double x = (double)i * 1024 / n;
+                g[i] = scale * Math.Exp(-Math.Pow(x - mean, 2) / (2 * Math.Pow(sigma, 2)));
+            }
+            return g;
+        }
+
+        int[] Guassian(int n, double scale, double mean, double sigma)
+        {
+            int[] g = new int[n];
+            for (int i = 0; i < g.Length; i++)
+            {
+                double x = (double)i * 1024 / n;
+                g[i] = (int)( scale * Math.Exp(-Math.Pow(x - mean, 2) / (2 * Math.Pow(sigma, 2))) );
+            }
+            return g;
+        }
     }
 }

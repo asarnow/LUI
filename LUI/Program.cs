@@ -8,9 +8,9 @@ using NDesk.Options;
 //#else
 //using ATMCD32CS;
 //#endif
-
+using lasercom;
+using lasercom.control;
 using LUI;
-using LUI.control;
 
 namespace LUI
 {
@@ -24,7 +24,7 @@ namespace LUI
             int N = 1;
             string mode = "ACCUM";
             bool show_help = false;
-            int temp = Constants.DefaultTemperature;
+            int temp = lasercom.Constants.DefaultTemperature;
             string fname = "data.csv";
             string dir = "";
             String flagPort = "COM1";
@@ -66,10 +66,10 @@ namespace LUI
             switch (mode.ToUpper())
             {
                 case "ACCUM":
-                    camera.ReadMode = Constants.ReadModeFVB;
-                    camera.AcquisitionMode = Constants.AcquisitionModeAccumulate;
+                    camera.ReadMode = lasercom.Constants.ReadModeFVB;
+                    camera.AcquisitionMode = lasercom.Constants.AcquisitionModeAccumulate;
                     camera.NumberAccumulations = N;
-                    camera.TriggerMode = Constants.TriggerModeExternalExposure;
+                    camera.TriggerMode = lasercom.Constants.TriggerModeExternalExposure;
                     beamflags.OpenFlash();
                     int[] data = camera.Acquire();
                     beamflags.CloseFlash();
@@ -91,10 +91,10 @@ namespace LUI
                     writer.Close();
                     break;
                 case "SPEC":
-                    camera.ReadMode = Constants.ReadModeFVB;
-                    camera.AcquisitionMode = Constants.AcquisitionModeAccumulate;
+                    camera.ReadMode = lasercom.Constants.ReadModeFVB;
+                    camera.AcquisitionMode = lasercom.Constants.AcquisitionModeAccumulate;
                     camera.NumberAccumulations = N;
-                    camera.TriggerMode = Constants.TriggerModeExternalExposure;
+                    camera.TriggerMode = lasercom.Constants.TriggerModeExternalExposure;
 
                     Console.WriteLine("Press any key to collect dark current");
                     Console.ReadKey(true);
