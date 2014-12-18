@@ -3,7 +3,7 @@
 //      implement this interface.
 //  </summary>
 
-namespace LUI
+namespace lasercom
 {
     public interface ICamera
     {        

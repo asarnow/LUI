@@ -5,7 +5,7 @@ using ATMCD64CS;
 using ATMCD32CS;
 #endif
 
-namespace LUI.camera
+namespace lasercom.camera
 {
     class DummyAndorCamera : AndorCamera
     {

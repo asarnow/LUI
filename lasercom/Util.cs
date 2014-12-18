@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using log4net;
 
-namespace LUI
+namespace lasercom
 {
     public class Util
     {

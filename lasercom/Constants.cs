@@ -4,7 +4,7 @@
 
 using System;
 
-namespace LUI
+namespace lasercom
 {
     public static class Constants
     {

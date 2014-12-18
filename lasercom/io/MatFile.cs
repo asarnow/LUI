@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using HDF5DotNet;
 
-namespace LUI.io
+namespace lasercom.io
 {
     public class MatFile:IDisposable
     {

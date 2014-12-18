@@ -14,7 +14,7 @@ using ATMCD32CS;
 //      Temperature controlled camera.
 //  </summary>
 
-namespace LUI
+namespace lasercom
 {
 
     public class CameraTempControlled:AndorCamera

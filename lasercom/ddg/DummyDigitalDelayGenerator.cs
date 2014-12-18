@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace LUI.ddg
+namespace lasercom.ddg
 {
     public class DummyDigitalDelayGenerator:IDigitalDelayGenerator
     {

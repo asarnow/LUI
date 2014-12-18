@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace LUI.control
+namespace lasercom.control
 {
     public class DummyBeamFlags:AbstractBeamFlags
     {

@@ -11,12 +11,12 @@ using ATMCD32CS;
 
 using log4net;
 using NationalInstruments.NI4882;
-using LUI.camera;
-using LUI.control;
-using LUI.ddg;
-using LUI.io;
+using lasercom.camera;
+using lasercom.control;
+using lasercom.ddg;
+using lasercom.io;
 
-namespace LUI
+namespace lasercom
 {
 
     public class Commander

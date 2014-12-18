@@ -7,7 +7,7 @@ using System.IO.Ports;
 //      class should be added for the beam flags classes to inherit from.
 //  </summary>
 
-namespace LUI.control
+namespace lasercom.control
 {
     public class BeamFlags:AbstractBeamFlags
     {
