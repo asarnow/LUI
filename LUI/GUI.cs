@@ -7,6 +7,8 @@ using NDesk.Options;
 
 using lasercom;
 using LUI;
+using lasercom.control;
+using lasercom.ddg;
 
 namespace LUI
 {

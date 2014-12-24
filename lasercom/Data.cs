@@ -111,7 +111,7 @@ namespace lasercom
             return OD;
         }
 
-        double[] Gaussian(int n, double scale, double mean, double sigma)
+        public static double[] Gaussian(int n, double scale, double mean, double sigma)
         {
             double[] g = new double[n];
             for (int i = 0; i < g.Length; i++)
@@ -122,7 +122,7 @@ namespace lasercom
             return g;
         }
 
-        int[] Guassian(int n, double scale, double mean, double sigma)
+        public static int[] Guassian(int n, double scale, double mean, double sigma)
         {
             int[] g = new int[n];
             for (int i = 0; i < g.Length; i++)

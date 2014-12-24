@@ -1,8 +1,8 @@
-﻿using LUI;
-using LUI.camera;
-using LUI.control;
-using LUI.ddg;
-using LUI.io;
+﻿using lasercom;
+using lasercom.camera;
+using lasercom.control;
+using lasercom.ddg;
+using lasercom.io;
 using System;
 using System.Collections.Generic;
 using System.Linq;
