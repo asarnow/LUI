@@ -96,6 +96,7 @@ namespace LUI.controls
         }
 
         public Color MarkerColor { get; set; }
+        const string MARKERDEFAULT = "*";
         private string _Marker;
         public string Marker
         {
@@ -111,7 +112,20 @@ namespace LUI.controls
             }
         }
 
-        const string MARKERDEFAULT = "*";
+        //IEnumerator<Color> COLORORDERDEFAULT = (new LinkedList<Color>(new List<Color>() { Color.Blue, Color.Green, Color.Red, Color.Magenta })).GetEnumerator();
+        List<Color> COLORORDERDEFAULT = new List<Color>() { Color.Blue, Color.Green, Color.Red, Color.Magenta };
+        private List<Color> _ColorOrder;
+        public List<Color> ColorOrder
+        {
+            get
+            {
+                return _ColorOrder;
+            }
+            set
+            {
+                _ColorOrder = value;
+            }
+        }
 
         public enum Annotation
         {
@@ -131,6 +145,8 @@ namespace LUI.controls
             Marker = MARKERDEFAULT;
             MarkerColor = Color.Blue;
             MarkerFont = Font;
+
+            ColorOrder = COLORORDERDEFAULT;
 
             XAxisHeight = XAXISHEIGHTDEFAULT;
             YAxisWidth = YAXISWIDTHDEFAULT;
@@ -310,7 +326,7 @@ namespace LUI.controls
             switch (A)
             {
                 case Annotation.VERTLINE:
-                    DrawVerticalLine(AnnotationBitmap, (Color)args[0], (float)args[1]);
+                    DrawVerticalLine(AnnotationBitmap, (Color)args[0], Convert.ToSingle(args[1]));
                     break;
             }
         }

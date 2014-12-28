@@ -7,9 +7,10 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Windows.Threading;
+using System.Runtime.CompilerServices;
 using lasercom;
 
-namespace LUI
+namespace LUI.controls
 {
     public partial class CalibrateControl : UserControl
     {
@@ -18,6 +19,69 @@ namespace LUI
         private BackgroundWorker ioWorker;
         private Dispatcher Dispatcher;
         bool wait;
+
+        int selectedChannel;
+
+        public class CalibrationPoint : INotifyPropertyChanged
+        {
+            private int _Channel;
+            public int Channel
+            {
+                get
+                {
+                    return _Channel;
+                }
+                set
+                {
+                    if (value != _Channel)
+                    {
+                        _Channel = value;
+                        NotifyPropertyChanged();
+                    }
+                }
+            }
+            private double _Wavelength;
+            public double Wavelength
+            {
+                get
+                {
+                    return _Wavelength;
+                }
+                set
+                {
+                    if (value != _Wavelength)
+                    {
+                        _Wavelength = value;
+                        NotifyPropertyChanged();
+                    }
+                }
+            }
+            public event PropertyChangedEventHandler PropertyChanged;
+            private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
+            {
+                if (PropertyChanged != null)
+                {
+                    PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+                }
+            }
+
+            public static explicit operator CalibrationPoint(DataRow dr)
+            {
+                CalibrationPoint p = new CalibrationPoint();
+                p.Channel = (int)dr.ItemArray[0];
+                p.Wavelength = (double)dr.ItemArray[1];
+                return p;
+            }
+            public static explicit operator CalibrationPoint(DataGridViewRow row)
+            {
+                return new CalibrationPoint()
+                {
+                    Channel = (int)row.Cells["Channel"].Value,
+                    Wavelength = (double)row.Cells["Channel"].Value
+                };
+            }
+        }
+        BindingList<CalibrationPoint> CalibrationList = new BindingList<CalibrationPoint>();
 
         public enum Dialog
         {
@@ -30,6 +94,11 @@ namespace LUI
             InitializeComponent();
             Commander = commander;
             Graph.MouseClick += new MouseEventHandler(Graph_Click);
+
+            CalibrationList.AllowEdit = true;
+            CalibrationListView.DefaultValuesNeeded += CalibrationListView_DefaultValuesNeeded;
+            CalibrationListView.EditingControlShowing += CalibrationListView_EditingControlShowing;
+            CalibrationListView.DataSource = new BindingSource(CalibrationList, null);
         }
 
         #region dialogs
@@ -210,14 +279,39 @@ namespace LUI
         private void Graph_Click(object sender, MouseEventArgs e)
         {
             PointF p = Graph.ScreenToData(new Point(e.X, e.Y));
-            //textBox1.Text = e.X.ToString("d") + ", " + e.Y.ToString("d");
-            //textBox2.Text = p.X.ToString("n2") + ", " + p.Y.ToString("n4");
-            //if (!persistentLine.Checked)
-            //{
-            //    Graph.ClearAnnotation();
-            //}
-            //Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.MarkerColor, p.X);
-            //Graph.Invalidate();
+            selectedChannel = (int)Math.Round(p.X);
+            DataGridViewSelectedRowCollection selection = CalibrationListView.SelectedRows;
+            if (selection.Count == 0)
+            {
+                DataGridViewRow row = CalibrationListView.Rows[CalibrationListView.Rows.Count - 1];
+                row.Cells["Channel"].Value = selectedChannel;
+            }
+            else if (selection.Count == 1)
+            {
+                selection[0].Cells["Channel"].Value = selectedChannel;
+            }
+            else
+            {
+                CalibrationListView.ClearSelection();
+            }
+            RedrawLines();
+        }
+
+        private void RedrawLines()
+        {
+            Graph.ClearAnnotation();
+            int i;
+            for (i=0; i<CalibrationList.Count; i++)
+            {
+                CalibrationPoint p = CalibrationList[i];
+                Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[i % Graph.ColorOrder.Count], p.Channel);
+            }
+            int newRowChannel = (int)(CalibrationListView.Rows[CalibrationListView.NewRowIndex].Cells["Channel"].Value ?? 0);
+            if (CalibrationListView.Rows.Count > CalibrationList.Count && newRowChannel != 0)
+            {
+                Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[i % Graph.ColorOrder.Count], newRowChannel);
+            }
+            Graph.Invalidate();
         }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
@@ -225,13 +319,76 @@ namespace LUI
             switch (keyData)
             {
                 case Keys.Left:
+                    if (!CalibrationListView.IsCurrentCellInEditMode && CalibrationListView.SelectedRows.Count == 1)
+                    {
+                        selectedChannel = (int)Math.Max(Graph.XMin, (int)CalibrationListView.SelectedRows[0].Cells["Channel"].Value - 1);
+                        CalibrationListView.SelectedRows[0].Cells["Channel"].Value = selectedChannel;
+                    }
+                    RedrawLines();
                     break;
                 case Keys.Right:
+                    if (!CalibrationListView.IsCurrentCellInEditMode && CalibrationListView.SelectedRows.Count == 1)
+                    {
+                        selectedChannel = (int)Math.Min(Graph.XMax, (int)CalibrationListView.SelectedRows[0].Cells["Channel"].Value + 1);
+                        CalibrationListView.SelectedRows[0].Cells["Channel"].Value = selectedChannel;
+                    }
+                    RedrawLines();
                     break;
                 case Keys.Enter:
+                    //TODO add calibration point
                     break;
             }
             return base.ProcessCmdKey(ref msg, keyData);
         }
+
+        void CalibrationListView_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
+        {
+            if (this.CalibrationListView.CurrentCell.ColumnIndex == 1)
+            {
+                if (e.Control is TextBox)
+                {
+                    TextBox tb = e.Control as TextBox;
+                    tb.KeyPress -= new KeyPressEventHandler(TBKeyPress);
+                    tb.KeyPress += new KeyPressEventHandler(TBKeyPress);
+                }
+            }
+        }
+
+        void TBKeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!(char.IsDigit(e.KeyChar)))
+            {
+                Keys key = (Keys)e.KeyChar;
+
+                if (!(key == Keys.Back || key == Keys.Delete))
+                {
+                    e.Handled = true;
+                }
+            }
+        }
+
+        private void CalibrationListView_DefaultValuesNeeded(object sender,
+    System.Windows.Forms.DataGridViewRowEventArgs e)
+        {
+            if (e.Row.Cells["Channel"].Value != null)
+            {
+                e.Row.Cells["Channel"].Value = selectedChannel;
+            }
+            else
+            {
+                e.Row.Cells["Channel"].Value = 0;
+            }
+                
+        }
+
+        private void RemoveCalItem_Click(object sender, EventArgs e)
+        {
+            foreach (DataGridViewRow row in CalibrationListView.SelectedRows)
+            {
+                if (!row.IsNewRow) CalibrationListView.Rows.Remove(row);
+            }
+            RedrawLines();
+        }
+
     }
 }
