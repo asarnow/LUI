@@ -25,6 +25,9 @@ namespace LUI
 
             CalibrateControl CalibrateControl = new CalibrateControl(Commander);
             CalibrationPage.Controls.Add(CalibrateControl);
+
+            AlignControl AlignControl = new AlignControl(Commander);
+            AlignPage.Controls.Add(AlignControl);
         }
 
         private static void MakeEmebeddable(Form Form)

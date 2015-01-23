@@ -133,6 +133,12 @@
     <Compile Include="config\Config.cs" />
     <Compile Include="config\GPIBDevice.cs" />
     <Compile Include="config\SerialDevice.cs" />
+    <Compile Include="controls\AlignControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="controls\AlignControl.Designer.cs">
+      <DependentUpon>AlignControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="ParentForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -173,6 +179,9 @@
   <ItemGroup>
     <EmbeddedResource Include="controls\CalibrateControl.resx">
       <DependentUpon>CalibrateControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\AlignControl.resx">
+      <DependentUpon>AlignControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ParentForm.resx">
       <DependentUpon>ParentForm.cs</DependentUpon>
