@@ -132,5 +132,51 @@ namespace lasercom
             }
             return g;
         }
+
+        public static double[] Calibrate(List<Tuple<int,double>> calpts, int n)
+        {
+            double[] x = calpts.Select(it => (double)it.Item1).ToArray();
+            double[] y = calpts.Select(it => it.Item2).ToArray();
+            Tuple<double, double, double> line = LinearLeastSquares(x, y);
+            double[] cal = new double[n];
+            for (int i = 0; i < n; i++)
+            {
+                cal[i] = line.Item1 * i + line.Item2;
+            }
+            return cal;
+        }
+
+        public static Tuple<double,double,double> LinearLeastSquares(double[] x, double[] y)
+        {
+            double n = x.Length;
+            double xysum = 0;
+            double xsum = 0;
+            double xsqsum = 0;
+            double ysum = 0;
+            double ysqsum = 0;
+            for (int i = 0; i < x.Length; i++)
+            {
+                xysum += x[i] * y[i];
+                xsum += x[i];
+                xsqsum += Math.Pow(x[i], 2);
+                ysum += y[i];
+                ysqsum += Math.Pow(y[i], 2);
+            }
+            double xyhat = xysum / n;
+            double xhat = xsum / n;
+            double yhat = ysum / n;
+            double xsqhat = xsqsum / n;
+            double ysqhat = ysqsum / n;
+
+            double cov = xyhat - xhat * yhat;
+            double xvar = xsqhat - Math.Pow(xhat, 2);
+            double yvar = ysqhat - Math.Pow(yhat, 2);
+
+            double slope = cov / xvar;
+            double yint = yhat - slope * xhat;
+            double rsq = Math.Pow( cov / Math.Sqrt(xvar * yvar), 2);
+
+            return Tuple.Create<double,double,double>(slope, yint, rsq);
+        }
     }
 }

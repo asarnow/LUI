@@ -15,18 +15,37 @@ namespace LUI
     {
         Commander Commander;
 
+        public enum State { IDLE, TROS, CALIBRATE, ALIGN, POWER, RESIDUALS }
+
+        TROSControl TROSControl;
+        CalibrateControl CalibrateControl;
+        AlignControl AlignControl;
+
+        public State TaskBusy
+        {
+            get
+            {
+                if (AlignControl.IsBusy) return State.ALIGN;
+                //if (ResidualsControl.IsBusy) return State.RESIDUALS;
+                if (CalibrateControl.IsBusy) return State.CALIBRATE;
+                //if (TROSControl.IsBusy) return State.TROS;
+                //if (PowerControl.IsBusy) return State.POWER;
+                else return State.IDLE;
+            }
+        }
+
         public ParentForm(Commander commander)
         {
             InitializeComponent();
             Commander = commander;
 
-            TROSControl TROSControl = new TROSControl(Commander);
+            TROSControl = new TROSControl(Commander);
             TROSPage.Controls.Add(TROSControl);
 
-            CalibrateControl CalibrateControl = new CalibrateControl(Commander);
+            CalibrateControl = new CalibrateControl(Commander);
             CalibrationPage.Controls.Add(CalibrateControl);
 
-            AlignControl AlignControl = new AlignControl(Commander);
+            AlignControl = new AlignControl(Commander);
             AlignPage.Controls.Add(AlignControl);
         }
 

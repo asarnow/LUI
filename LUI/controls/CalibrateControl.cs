@@ -12,13 +12,10 @@ using lasercom;
 
 namespace LUI.controls
 {
-    public partial class CalibrateControl : UserControl
+    public partial class CalibrateControl : LUIControl
     {
-        public Commander Commander { get; set; }
-        private BackgroundWorker worker;
         private BackgroundWorker ioWorker;
         private Dispatcher Dispatcher;
-        bool wait;
 
         int selectedChannel;
 
@@ -80,6 +77,10 @@ namespace LUI.controls
                     Wavelength = (double)row.Cells["Channel"].Value
                 };
             }
+            public static explicit operator Tuple<int,double>(CalibrationPoint p)
+            {
+                return Tuple.Create<int, double>(p.Channel, p.Wavelength);
+            }
         }
         BindingList<CalibrationPoint> CalibrationList = new BindingList<CalibrationPoint>();
 
@@ -101,35 +102,7 @@ namespace LUI.controls
             CalibrationListView.DataSource = new BindingSource(CalibrationList, null);
         }
 
-        #region dialogs
-
-        private void BlockingBlankDialog()
-        {
-            DialogResult result = MessageBox.Show("Please insert blank",
-                "Blank",
-                MessageBoxButtons.OKCancel);
-            if (result == DialogResult.Cancel)
-            {
-                worker.CancelAsync();
-            }
-            wait = false;
-        }
-
-        private void BlockingSampleDialog()
-        {
-            DialogResult result = MessageBox.Show("Please insert sample",
-                    "Continue",
-                    MessageBoxButtons.OKCancel);
-            if (result == DialogResult.Cancel)
-            {
-                worker.CancelAsync();
-            }
-            wait = false;
-        }
-
-        #endregion
-
-        public void AbsorbanceSpectrumWork(object sender, DoWorkEventArgs e)
+        public void CalibrateWork(object sender, DoWorkEventArgs e)
         {
             Commander.Camera.AcquisitionMode = AndorCamera.AcquisitionModeSingle;
             Commander.Camera.TriggerMode = AndorCamera.TriggerModeExternalExposure;
@@ -210,14 +183,14 @@ namespace LUI.controls
             Collect.Enabled = false;
             int N = (int)Averages.Value;
             worker = new BackgroundWorker();
-            worker.DoWork += new System.ComponentModel.DoWorkEventHandler(AbsorbanceSpectrumWork);
-            worker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(AbsorbanceSpectrumProgress);
+            worker.DoWork += new System.ComponentModel.DoWorkEventHandler(CalibrateWork);
+            worker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(CalibrateProgress);
             worker.WorkerSupportsCancellation = true;
             worker.WorkerReportsProgress = true;
             worker.RunWorkerAsync(N);
         }
 
-        public void AbsorbanceSpectrumProgress(object sender, ProgressChangedEventArgs e)
+        public void CalibrateProgress(object sender, ProgressChangedEventArgs e)
         {
             Dialog operation = (Dialog)Enum.Parse(typeof(Dialog), (string)e.UserState);
             switch (operation)
@@ -253,7 +226,7 @@ namespace LUI.controls
             }
         }
 
-        public void AbsorbanceSpectrumComplete(object sender, RunWorkerCompletedEventArgs e)
+        public void CalibrateComplete(object sender, RunWorkerCompletedEventArgs e)
         {
             if (!e.Cancelled)
             {

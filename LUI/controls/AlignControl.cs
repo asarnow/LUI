@@ -12,13 +12,10 @@ using lasercom;
 
 namespace LUI.controls
 {
-    public partial class AlignControl : UserControl
+    public partial class AlignControl : LUIControl
     {
-        public Commander Commander { get; set; }
-        private BackgroundWorker worker;
         private BackgroundWorker ioWorker;
-        private Dispatcher Dispatcher;
-        bool wait;
+        private Dispatcher Dispatcher;        
 
         int selectedChannel = -1;
 
@@ -35,35 +32,7 @@ namespace LUI.controls
             Graph.MouseClick += new MouseEventHandler(Graph_Click);
         }
 
-        #region dialogs
-
-        private void BlockingBlankDialog()
-        {
-            DialogResult result = MessageBox.Show("Please insert blank",
-                "Blank",
-                MessageBoxButtons.OKCancel);
-            if (result == DialogResult.Cancel)
-            {
-                worker.CancelAsync();
-            }
-            wait = false;
-        }
-
-        private void BlockingSampleDialog()
-        {
-            DialogResult result = MessageBox.Show("Please insert sample",
-                    "Continue",
-                    MessageBoxButtons.OKCancel);
-            if (result == DialogResult.Cancel)
-            {
-                worker.CancelAsync();
-            }
-            wait = false;
-        }
-
-        #endregion
-
-        public void AbsorbanceSpectrumWork(object sender, DoWorkEventArgs e)
+        public void AlignmentWork(object sender, DoWorkEventArgs e)
         {
             Commander.Camera.AcquisitionMode = AndorCamera.AcquisitionModeSingle;
             Commander.Camera.TriggerMode = AndorCamera.TriggerModeExternalExposure;
@@ -144,14 +113,14 @@ namespace LUI.controls
             Collect.Enabled = false;
             int N = (int)Averages.Value;
             worker = new BackgroundWorker();
-            worker.DoWork += new System.ComponentModel.DoWorkEventHandler(AbsorbanceSpectrumWork);
-            worker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(AbsorbanceSpectrumProgress);
+            worker.DoWork += new System.ComponentModel.DoWorkEventHandler(AlignmentWork);
+            worker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(AlignmentProgress);
             worker.WorkerSupportsCancellation = true;
             worker.WorkerReportsProgress = true;
             worker.RunWorkerAsync(N);
         }
 
-        public void AbsorbanceSpectrumProgress(object sender, ProgressChangedEventArgs e)
+        public void AlignmentProgress(object sender, ProgressChangedEventArgs e)
         {
             Dialog operation = (Dialog)Enum.Parse(typeof(Dialog), (string)e.UserState);
             switch (operation)
@@ -187,7 +156,7 @@ namespace LUI.controls
             }
         }
 
-        public void AbsorbanceSpectrumComplete(object sender, RunWorkerCompletedEventArgs e)
+        public void AlignmentComplete(object sender, RunWorkerCompletedEventArgs e)
         {
             if (!e.Cancelled)
             {
