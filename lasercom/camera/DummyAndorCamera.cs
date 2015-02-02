@@ -122,7 +122,7 @@ namespace lasercom.camera
         }
 
         private uint _Height;
-        public uint Height
+        public override uint Height
         {
             get
             {
@@ -131,7 +131,7 @@ namespace lasercom.camera
         }
 
         private uint _Width;
-        public uint Width
+        public override uint Width
         {
             get
             {
@@ -154,7 +154,7 @@ namespace lasercom.camera
             }
         }
 
-        public DummyAndorCamera()
+        public DummyAndorCamera() : base(null)
         {
             _Width = 1024;
             _Height = 256;

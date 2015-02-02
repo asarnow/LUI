@@ -45,6 +45,9 @@
             this.CloseLaser = new System.Windows.Forms.Button();
             this.OpenLaser = new System.Windows.Forms.Button();
             this.CalPanel = new System.Windows.Forms.Panel();
+            this.RSquaredLabel = new System.Windows.Forms.RichTextBox();
+            this.InterceptLabel = new System.Windows.Forms.Label();
+            this.SlopeLabel = new System.Windows.Forms.Label();
             this.SaveCal = new System.Windows.Forms.Button();
             this.Slope = new System.Windows.Forms.TextBox();
             this.Intercept = new System.Windows.Forms.TextBox();
@@ -55,9 +58,6 @@
             this.Wavelength = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.RemoveCalItem = new System.Windows.Forms.Button();
             this.Graph = new LUI.controls.GraphControl();
-            this.RSquaredLabel = new System.Windows.Forms.Label();
-            this.SlopeLabel = new System.Windows.Forms.Label();
-            this.InterceptLabel = new System.Windows.Forms.Label();
             this.TableLayout.SuspendLayout();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
@@ -261,9 +261,9 @@
             // CalPanel
             // 
             this.TableLayout.SetColumnSpan(this.CalPanel, 3);
+            this.CalPanel.Controls.Add(this.RSquaredLabel);
             this.CalPanel.Controls.Add(this.InterceptLabel);
             this.CalPanel.Controls.Add(this.SlopeLabel);
-            this.CalPanel.Controls.Add(this.RSquaredLabel);
             this.CalPanel.Controls.Add(this.SaveCal);
             this.CalPanel.Controls.Add(this.Slope);
             this.CalPanel.Controls.Add(this.Intercept);
@@ -276,6 +276,37 @@
             this.CalPanel.Name = "CalPanel";
             this.CalPanel.Size = new System.Drawing.Size(1099, 258);
             this.CalPanel.TabIndex = 7;
+            // 
+            // RSquaredLabel
+            // 
+            this.RSquaredLabel.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.RSquaredLabel.Location = new System.Drawing.Point(877, 40);
+            this.RSquaredLabel.Multiline = false;
+            this.RSquaredLabel.Name = "RSquaredLabel";
+            this.RSquaredLabel.ReadOnly = true;
+            this.RSquaredLabel.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
+            this.RSquaredLabel.ShortcutsEnabled = false;
+            this.RSquaredLabel.Size = new System.Drawing.Size(44, 23);
+            this.RSquaredLabel.TabIndex = 16;
+            this.RSquaredLabel.Text = "R2";
+            // 
+            // InterceptLabel
+            // 
+            this.InterceptLabel.AutoSize = true;
+            this.InterceptLabel.Location = new System.Drawing.Point(874, 99);
+            this.InterceptLabel.Name = "InterceptLabel";
+            this.InterceptLabel.Size = new System.Drawing.Size(63, 17);
+            this.InterceptLabel.TabIndex = 15;
+            this.InterceptLabel.Text = "Intercept";
+            // 
+            // SlopeLabel
+            // 
+            this.SlopeLabel.AutoSize = true;
+            this.SlopeLabel.Location = new System.Drawing.Point(874, 71);
+            this.SlopeLabel.Name = "SlopeLabel";
+            this.SlopeLabel.Size = new System.Drawing.Size(44, 17);
+            this.SlopeLabel.TabIndex = 14;
+            this.SlopeLabel.Text = "Slope";
             // 
             // SaveCal
             // 
@@ -398,33 +429,6 @@
             this.Graph.YMax = float.NegativeInfinity;
             this.Graph.YMin = float.PositiveInfinity;
             // 
-            // RSquaredLabel
-            // 
-            this.RSquaredLabel.AutoSize = true;
-            this.RSquaredLabel.Location = new System.Drawing.Point(878, 45);
-            this.RSquaredLabel.Name = "RSquaredLabel";
-            this.RSquaredLabel.Size = new System.Drawing.Size(33, 17);
-            this.RSquaredLabel.TabIndex = 13;
-            this.RSquaredLabel.Text = "R^2";
-            // 
-            // SlopeLabel
-            // 
-            this.SlopeLabel.AutoSize = true;
-            this.SlopeLabel.Location = new System.Drawing.Point(877, 71);
-            this.SlopeLabel.Name = "SlopeLabel";
-            this.SlopeLabel.Size = new System.Drawing.Size(44, 17);
-            this.SlopeLabel.TabIndex = 14;
-            this.SlopeLabel.Text = "Slope";
-            // 
-            // InterceptLabel
-            // 
-            this.InterceptLabel.AutoSize = true;
-            this.InterceptLabel.Location = new System.Drawing.Point(878, 99);
-            this.InterceptLabel.Name = "InterceptLabel";
-            this.InterceptLabel.Size = new System.Drawing.Size(63, 17);
-            this.InterceptLabel.TabIndex = 15;
-            this.InterceptLabel.Text = "Intercept";
-            // 
             // CalibrateControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -477,6 +481,6 @@
         private System.Windows.Forms.TextBox Intercept;
         private System.Windows.Forms.Label InterceptLabel;
         private System.Windows.Forms.Label SlopeLabel;
-        private System.Windows.Forms.Label RSquaredLabel;
+        private System.Windows.Forms.RichTextBox RSquaredLabel;
     }
 }

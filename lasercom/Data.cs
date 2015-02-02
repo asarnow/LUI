@@ -135,8 +135,12 @@ namespace lasercom
 
         public static double[] Calibrate(double[] channel, double slope, double intercept)
         {
-            int n = channel.Length;
-            return Calibrate(n, slope, intercept);
+            double[] cal = new double[channel.Length];
+            for (int i = 0; i < channel.Length; i++)
+            {
+                cal[i] = slope * channel[i] + intercept;
+            }
+            return cal;
         }
 
         public static double[] Calibrate(int n, double slope, double intercept)
@@ -144,7 +148,7 @@ namespace lasercom
             double[] cal = new double[n];
             for (int i = 0; i < n; i++)
             {
-                cal[i] = slope * i + intercept;
+                cal[i] = slope * (i+1) + intercept;
             }
             return cal;
         }

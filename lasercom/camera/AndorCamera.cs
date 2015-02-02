@@ -166,7 +166,7 @@ namespace lasercom
         }
 
         private uint _Height;
-        public uint Height
+        virtual public uint Height
         {
             get
             {
@@ -175,7 +175,7 @@ namespace lasercom
         }
 
         private uint _Width;
-        public uint Width
+        virtual public uint Width
         { 
             get
             {
@@ -202,28 +202,31 @@ namespace lasercom
         
         public AndorCamera(String dir)
         {
-            InitVal = AndorSdk.Initialize(dir);
-            AndorSdk.GetCapabilities(ref Capabilities);
-            AndorSdk.FreeInternalMemory();
+            if (dir != null)
+            {
+                InitVal = AndorSdk.Initialize(dir);
+                AndorSdk.GetCapabilities(ref Capabilities);
+                AndorSdk.FreeInternalMemory();
 
-            int width = 0, height = 0;
-            AndorSdk.GetDetector(ref width, ref height);
-            _Width = (uint)width;
-            _Height = (uint)height;
+                int width = 0, height = 0;
+                AndorSdk.GetDetector(ref width, ref height);
+                _Width = (uint)width;
+                _Height = (uint)height;
 
-            Image = new ImageArea(1, 1, 1, (int)Width, 1, (int)Height);
+                Image = new ImageArea(1, 1, 1, (int)Width, 1, (int)Height);
 
-            GateMode = Constants.GatingModeSMBOnly;
-            MCPGating = Constants.MCPGatingOn;
+                GateMode = Constants.GatingModeSMBOnly;
+                MCPGating = Constants.MCPGatingOn;
 
-            //TriggerInvert = Constants.TriggerInvertRising;
-            //TriggerLevel = Constants.DefaultTriggerLevel; // TTL signal is 4.0V
-            MCPGain = Constants.DefaultMCPGain;
+                //TriggerInvert = Constants.TriggerInvertRising;
+                //TriggerLevel = Constants.DefaultTriggerLevel; // TTL signal is 4.0V
+                MCPGain = Constants.DefaultMCPGain;
+            }
         }
 
         public virtual void Close()
         {
-            AndorSdk.ShutDown();
+            if (AndorSdk != null) AndorSdk.ShutDown();
         }
 
         public virtual int[] FullResolutionImage()

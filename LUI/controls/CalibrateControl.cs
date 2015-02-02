@@ -102,6 +102,11 @@ namespace LUI.controls
             CalibrationListView.DefaultValuesNeeded += CalibrationListView_DefaultValuesNeeded;
             CalibrationListView.EditingControlShowing += CalibrationListView_EditingControlShowing;
             CalibrationListView.DataSource = new BindingSource(CalibrationList, null);
+
+            RSquaredLabel.SelectionStart = 1;
+            RSquaredLabel.SelectionLength = 1;
+            RSquaredLabel.SelectionCharOffset = 5;
+            RSquaredLabel.SelectionLength = 0;
         }
 
         public void CalibrateWork(object sender, DoWorkEventArgs e)
@@ -371,9 +376,9 @@ namespace LUI.controls
                 CalibrationList.Select(it => (double)it.Wavelength).ToArray());
             Commander.Calibration = Data.Calibrate((int)Commander.Camera.Width, fitdata.Item2, fitdata.Item3);
 
-            Slope.Text = fitdata.Item1.ToString();
-            Intercept.Text = fitdata.Item2.ToString();
-            RSquared.Text = fitdata.Item3.ToString();
+            Slope.Text = fitdata.Item1.ToString("n4");
+            Intercept.Text = fitdata.Item2.ToString("n4");
+            RSquared.Text = fitdata.Item3.ToString("n6");
         }
 
         private void SaveCal_Click(object sender, EventArgs e)
