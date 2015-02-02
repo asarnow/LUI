@@ -133,15 +133,18 @@ namespace lasercom
             return g;
         }
 
-        public static double[] Calibrate(List<Tuple<int,double>> calpts, int n)
+        public static double[] Calibrate(double[] channel, double slope, double intercept)
         {
-            double[] x = calpts.Select(it => (double)it.Item1).ToArray();
-            double[] y = calpts.Select(it => it.Item2).ToArray();
-            Tuple<double, double, double> line = LinearLeastSquares(x, y);
+            int n = channel.Length;
+            return Calibrate(n, slope, intercept);
+        }
+
+        public static double[] Calibrate(int n, double slope, double intercept)
+        {
             double[] cal = new double[n];
             for (int i = 0; i < n; i++)
             {
-                cal[i] = line.Item1 * i + line.Item2;
+                cal[i] = slope * i + intercept;
             }
             return cal;
         }

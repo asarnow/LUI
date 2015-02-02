@@ -26,7 +26,7 @@ namespace lasercom
         public IDigitalDelayGenerator DDG { get; set; }
         public AbstractPump Pump { get; set; }
         public List<Double> Delays { get; set; }
-        public int[] Calibration { get; set; }
+        public double[] Calibration { get; set; }
 
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 

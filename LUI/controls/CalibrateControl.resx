@@ -137,10 +137,4 @@
         AAAAAAAAAE8AAQAB+f////v///8KAAAAAAAAAACNAAEAAfj////7////CgAAAAAAAAAAawABAAs=
 </value>
   </data>
-  <metadata name="Channel.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="Wavelength.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
 </root>

@@ -9,6 +9,8 @@ using System.Windows.Forms;
 using System.Windows.Threading;
 using System.Runtime.CompilerServices;
 using lasercom;
+using System.IO;
+using CsvHelper;
 
 namespace LUI.controls
 {
@@ -361,6 +363,49 @@ namespace LUI.controls
                 if (!row.IsNewRow) CalibrationListView.Rows.Remove(row);
             }
             RedrawLines();
+        }
+
+        private void RunCal_Click(object sender, EventArgs e)
+        {
+            Tuple<double, double, double> fitdata = Data.LinearLeastSquares(CalibrationList.Select(it => (double)it.Channel).ToArray(),
+                CalibrationList.Select(it => (double)it.Wavelength).ToArray());
+            Commander.Calibration = Data.Calibrate((int)Commander.Camera.Width, fitdata.Item2, fitdata.Item3);
+
+            Slope.Text = fitdata.Item1.ToString();
+            Intercept.Text = fitdata.Item2.ToString();
+            RSquared.Text = fitdata.Item3.ToString();
+        }
+
+        private void SaveCal_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveFile = new SaveFileDialog();
+            saveFile.Filter = "CAL File|*.cal|MAT File|*.mat|Text File|*.txt";
+            saveFile.Title = "Save Calibration Date";
+            saveFile.ShowDialog();
+
+            if (saveFile.FileName == "") return;
+
+            switch (saveFile.FilterIndex)
+            {
+                case 1:
+                    // CAL
+                    try {
+                        TextWriter writer = new StreamWriter(saveFile.FileName);
+                        CsvWriter csv = new CsvWriter(writer);
+                        csv.WriteRecords(Commander.Calibration);
+                        writer.Close();
+                    } catch (IOException ex)
+                    {
+                        MessageBox.Show(ex.ToString());
+                    }
+                    break;
+                case 2:
+                    // MAT
+                    break;
+                case 3:
+                    // TXT
+                    break;
+            }
         }
 
     }
