@@ -157,6 +157,9 @@
     <Compile Include="controls\AlignControl.Designer.cs">
       <DependentUpon>AlignControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="controls\DisabledRichTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="controls\LUIControl.cs">
       <SubType>UserControl</SubType>
     </Compile>

@@ -103,9 +103,11 @@ namespace LUI.controls
             CalibrationListView.EditingControlShowing += CalibrationListView_EditingControlShowing;
             CalibrationListView.DataSource = new BindingSource(CalibrationList, null);
 
+            // Superscript the "2" in "R2"
             RSquaredLabel.SelectionStart = 1;
             RSquaredLabel.SelectionLength = 1;
             RSquaredLabel.SelectionCharOffset = 5;
+            RSquaredLabel.SelectionFont = new Font("Microsoft Sans Serif", 6, FontStyle.Regular);
             RSquaredLabel.SelectionLength = 0;
         }
 
@@ -374,7 +376,7 @@ namespace LUI.controls
         {
             Tuple<double, double, double> fitdata = Data.LinearLeastSquares(CalibrationList.Select(it => (double)it.Channel).ToArray(),
                 CalibrationList.Select(it => (double)it.Wavelength).ToArray());
-            Commander.Calibration = Data.Calibrate((int)Commander.Camera.Width, fitdata.Item2, fitdata.Item3);
+            Commander.Calibration = Data.Calibrate((int)Commander.Camera.Width, fitdata.Item1, fitdata.Item2);
 
             Slope.Text = fitdata.Item1.ToString("n4");
             Intercept.Text = fitdata.Item2.ToString("n4");
@@ -384,7 +386,7 @@ namespace LUI.controls
         private void SaveCal_Click(object sender, EventArgs e)
         {
             SaveFileDialog saveFile = new SaveFileDialog();
-            saveFile.Filter = "CAL File|*.cal|MAT File|*.mat|Text File|*.txt";
+            saveFile.Filter = "CAL File|*.cal|MAT File|*.mat|Text File|*.txt|All Files|*.*";
             saveFile.Title = "Save Calibration Date";
             saveFile.ShowDialog();
 

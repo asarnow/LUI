@@ -419,7 +419,8 @@ namespace LUI.controls
 
         void InvalidateCanvas()
         {
-            CanvasBitmap.Dispose();
+            // The null check permits selection to be updated quickly
+            if (CanvasBitmap != null) CanvasBitmap.Dispose();
             CanvasBitmap = null;
         }
 

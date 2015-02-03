@@ -15,9 +15,23 @@ namespace LUI.controls
     public partial class AlignControl : LUIControl
     {
         private BackgroundWorker ioWorker;
-        private Dispatcher Dispatcher;        
+        private Dispatcher Dispatcher;
 
-        int selectedChannel = -1;
+        private double[] Light = null;
+
+        int _SelectedChannel = -1;
+        int SelectedChannel
+        {
+            get
+            {
+                return _SelectedChannel;
+            }
+            set
+            {
+                _SelectedChannel = value;
+                if (Light != null) CountsDisplay.Text = Light[_SelectedChannel].ToString("n");
+            }
+        }
 
         public enum Dialog
         {
@@ -105,7 +119,9 @@ namespace LUI.controls
                 worker.ReportProgress(66 + (i / N) * 33, Dialog.PROGRESS_DATA.ToString());
             }
             worker.ReportProgress(99, Dialog.PROGRESS_CALC.ToString());
-            e.Result = Data.OpticalDensity(DataBuffer, BlankBuffer, DarkBuffer);
+            Data.Dissipate(DataBuffer, DarkBuffer);
+            worker.ReportProgress(100, Dialog.PROGRESS_CALC.ToString());
+            e.Result = DataBuffer;
         }
 
         private void Collect_Click(object sender, EventArgs e)
@@ -160,9 +176,10 @@ namespace LUI.controls
         {
             if (!e.Cancelled)
             {
-                double[] OD = (double[])e.Result;
-                Graph.DrawPoints(OD);
+                Light = (double[])e.Result;
+                Graph.DrawPoints(Light);
                 Graph.ClearData();
+                SelectedChannel = SelectedChannel;
                 ProgressLabel.Text = "Complete";
             }
             else
@@ -182,14 +199,14 @@ namespace LUI.controls
         private void Graph_Click(object sender, MouseEventArgs e)
         {
             PointF p = Graph.ScreenToData(new Point(e.X, e.Y));
-            selectedChannel = (int)Math.Round(p.X);
+            SelectedChannel = (int)Math.Round(p.X);
             RedrawLines();
         }
 
         private void RedrawLines()
         {
             Graph.ClearAnnotation();
-            Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[0], selectedChannel);
+            Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[0], SelectedChannel);
             Graph.Invalidate();
         }
 
@@ -198,16 +215,16 @@ namespace LUI.controls
             switch (keyData)
             {
                 case Keys.Left:
-                    if (selectedChannel > -1)
+                    if (SelectedChannel > -1)
                     {
-                        selectedChannel = (int)Math.Max(Graph.XMin, selectedChannel - 1);
+                        SelectedChannel = (int)Math.Max(Graph.XMin, SelectedChannel - 1);
                     }
                     RedrawLines();
                     break;
                 case Keys.Right:
-                    if (selectedChannel > -1)
+                    if (SelectedChannel > -1)
                     {
-                        selectedChannel = (int)Math.Min(Graph.XMax, selectedChannel + 1);
+                        SelectedChannel = (int)Math.Min(Graph.XMax, SelectedChannel + 1);
                     }
                     RedrawLines();
                     break;
