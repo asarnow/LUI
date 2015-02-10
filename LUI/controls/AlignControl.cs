@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Data;
+using System.IO;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using System.Windows.Threading;
-using System.Runtime.CompilerServices;
 using lasercom;
+using lasercom.io;
 
 namespace LUI.controls
 {
@@ -18,6 +16,20 @@ namespace LUI.controls
         private Dispatcher Dispatcher;
 
         private double[] Light = null;
+        private double[] LastLight = null;
+        private double[] _DiffLight = null;
+        private double[] DiffLight
+        {
+            get
+            {
+                return _DiffLight;
+            }
+            set
+            {
+                _DiffLight = value;
+                DiffSum.Text = _DiffLight.Sum().ToString("n");
+            }
+        }
 
         int _SelectedChannel = -1;
         int SelectedChannel
@@ -28,7 +40,7 @@ namespace LUI.controls
             }
             set
             {
-                _SelectedChannel = value;
+                _SelectedChannel = Math.Max(Math.Min(value, (int)Commander.Camera.Width - 1), 0);
                 if (Light != null) CountsDisplay.Text = Light[_SelectedChannel].ToString("n");
             }
         }
@@ -44,6 +56,8 @@ namespace LUI.controls
             InitializeComponent();
             Commander = commander;
             Graph.MouseClick += new MouseEventHandler(Graph_Click);
+            Graph.XMin = (float)Commander.Calibration[0];
+            Graph.XMax = (float)Commander.Calibration[Commander.Calibration.Length - 1];
         }
 
         public void AlignmentWork(object sender, DoWorkEventArgs e)
@@ -176,9 +190,13 @@ namespace LUI.controls
         {
             if (!e.Cancelled)
             {
-                Light = (double[])e.Result;
-                Graph.DrawPoints(Light);
-                Graph.ClearData();
+                Light = Array.ConvertAll((int[])e.Result, x => (double)x);
+                if (LastLight != null)
+                {
+                    DiffLight = (double[])Light.Clone(); // Deep copy for value types only
+                    Data.Dissipate(DiffLight, LastLight);
+                }
+                DisplayProfiles();
                 SelectedChannel = SelectedChannel;
                 ProgressLabel.Text = "Complete";
             }
@@ -198,8 +216,8 @@ namespace LUI.controls
 
         private void Graph_Click(object sender, MouseEventArgs e)
         {
-            PointF p = Graph.ScreenToData(new Point(e.X, e.Y));
-            SelectedChannel = (int)Math.Round(p.X);
+            //PointF p = Graph.ScreenToData(new Point(e.X, e.Y));
+            SelectedChannel = (int)Math.Round(Graph.CanvasToNormalized(Graph.ScreenToCanvas(new Point(e.X, e.Y))).X * (Commander.Camera.Width - 1));
             RedrawLines();
         }
 
@@ -217,14 +235,14 @@ namespace LUI.controls
                 case Keys.Left:
                     if (SelectedChannel > -1)
                     {
-                        SelectedChannel = (int)Math.Max(Graph.XMin, SelectedChannel - 1);
+                        SelectedChannel--;
                     }
                     RedrawLines();
                     break;
                 case Keys.Right:
                     if (SelectedChannel > -1)
                     {
-                        SelectedChannel = (int)Math.Min(Graph.XMax, SelectedChannel + 1);
+                        SelectedChannel++;
                     }
                     RedrawLines();
                     break;
@@ -246,6 +264,126 @@ namespace LUI.controls
                     e.Handled = true;
                 }
             }
+        }
+
+        private void LoadProfile_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFile = new OpenFileDialog();
+            openFile.Filter = "Alignment File|*.aln|Text File|*.txt|All Files|*.*";
+            openFile.Title = "Load Alignment Profile";
+            openFile.ShowDialog();
+
+            if (openFile.FileName == "") return;
+
+            switch (openFile.FilterIndex)
+            {
+                case 1:
+                    try
+                    {
+                        LastLight = FileIO.ReadVector<double>(openFile.FileName);
+                    }
+                    catch (IOException ex)
+                    {
+                        MessageBox.Show(ex.ToString());
+                    }
+                    break;
+                case 2:
+                    try
+                    {
+                        LastLight = FileIO.ReadVector<double>(openFile.FileName);
+                    }
+                    catch (IOException ex)
+                    {
+                        MessageBox.Show(ex.ToString());
+                    }
+                    break;
+                case 3:
+                    break;
+            }
+        }
+
+        private void DisplayProfiles()
+        {
+            Graph.ClearData();
+
+            if (ShowLast.Checked && LastLight != null)
+            {
+                Graph.MarkerColor = Graph.ColorOrder[2];
+                Graph.DrawPoints(Commander.Calibration, LastLight);
+            }
+
+            if (ShowDifference.Checked && DiffLight != null)
+            {
+                Graph.MarkerColor = Graph.ColorOrder[1];
+                Graph.DrawPoints(Commander.Calibration, DiffLight);
+            }
+
+            if (Light != null)
+            {
+                Graph.MarkerColor = Graph.ColorOrder[0];
+                Graph.DrawPoints(Commander.Calibration, Light);
+            }
+
+            Graph.Invalidate();
+        }
+
+        private void ShowLast_CheckedChanged(object sender, EventArgs e)
+        {
+            DisplayProfiles();
+        }
+
+        private void ShowDifference_CheckedChanged(object sender, EventArgs e)
+        {
+            DisplayProfiles();
+        }
+
+        private void SaveProfile_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveFile = new SaveFileDialog();
+            saveFile.Filter = "ALN File|*.aln|MAT File|*.mat|All Files|*.*";
+            saveFile.Title = "Save Light Profile";
+            saveFile.ShowDialog();
+
+            if (saveFile.FileName == "") return;
+
+            switch (saveFile.FilterIndex)
+            {
+                case 3:
+                    // All files, fall through to ALN.
+                case 1:
+                    // ALN
+                    try
+                    {
+                        FileIO.WriteVector<double>(saveFile.FileName, Light);
+                    }
+                    catch (IOException ex)
+                    {
+                        MessageBox.Show(ex.ToString());
+                    }
+                    break;
+                case 2:
+                    // MAT
+                    try
+                    {
+                        MatFile mat = new MatFile(saveFile.FileName, "aln", 
+                            Light.Length, 1, "double");
+                        mat.WriteColumn(Light);
+                        mat.Dispose();
+                    }
+                    catch (IOException ex)
+                    {
+                        MessageBox.Show(ex.ToString());
+                    }
+                    break;
+            }
+        }
+
+        public void HandleCalibrationChanged(object sender, EventArgs args)
+        {
+            Graph.XMin = (float)Commander.Calibration[0];
+            Graph.XMax = (float)Commander.Calibration[Commander.Calibration.Length - 1];
+            Graph.Clear();
+            DisplayProfiles();
         }
 
     }

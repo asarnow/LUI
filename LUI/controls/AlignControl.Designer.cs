@@ -45,8 +45,15 @@
             this.CloseLaser = new System.Windows.Forms.Button();
             this.OpenLaser = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.Graph = new LUI.controls.GraphControl();
+            this.SaveProfile = new System.Windows.Forms.Button();
+            this.ShowDifference = new System.Windows.Forms.CheckBox();
+            this.ShowLast = new System.Windows.Forms.CheckBox();
+            this.LoadProfile = new System.Windows.Forms.Button();
             this.CountsDisplay = new System.Windows.Forms.TextBox();
+            this.Graph = new LUI.controls.GraphControl();
+            this.DiffSum = new System.Windows.Forms.TextBox();
+            this.CountsLabel = new System.Windows.Forms.Label();
+            this.DiffSumLabel = new System.Windows.Forms.Label();
             this.tableLayoutPanel1.SuspendLayout();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
@@ -235,12 +242,77 @@
             // panel1
             // 
             this.tableLayoutPanel1.SetColumnSpan(this.panel1, 3);
+            this.panel1.Controls.Add(this.DiffSumLabel);
+            this.panel1.Controls.Add(this.CountsLabel);
+            this.panel1.Controls.Add(this.DiffSum);
+            this.panel1.Controls.Add(this.SaveProfile);
+            this.panel1.Controls.Add(this.ShowDifference);
+            this.panel1.Controls.Add(this.ShowLast);
+            this.panel1.Controls.Add(this.LoadProfile);
             this.panel1.Controls.Add(this.CountsDisplay);
             this.panel1.Location = new System.Drawing.Point(2, 432);
             this.panel1.Margin = new System.Windows.Forms.Padding(2);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(824, 210);
             this.panel1.TabIndex = 7;
+            // 
+            // SaveProfile
+            // 
+            this.SaveProfile.Location = new System.Drawing.Point(720, 34);
+            this.SaveProfile.Margin = new System.Windows.Forms.Padding(2);
+            this.SaveProfile.Name = "SaveProfile";
+            this.SaveProfile.Size = new System.Drawing.Size(102, 28);
+            this.SaveProfile.TabIndex = 5;
+            this.SaveProfile.Text = "Save Profile";
+            this.SaveProfile.UseVisualStyleBackColor = true;
+            this.SaveProfile.Click += new System.EventHandler(this.SaveProfile_Click);
+            // 
+            // ShowDifference
+            // 
+            this.ShowDifference.AutoSize = true;
+            this.ShowDifference.Checked = true;
+            this.ShowDifference.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ShowDifference.Location = new System.Drawing.Point(641, 106);
+            this.ShowDifference.Name = "ShowDifference";
+            this.ShowDifference.Size = new System.Drawing.Size(105, 17);
+            this.ShowDifference.TabIndex = 4;
+            this.ShowDifference.Text = "Show Difference";
+            this.ShowDifference.UseVisualStyleBackColor = true;
+            this.ShowDifference.CheckedChanged += new System.EventHandler(this.ShowDifference_CheckedChanged);
+            // 
+            // ShowLast
+            // 
+            this.ShowLast.AutoSize = true;
+            this.ShowLast.Checked = true;
+            this.ShowLast.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ShowLast.Location = new System.Drawing.Point(641, 83);
+            this.ShowLast.Name = "ShowLast";
+            this.ShowLast.Size = new System.Drawing.Size(124, 17);
+            this.ShowLast.TabIndex = 3;
+            this.ShowLast.Text = "Show Loaded Profile";
+            this.ShowLast.UseVisualStyleBackColor = true;
+            this.ShowLast.CheckedChanged += new System.EventHandler(this.ShowLast_CheckedChanged);
+            // 
+            // LoadProfile
+            // 
+            this.LoadProfile.Location = new System.Drawing.Point(720, 2);
+            this.LoadProfile.Margin = new System.Windows.Forms.Padding(2);
+            this.LoadProfile.Name = "LoadProfile";
+            this.LoadProfile.Size = new System.Drawing.Size(102, 28);
+            this.LoadProfile.TabIndex = 2;
+            this.LoadProfile.Text = "Load Profile";
+            this.LoadProfile.UseVisualStyleBackColor = true;
+            this.LoadProfile.Click += new System.EventHandler(this.LoadProfile_Click);
+            // 
+            // CountsDisplay
+            // 
+            this.CountsDisplay.Location = new System.Drawing.Point(35, 27);
+            this.CountsDisplay.Name = "CountsDisplay";
+            this.CountsDisplay.ReadOnly = true;
+            this.CountsDisplay.Size = new System.Drawing.Size(100, 20);
+            this.CountsDisplay.TabIndex = 0;
+            this.CountsDisplay.Text = "0";
+            this.CountsDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // Graph
             // 
@@ -279,15 +351,33 @@
             this.Graph.YMax = float.NegativeInfinity;
             this.Graph.YMin = float.PositiveInfinity;
             // 
-            // CountsDisplay
+            // DiffSum
             // 
-            this.CountsDisplay.Location = new System.Drawing.Point(35, 27);
-            this.CountsDisplay.Name = "CountsDisplay";
-            this.CountsDisplay.ReadOnly = true;
-            this.CountsDisplay.Size = new System.Drawing.Size(100, 20);
-            this.CountsDisplay.TabIndex = 0;
-            this.CountsDisplay.Text = "0";
-            this.CountsDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.DiffSum.Location = new System.Drawing.Point(35, 53);
+            this.DiffSum.Name = "DiffSum";
+            this.DiffSum.ReadOnly = true;
+            this.DiffSum.Size = new System.Drawing.Size(100, 20);
+            this.DiffSum.TabIndex = 6;
+            this.DiffSum.Text = "0";
+            this.DiffSum.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // CountsLabel
+            // 
+            this.CountsLabel.AutoSize = true;
+            this.CountsLabel.Location = new System.Drawing.Point(141, 30);
+            this.CountsLabel.Name = "CountsLabel";
+            this.CountsLabel.Size = new System.Drawing.Size(40, 13);
+            this.CountsLabel.TabIndex = 7;
+            this.CountsLabel.Text = "Counts";
+            // 
+            // DiffSumLabel
+            // 
+            this.DiffSumLabel.AutoSize = true;
+            this.DiffSumLabel.Location = new System.Drawing.Point(141, 56);
+            this.DiffSumLabel.Name = "DiffSumLabel";
+            this.DiffSumLabel.Size = new System.Drawing.Size(92, 13);
+            this.DiffSumLabel.TabIndex = 8;
+            this.DiffSumLabel.Text = "Sum of Difference";
             // 
             // AlignControl
             // 
@@ -330,5 +420,12 @@
         private System.Windows.Forms.ProgressBar StatusProgress;
         private controls.GraphControl Graph;
         private System.Windows.Forms.TextBox CountsDisplay;
+        private System.Windows.Forms.Button LoadProfile;
+        private System.Windows.Forms.CheckBox ShowDifference;
+        private System.Windows.Forms.CheckBox ShowLast;
+        private System.Windows.Forms.Button SaveProfile;
+        private System.Windows.Forms.Label DiffSumLabel;
+        private System.Windows.Forms.Label CountsLabel;
+        private System.Windows.Forms.TextBox DiffSum;
     }
 }

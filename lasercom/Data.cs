@@ -30,6 +30,18 @@ namespace lasercom
                 a[i] -= b[i];
         }
 
+        public static void Accumulate(double[] a, double[] b)
+        {
+            for (int i = 0; i < a.Length; i++)
+                a[i] += b[i];
+        }
+
+        public static void Dissipate(double[] a, double[] b)
+        {
+            for (int i = 0; i < a.Length; i++)
+                a[i] -= b[i];
+        }
+
         public static int[] DummySpectrum(double t)
         {
             int[] data = new int[1024];
@@ -43,7 +55,6 @@ namespace lasercom
                 curmax = Math.Abs(arr[i]) > curmax ? Math.Abs(arr[i]) : curmax;
             return curmax;
         }
-
 
         public static void DivideArray(int[] arr, int N)
         {

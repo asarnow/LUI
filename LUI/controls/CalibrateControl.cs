@@ -10,7 +10,7 @@ using System.Windows.Threading;
 using System.Runtime.CompilerServices;
 using lasercom;
 using System.IO;
-using CsvHelper;
+using lasercom.io;
 
 namespace LUI.controls
 {
@@ -19,8 +19,30 @@ namespace LUI.controls
         private BackgroundWorker ioWorker;
         private Dispatcher Dispatcher;
 
-        int selectedChannel;
+        double[] OD = null;
 
+        private int _SelectedChannel = -1;
+        /// <summary>
+        /// Currently selected detector channel regardless of calibration.
+        /// Min value zero, max value is camera width - 1.
+        /// </summary>
+        int SelectedChannel
+        {
+            get
+            {
+                return _SelectedChannel;
+            }
+            set
+            {
+                _SelectedChannel = value;
+                _SelectedChannel = Math.Max(Math.Min(value, (int)Commander.Camera.Width - 1), 0);
+            }
+        }
+
+        /// <summary>
+        /// Stores channel & wavelength point in a class suitable for data
+        /// binding to a DataGridView.
+        /// </summary>
         public class CalibrationPoint : INotifyPropertyChanged
         {
             private int _Channel;
@@ -84,6 +106,10 @@ namespace LUI.controls
                 return Tuple.Create<int, double>(p.Channel, p.Wavelength);
             }
         }
+
+        /// <summary>
+        /// List of current calibration points, bound to CalibrationListView.
+        /// </summary>
         BindingList<CalibrationPoint> CalibrationList = new BindingList<CalibrationPoint>();
 
         public enum Dialog
@@ -97,6 +123,8 @@ namespace LUI.controls
             InitializeComponent();
             Commander = commander;
             Graph.MouseClick += new MouseEventHandler(Graph_Click);
+            Graph.XMin = (float)Commander.Calibration[0];
+            Graph.XMax = (float)Commander.Calibration[Commander.Calibration.Length - 1];
 
             CalibrationList.AllowEdit = true;
             CalibrationListView.DefaultValuesNeeded += CalibrationListView_DefaultValuesNeeded;
@@ -239,9 +267,10 @@ namespace LUI.controls
         {
             if (!e.Cancelled)
             {
-                double[] OD = (double[])e.Result;
-                Graph.DrawPoints(OD);
+                OD = (double[])e.Result;
                 Graph.ClearData();
+                Graph.DrawPoints(Commander.Calibration, OD);
+                Graph.Invalidate();
                 ProgressLabel.Text = "Complete";
             }
             else
@@ -260,17 +289,18 @@ namespace LUI.controls
 
         private void Graph_Click(object sender, MouseEventArgs e)
         {
-            PointF p = Graph.ScreenToData(new Point(e.X, e.Y));
-            selectedChannel = (int)Math.Round(p.X);
+            //PointF p = Graph.ScreenToData(new Point(e.X, e.Y));
+            //SelectedChannel = (int)Math.Round(p.X);
+            SelectedChannel = (int)Math.Round(Graph.CanvasToNormalized(Graph.ScreenToCanvas(new Point(e.X, e.Y))).X * (Commander.Camera.Width - 1));
             DataGridViewSelectedRowCollection selection = CalibrationListView.SelectedRows;
             if (selection.Count == 0)
             {
                 DataGridViewRow row = CalibrationListView.Rows[CalibrationListView.Rows.Count - 1];
-                row.Cells["Channel"].Value = selectedChannel;
+                row.Cells["Channel"].Value = SelectedChannel;
             }
             else if (selection.Count == 1)
             {
-                selection[0].Cells["Channel"].Value = selectedChannel;
+                selection[0].Cells["Channel"].Value = SelectedChannel;
             }
             else
             {
@@ -279,6 +309,10 @@ namespace LUI.controls
             RedrawLines();
         }
 
+        /// <summary>
+        /// Vertical lines are drawn for each calibration point at the
+        /// X-position of the channel wrt to the current calibration vector.
+        /// </summary>
         private void RedrawLines()
         {
             Graph.ClearAnnotation();
@@ -286,12 +320,12 @@ namespace LUI.controls
             for (i=0; i<CalibrationList.Count; i++)
             {
                 CalibrationPoint p = CalibrationList[i];
-                Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[i % Graph.ColorOrder.Count], p.Channel);
+                Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[i % Graph.ColorOrder.Count], Commander.Calibration[p.Channel]);
             }
             int newRowChannel = (int)(CalibrationListView.Rows[CalibrationListView.NewRowIndex].Cells["Channel"].Value ?? 0);
             if (CalibrationListView.Rows.Count > CalibrationList.Count && newRowChannel != 0)
             {
-                Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[i % Graph.ColorOrder.Count], newRowChannel);
+                Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[i % Graph.ColorOrder.Count], Commander.Calibration[newRowChannel]);
             }
             Graph.Invalidate();
         }
@@ -303,16 +337,16 @@ namespace LUI.controls
                 case Keys.Left:
                     if (!CalibrationListView.IsCurrentCellInEditMode && CalibrationListView.SelectedRows.Count == 1)
                     {
-                        selectedChannel = (int)Math.Max(Graph.XMin, (int)CalibrationListView.SelectedRows[0].Cells["Channel"].Value - 1);
-                        CalibrationListView.SelectedRows[0].Cells["Channel"].Value = selectedChannel;
+                        SelectedChannel--;
+                        CalibrationListView.SelectedRows[0].Cells["Channel"].Value = SelectedChannel;
                     }
                     RedrawLines();
                     break;
                 case Keys.Right:
                     if (!CalibrationListView.IsCurrentCellInEditMode && CalibrationListView.SelectedRows.Count == 1)
                     {
-                        selectedChannel = (int)Math.Min(Graph.XMax, (int)CalibrationListView.SelectedRows[0].Cells["Channel"].Value + 1);
-                        CalibrationListView.SelectedRows[0].Cells["Channel"].Value = selectedChannel;
+                        SelectedChannel++;
+                        CalibrationListView.SelectedRows[0].Cells["Channel"].Value = SelectedChannel;
                     }
                     RedrawLines();
                     break;
@@ -323,6 +357,11 @@ namespace LUI.controls
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
+        /// <summary>
+        /// Called when editing CalibrationListView to set accepted key press events.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void CalibrationListView_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
             if (this.CalibrationListView.CurrentCell.ColumnIndex == 1)
@@ -336,6 +375,11 @@ namespace LUI.controls
             }
         }
 
+        /// <summary>
+        /// Key press event firing for digits, backspace and delete only.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void TBKeyPress(object sender, KeyPressEventArgs e)
         {
             if (!(char.IsDigit(e.KeyChar)))
@@ -354,7 +398,7 @@ namespace LUI.controls
         {
             if (e.Row.Cells["Channel"].Value != null)
             {
-                e.Row.Cells["Channel"].Value = selectedChannel;
+                e.Row.Cells["Channel"].Value = SelectedChannel;
             }
             else
             {
@@ -386,21 +430,20 @@ namespace LUI.controls
         private void SaveCal_Click(object sender, EventArgs e)
         {
             SaveFileDialog saveFile = new SaveFileDialog();
-            saveFile.Filter = "CAL File|*.cal|MAT File|*.mat|Text File|*.txt|All Files|*.*";
-            saveFile.Title = "Save Calibration Date";
+            saveFile.Filter = "CAL File|*.cal|MAT File|*.mat|All Files|*.*";
+            saveFile.Title = "Save Calibration Data";
             saveFile.ShowDialog();
 
             if (saveFile.FileName == "") return;
 
             switch (saveFile.FilterIndex)
             {
+                case 3:
+                    // All files, fall through to CAL.
                 case 1:
                     // CAL
                     try {
-                        TextWriter writer = new StreamWriter(saveFile.FileName);
-                        CsvWriter csv = new CsvWriter(writer);
-                        csv.WriteRecords(Commander.Calibration);
-                        writer.Close();
+                        FileIO.WriteVector<double>(saveFile.FileName, Commander.Calibration);
                     } catch (IOException ex)
                     {
                         MessageBox.Show(ex.ToString());
@@ -408,11 +451,31 @@ namespace LUI.controls
                     break;
                 case 2:
                     // MAT
-                    break;
-                case 3:
-                    // TXT
+                    try
+                    {
+                        MatFile mat = new MatFile(saveFile.FileName, "cal", 
+                            Commander.Calibration.Length, 1, "double");
+                        mat.WriteColumn(Commander.Calibration);
+                        mat.Dispose();
+                    }
+                    catch (IOException ex)
+                    {
+                        MessageBox.Show(ex.ToString());
+                    }
                     break;
             }
+        }
+
+        public void HandleCalibrationChanged(object sender, EventArgs args)
+        {
+            Graph.XMin = (float)Commander.Calibration[0];
+            Graph.XMax = (float)Commander.Calibration[Commander.Calibration.Length - 1];
+            if (OD != null)
+            {
+                Graph.Clear();
+                Graph.DrawPoints(Commander.Calibration, OD);
+            }
+            RedrawLines();
         }
 
     }

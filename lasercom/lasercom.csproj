@@ -81,6 +81,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib64\ATMCD64CS.dll</HintPath>
     </Reference>
+    <Reference Include="CsvHelper">
+      <HintPath>..\packages\CsvHelper.2.10.0\lib\net40-client\CsvHelper.dll</HintPath>
+    </Reference>
     <Reference Include="HDF5DotNet-x64, Version=1.8.9.0, Culture=neutral, PublicKeyToken=a4952c8df86d6e8c, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib64\HDF5DotNet-x64.dll</HintPath>
@@ -118,6 +121,7 @@
     <Compile Include="camera\CameraTempControlled.cs" />
     <Compile Include="Data.cs" />
     <Compile Include="ddg\DummyDigitalDelayGenerator.cs" />
+    <Compile Include="io\FileIO.cs" />
     <Compile Include="io\MatFile.cs" />
     <Compile Include="control\DummyBeamFlags.cs" />
     <Compile Include="ddg\DDG535.cs" />
@@ -132,8 +136,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /Y /S "$(SolutionDir)common\*" "$(TargetDir)"

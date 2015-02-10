@@ -44,9 +44,11 @@ namespace LUI
 
             CalibrateControl = new CalibrateControl(Commander);
             CalibrationPage.Controls.Add(CalibrateControl);
+            Commander.CalibrationChanged += CalibrateControl.HandleCalibrationChanged;
 
             AlignControl = new AlignControl(Commander);
             AlignPage.Controls.Add(AlignControl);
+            Commander.CalibrationChanged += AlignControl.HandleCalibrationChanged;
         }
 
         private static void MakeEmebeddable(Form Form)

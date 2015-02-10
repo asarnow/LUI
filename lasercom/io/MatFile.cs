@@ -28,13 +28,11 @@ namespace lasercom.io
         public int RowCursor { get; set; }
         public int ColCursor { get; set; }
 
-        public MatFile(string fileName, string matlabClass, int m, int n)
+        public MatFile(string fileName, string varname, int m, int n, string matlabClass)
         {
             _FileName = fileName;
             FileId = H5F.create(FileName, H5F.CreateMode.ACC_TRUNC);
             GroupId = H5G.open(FileId, "/");
-
-            string varname = "data";
 
             switch (matlabClass)
             {

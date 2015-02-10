@@ -279,6 +279,22 @@ namespace LUI.controls
             }
         }
 
+        public void DrawPoints(int[] Y)
+        {
+            using (Brush B = new SolidBrush(MarkerColor))
+            {
+                float _Min = (float)Y.Min() < YMin ? (float)Y.Min() : YMin;
+                float _Max = (float)Y.Max() > YMax ? (float)Y.Max() : YMax;
+                RescaleHandler(_Min, _Max);
+                for (int i = 0; i < Y.Length; i++)
+                {
+                    float x = (float)(i + 1) / Y.Length;
+                    float y = Math.Abs(YMax - (float)Y[i]) / ScaleHeight;
+                    DrawPoint(BitmapGraphics, B, MarkerFont, Axes, x, y);
+                }
+            }
+        }
+
         public void DrawPoints(double[] X, double[] Y)
         {
             using (Brush B = new SolidBrush(MarkerColor))
@@ -419,27 +435,27 @@ namespace LUI.controls
 
         void InvalidateCanvas()
         {
-            // The null check permits selection to be updated quickly
+            // The null check permits redundant calls, e.g. when rapidly changing selection.
             if (CanvasBitmap != null) CanvasBitmap.Dispose();
             CanvasBitmap = null;
         }
 
         void InvalidateData()
         {
-            BitmapGraphics.Dispose();
-            DataBitmap.Dispose();
+            if (BitmapGraphics != null) BitmapGraphics.Dispose();
+            if (DataBitmap != null) DataBitmap.Dispose();
             DataBitmap = null;
         }
 
         void InvalidateAxes()
         {
-            AxesBitmap.Dispose();
+            if (AxesBitmap != null) AxesBitmap.Dispose();
             AxesBitmap = null;
         }
 
         void InvalidateAnnotation()
         {
-            AnnotationBitmap.Dispose();
+            if (AnnotationBitmap != null) AnnotationBitmap.Dispose();
             AnnotationBitmap = null;
         }
 
@@ -476,22 +492,30 @@ namespace LUI.controls
         public PointF ScreenToData(Point p)
         {
             return new PointF(
-                XMin + (p.X - Axes.X) / Axes.Width * XMax,
-                YMax - (p.Y - Axes.Y) / Axes.Height * ScaleHeight
+                XMin + (p.X - Axes.X) / (Axes.Width - 1) * XMax,
+                YMax - (p.Y - Axes.Y) / (Axes.Height - 1) * ScaleHeight
                 );
         }
 
-        PointF CanvasToNormalized(Point p)
-        {
-            return new PointF(
-                p.X / Axes.Width, p.Y / Axes.Height
-                );
-        }
-
-        Point NormalizedToCanvas(PointF p)
+        public Point ScreenToCanvas(Point p)
         {
             return new Point(
-                (int)(p.X * Axes.Width), (int)(p.Y * Axes.Height)
+                p.X - (int)Axes.X,
+                p.Y - (int)Axes.Y
+                );
+        }
+
+        public PointF CanvasToNormalized(Point p)
+        {
+            return new PointF(
+                p.X / (Axes.Width - 1), p.Y / (Axes.Height - 1)
+                );
+        }
+
+        public Point NormalizedToCanvas(PointF p)
+        {
+            return new Point(
+                (int)(p.X * (Axes.Width - 1)), (int)(p.Y * (Axes.Height - 1))
                 );
         }
 
