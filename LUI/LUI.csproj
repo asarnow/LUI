@@ -154,13 +154,24 @@
     <Compile Include="controls\AlignControl.Designer.cs">
       <DependentUpon>AlignControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="controls\ResidualsControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="controls\ResidualsControl.Designer.cs">
+      <DependentUpon>ResidualsControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\LaserPowerControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="controls\LaserPowerControl.Designer.cs">
+      <DependentUpon>LaserPowerControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="controls\DisabledRichTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="controls\LUIControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="LUISession.cs" />
     <Compile Include="ParentForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -204,6 +215,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="controls\AlignControl.resx">
       <DependentUpon>AlignControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\ResidualsControl.resx">
+      <DependentUpon>ResidualsControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\LaserPowerControl.resx">
+      <DependentUpon>LaserPowerControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ParentForm.resx">
       <DependentUpon>ParentForm.cs</DependentUpon>
