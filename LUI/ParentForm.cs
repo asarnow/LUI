@@ -11,6 +11,11 @@ using LUI.controls;
 
 namespace LUI
 {
+    /// <summary>
+    /// Windows Form containing the entire LUI application.
+    /// The TabControl's pages are populated with UserControls which handle
+    /// the various features of the application.
+    /// </summary>
     public partial class ParentForm : Form
     {
         Commander Commander;
@@ -20,16 +25,18 @@ namespace LUI
         TROSControl TROSControl;
         CalibrateControl CalibrateControl;
         AlignControl AlignControl;
+        LaserPowerControl LaserPowerControl;
+        ResidualsControl ResidualsControl;
 
         public State TaskBusy
         {
             get
             {
                 if (AlignControl.IsBusy) return State.ALIGN;
-                //if (ResidualsControl.IsBusy) return State.RESIDUALS;
+                if (ResidualsControl.IsBusy) return State.RESIDUALS;
                 if (CalibrateControl.IsBusy) return State.CALIBRATE;
                 //if (TROSControl.IsBusy) return State.TROS;
-                //if (PowerControl.IsBusy) return State.POWER;
+                if (LaserPowerControl.IsBusy) return State.POWER;
                 else return State.IDLE;
             }
         }
@@ -49,6 +56,14 @@ namespace LUI
             AlignControl = new AlignControl(Commander);
             AlignPage.Controls.Add(AlignControl);
             Commander.CalibrationChanged += AlignControl.HandleCalibrationChanged;
+
+            LaserPowerControl = new LaserPowerControl(Commander);
+            PowerPage.Controls.Add(LaserPowerControl);
+            Commander.CalibrationChanged += LaserPowerControl.HandleCalibrationChanged;
+
+            ResidualsControl = new ResidualsControl(Commander);
+            ResidualsPage.Controls.Add(ResidualsControl);
+            Commander.CalibrationChanged += ResidualsControl.HandleCalibrationChanged;
         }
 
         private static void MakeEmebeddable(Form Form)
