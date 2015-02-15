@@ -88,6 +88,12 @@ namespace lasercom
             return Camera.Acquire();
         }
 
+        public uint Dark(ref int[] DataBuffer)
+        {
+            BeamFlags.CloseLaserAndFlash();
+            return Camera.Acquire(ref DataBuffer);
+        }
+
         public int[] Flash()
         {
             BeamFlags.CloseLaserAndFlash();
@@ -98,6 +104,16 @@ namespace lasercom
             return data;
         }
 
+        public uint Flash(ref int[] DataBuffer)
+        {
+            BeamFlags.CloseLaserAndFlash();
+            BeamFlags.OpenFlash();
+            uint ret = Camera.Acquire(ref DataBuffer);
+            System.Threading.Thread.Sleep(BeamFlags.Delay);
+            BeamFlags.CloseLaserAndFlash();
+            return ret;
+        }
+
         public int[] Trans()
         {
             BeamFlags.OpenLaserAndFlash();
@@ -105,6 +121,15 @@ namespace lasercom
             System.Threading.Thread.Sleep(BeamFlags.Delay);
             BeamFlags.CloseLaserAndFlash();
             return data;
+        }
+
+        public uint Trans(ref int[] DataBuffer)
+        {
+            BeamFlags.OpenLaserAndFlash();
+            uint ret = Camera.Acquire(ref DataBuffer);
+            System.Threading.Thread.Sleep(BeamFlags.Delay);
+            BeamFlags.CloseLaserAndFlash();
+            return ret;
         }
 
     }

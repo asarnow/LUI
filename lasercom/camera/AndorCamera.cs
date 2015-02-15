@@ -40,6 +40,8 @@ namespace lasercom
         public const int MCPGatingOn = 1;
         public const int DefaultMCPGain = 500;
 
+        public const int DefaultADChannel = 0;
+
         public uint InitVal;
         public AndorSDK AndorSdk = new AndorSDK();
         public AndorSDK.AndorCapabilities Capabilities;
@@ -132,6 +134,23 @@ namespace lasercom
             }
         }
 
+        private int _MinMCPGain;
+        public int MinMCPGain
+        {
+            get
+            {
+                return _MinMCPGain;
+            }
+        }
+        private int _MaxMCPGain;
+        public int MaxMCPGain
+        {
+            get
+            {
+                return _MaxMCPGain;
+            }
+        }
+
         private int _MCPGain;
         public int MCPGain
         {
@@ -183,6 +202,59 @@ namespace lasercom
             } 
         }
 
+        private int _BitDepth;
+        public int BitDepth 
+        {
+            get
+            {
+                return _BitDepth;
+            }
+        }
+
+        private int _NumberADChannels;
+        public int NumberADChannels
+        {
+            get
+            {
+                return _NumberADChannels;
+            }
+        }
+
+        private int _CurrentADChannel;
+        public int CurrentADChannel
+        {
+            get
+            {
+                return _CurrentADChannel;
+            }
+            set
+            {
+                //TODO check return from Andor
+                //TODO ALL properties in this class need this fix and code reorder to reflect
+                AndorSdk.SetADChannel(value);
+                _CurrentADChannel = value;
+            }
+        }
+
+        public uint AcqSize
+        {
+            get
+            {
+                if (this.ReadMode == Constants.ReadModeFVB)
+                {
+                    return Width;
+                }
+                else if (ReadMode == Constants.ReadModeImage)
+                {
+                    return (uint)((Image.hend - Image.hstart + 1) * (Image.vend - Image.vstart + 1));
+                }
+                else
+                {
+                    throw new NotImplementedException();
+                }
+            }
+        }
+
         public class ImageArea
         {
             public readonly int hbin, vbin, hstart, hend, vstart, vend;
@@ -212,6 +284,9 @@ namespace lasercom
                 AndorSdk.GetDetector(ref width, ref height);
                 _Width = (uint)width;
                 _Height = (uint)height;
+                AndorSdk.GetNumberADChannels(ref _NumberADChannels);
+                CurrentADChannel = DefaultADChannel;
+                AndorSdk.GetBitDepth(CurrentADChannel, ref _BitDepth);
 
                 Image = new ImageArea(1, 1, 1, (int)Width, 1, (int)Height);
 
@@ -220,6 +295,7 @@ namespace lasercom
 
                 //TriggerInvert = Constants.TriggerInvertRising;
                 //TriggerLevel = Constants.DefaultTriggerLevel; // TTL signal is 4.0V
+                AndorSdk.GetMCPGainRange(ref _MinMCPGain, ref _MaxMCPGain);
                 MCPGain = Constants.DefaultMCPGain;
             }
         }
@@ -257,25 +333,36 @@ namespace lasercom
 
         public virtual int[] Acquire()
         {
-            uint npx;
-            if (this.ReadMode == Constants.ReadModeFVB)
-            {
-                npx = Width;
-            }
-            else if (ReadMode == Constants.ReadModeImage)
-            {
-                npx = (uint)((Image.hend - Image.hstart + 1) * (Image.vend - Image.vstart + 1));
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
-
+            uint npx = AcqSize;
             int[] data = new int[npx];
+            uint ret = Acquire(ref data);
+            return data;
+        }
+
+        /// <summary>
+        /// Acquire data and store in referenced array.
+        /// This overload supports memory efficient acquisition if the same
+        /// (ref'd) array is continually re-passed. Note the ref'd array must
+        /// be initialized in the caller ('ref' semantics as opposd to 'out').
+        /// Additionally, the ref'd array must be a legal size for acquisition.
+        /// AndorSDK return codes (uint):
+        /// DRV_SUCCESS             Data copied. 
+        /// DRV_NOT_INITIALIZED     System not initialized.
+        /// DRV_ACQUIRING           Acquisition in progress.
+        /// DRV_ERROR_ACK           Unable to communicate with card.
+        /// DRV_P1INVALID           Invalid pointer (i.e. NULL).
+        /// DRV_P2INVALID           Array size is incorrect.
+        /// DRV_NO_NEW_DATA         No acquisition has taken place
+        /// </summary>
+        /// <param name="DataBuffer"></param>
+        /// <returns></returns>
+        public virtual uint Acquire(ref int[] DataBuffer)
+        {
+            uint npx = (uint)DataBuffer.Length;
             AndorSdk.StartAcquisition();
             AndorSdk.WaitForAcquisition();
-            uint ret = AndorSdk.GetAcquiredData(data, npx);
-            return data;
+            uint ret = AndorSdk.GetAcquiredData(DataBuffer, npx);
+            return ret;
         }
 
         public void ResetCameraParameters()

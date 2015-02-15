@@ -291,7 +291,7 @@ namespace LUI.controls
         {
             //PointF p = Graph.ScreenToData(new Point(e.X, e.Y));
             //SelectedChannel = (int)Math.Round(p.X);
-            SelectedChannel = (int)Math.Round(Graph.CanvasToNormalized(Graph.ScreenToCanvas(new Point(e.X, e.Y))).X * (Commander.Camera.Width - 1));
+            SelectedChannel = (int)Math.Round(Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y))).X * (Commander.Camera.Width - 1));
             DataGridViewSelectedRowCollection selection = CalibrationListView.SelectedRows;
             if (selection.Count == 0)
             {

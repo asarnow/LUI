@@ -497,7 +497,7 @@ namespace LUI.controls
                 );
         }
 
-        public Point ScreenToCanvas(Point p)
+        public Point ScreenToAxes(Point p)
         {
             return new Point(
                 p.X - (int)Axes.X,
@@ -505,14 +505,14 @@ namespace LUI.controls
                 );
         }
 
-        public PointF CanvasToNormalized(Point p)
+        public PointF AxesToNormalized(Point p)
         {
             return new PointF(
                 p.X / (Axes.Width - 1), p.Y / (Axes.Height - 1)
                 );
         }
 
-        public Point NormalizedToCanvas(PointF p)
+        public Point AxesToCanvas(PointF p)
         {
             return new Point(
                 (int)(p.X * (Axes.Width - 1)), (int)(p.Y * (Axes.Height - 1))

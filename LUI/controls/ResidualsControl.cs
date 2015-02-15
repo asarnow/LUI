@@ -41,14 +41,45 @@ namespace LUI.controls
             set
             {
                 _SelectedChannel = Math.Max(Math.Min(value, (int)Commander.Camera.Width - 1), 0);
-                if (Light != null) CountsDisplay.Text = Light[_SelectedChannel].ToString("n");
             }
         }
 
+        int LowerBound { get; set; }
+        int UpperBound { get; set; }
+
         public enum Dialog
         {
-            BLANK, SAMPLE, PROGRESS, PROGRESS_BLANK, PROGRESS_DARK, PROGRESS_DATA,
-            PROGRESS_CALC
+            PROGRESS_CAMERA, PROGRESS_DATA
+        }
+
+        struct WorkArgs
+        {
+            public WorkArgs(int NScans, int NAverage)
+            {
+                this.NScans = NScans;
+                this.NAvg = NAverage;
+            }
+            public readonly int NScans;
+            public readonly int NAvg;
+        }
+
+        struct WorkProgress
+        {
+            public WorkProgress(object Data, int Sum, int Peak, int SumN, int PeakN, Dialog Status)
+            {
+                this.Data = Data;
+                this.Sum = Sum;
+                this.Peak = Peak;
+                this.SumN = SumN;
+                this.PeakN = PeakN;
+                this.Status = Status;
+            }                             
+            public readonly object Data;  
+            public readonly int Sum;      
+            public readonly int Peak;     
+            public readonly int SumN;     
+            public readonly int PeakN;    
+            public readonly Dialog Status;
         }
 
         public ResidualsControl(Commander commander)
@@ -58,6 +89,12 @@ namespace LUI.controls
             Graph.MouseClick += new MouseEventHandler(Graph_Click);
             Graph.XMin = (float)Commander.Calibration[0];
             Graph.XMax = (float)Commander.Calibration[Commander.Calibration.Length - 1];
+            LowerBound = (int)Commander.Camera.Width / 6;
+            UpperBound = (int)Commander.Camera.Width * 5 / 6;
+
+            CameraGain.Minimum = Commander.Camera.MinMCPGain;
+            CameraGain.Maximum = Commander.Camera.MaxMCPGain;
+            CameraGain.Value = Commander.Camera.MCPGain;
         }
 
         public void AlignmentWork(object sender, DoWorkEventArgs e)
@@ -65,123 +102,66 @@ namespace LUI.controls
             Commander.Camera.AcquisitionMode = AndorCamera.AcquisitionModeSingle;
             Commander.Camera.TriggerMode = AndorCamera.TriggerModeExternalExposure;
             Commander.Camera.ReadMode = AndorCamera.ReadModeFVB;
-            int N = (int)e.Argument;
+            //TODO Need local sample size and no. scans
+            WorkArgs args = (WorkArgs)e.Argument;
 
-            worker.ReportProgress(0, Dialog.BLANK.ToString());
-
-            int[] BlankBuffer = Commander.Flash();
-            for (int i = 0; i < N - 1; i++)
+            int cmasum = 0; // Cumulative moving average over scans
+            int cmapeak = 0;
+            int nsum = 0; // CMA over last NAvg scans only
+            int npeak = 0;
+            
+            for (int i = 0; i < args.NScans; i++)
             {
                 if (worker.CancellationPending)
                 {
                     e.Cancel = true;
                     return;
                 }
-                Data.Accumulate(BlankBuffer, Commander.Flash());
-                worker.ReportProgress((i / N) * 33, Dialog.PROGRESS_BLANK.ToString());
-            }
-
-            worker.ReportProgress(33, Dialog.SAMPLE.ToString());
-
-            wait = true;
-            bool[] waitparam = { wait };
-            Dispatcher.BeginInvoke(new Action(BlockingBlankDialog), waitparam);
-            while (wait) ;
-
-            worker.ReportProgress(33, Dialog.PROGRESS_DARK.ToString());
-
-            if (worker.CancellationPending)
-            {
-                e.Cancel = true;
-                return;
-            }
-
-            int[] DarkBuffer = Commander.Dark();
-            for (int i = 0; i < N - 1; i++)
-            {
-                if (worker.CancellationPending)
+                int[] DataBuffer = Commander.Flash();
+                int sum = 0;
+                int peak = int.MinValue;
+                for (int j = LowerBound; j <= UpperBound; j++)
                 {
-                    e.Cancel = true;
-                    return;
+                    sum += DataBuffer[j];
+                    if (DataBuffer[j] > peak) peak = DataBuffer[j];
                 }
-                Data.Accumulate(DarkBuffer, Commander.Dark());
-                worker.ReportProgress(33 + (i / N) * 33, Dialog.PROGRESS_DARK.ToString());
+
+                cmasum = (sum + i * cmasum) / (i + 1);
+                cmapeak = (peak + i * cmapeak) / (i + 1);
+
+                int n = i % args.NAvg; // Reset NAvg CMA
+                if (n == 0) npeak = nsum = 0;
+                nsum = (nsum + n * nsum) / (n + 1);
+                npeak = (npeak + n * npeak) / (n + 1);
+
+                WorkProgress progress = new WorkProgress(Array.ConvertAll((int[])DataBuffer, x => (double)x), cmasum, cmapeak, nsum, npeak, Dialog.PROGRESS_DATA);
+                worker.ReportProgress(1 + (i / args.NScans), progress);
             }
-
-            worker.ReportProgress(66, Dialog.PROGRESS.ToString());
-            wait = true;
-            Dispatcher.BeginInvoke(new Action(BlockingSampleDialog), new bool[] { wait });
-            while (wait) ;
-
-            if (worker.CancellationPending)
-            {
-                e.Cancel = true;
-                return;
-            }
-
-            worker.ReportProgress(66, Dialog.PROGRESS_DATA.ToString());
-
-            int[] DataBuffer = Commander.Flash();
-            for (int i = 0; i < N - 1; i++)
-            {
-                if (worker.CancellationPending)
-                {
-                    e.Cancel = true;
-                    return;
-                }
-                Data.Accumulate(DataBuffer, Commander.Flash());
-                worker.ReportProgress(66 + (i / N) * 33, Dialog.PROGRESS_DATA.ToString());
-            }
-            worker.ReportProgress(99, Dialog.PROGRESS_CALC.ToString());
-            Data.Dissipate(DataBuffer, DarkBuffer);
-            worker.ReportProgress(100, Dialog.PROGRESS_CALC.ToString());
-            e.Result = DataBuffer;
+            //e.Result = DataBuffer;
         }
 
         private void Collect_Click(object sender, EventArgs e)
         {
             Collect.Enabled = false;
-            int N = (int)Averages.Value;
             worker = new BackgroundWorker();
             worker.DoWork += new System.ComponentModel.DoWorkEventHandler(AlignmentWork);
             worker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(AlignmentProgress);
             worker.WorkerSupportsCancellation = true;
             worker.WorkerReportsProgress = true;
-            worker.RunWorkerAsync(N);
+            worker.RunWorkerAsync(new WorkArgs((int)NScan.Value, (int)NAverage.Value));
         }
 
         public void AlignmentProgress(object sender, ProgressChangedEventArgs e)
         {
-            Dialog operation = (Dialog)Enum.Parse(typeof(Dialog), (string)e.UserState);
-            switch (operation)
+            WorkProgress progress = (WorkProgress)e.UserState;
+
+            double[] Data = (double[])progress.Data;
+
+            switch (progress.Status)
             {
-                case Dialog.BLANK:
-                    StatusProgress.Value = e.ProgressPercentage;
-                    ProgressLabel.Text = "Waiting";
-                    break;
-                case Dialog.SAMPLE:
-                    StatusProgress.Value = e.ProgressPercentage;
-                    ProgressLabel.Text = "Waiting";
-                    break;
-                case Dialog.PROGRESS:
-                    StatusProgress.Value = e.ProgressPercentage;
-                    ProgressLabel.Text = "Busy";
-                    break;
-                case Dialog.PROGRESS_BLANK:
-                    StatusProgress.Value = e.ProgressPercentage;
-                    ProgressLabel.Text = "Collecting blank";
-                    break;
-                case Dialog.PROGRESS_DARK:
-                    StatusProgress.Value = e.ProgressPercentage;
-                    ProgressLabel.Text = "Collecting dark";
-                    break;
                 case Dialog.PROGRESS_DATA:
                     StatusProgress.Value = e.ProgressPercentage;
                     ProgressLabel.Text = "Collecting data";
-                    break;
-                case Dialog.PROGRESS_CALC:
-                    StatusProgress.Value = e.ProgressPercentage;
-                    ProgressLabel.Text = "Calculating";
                     break;
             }
         }
@@ -190,12 +170,7 @@ namespace LUI.controls
         {
             if (!e.Cancelled)
             {
-                Light = Array.ConvertAll((int[])e.Result, x => (double)x);
-                if (LastLight != null)
-                {
-                    DiffLight = (double[])Light.Clone(); // Deep copy for value types only
-                    Data.Dissipate(DiffLight, LastLight);
-                }
+                
                 Display();
                 SelectedChannel = SelectedChannel;
                 ProgressLabel.Text = "Complete";
@@ -216,15 +191,26 @@ namespace LUI.controls
 
         private void Graph_Click(object sender, MouseEventArgs e)
         {
-            //PointF p = Graph.ScreenToData(new Point(e.X, e.Y));
-            SelectedChannel = (int)Math.Round(Graph.CanvasToNormalized(Graph.ScreenToCanvas(new Point(e.X, e.Y))).X * (Commander.Camera.Width - 1));
+            SelectedChannel = (int)Math.Round(Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y))).X * (Commander.Camera.Width - 1));
+
+            // If the click is closer to the LB, update LB. Else, update UB.
+            if (Math.Abs(SelectedChannel - LowerBound) < Math.Abs(SelectedChannel - UpperBound))
+            {
+                LowerBound = SelectedChannel;
+            }
+            else
+            {
+                UpperBound = SelectedChannel;
+            }
+
             RedrawLines();
         }
 
         private void RedrawLines()
         {
             Graph.ClearAnnotation();
-            Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[0], SelectedChannel);
+            Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[0], LowerBound);
+            Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[0], UpperBound);
             Graph.Invalidate();
         }
 
@@ -280,7 +266,7 @@ namespace LUI.controls
                 case 1:
                     try
                     {
-                        LastLight = FileIO.ReadVector<double>(openFile.FileName);
+                        Light = FileIO.ReadVector<double>(openFile.FileName);
                     }
                     catch (IOException ex)
                     {
@@ -290,7 +276,7 @@ namespace LUI.controls
                 case 2:
                     try
                     {
-                        LastLight = FileIO.ReadVector<double>(openFile.FileName);
+                        Light = FileIO.ReadVector<double>(openFile.FileName);
                     }
                     catch (IOException ex)
                     {
@@ -305,7 +291,7 @@ namespace LUI.controls
         private void Display()
         {
             Graph.ClearData();
-
+            
             if (ShowLast.Checked && LastLight != null)
             {
                 Graph.MarkerColor = Graph.ColorOrder[2];
@@ -343,6 +329,58 @@ namespace LUI.controls
             Graph.XMax = (float)Commander.Calibration[Commander.Calibration.Length - 1];
             Graph.Clear();
             Display();
+        }
+
+        private void NAverage_ValueChanged(object sender, EventArgs e)
+        {
+            PeakNLabel.Text = NAverage.Value.ToString("n") + " Point Average";
+        }
+
+        private void CameraGain_ValueChanged(object sender, EventArgs e)
+        {
+            //TODO Safety check
+            Commander.Camera.MCPGain = (int)CameraGain.Value;
+        }
+
+        private void SaveProfile_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveFile = new SaveFileDialog();
+            saveFile.Filter = "ALN File|*.aln|MAT File|*.mat|All Files|*.*";
+            saveFile.Title = "Save Light Profile";
+            saveFile.ShowDialog();
+
+            if (saveFile.FileName == "") return;
+
+            switch (saveFile.FilterIndex)
+            {
+                case 3:
+                // All files, fall through to ALN.
+                case 1:
+                    // ALN
+                    try
+                    {
+                        FileIO.WriteVector<double>(saveFile.FileName, Light);
+                    }
+                    catch (IOException ex)
+                    {
+                        MessageBox.Show(ex.ToString());
+                    }
+                    break;
+                case 2:
+                    // MAT
+                    try
+                    {
+                        MatFile mat = new MatFile(saveFile.FileName, "aln",
+                            Light.Length, 1, "double");
+                        mat.WriteColumn(Light);
+                        mat.Dispose();
+                    }
+                    catch (IOException ex)
+                    {
+                        MessageBox.Show(ex.ToString());
+                    }
+                    break;
+            }
         }
 
     }

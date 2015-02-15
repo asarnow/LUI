@@ -197,8 +197,8 @@ namespace LUI.controls
 
         private void Graph_Click(object sender, MouseEventArgs e)
         {
-            //PointF p = Graph.ScreenToData(new Point(e.X, e.Y));
-            SelectedChannel = (int)Math.Round(Graph.CanvasToNormalized(Graph.ScreenToCanvas(new Point(e.X, e.Y))).X * (Commander.Camera.Width - 1));
+            // Selects a *physical channel* on the camera.
+            SelectedChannel = (int)Math.Round(Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y))).X * (Commander.Camera.Width - 1));
             RedrawLines();
         }
 

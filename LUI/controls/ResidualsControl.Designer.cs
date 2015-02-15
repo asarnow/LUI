@@ -34,9 +34,11 @@
             this.ProgressLabel = new System.Windows.Forms.Label();
             this.StatusProgress = new System.Windows.Forms.ProgressBar();
             this.CommandsBox = new System.Windows.Forms.GroupBox();
+            this.GainLabel = new System.Windows.Forms.Label();
+            this.CameraGain = new System.Windows.Forms.NumericUpDown();
             this.Clear = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
-            this.Averages = new System.Windows.Forms.NumericUpDown();
+            this.NScan = new System.Windows.Forms.NumericUpDown();
             this.Collect = new System.Windows.Forms.Button();
             this.Abort = new System.Windows.Forms.Button();
             this.BeamFlagBox = new System.Windows.Forms.GroupBox();
@@ -45,21 +47,30 @@
             this.CloseLaser = new System.Windows.Forms.Button();
             this.OpenLaser = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.SaveProfile = new System.Windows.Forms.Button();
             this.DiffSumLabel = new System.Windows.Forms.Label();
-            this.CountsLabel = new System.Windows.Forms.Label();
             this.DiffSum = new System.Windows.Forms.TextBox();
+            this.NAverageLabel = new System.Windows.Forms.Label();
+            this.NAverage = new System.Windows.Forms.NumericUpDown();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.PeakNLabel = new System.Windows.Forms.Label();
+            this.CountsAverage = new System.Windows.Forms.TextBox();
+            this.TotalCountsLabel = new System.Windows.Forms.Label();
+            this.PeakLabel = new System.Windows.Forms.Label();
+            this.TotalCounts = new System.Windows.Forms.TextBox();
             this.ShowDifference = new System.Windows.Forms.CheckBox();
             this.ShowLast = new System.Windows.Forms.CheckBox();
             this.LoadProfile = new System.Windows.Forms.Button();
-            this.CountsDisplay = new System.Windows.Forms.TextBox();
+            this.Peak = new System.Windows.Forms.TextBox();
             this.Graph = new LUI.controls.GraphControl();
-            this.CountsAverage = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel1.SuspendLayout();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.Averages)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.CameraGain)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.NScan)).BeginInit();
             this.BeamFlagBox.SuspendLayout();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.NAverage)).BeginInit();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -117,9 +128,11 @@
             // 
             // CommandsBox
             // 
+            this.CommandsBox.Controls.Add(this.GainLabel);
+            this.CommandsBox.Controls.Add(this.CameraGain);
             this.CommandsBox.Controls.Add(this.Clear);
             this.CommandsBox.Controls.Add(this.label1);
-            this.CommandsBox.Controls.Add(this.Averages);
+            this.CommandsBox.Controls.Add(this.NScan);
             this.CommandsBox.Controls.Add(this.Collect);
             this.CommandsBox.Controls.Add(this.Abort);
             this.CommandsBox.Location = new System.Drawing.Point(831, 218);
@@ -128,6 +141,33 @@
             this.CommandsBox.TabIndex = 3;
             this.CommandsBox.TabStop = false;
             this.CommandsBox.Text = "Commands";
+            // 
+            // GainLabel
+            // 
+            this.GainLabel.AutoSize = true;
+            this.GainLabel.Location = new System.Drawing.Point(179, 169);
+            this.GainLabel.Name = "GainLabel";
+            this.GainLabel.Size = new System.Drawing.Size(68, 13);
+            this.GainLabel.TabIndex = 6;
+            this.GainLabel.Text = "Camera Gain";
+            // 
+            // CameraGain
+            // 
+            this.CameraGain.Location = new System.Drawing.Point(114, 167);
+            this.CameraGain.Maximum = new decimal(new int[] {
+            500,
+            0,
+            0,
+            0});
+            this.CameraGain.Name = "CameraGain";
+            this.CameraGain.Size = new System.Drawing.Size(59, 20);
+            this.CameraGain.TabIndex = 5;
+            this.CameraGain.Value = new decimal(new int[] {
+            500,
+            0,
+            0,
+            0});
+            this.CameraGain.ValueChanged += new System.EventHandler(this.CameraGain_ValueChanged);
             // 
             // Clear
             // 
@@ -149,23 +189,23 @@
             this.label1.TabIndex = 4;
             this.label1.Text = "Scans";
             // 
-            // Averages
+            // NScan
             // 
-            this.Averages.Location = new System.Drawing.Point(113, 24);
-            this.Averages.Maximum = new decimal(new int[] {
+            this.NScan.Location = new System.Drawing.Point(113, 24);
+            this.NScan.Maximum = new decimal(new int[] {
             127,
             0,
             0,
             0});
-            this.Averages.Minimum = new decimal(new int[] {
+            this.NScan.Minimum = new decimal(new int[] {
             1,
             0,
             0,
             0});
-            this.Averages.Name = "Averages";
-            this.Averages.Size = new System.Drawing.Size(36, 20);
-            this.Averages.TabIndex = 3;
-            this.Averages.Value = new decimal(new int[] {
+            this.NScan.Name = "NScan";
+            this.NScan.Size = new System.Drawing.Size(36, 20);
+            this.NScan.TabIndex = 3;
+            this.NScan.Value = new decimal(new int[] {
             1,
             0,
             0,
@@ -242,47 +282,145 @@
             // panel1
             // 
             this.tableLayoutPanel1.SetColumnSpan(this.panel1, 3);
-            this.panel1.Controls.Add(this.CountsAverage);
+            this.panel1.Controls.Add(this.SaveProfile);
             this.panel1.Controls.Add(this.DiffSumLabel);
-            this.panel1.Controls.Add(this.CountsLabel);
             this.panel1.Controls.Add(this.DiffSum);
+            this.panel1.Controls.Add(this.NAverageLabel);
+            this.panel1.Controls.Add(this.NAverage);
+            this.panel1.Controls.Add(this.textBox1);
+            this.panel1.Controls.Add(this.PeakNLabel);
+            this.panel1.Controls.Add(this.CountsAverage);
+            this.panel1.Controls.Add(this.TotalCountsLabel);
+            this.panel1.Controls.Add(this.PeakLabel);
+            this.panel1.Controls.Add(this.TotalCounts);
             this.panel1.Controls.Add(this.ShowDifference);
             this.panel1.Controls.Add(this.ShowLast);
             this.panel1.Controls.Add(this.LoadProfile);
-            this.panel1.Controls.Add(this.CountsDisplay);
+            this.panel1.Controls.Add(this.Peak);
             this.panel1.Location = new System.Drawing.Point(2, 432);
             this.panel1.Margin = new System.Windows.Forms.Padding(2);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(824, 210);
             this.panel1.TabIndex = 7;
             // 
+            // SaveProfile
+            // 
+            this.SaveProfile.Location = new System.Drawing.Point(720, 34);
+            this.SaveProfile.Margin = new System.Windows.Forms.Padding(2);
+            this.SaveProfile.Name = "SaveProfile";
+            this.SaveProfile.Size = new System.Drawing.Size(102, 28);
+            this.SaveProfile.TabIndex = 16;
+            this.SaveProfile.Text = "Save Profile";
+            this.SaveProfile.UseVisualStyleBackColor = true;
+            this.SaveProfile.Click += new System.EventHandler(this.SaveProfile_Click);
+            // 
             // DiffSumLabel
             // 
             this.DiffSumLabel.AutoSize = true;
-            this.DiffSumLabel.Location = new System.Drawing.Point(141, 56);
+            this.DiffSumLabel.Location = new System.Drawing.Point(202, 139);
             this.DiffSumLabel.Name = "DiffSumLabel";
             this.DiffSumLabel.Size = new System.Drawing.Size(92, 13);
-            this.DiffSumLabel.TabIndex = 8;
+            this.DiffSumLabel.TabIndex = 15;
             this.DiffSumLabel.Text = "Sum of Difference";
-            // 
-            // CountsLabel
-            // 
-            this.CountsLabel.AutoSize = true;
-            this.CountsLabel.Location = new System.Drawing.Point(141, 30);
-            this.CountsLabel.Name = "CountsLabel";
-            this.CountsLabel.Size = new System.Drawing.Size(40, 13);
-            this.CountsLabel.TabIndex = 7;
-            this.CountsLabel.Text = "Counts";
             // 
             // DiffSum
             // 
-            this.DiffSum.Location = new System.Drawing.Point(35, 53);
+            this.DiffSum.Location = new System.Drawing.Point(96, 136);
             this.DiffSum.Name = "DiffSum";
             this.DiffSum.ReadOnly = true;
             this.DiffSum.Size = new System.Drawing.Size(100, 20);
-            this.DiffSum.TabIndex = 6;
+            this.DiffSum.TabIndex = 14;
             this.DiffSum.Text = "0";
             this.DiffSum.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // NAverageLabel
+            // 
+            this.NAverageLabel.AutoSize = true;
+            this.NAverageLabel.Location = new System.Drawing.Point(542, 62);
+            this.NAverageLabel.Name = "NAverageLabel";
+            this.NAverageLabel.Size = new System.Drawing.Size(90, 13);
+            this.NAverageLabel.TabIndex = 13;
+            this.NAverageLabel.Text = "Points in Average";
+            // 
+            // NAverage
+            // 
+            this.NAverage.Location = new System.Drawing.Point(500, 60);
+            this.NAverage.Maximum = new decimal(new int[] {
+            127,
+            0,
+            0,
+            0});
+            this.NAverage.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.NAverage.Name = "NAverage";
+            this.NAverage.Size = new System.Drawing.Size(36, 20);
+            this.NAverage.TabIndex = 12;
+            this.NAverage.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.NAverage.ValueChanged += new System.EventHandler(this.NAverage_ValueChanged);
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(240, 49);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.ReadOnly = true;
+            this.textBox1.Size = new System.Drawing.Size(100, 20);
+            this.textBox1.TabIndex = 11;
+            this.textBox1.Text = "0";
+            this.textBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // PeakNLabel
+            // 
+            this.PeakNLabel.AutoSize = true;
+            this.PeakNLabel.Location = new System.Drawing.Point(346, 28);
+            this.PeakNLabel.Name = "PeakNLabel";
+            this.PeakNLabel.Size = new System.Drawing.Size(83, 13);
+            this.PeakNLabel.TabIndex = 10;
+            this.PeakNLabel.Text = "5 Point Average";
+            // 
+            // CountsAverage
+            // 
+            this.CountsAverage.Location = new System.Drawing.Point(240, 25);
+            this.CountsAverage.Name = "CountsAverage";
+            this.CountsAverage.ReadOnly = true;
+            this.CountsAverage.Size = new System.Drawing.Size(100, 20);
+            this.CountsAverage.TabIndex = 9;
+            this.CountsAverage.Text = "0";
+            this.CountsAverage.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // TotalCountsLabel
+            // 
+            this.TotalCountsLabel.AutoSize = true;
+            this.TotalCountsLabel.Location = new System.Drawing.Point(141, 56);
+            this.TotalCountsLabel.Name = "TotalCountsLabel";
+            this.TotalCountsLabel.Size = new System.Drawing.Size(67, 13);
+            this.TotalCountsLabel.TabIndex = 8;
+            this.TotalCountsLabel.Text = "Total Counts";
+            // 
+            // PeakLabel
+            // 
+            this.PeakLabel.AutoSize = true;
+            this.PeakLabel.Location = new System.Drawing.Point(141, 28);
+            this.PeakLabel.Name = "PeakLabel";
+            this.PeakLabel.Size = new System.Drawing.Size(55, 13);
+            this.PeakLabel.TabIndex = 7;
+            this.PeakLabel.Text = "Peak Size";
+            // 
+            // TotalCounts
+            // 
+            this.TotalCounts.Location = new System.Drawing.Point(35, 53);
+            this.TotalCounts.Name = "TotalCounts";
+            this.TotalCounts.ReadOnly = true;
+            this.TotalCounts.Size = new System.Drawing.Size(100, 20);
+            this.TotalCounts.TabIndex = 6;
+            this.TotalCounts.Text = "0";
+            this.TotalCounts.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // ShowDifference
             // 
@@ -321,15 +459,15 @@
             this.LoadProfile.UseVisualStyleBackColor = true;
             this.LoadProfile.Click += new System.EventHandler(this.LoadProfile_Click);
             // 
-            // CountsDisplay
+            // Peak
             // 
-            this.CountsDisplay.Location = new System.Drawing.Point(35, 27);
-            this.CountsDisplay.Name = "CountsDisplay";
-            this.CountsDisplay.ReadOnly = true;
-            this.CountsDisplay.Size = new System.Drawing.Size(100, 20);
-            this.CountsDisplay.TabIndex = 0;
-            this.CountsDisplay.Text = "0";
-            this.CountsDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.Peak.Location = new System.Drawing.Point(35, 25);
+            this.Peak.Name = "Peak";
+            this.Peak.ReadOnly = true;
+            this.Peak.Size = new System.Drawing.Size(100, 20);
+            this.Peak.TabIndex = 0;
+            this.Peak.Text = "0";
+            this.Peak.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // Graph
             // 
@@ -368,16 +506,6 @@
             this.Graph.YMax = float.NegativeInfinity;
             this.Graph.YMin = float.PositiveInfinity;
             // 
-            // CountsAverage
-            // 
-            this.CountsAverage.Location = new System.Drawing.Point(35, 79);
-            this.CountsAverage.Name = "CountsAverage";
-            this.CountsAverage.ReadOnly = true;
-            this.CountsAverage.Size = new System.Drawing.Size(100, 20);
-            this.CountsAverage.TabIndex = 9;
-            this.CountsAverage.Text = "0";
-            this.CountsAverage.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
             // ResidualsControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -391,10 +519,12 @@
             this.StatusBox.PerformLayout();
             this.CommandsBox.ResumeLayout(false);
             this.CommandsBox.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.Averages)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.CameraGain)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.NScan)).EndInit();
             this.BeamFlagBox.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.NAverage)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -406,7 +536,7 @@
         private System.Windows.Forms.GroupBox CommandsBox;
         private System.Windows.Forms.Button Clear;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.NumericUpDown Averages;
+        private System.Windows.Forms.NumericUpDown NScan;
         private System.Windows.Forms.Button Collect;
         private System.Windows.Forms.Button Abort;
         private System.Windows.Forms.GroupBox BeamFlagBox;
@@ -418,13 +548,22 @@
         private System.Windows.Forms.Label ProgressLabel;
         private System.Windows.Forms.ProgressBar StatusProgress;
         private controls.GraphControl Graph;
-        private System.Windows.Forms.TextBox CountsDisplay;
+        private System.Windows.Forms.TextBox Peak;
         private System.Windows.Forms.Button LoadProfile;
         private System.Windows.Forms.CheckBox ShowDifference;
         private System.Windows.Forms.CheckBox ShowLast;
-        private System.Windows.Forms.Label DiffSumLabel;
-        private System.Windows.Forms.Label CountsLabel;
-        private System.Windows.Forms.TextBox DiffSum;
+        private System.Windows.Forms.Label TotalCountsLabel;
+        private System.Windows.Forms.Label PeakLabel;
+        private System.Windows.Forms.TextBox TotalCounts;
         private System.Windows.Forms.TextBox CountsAverage;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Label PeakNLabel;
+        private System.Windows.Forms.NumericUpDown NAverage;
+        private System.Windows.Forms.Label NAverageLabel;
+        private System.Windows.Forms.NumericUpDown CameraGain;
+        private System.Windows.Forms.Label GainLabel;
+        private System.Windows.Forms.Label DiffSumLabel;
+        private System.Windows.Forms.TextBox DiffSum;
+        private System.Windows.Forms.Button SaveProfile;
     }
 }
