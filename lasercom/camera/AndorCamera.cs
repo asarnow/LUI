@@ -335,16 +335,15 @@ namespace lasercom
         {
             uint npx = AcqSize;
             int[] data = new int[npx];
-            uint ret = Acquire(ref data);
+            uint ret = Acquire(data);
             return data;
         }
 
         /// <summary>
         /// Acquire data and store in referenced array.
         /// This overload supports memory efficient acquisition if the same
-        /// (ref'd) array is continually re-passed. Note the ref'd array must
-        /// be initialized in the caller ('ref' semantics as opposd to 'out').
-        /// Additionally, the ref'd array must be a legal size for acquisition.
+        /// array is continually re-passed.
+        /// The array must be a legal size for acquisition.
         /// AndorSDK return codes (uint):
         /// DRV_SUCCESS             Data copied. 
         /// DRV_NOT_INITIALIZED     System not initialized.
@@ -356,7 +355,7 @@ namespace lasercom
         /// </summary>
         /// <param name="DataBuffer"></param>
         /// <returns></returns>
-        public virtual uint Acquire(ref int[] DataBuffer)
+        public virtual uint Acquire(int[] DataBuffer)
         {
             uint npx = (uint)DataBuffer.Length;
             AndorSdk.StartAcquisition();

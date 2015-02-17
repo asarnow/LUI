@@ -375,8 +375,9 @@ namespace LUI.controls
                 YAxisTop = new PointF(Origin.X, Axes.Top);
                 using (Pen AxisPen = new Pen(AxesColor))
                 {
-                    G.DrawLine(AxisPen, Origin.X, Origin.Y, YAxisTop.X, YAxisTop.Y);
-                    G.DrawLine(AxisPen, XAxisRight.X, XAxisRight.Y, XAxisRight.X, YAxisTop.Y);
+                    G.DrawLine(AxisPen, Origin.X, Origin.Y, YAxisTop.X, YAxisTop.Y); // Draw left Y-Axis
+                    G.DrawLine(AxisPen, XAxisRight.X, XAxisRight.Y, XAxisRight.X, YAxisTop.Y); // Draw right Y-Axis
+                    // Draw X-Axis, then horizontal grid lines
                     for (float i = 0; i <= NYTicks; i++)
                     {
                         G.DrawLine(AxisPen, Origin.X, Origin.Y - i / NYTicks * Axes.Height, XAxisRight.X, XAxisRight.Y - i / NYTicks * Axes.Height);

@@ -65,19 +65,19 @@ namespace LUI.controls
 
         struct WorkProgress
         {
-            public WorkProgress(object Data, int Sum, int Peak, int SumN, int PeakN, Dialog Status)
+            public WorkProgress(object Data, int Counts, int Peak, int CountsN, int PeakN, Dialog Status)
             {
                 this.Data = Data;
-                this.Sum = Sum;
+                this.Counts = Counts;
                 this.Peak = Peak;
-                this.SumN = SumN;
+                this.CountsN = CountsN;
                 this.PeakN = PeakN;
                 this.Status = Status;
             }                             
             public readonly object Data;  
-            public readonly int Sum;      
+            public readonly int Counts;      
             public readonly int Peak;     
-            public readonly int SumN;     
+            public readonly int CountsN;     
             public readonly int PeakN;    
             public readonly Dialog Status;
         }
@@ -109,7 +109,7 @@ namespace LUI.controls
             int cmapeak = 0;
             int nsum = 0; // CMA over last NAvg scans only
             int npeak = 0;
-            
+            int[] DataBuffer = new int[Commander.Camera.AcqSize];
             for (int i = 0; i < args.NScans; i++)
             {
                 if (worker.CancellationPending)
@@ -117,7 +117,8 @@ namespace LUI.controls
                     e.Cancel = true;
                     return;
                 }
-                int[] DataBuffer = Commander.Flash();
+                uint ret = Commander.Flash(DataBuffer);
+
                 int sum = 0;
                 int peak = int.MinValue;
                 for (int j = LowerBound; j <= UpperBound; j++)
@@ -135,7 +136,7 @@ namespace LUI.controls
                 npeak = (npeak + n * npeak) / (n + 1);
 
                 WorkProgress progress = new WorkProgress(Array.ConvertAll((int[])DataBuffer, x => (double)x), cmasum, cmapeak, nsum, npeak, Dialog.PROGRESS_DATA);
-                worker.ReportProgress(1 + (i / args.NScans), progress);
+                worker.ReportProgress(i / args.NScans, progress);
             }
             //e.Result = DataBuffer;
         }
@@ -153,13 +154,20 @@ namespace LUI.controls
 
         public void AlignmentProgress(object sender, ProgressChangedEventArgs e)
         {
-            WorkProgress progress = (WorkProgress)e.UserState;
+            WorkProgress Progress = (WorkProgress)e.UserState;
 
-            double[] Data = (double[])progress.Data;
-
-            switch (progress.Status)
+            switch (Progress.Status)
             {
                 case Dialog.PROGRESS_DATA:
+                    double[] Data = (double[])Progress.Data;
+
+                    Peak.Text = Progress.Peak.ToString("n");
+                    Counts.Text = Progress.Counts.ToString("n");
+                    PeakN.Text = Progress.PeakN.ToString("n");
+                    CountsN.Text = Progress.CountsN.ToString("n");
+
+                    Graph.DrawPoints(Commander.Calibration, Data);
+                    Graph.Invalidate();
                     StatusProgress.Value = e.ProgressPercentage;
                     ProgressLabel.Text = "Collecting data";
                     break;
@@ -168,16 +176,18 @@ namespace LUI.controls
 
         public void AlignmentComplete(object sender, RunWorkerCompletedEventArgs e)
         {
-            if (!e.Cancelled)
+            if (e.Error != null)
             {
-                
-                Display();
-                SelectedChannel = SelectedChannel;
-                ProgressLabel.Text = "Complete";
+                // Handle the exception thrown in the worker thread
+            }
+            else if (e.Cancelled)
+            {
+                ProgressLabel.Text = "Aborted";
             }
             else
             {
-                ProgressLabel.Text = "Aborted";
+                ProgressLabel.Text = "Complete";
+                //e.Result
             }
             StatusProgress.Value = 100;
             Collect.Enabled = true;
@@ -193,7 +203,7 @@ namespace LUI.controls
         {
             SelectedChannel = (int)Math.Round(Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y))).X * (Commander.Camera.Width - 1));
 
-            // If the click is closer to the LB, update LB. Else, update UB.
+            // If the click is closer to the LB, update LB. Else (equidistant or closer to UB), update UB.
             if (Math.Abs(SelectedChannel - LowerBound) < Math.Abs(SelectedChannel - UpperBound))
             {
                 LowerBound = SelectedChannel;
@@ -231,9 +241,6 @@ namespace LUI.controls
                         SelectedChannel++;
                     }
                     RedrawLines();
-                    break;
-                case Keys.Enter:
-                    //TODO add calibration point
                     break;
             }
             return base.ProcessCmdKey(ref msg, keyData);

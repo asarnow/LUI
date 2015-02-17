@@ -52,12 +52,12 @@
             this.DiffSum = new System.Windows.Forms.TextBox();
             this.NAverageLabel = new System.Windows.Forms.Label();
             this.NAverage = new System.Windows.Forms.NumericUpDown();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.CountsN = new System.Windows.Forms.TextBox();
             this.PeakNLabel = new System.Windows.Forms.Label();
-            this.CountsAverage = new System.Windows.Forms.TextBox();
+            this.PeakN = new System.Windows.Forms.TextBox();
             this.TotalCountsLabel = new System.Windows.Forms.Label();
             this.PeakLabel = new System.Windows.Forms.Label();
-            this.TotalCounts = new System.Windows.Forms.TextBox();
+            this.Counts = new System.Windows.Forms.TextBox();
             this.ShowDifference = new System.Windows.Forms.CheckBox();
             this.ShowLast = new System.Windows.Forms.CheckBox();
             this.LoadProfile = new System.Windows.Forms.Button();
@@ -287,12 +287,12 @@
             this.panel1.Controls.Add(this.DiffSum);
             this.panel1.Controls.Add(this.NAverageLabel);
             this.panel1.Controls.Add(this.NAverage);
-            this.panel1.Controls.Add(this.textBox1);
+            this.panel1.Controls.Add(this.CountsN);
             this.panel1.Controls.Add(this.PeakNLabel);
-            this.panel1.Controls.Add(this.CountsAverage);
+            this.panel1.Controls.Add(this.PeakN);
             this.panel1.Controls.Add(this.TotalCountsLabel);
             this.panel1.Controls.Add(this.PeakLabel);
-            this.panel1.Controls.Add(this.TotalCounts);
+            this.panel1.Controls.Add(this.Counts);
             this.panel1.Controls.Add(this.ShowDifference);
             this.panel1.Controls.Add(this.ShowLast);
             this.panel1.Controls.Add(this.LoadProfile);
@@ -365,15 +365,15 @@
             0});
             this.NAverage.ValueChanged += new System.EventHandler(this.NAverage_ValueChanged);
             // 
-            // textBox1
+            // CountsN
             // 
-            this.textBox1.Location = new System.Drawing.Point(240, 49);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(100, 20);
-            this.textBox1.TabIndex = 11;
-            this.textBox1.Text = "0";
-            this.textBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.CountsN.Location = new System.Drawing.Point(240, 49);
+            this.CountsN.Name = "CountsN";
+            this.CountsN.ReadOnly = true;
+            this.CountsN.Size = new System.Drawing.Size(100, 20);
+            this.CountsN.TabIndex = 11;
+            this.CountsN.Text = "0";
+            this.CountsN.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // PeakNLabel
             // 
@@ -384,15 +384,15 @@
             this.PeakNLabel.TabIndex = 10;
             this.PeakNLabel.Text = "5 Point Average";
             // 
-            // CountsAverage
+            // PeakN
             // 
-            this.CountsAverage.Location = new System.Drawing.Point(240, 25);
-            this.CountsAverage.Name = "CountsAverage";
-            this.CountsAverage.ReadOnly = true;
-            this.CountsAverage.Size = new System.Drawing.Size(100, 20);
-            this.CountsAverage.TabIndex = 9;
-            this.CountsAverage.Text = "0";
-            this.CountsAverage.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.PeakN.Location = new System.Drawing.Point(240, 25);
+            this.PeakN.Name = "PeakN";
+            this.PeakN.ReadOnly = true;
+            this.PeakN.Size = new System.Drawing.Size(100, 20);
+            this.PeakN.TabIndex = 9;
+            this.PeakN.Text = "0";
+            this.PeakN.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // TotalCountsLabel
             // 
@@ -412,15 +412,15 @@
             this.PeakLabel.TabIndex = 7;
             this.PeakLabel.Text = "Peak Size";
             // 
-            // TotalCounts
+            // Counts
             // 
-            this.TotalCounts.Location = new System.Drawing.Point(35, 53);
-            this.TotalCounts.Name = "TotalCounts";
-            this.TotalCounts.ReadOnly = true;
-            this.TotalCounts.Size = new System.Drawing.Size(100, 20);
-            this.TotalCounts.TabIndex = 6;
-            this.TotalCounts.Text = "0";
-            this.TotalCounts.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.Counts.Location = new System.Drawing.Point(35, 53);
+            this.Counts.Name = "Counts";
+            this.Counts.ReadOnly = true;
+            this.Counts.Size = new System.Drawing.Size(100, 20);
+            this.Counts.TabIndex = 6;
+            this.Counts.Text = "0";
+            this.Counts.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // ShowDifference
             // 
@@ -554,9 +554,9 @@
         private System.Windows.Forms.CheckBox ShowLast;
         private System.Windows.Forms.Label TotalCountsLabel;
         private System.Windows.Forms.Label PeakLabel;
-        private System.Windows.Forms.TextBox TotalCounts;
-        private System.Windows.Forms.TextBox CountsAverage;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox Counts;
+        private System.Windows.Forms.TextBox PeakN;
+        private System.Windows.Forms.TextBox CountsN;
         private System.Windows.Forms.Label PeakNLabel;
         private System.Windows.Forms.NumericUpDown NAverage;
         private System.Windows.Forms.Label NAverageLabel;
