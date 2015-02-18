@@ -17,6 +17,7 @@ namespace LUI.controls
 
         private double[] Light = null;
         private double[] LastLight = null;
+        private double[] CumulativeLight = null;
         private double[] _DiffLight = null;
         private double[] DiffLight
         {
@@ -97,6 +98,16 @@ namespace LUI.controls
             CameraGain.Value = Commander.Camera.MCPGain;
         }
 
+        /// <summary>
+        /// Alignment / Residuals background task logic.
+        /// For both functions, we need to poll the camera continuously while
+        /// updating the graph with the acquired data.
+        /// A blank isn't required since we're already looking at the blank
+        /// for these functions. Subtracting dark current is also not required
+        /// as it would only subtract an equal, fixed amount from every scan.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void AlignmentWork(object sender, DoWorkEventArgs e)
         {
             Commander.Camera.AcquisitionMode = AndorCamera.AcquisitionModeSingle;
@@ -110,6 +121,7 @@ namespace LUI.controls
             int nsum = 0; // CMA over last NAvg scans only
             int npeak = 0;
             int[] DataBuffer = new int[Commander.Camera.AcqSize];
+            int[] CumulativeDataBuffer = new int[DataBuffer.Length];
             for (int i = 0; i < args.NScans; i++)
             {
                 if (worker.CancellationPending)
@@ -117,7 +129,8 @@ namespace LUI.controls
                     e.Cancel = true;
                     return;
                 }
-                uint ret = Commander.Flash(DataBuffer);
+                uint ret = Commander.Flash(DataBuffer); //TODO If flag, dump it in a MAT to be renamed later
+                Data.Accumulate(CumulativeDataBuffer, DataBuffer);
 
                 int sum = 0;
                 int peak = int.MinValue;
@@ -138,7 +151,8 @@ namespace LUI.controls
                 WorkProgress progress = new WorkProgress(Array.ConvertAll((int[])DataBuffer, x => (double)x), cmasum, cmapeak, nsum, npeak, Dialog.PROGRESS_DATA);
                 worker.ReportProgress(i / args.NScans, progress);
             }
-            //e.Result = DataBuffer;
+            Data.DivideArray(CumulativeDataBuffer, args.NScans);
+            e.Result = Array.ConvertAll((int[])CumulativeDataBuffer, x=> (double)x);
         }
 
         private void Collect_Click(object sender, EventArgs e)
@@ -150,8 +164,15 @@ namespace LUI.controls
             worker.WorkerSupportsCancellation = true;
             worker.WorkerReportsProgress = true;
             worker.RunWorkerAsync(new WorkArgs((int)NScan.Value, (int)NAverage.Value));
+            Graph.ClearData();
+            CumulativeLight = null;
         }
 
+        /// <summary>
+        /// Runs in UI thread to report background task progress.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void AlignmentProgress(object sender, ProgressChangedEventArgs e)
         {
             WorkProgress Progress = (WorkProgress)e.UserState;
@@ -159,21 +180,31 @@ namespace LUI.controls
             switch (Progress.Status)
             {
                 case Dialog.PROGRESS_DATA:
-                    double[] Data = (double[])Progress.Data;
+                    Light = (double[])Progress.Data;
+                    if (LastLight != null)
+                    {
+                        DiffLight = (double[])Light.Clone(); // Deep copy for value types only
+                        Data.Dissipate(DiffLight, LastLight);
+                    }
+
+                    DisplayProgress();
 
                     Peak.Text = Progress.Peak.ToString("n");
                     Counts.Text = Progress.Counts.ToString("n");
                     PeakN.Text = Progress.PeakN.ToString("n");
                     CountsN.Text = Progress.CountsN.ToString("n");
 
-                    Graph.DrawPoints(Commander.Calibration, Data);
-                    Graph.Invalidate();
                     StatusProgress.Value = e.ProgressPercentage;
                     ProgressLabel.Text = "Collecting data";
                     break;
             }
         }
 
+        /// <summary>
+        /// Runs in UI thread after background task completed.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void AlignmentComplete(object sender, RunWorkerCompletedEventArgs e)
         {
             if (e.Error != null)
@@ -187,7 +218,8 @@ namespace LUI.controls
             else
             {
                 ProgressLabel.Text = "Complete";
-                //e.Result
+                CumulativeLight = (double[])e.Result;
+                DisplayComplete();
             }
             StatusProgress.Value = 100;
             Collect.Enabled = true;
@@ -295,19 +327,27 @@ namespace LUI.controls
             }
         }
 
+        /// <summary>
+        /// (Re-)graph most current data.
+        /// Used when ShowLast/ShowDiff is changed or calibration is updated
+        /// while the background task is stopped.
+        /// Also if in "alignment mode" (PeristentGraphing NOT checked) while
+        /// the background task is running.
+        /// </summary>
         private void Display()
         {
+
             Graph.ClearData();
             
             if (ShowLast.Checked && LastLight != null)
             {
-                Graph.MarkerColor = Graph.ColorOrder[2];
+                Graph.MarkerColor = Graph.ColorOrder[1];
                 Graph.DrawPoints(Commander.Calibration, LastLight);
             }
 
             if (ShowDifference.Checked && DiffLight != null)
             {
-                Graph.MarkerColor = Graph.ColorOrder[1];
+                Graph.MarkerColor = Graph.ColorOrder[2];
                 Graph.DrawPoints(Commander.Calibration, DiffLight);
             }
 
@@ -317,6 +357,59 @@ namespace LUI.controls
                 Graph.DrawPoints(Commander.Calibration, Light);
             }
 
+            if (CumulativeLight != null) // Always false while background task running.
+            {
+                Graph.MarkerColor = Graph.ColorOrder[3];
+                Graph.DrawPoints(Commander.Calibration, CumulativeLight);
+            }
+
+            Graph.Invalidate();
+        }
+
+        /// <summary>
+        /// Used to update graph as background task runs.
+        /// If PersistentGraphing isn't checked, forwards to Display().
+        /// Otherwise, we re-graph the new DiffLight and Light.
+        /// DiffLight should rarely appear on top of other curves.
+        /// </summary>
+        private void DisplayProgress()
+        {
+            if (PersistentGraphing.Checked)
+            {
+                if (ShowDifference.Checked && DiffLight != null)
+                {
+                    Graph.MarkerColor = Graph.ColorOrder[2];
+                    Graph.DrawPoints(Commander.Calibration, DiffLight);
+                }
+
+                if (Light != null)
+                {
+                    Graph.MarkerColor = Graph.ColorOrder[0];
+                    Graph.DrawPoints(Commander.Calibration, Light);
+                }
+                Graph.Invalidate();
+            }
+            else
+            {
+                Display();
+            }
+        }
+
+        /// <summary>
+        /// Updates graph after background task complete.
+        /// Reduces to a no-op if PersistentGraphing is NOT checked.
+        /// Note in this case, the final scan has already been displayed.
+        /// </summary>
+        private void DisplayComplete()
+        {
+            // No point if PersistentGraphing isn't checked, as we would only
+            // see the final scan with the average. Graphing the average is
+            // most useful if it's graphed on top of all previous scans.
+            if (CumulativeLight != null && PersistentGraphing.Checked)
+            {
+                Graph.MarkerColor = Graph.ColorOrder[3];
+                Graph.DrawPoints(Commander.Calibration, CumulativeLight);
+            }
             Graph.Invalidate();
         }
 
