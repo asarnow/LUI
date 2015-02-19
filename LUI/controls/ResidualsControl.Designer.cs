@@ -52,6 +52,7 @@
             this.CloseLaser = new System.Windows.Forms.Button();
             this.OpenLaser = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.PersistentGraphing = new System.Windows.Forms.CheckBox();
             this.SaveProfile = new System.Windows.Forms.Button();
             this.DiffSum = new System.Windows.Forms.TextBox();
             this.NAverage = new System.Windows.Forms.NumericUpDown();
@@ -63,7 +64,6 @@
             this.ShowLast = new System.Windows.Forms.CheckBox();
             this.LoadProfile = new System.Windows.Forms.Button();
             this.Peak = new System.Windows.Forms.TextBox();
-            this.PersistentGraphing = new System.Windows.Forms.CheckBox();
             this.Graph = new LUI.controls.GraphControl();
             GainLabel = new System.Windows.Forms.Label();
             label1 = new System.Windows.Forms.Label();
@@ -81,6 +81,69 @@
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NAverage)).BeginInit();
             this.SuspendLayout();
+            // 
+            // GainLabel
+            // 
+            GainLabel.AutoSize = true;
+            GainLabel.Location = new System.Drawing.Point(179, 169);
+            GainLabel.Name = "GainLabel";
+            GainLabel.Size = new System.Drawing.Size(68, 13);
+            GainLabel.TabIndex = 6;
+            GainLabel.Text = "Camera Gain";
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new System.Drawing.Point(155, 26);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(37, 13);
+            label1.TabIndex = 4;
+            label1.Text = "Scans";
+            // 
+            // DiffSumLabel
+            // 
+            DiffSumLabel.AutoSize = true;
+            DiffSumLabel.Location = new System.Drawing.Point(202, 139);
+            DiffSumLabel.Name = "DiffSumLabel";
+            DiffSumLabel.Size = new System.Drawing.Size(92, 13);
+            DiffSumLabel.TabIndex = 15;
+            DiffSumLabel.Text = "Sum of Difference";
+            // 
+            // NAverageLabel
+            // 
+            NAverageLabel.AutoSize = true;
+            NAverageLabel.Location = new System.Drawing.Point(542, 62);
+            NAverageLabel.Name = "NAverageLabel";
+            NAverageLabel.Size = new System.Drawing.Size(90, 13);
+            NAverageLabel.TabIndex = 13;
+            NAverageLabel.Text = "Points in Average";
+            // 
+            // TotalCountsLabel
+            // 
+            TotalCountsLabel.AutoSize = true;
+            TotalCountsLabel.Location = new System.Drawing.Point(141, 56);
+            TotalCountsLabel.Name = "TotalCountsLabel";
+            TotalCountsLabel.Size = new System.Drawing.Size(67, 13);
+            TotalCountsLabel.TabIndex = 8;
+            TotalCountsLabel.Text = "Total Counts";
+            // 
+            // PeakLabel
+            // 
+            PeakLabel.AutoSize = true;
+            PeakLabel.Location = new System.Drawing.Point(141, 28);
+            PeakLabel.Name = "PeakLabel";
+            PeakLabel.Size = new System.Drawing.Size(55, 13);
+            PeakLabel.TabIndex = 7;
+            PeakLabel.Text = "Peak Size";
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new System.Drawing.Point(647, 149);
+            label2.Name = "label2";
+            label2.Size = new System.Drawing.Size(118, 13);
+            label2.TabIndex = 18;
+            label2.Text = "(uncheck for alignment)";
             // 
             // tableLayoutPanel1
             // 
@@ -151,15 +214,6 @@
             this.CommandsBox.TabStop = false;
             this.CommandsBox.Text = "Commands";
             // 
-            // GainLabel
-            // 
-            GainLabel.AutoSize = true;
-            GainLabel.Location = new System.Drawing.Point(179, 169);
-            GainLabel.Name = "GainLabel";
-            GainLabel.Size = new System.Drawing.Size(68, 13);
-            GainLabel.TabIndex = 6;
-            GainLabel.Text = "Camera Gain";
-            // 
             // CameraGain
             // 
             this.CameraGain.Location = new System.Drawing.Point(114, 167);
@@ -189,15 +243,6 @@
             this.Clear.UseVisualStyleBackColor = true;
             this.Clear.Click += new System.EventHandler(this.Clear_Click);
             // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Location = new System.Drawing.Point(155, 26);
-            label1.Name = "label1";
-            label1.Size = new System.Drawing.Size(37, 13);
-            label1.TabIndex = 4;
-            label1.Text = "Scans";
-            // 
             // NScan
             // 
             this.NScan.Location = new System.Drawing.Point(113, 24);
@@ -215,7 +260,7 @@
             this.NScan.Size = new System.Drawing.Size(36, 20);
             this.NScan.TabIndex = 3;
             this.NScan.Value = new decimal(new int[] {
-            1,
+            10,
             0,
             0,
             0});
@@ -260,6 +305,7 @@
             this.CloseLamp.TabIndex = 7;
             this.CloseLamp.Text = "Close Lamp";
             this.CloseLamp.UseVisualStyleBackColor = true;
+            this.CloseLamp.Click += new System.EventHandler(this.CloseLamp_Click);
             // 
             // OpenLamp
             // 
@@ -269,6 +315,7 @@
             this.OpenLamp.TabIndex = 6;
             this.OpenLamp.Text = "Open Lamp";
             this.OpenLamp.UseVisualStyleBackColor = true;
+            this.OpenLamp.Click += new System.EventHandler(this.OpenLamp_Click);
             // 
             // CloseLaser
             // 
@@ -278,6 +325,7 @@
             this.CloseLaser.TabIndex = 5;
             this.CloseLaser.Text = "Close Laser";
             this.CloseLaser.UseVisualStyleBackColor = true;
+            this.CloseLaser.Click += new System.EventHandler(this.CloseLaser_Click);
             // 
             // OpenLaser
             // 
@@ -287,6 +335,7 @@
             this.OpenLaser.TabIndex = 4;
             this.OpenLaser.Text = "Open Laser";
             this.OpenLaser.UseVisualStyleBackColor = true;
+            this.OpenLaser.Click += new System.EventHandler(this.OpenLaser_Click);
             // 
             // panel1
             // 
@@ -314,6 +363,18 @@
             this.panel1.Size = new System.Drawing.Size(824, 210);
             this.panel1.TabIndex = 7;
             // 
+            // PersistentGraphing
+            // 
+            this.PersistentGraphing.AutoSize = true;
+            this.PersistentGraphing.Checked = true;
+            this.PersistentGraphing.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.PersistentGraphing.Location = new System.Drawing.Point(641, 129);
+            this.PersistentGraphing.Name = "PersistentGraphing";
+            this.PersistentGraphing.Size = new System.Drawing.Size(118, 17);
+            this.PersistentGraphing.TabIndex = 17;
+            this.PersistentGraphing.Text = "Persistent Graphing";
+            this.PersistentGraphing.UseVisualStyleBackColor = true;
+            // 
             // SaveProfile
             // 
             this.SaveProfile.Location = new System.Drawing.Point(720, 34);
@@ -325,15 +386,6 @@
             this.SaveProfile.UseVisualStyleBackColor = true;
             this.SaveProfile.Click += new System.EventHandler(this.SaveProfile_Click);
             // 
-            // DiffSumLabel
-            // 
-            DiffSumLabel.AutoSize = true;
-            DiffSumLabel.Location = new System.Drawing.Point(202, 139);
-            DiffSumLabel.Name = "DiffSumLabel";
-            DiffSumLabel.Size = new System.Drawing.Size(92, 13);
-            DiffSumLabel.TabIndex = 15;
-            DiffSumLabel.Text = "Sum of Difference";
-            // 
             // DiffSum
             // 
             this.DiffSum.Location = new System.Drawing.Point(96, 136);
@@ -343,15 +395,6 @@
             this.DiffSum.TabIndex = 14;
             this.DiffSum.Text = "0";
             this.DiffSum.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // NAverageLabel
-            // 
-            NAverageLabel.AutoSize = true;
-            NAverageLabel.Location = new System.Drawing.Point(542, 62);
-            NAverageLabel.Name = "NAverageLabel";
-            NAverageLabel.Size = new System.Drawing.Size(90, 13);
-            NAverageLabel.TabIndex = 13;
-            NAverageLabel.Text = "Points in Average";
             // 
             // NAverage
             // 
@@ -404,24 +447,6 @@
             this.PeakN.TabIndex = 9;
             this.PeakN.Text = "0";
             this.PeakN.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // TotalCountsLabel
-            // 
-            TotalCountsLabel.AutoSize = true;
-            TotalCountsLabel.Location = new System.Drawing.Point(141, 56);
-            TotalCountsLabel.Name = "TotalCountsLabel";
-            TotalCountsLabel.Size = new System.Drawing.Size(67, 13);
-            TotalCountsLabel.TabIndex = 8;
-            TotalCountsLabel.Text = "Total Counts";
-            // 
-            // PeakLabel
-            // 
-            PeakLabel.AutoSize = true;
-            PeakLabel.Location = new System.Drawing.Point(141, 28);
-            PeakLabel.Name = "PeakLabel";
-            PeakLabel.Size = new System.Drawing.Size(55, 13);
-            PeakLabel.TabIndex = 7;
-            PeakLabel.Text = "Peak Size";
             // 
             // Counts
             // 
@@ -479,27 +504,6 @@
             this.Peak.TabIndex = 0;
             this.Peak.Text = "0";
             this.Peak.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // PersistentGraphing
-            // 
-            this.PersistentGraphing.AutoSize = true;
-            this.PersistentGraphing.Checked = true;
-            this.PersistentGraphing.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.PersistentGraphing.Location = new System.Drawing.Point(641, 129);
-            this.PersistentGraphing.Name = "PersistentGraphing";
-            this.PersistentGraphing.Size = new System.Drawing.Size(118, 17);
-            this.PersistentGraphing.TabIndex = 17;
-            this.PersistentGraphing.Text = "Persistent Graphing";
-            this.PersistentGraphing.UseVisualStyleBackColor = true;
-            // 
-            // label2
-            // 
-            label2.AutoSize = true;
-            label2.Location = new System.Drawing.Point(647, 149);
-            label2.Name = "label2";
-            label2.Size = new System.Drawing.Size(118, 13);
-            label2.TabIndex = 18;
-            label2.Text = "(uncheck for alignment)";
             // 
             // Graph
             // 

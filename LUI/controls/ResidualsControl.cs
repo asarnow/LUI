@@ -483,5 +483,25 @@ namespace LUI.controls
             }
         }
 
+        private void OpenLaser_Click(object sender, EventArgs e)
+        {
+            Commander.BeamFlags.OpenLaser();
+        }
+
+        private void CloseLaser_Click(object sender, EventArgs e)
+        {
+            Commander.BeamFlags.CloseLaser();
+        }
+
+        private void OpenLamp_Click(object sender, EventArgs e)
+        {
+            Commander.BeamFlags.OpenFlash();
+        }
+
+        private void CloseLamp_Click(object sender, EventArgs e)
+        {
+            Commander.BeamFlags.CloseFlash();
+        }
+
     }
 }
