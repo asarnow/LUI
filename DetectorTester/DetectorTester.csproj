@@ -156,6 +156,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /Y /S "$(SolutionDir)common\*" "$(TargetDir)"
+xcopy /Y /S "$(SolutionDir)lib\*.dll" "$(TargetDir)"
 xcopy /Y /S "$(SolutionDir)lib64\*.dll" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

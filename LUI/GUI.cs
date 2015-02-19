@@ -25,8 +25,9 @@ namespace LUI
             Commander Commander = new Commander();            
 #else
             AndorCamera Camera = new CameraTempControlled(".");
-            BeamFlags BeamFlags = new BeamFlags("COM1");
-            IDigitalDelayGenerator DDG = new DDG535(15);
+            BeamFlags BeamFlags = new BeamFlags("COM3");
+            //IDigitalDelayGenerator DDG = new DDG535(15);
+            IDigitalDelayGenerator DDG = new DummyDigitalDelayGenerator();
             Commander Commander = new Commander(Camera, BeamFlags, DDG);
 #endif
 
