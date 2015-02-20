@@ -165,6 +165,7 @@ namespace LUI.controls
             worker.WorkerReportsProgress = true;
             worker.RunWorkerAsync(new WorkArgs((int)NScan.Value, (int)NAverage.Value));
             Graph.ClearData();
+            Graph.Invalidate();
             CumulativeLight = null;
         }
 
