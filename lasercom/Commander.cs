@@ -99,7 +99,6 @@ namespace lasercom
             BeamFlags.CloseLaserAndFlash();
             BeamFlags.OpenFlash();
             int[] data = Camera.Acquire();
-            System.Threading.Thread.Sleep(BeamFlags.Delay);
             BeamFlags.CloseLaserAndFlash();
             return data;
         }
@@ -109,7 +108,6 @@ namespace lasercom
             BeamFlags.CloseLaserAndFlash();
             BeamFlags.OpenFlash();
             uint ret = Camera.Acquire(DataBuffer);
-            System.Threading.Thread.Sleep(BeamFlags.Delay);
             BeamFlags.CloseLaserAndFlash();
             return ret;
         }
@@ -118,7 +116,6 @@ namespace lasercom
         {
             BeamFlags.OpenLaserAndFlash();
             int[] data = Camera.Acquire();
-            System.Threading.Thread.Sleep(BeamFlags.Delay);
             BeamFlags.CloseLaserAndFlash();
             return data;
         }
@@ -127,7 +124,6 @@ namespace lasercom
         {
             BeamFlags.OpenLaserAndFlash();
             uint ret = Camera.Acquire(DataBuffer);
-            System.Threading.Thread.Sleep(BeamFlags.Delay);
             BeamFlags.CloseLaserAndFlash();
             return ret;
         }

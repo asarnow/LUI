@@ -9,8 +9,8 @@ namespace lasercom.control
     public abstract class AbstractBeamFlags
     {        
         public enum State { Open, Closed }
-        public State FlashState;
-        public State LaserState;
+        public State FlashState { get; set; }
+        public State LaserState { get; set; }
         public int Delay { get; set; } // Time in miliseconds to sleep between commands.
 
         virtual public State ToggleLaser()
@@ -24,21 +24,6 @@ namespace lasercom.control
                     CloseLaser();
                     break;
             }
-            return LaserState;
-        }
-
-        virtual public void OpenLaser()
-        {
-            LaserState = State.Open;
-        }
-
-        virtual public void CloseLaser()
-        {
-            LaserState = State.Closed;
-        }
-
-        virtual public State GetLaserState()
-        {
             return LaserState;
         }
 
@@ -56,6 +41,16 @@ namespace lasercom.control
             return FlashState;
         }
 
+        virtual public void OpenLaser()
+        {
+            LaserState = State.Open;
+        }
+
+        virtual public void CloseLaser()
+        {
+            LaserState = State.Closed;
+        }
+
         virtual public void OpenFlash()
         {
             FlashState = State.Open;
@@ -64,11 +59,6 @@ namespace lasercom.control
         virtual public void CloseFlash()
         {
             FlashState = State.Closed;
-        }
-
-        virtual public State GetFlashState()
-        {
-            return FlashState;
         }
 
         virtual public void ToggleLaserAndFlash()

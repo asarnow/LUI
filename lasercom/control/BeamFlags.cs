@@ -2,13 +2,18 @@
 using System.IO.Ports;
 
 //  <summary>
-//      Represents the beam flag microcontroller.
+//      Represents the beam flag microcontroller (232 SDA12).
 //      If different microcontrollers are used, an interface and abstract
 //      class should be added for the beam flags classes to inherit from.
 //  </summary>
 
 namespace lasercom.control
 {
+    /// <summary>
+    /// Class representing BeamFlags operated by 232 SDA12 microcontroller.
+    /// Note that due to limitations of the microcontroller, the flags can
+    /// NOT BE CLOSED SIMULTANEOUSLY. Instead, that behavior is emulated.
+    /// </summary>
     public class BeamFlags:AbstractBeamFlags
     {
         public const string OpenFlashCommand = "!0SO1";
@@ -20,11 +25,14 @@ namespace lasercom.control
         public const string OpenLaserAndFlashCommand = "!0SO3";
         public const string CloseLaserAndFlashCommand = "!0SO000";
 
+        // Approximate time in ms for solenoid to switch.
+        public const int DefaultDelay = 150;
+
         private readonly SerialPort _port;
 
         public BeamFlags(String portName)
         {
-            Delay = Constants.DefaultBeamFlagsCommandDelay;
+            Delay = DefaultDelay;
             _port = new SerialPort(portName);
             CloseLaserAndFlash();
         }
@@ -34,26 +42,47 @@ namespace lasercom.control
             return _port.PortName;
         }
 
-        public override State ToggleLaser()
+        public override void OpenLaser()
         {
-            switch (LaserState)
-            {
-                case State.Closed:
-                    OpenLaser();
-                    break;
-                case State.Open:
-                    CloseLaser();
-                    break;
-            }
-            return LaserState;
+            OpenLaser(true);
         }
 
-        public override void OpenLaser()
+        public new void OpenLaser(bool wait)
         {
             _port.Open();
             _port.Write(OpenLaserCommand);
             _port.Close();
+            if (wait) System.Threading.Thread.Sleep(Delay);
             LaserState = State.Open;
+        }
+
+        public override void OpenFlash()
+        {
+            OpenFlash(true);
+        }
+
+        public new void OpenFlash(bool wait)
+        {
+            _port.Open();
+            _port.Write(OpenFlashCommand);
+            _port.Close();
+            if (wait) System.Threading.Thread.Sleep(Delay);
+            FlashState = State.Open;
+        }
+
+        public override void OpenLaserAndFlash()
+        {
+            OpenLaserAndFlash(true);
+        }
+
+        public new void OpenLaserAndFlash(bool wait)
+        {
+            _port.Open();
+            _port.Write(OpenLaserAndFlashCommand);
+            _port.Close();
+            if (wait) System.Threading.Thread.Sleep(Delay);
+            LaserState = State.Open;
+            FlashState = State.Open;
         }
 
         public override void CloseLaser()
@@ -62,34 +91,8 @@ namespace lasercom.control
             _port.Write(CloseLaserAndFlashCommand);
             _port.Close();
             LaserState = State.Closed;
-            if (FlashState == State.Open) OpenFlash();
-        }
-
-        public override State GetLaserState()
-        {
-            return LaserState;
-        }
-
-        public override State ToggleFlash()
-        {
-            switch (FlashState)
-            {
-                case State.Closed:
-                    OpenFlash();
-                    break;
-                case State.Open:
-                    CloseFlash();
-                    break;
-            }
-            return FlashState;
-        }
-
-        public override void OpenFlash()
-        {
-            _port.Open();
-            _port.Write(OpenFlashCommand);
-            _port.Close();
-            FlashState = State.Open;
+            if (FlashState == State.Open) OpenFlash(false);
+            //throw new NotImplementedException("Can't close flags independently");
         }
 
         public override void CloseFlash()
@@ -98,27 +101,8 @@ namespace lasercom.control
             _port.Write(CloseLaserAndFlashCommand);
             _port.Close();
             FlashState = State.Closed;
-            if (LaserState == State.Open) OpenLaser();
-        }
-
-        public override State GetFlashState()
-        {
-            return FlashState;
-        }
-
-        public override void ToggleLaserAndFlash()
-        {
-            ToggleFlash();
-            ToggleLaser();
-        }
-
-        public override void OpenLaserAndFlash()
-        {
-            _port.Open();
-            _port.Write(OpenLaserAndFlashCommand);
-            _port.Close();
-            LaserState = State.Open;
-            FlashState = State.Open;
+            if (LaserState == State.Open) OpenLaser(false);
+            //throw new NotImplementedException("Can't close flags independently");
         }
 
         public override void CloseLaserAndFlash()
