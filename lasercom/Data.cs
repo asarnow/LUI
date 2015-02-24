@@ -75,7 +75,7 @@ namespace lasercom
         {
             double[] OD = new double[Sample.Length];
             for (int i = 0; i < OD.Length; i++)
-                OD[i] = Math.Log10((double)(Sample[i] - Dark[i]) / (double)(Blank[i] - Dark[i]));
+                OD[i] = -Math.Log10((double)(Sample[i] - Dark[i]) / (double)(Blank[i] - Dark[i]));
             return OD;
         }
 
@@ -195,6 +195,14 @@ namespace lasercom
             double rsq = Math.Pow( cov / Math.Sqrt(xvar * yvar), 2);
 
             return Tuple.Create<double,double,double>(slope, yint, rsq);
+        }
+
+        internal static int[] Uniform(int n, double scale)
+        {
+            Random R = new Random();
+            int[] A = new int[n];
+            for (int i = 0; i < n; i++) A[i] = (int)Math.Round(R.NextDouble() * scale);
+            return A;
         }
     }
 }

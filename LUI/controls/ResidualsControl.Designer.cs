@@ -277,6 +277,7 @@
             // 
             // Abort
             // 
+            this.Abort.Enabled = false;
             this.Abort.Location = new System.Drawing.Point(6, 53);
             this.Abort.Name = "Abort";
             this.Abort.Size = new System.Drawing.Size(68, 28);
@@ -513,8 +514,8 @@
             this.Graph.ColorOrder = ((System.Collections.Generic.List<System.Drawing.Color>)(resources.GetObject("Graph.ColorOrder")));
             this.tableLayoutPanel1.SetColumnSpan(this.Graph, 3);
             this.Graph.InitialScaleHeight = 0F;
-            this.Graph.InitialXMax = 1023F;
-            this.Graph.InitialXMin = 0F;
+            this.Graph.InitialXRight = 1023F;
+            this.Graph.InitialXLeft = 0F;
             this.Graph.InitialYMax = float.NegativeInfinity;
             this.Graph.InitialYMin = float.PositiveInfinity;
             this.Graph.Location = new System.Drawing.Point(2, 2);
@@ -535,8 +536,8 @@
             this.Graph.TabIndex = 8;
             this.Graph.XAxisHeight = 0.1F;
             this.Graph.XLabelFormat = "f0";
-            this.Graph.XMax = 1023F;
-            this.Graph.XMin = 0F;
+            this.Graph.XRight = 1023F;
+            this.Graph.XLeft = 0F;
             this.Graph.YAxisWidth = 0.05F;
             this.Graph.YLabelFormat = "n3";
             this.Graph.YMax = float.NegativeInfinity;

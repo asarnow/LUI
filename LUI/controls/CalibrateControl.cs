@@ -118,13 +118,25 @@ namespace LUI.controls
             PROGRESS_CALC
         }
 
+        struct WorkArgs
+        {
+            public WorkArgs(int N, CalibrateControl UI)
+            {
+                this.N = N;
+                this.UI = UI;
+            }
+            public readonly int N;
+            public readonly CalibrateControl UI;
+        }
+
         public CalibrateControl(Commander commander)
         {
             InitializeComponent();
             Commander = commander;
+
+            Load += HandleLoad;
+            
             Graph.MouseClick += new MouseEventHandler(Graph_Click);
-            Graph.XMin = (float)Commander.Calibration[0];
-            Graph.XMax = (float)Commander.Calibration[Commander.Calibration.Length - 1];
 
             CalibrationList.AllowEdit = true;
             CalibrationListView.DefaultValuesNeeded += CalibrationListView_DefaultValuesNeeded;
@@ -139,35 +151,23 @@ namespace LUI.controls
             RSquaredLabel.SelectionLength = 0;
         }
 
+        private void HandleLoad(object sender, EventArgs e)
+        {
+            Commander.CalibrationChanged += HandleCalibrationChanged;
+            Graph.XLeft = (float)Commander.Calibration[0];
+            Graph.XRight = (float)Commander.Calibration[Commander.Calibration.Length - 1];
+        }
+
         public void CalibrateWork(object sender, DoWorkEventArgs e)
         {
             Commander.Camera.AcquisitionMode = AndorCamera.AcquisitionModeSingle;
             Commander.Camera.TriggerMode = AndorCamera.TriggerModeExternalExposure;
+            Commander.Camera.DDGTriggerMode = AndorCamera.DDGTriggerModeExternal;
             Commander.Camera.ReadMode = AndorCamera.ReadModeFVB;
-            int N = (int)e.Argument;
+            WorkArgs args = (WorkArgs)e.Argument;
+            int N = args.N;
 
-            worker.ReportProgress(0, Dialog.BLANK.ToString());
-
-            int[] BlankBuffer = Commander.Flash();
-            for (int i = 0; i < N - 1; i++)
-            {
-                if (worker.CancellationPending)
-                {
-                    e.Cancel = true;
-                    return;
-                }
-                Data.Accumulate(BlankBuffer, Commander.Flash());
-                worker.ReportProgress((i / N) * 33, Dialog.PROGRESS_BLANK.ToString());
-            }
-
-            worker.ReportProgress(33, Dialog.SAMPLE.ToString());
-
-            wait = true;
-            bool[] waitparam = { wait };
-            Dispatcher.BeginInvoke(new Action(BlockingBlankDialog), waitparam);
-            while (wait) ;
-
-            worker.ReportProgress(33, Dialog.PROGRESS_DARK.ToString());
+            worker.ReportProgress(0, Dialog.PROGRESS_DARK.ToString());
 
             if (worker.CancellationPending)
             {
@@ -187,10 +187,31 @@ namespace LUI.controls
                 worker.ReportProgress(33 + (i / N) * 33, Dialog.PROGRESS_DARK.ToString());
             }
 
-            worker.ReportProgress(66, Dialog.PROGRESS.ToString());
+            worker.ReportProgress(33, Dialog.BLANK.ToString());
+
             wait = true;
-            Dispatcher.BeginInvoke(new Action(BlockingSampleDialog), new bool[] { wait });
-            while (wait) ;
+            bool[] waitparam = { wait };
+            //args.UI.Invoke(new Action(BlockingBlankDialog), waitparam);
+            args.UI.Invoke(new Action(args.UI.BlockingBlankDialog));
+            //while (wait) ;
+
+            int[] BlankBuffer = Commander.Flash();
+            for (int i = 0; i < N - 1; i++)
+            {
+                if (worker.CancellationPending)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+                Data.Accumulate(BlankBuffer, Commander.Flash());
+                worker.ReportProgress((i / N) * 33, Dialog.PROGRESS_BLANK.ToString());
+            }
+
+            worker.ReportProgress(66, Dialog.SAMPLE.ToString());
+
+            wait = true;
+            args.UI.Invoke(new Action(args.UI.BlockingSampleDialog));
+            //while (wait) ;
 
             if (worker.CancellationPending)
             {
@@ -218,13 +239,18 @@ namespace LUI.controls
         private void Collect_Click(object sender, EventArgs e)
         {
             Collect.Enabled = false;
+            Abort.Enabled = true;
+            //Dispatcher = Dispatcher.CurrentDispatcher;
+            Graph.ClearData();
+            Graph.Invalidate();
             int N = (int)Averages.Value;
             worker = new BackgroundWorker();
             worker.DoWork += new System.ComponentModel.DoWorkEventHandler(CalibrateWork);
             worker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(CalibrateProgress);
+            worker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(CalibrateComplete);
             worker.WorkerSupportsCancellation = true;
             worker.WorkerReportsProgress = true;
-            worker.RunWorkerAsync(N);
+            worker.RunWorkerAsync(new WorkArgs(N, this));
         }
 
         public void CalibrateProgress(object sender, ProgressChangedEventArgs e)
@@ -268,7 +294,7 @@ namespace LUI.controls
             if (!e.Cancelled)
             {
                 OD = (double[])e.Result;
-                Graph.ClearData();
+                for (int i = 0; i < OD.Length; i++) if (Double.IsNaN(OD[i]) || Double.IsInfinity(OD[i])) OD[i] = 0;
                 Graph.DrawPoints(Commander.Calibration, OD);
                 Graph.Invalidate();
                 ProgressLabel.Text = "Complete";
@@ -279,6 +305,7 @@ namespace LUI.controls
             }
             StatusProgress.Value = 100;
             Collect.Enabled = true;
+            Abort.Enabled = false;
         }
 
         private void Clear_Click(object sender, EventArgs e)
@@ -320,12 +347,16 @@ namespace LUI.controls
             for (i=0; i<CalibrationList.Count; i++)
             {
                 CalibrationPoint p = CalibrationList[i];
-                Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[i % Graph.ColorOrder.Count], Commander.Calibration[p.Channel]);
+                //float X = Graph.XLeft + (float)p.Channel / (Commander.Camera.Width - 1) * Graph.XRange;
+                float X = (float)Commander.Calibration[p.Channel];
+                Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[i % Graph.ColorOrder.Count], X);
             }
             int newRowChannel = (int)(CalibrationListView.Rows[CalibrationListView.NewRowIndex].Cells["Channel"].Value ?? 0);
             if (CalibrationListView.Rows.Count > CalibrationList.Count && newRowChannel != 0)
             {
-                Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[i % Graph.ColorOrder.Count], Commander.Calibration[newRowChannel]);
+                //float X = Graph.XLeft + (float)newRowChannel / (Commander.Camera.Width - 1) * Graph.XRange;
+                float X = (float)Commander.Calibration[newRowChannel];
+                Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[i % Graph.ColorOrder.Count], X);
             }
             Graph.Invalidate();
         }
@@ -468,13 +499,15 @@ namespace LUI.controls
 
         public void HandleCalibrationChanged(object sender, EventArgs args)
         {
-            Graph.XMin = (float)Commander.Calibration[0];
-            Graph.XMax = (float)Commander.Calibration[Commander.Calibration.Length - 1];
-            if (OD != null)
-            {
-                Graph.Clear();
-                Graph.DrawPoints(Commander.Calibration, OD);
-            }
+            Graph.XLeft = (float)Commander.Calibration[0];
+            Graph.XRight = (float)Commander.Calibration[Commander.Calibration.Length - 1];
+            Graph.ClearAxes();
+            //if (OD != null)
+            //{
+            //    //Graph.ClearData();
+            //    Graph.ClearAxes();
+            //    //Graph.DrawPoints(Commander.Calibration, OD);
+            //}
             RedrawLines();
         }
 

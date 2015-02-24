@@ -3,6 +3,7 @@
 using ATMCD64CS;
 #else
 using ATMCD32CS;
+using System.Diagnostics;
 #endif
 
 namespace lasercom.camera
@@ -172,7 +173,49 @@ namespace lasercom.camera
 
         public override int[] Acquire()
         {
-            return null;
+            string caller = (new StackFrame(1)).GetMethod().Name;
+            int line = (new StackFrame(2)).GetFileLineNumber();
+            int[] data = null;
+            switch (caller)
+            {
+                case "Dark":
+                    data = Data.Uniform((int)Width, 1000);
+                    break;
+                case "Flash":
+                    if (line > 200)
+                        data = Data.Guassian((int)Width, 32000, Width * 1 / 3, Width / 10);
+                    else
+                        data = Data.Uniform((int)Width, 2000);
+                    break;
+                case "Trans":
+                    data = Data.Guassian((int)Width, 32000, Width * 2 / 3, Width / 10);
+                    break;
+            }
+            return data;
+        }
+
+        public override uint Acquire(int[] DataBuffer)
+        {
+            string caller = (new StackFrame(1)).GetMethod().Name;
+            int line = (new StackFrame(2)).GetFileLineNumber();
+            int[] data = null;
+            switch (caller)
+            {
+                case "Dark":
+                    data = Data.Uniform((int)Width, 1000);
+                    break;
+                case "Flash":
+                    if (line > 200)
+                        data = Data.Guassian((int)Width, 32000, Width * 1/3, Width / 10);
+                    else
+                        data = Data.Uniform((int)Width, 2000);
+                    break;
+                case "Trans":
+                    data = Data.Guassian((int)Width, 32000, Width * 2/3, Width / 10);
+                    break;
+            }
+            data.CopyTo(DataBuffer, 0);
+            return AndorSDK.DRV_SUCCESS;
         }
 
         public override void Close()

@@ -47,7 +47,7 @@ namespace lasercom.control
             OpenLaser(true);
         }
 
-        public new void OpenLaser(bool wait)
+        public void OpenLaser(bool wait)
         {
             _port.Open();
             _port.Write(OpenLaserCommand);
@@ -61,7 +61,7 @@ namespace lasercom.control
             OpenFlash(true);
         }
 
-        public new void OpenFlash(bool wait)
+        public void OpenFlash(bool wait)
         {
             _port.Open();
             _port.Write(OpenFlashCommand);
@@ -75,7 +75,7 @@ namespace lasercom.control
             OpenLaserAndFlash(true);
         }
 
-        public new void OpenLaserAndFlash(bool wait)
+        public void OpenLaserAndFlash(bool wait)
         {
             _port.Open();
             _port.Write(OpenLaserAndFlashCommand);
@@ -112,6 +112,12 @@ namespace lasercom.control
             _port.Close();
             LaserState = State.Closed;
             FlashState = State.Closed;
+        }
+
+        public override void EnsurePortDisposed()
+        {
+            _port.Close();
+            _port.Dispose();
         }
     }
 }

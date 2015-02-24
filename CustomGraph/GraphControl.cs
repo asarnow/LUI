@@ -32,19 +32,45 @@ namespace LUI.controls
         RectangleF AxesPadding;
         RectangleF Canvas;
 
-        public float XMax { get; set; }
-        public float YMax { get; set; }
-        public float InitialXMax { get; set; }
-        public float InitialYMax { get; set; }
-        const float XMAXDEFAULT = 1023f;
-        const float YMAXDEFAULT = 1.0f;
+        public float XLeft { get; set; }
+        public float InitialXLeft { get; set; }
+        const float XLEFTDEFAULT = 0f;
 
-        public float XMin { get; set; }
+        public float XRight { get; set; }
+        public float InitialXRight { get; set; }
+        const float XRIGHTDEFAULT = 1023f;
+
+        public float XMin
+        {
+            get
+            {
+                return Math.Min(XLeft, XRight);
+            }
+        }
+
+        public float XMax
+        {
+            get
+            {
+                return Math.Max(XLeft, XRight);
+            }
+        }
+
+        public float XRange
+        {
+            get
+            {
+                return Math.Abs(XRight - XLeft);
+            }
+        }
+
         public float YMin { get; set; }
-        public float InitialXMin { get; set; }
         public float InitialYMin { get; set; }
-        const float XMINDEFAULT = 0f;
         const float YMINDEFAULT = 0.0f;
+
+        public float YMax { get; set; }
+        public float InitialYMax { get; set; }
+        const float YMAXDEFAULT = 1.0f;
 
         public float ScaleHeight { get; set; }
         public float InitialScaleHeight { get; set; }
@@ -150,10 +176,10 @@ namespace LUI.controls
 
             XAxisHeight = XAXISHEIGHTDEFAULT;
             YAxisWidth = YAXISWIDTHDEFAULT;
-            XMax = InitialXMax = XMAXDEFAULT;
+            XRight = InitialXRight = XRIGHTDEFAULT;
             YMax = InitialYMax = float.NegativeInfinity;
 
-            XMin = InitialXMin = XMINDEFAULT;
+            XLeft = InitialXLeft = XLEFTDEFAULT;
             YMin = InitialYMin = float.PositiveInfinity;
 
             ScaleHeight = InitialScaleHeight = SCALEHEIGHTDEFAULT;
@@ -167,6 +193,16 @@ namespace LUI.controls
             NXTicks = NXTICKSDEFAULT;
             XLabelFormat = "f0";
             YLabelFormat = "n3";
+
+            Load += new EventHandler(HandleLoad);
+        }
+
+        void HandleLoad(object sender, EventArgs e)
+        {
+            if (CanvasBitmap == null) InitCanvasBitmap();
+            if (DataBitmap == null) InitDataBitmap();
+            if (AxesBitmap == null) InitAxesBitmap();
+            if (AnnotationBitmap == null) InitAnnotationBitmap();
         }
 
         void InitCanvasBitmap()
@@ -207,7 +243,7 @@ namespace LUI.controls
             Clear(AxesBitmap);
             DrawAxes(AxesBitmap);
             if (YMax != float.NegativeInfinity) DrawYLabels(AxesBitmap);
-            if (XMax != float.NegativeInfinity) DrawXLabels(AxesBitmap);
+            if (XRight != float.NegativeInfinity) DrawXLabels(AxesBitmap);
             AxesBitmap.MakeTransparent(BackColor);
         }
 
@@ -304,8 +340,9 @@ namespace LUI.controls
                 Rescale(_Min, _Max);
                 for (int i = 0; i < Y.Length; i++)
                 {
-                    float x = (float)X[i] / XMax;
-                    float y = (float)Y[i] / YMax;
+                    float x = Math.Abs((float)X[i] - XLeft) / XRange;
+                    float y = (YMax - (float)Y[i]) / ScaleHeight;
+                    //float y = Math.Abs(YMax - (float)Y[i]) / ScaleHeight;
                     DrawPoint(BitmapGraphics, B, MarkerFont, Axes, x, y);
                 }
             }
@@ -320,7 +357,7 @@ namespace LUI.controls
                 {
                     for (int i = 0; i < X.Length; i++)
                     {
-                        float x = (float)X[i] / XMax;
+                        float x = Math.Abs((float)X[i] - XLeft) / XRange;
                         float y = (float)Y[i] / YMax;
                         DrawPoint(G, B, MarkerFont, Axes, x, y);
                     }
@@ -328,6 +365,15 @@ namespace LUI.controls
             }
         }
 
+        /// <summary>
+        /// Draw marker at point in normalized coordinates.
+        /// </summary>
+        /// <param name="G"></param>
+        /// <param name="B"></param>
+        /// <param name="F"></param>
+        /// <param name="Axes"></param>
+        /// <param name="x">Normalized X-coordinate</param>
+        /// <param name="y">Normalized Y-coordinate</param>
         void DrawPoint(Graphics G, Brush B, Font F, RectangleF Axes, float x, float y)
         {
             float X = Axes.Left + Axes.Width * x - MarkerOffset.Width;
@@ -352,11 +398,17 @@ namespace LUI.controls
             DrawVerticalLine(Image, C, (float)x);
         }
 
+        /// <summary>
+        /// Draw vertical line at specified data coordinate.
+        /// </summary>
+        /// <param name="Image"></param>
+        /// <param name="C"></param>
+        /// <param name="x"></param>
         void DrawVerticalLine(Image Image, Color C, float x)
         {
             using (Graphics G = Graphics.FromImage(Image))
             {
-                float X = Axes.Left + Axes.Width * x / XMax;
+                float X = Axes.Left + Axes.Width * Math.Abs(x - XLeft) / XRange;
                 //G.CompositingMode = CompositingMode.SourceOver;
                 using (Pen Pen = new Pen(C))
                 {
@@ -413,12 +465,12 @@ namespace LUI.controls
                 {
                     for (float i = 0; i <= NXTicks; i++)
                     {
-                        int XMaxOrder = (int)(Math.Log10(XMax));
-                        double XMaxRound = Math.Round(XMax / Math.Pow(10, XMaxOrder)) * Math.Pow(10, XMaxOrder);
-                        float XVal = XMin + i / NXTicks * (float)XMaxRound;
-                        string TickLabel = XVal.ToString(XLabelFormat);
+                        int XRangeOrder = (int)(Math.Log10(XRange)); // Rounds down
+                        double XRangeRound = Math.Round(XRange / Math.Pow(10, XRangeOrder)) * Math.Pow(10, XRangeOrder);
+                        float XVal = i / NXTicks * (float)XRangeRound;
+                        string TickLabel = (XLeft < XRight ? XLeft + XVal : XLeft - XVal).ToString(XLabelFormat);
                         SizeF TickLabelOffset = G.MeasureString(TickLabel, AxesFont);
-                        float X = Axes.Left + Axes.Width * XVal / XMax - TickLabelOffset.Width / 2;
+                        float X = Axes.Left + Axes.Width * XVal/XRange - TickLabelOffset.Width / 2;
                         float Y = AxesPadding.Bottom + TickLabelOffset.Height;
                         G.DrawString(TickLabel, AxesFont, B, new PointF(X, Y));
                     }
@@ -474,6 +526,7 @@ namespace LUI.controls
         public void ClearData()
         {
             InvalidateData();
+            InitDataBitmap();
             InvalidateCanvas();
         }
 
@@ -481,6 +534,13 @@ namespace LUI.controls
         {
             InvalidateAnnotation();
             InitAnnotationBitmap();
+            InvalidateCanvas();
+        }
+
+        public void ClearAxes()
+        {
+            InvalidateAxes();
+            InitAxesBitmap();
             InvalidateCanvas();
         }
 
@@ -493,7 +553,7 @@ namespace LUI.controls
         public PointF ScreenToData(Point p)
         {
             return new PointF(
-                XMin + (p.X - Axes.X) / (Axes.Width - 1) * XMax,
+                XLeft + (p.X - Axes.X) / (Axes.Width - 1) * XRange,
                 YMax - (p.Y - Axes.Y) / (Axes.Height - 1) * ScaleHeight
                 );
         }

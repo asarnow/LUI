@@ -13,7 +13,6 @@ namespace LUI.controls
     public partial class ResidualsControl : LUIControl
     {
         private BackgroundWorker ioWorker;
-        private Dispatcher Dispatcher;
 
         private double[] Light = null;
         private double[] LastLight = null;
@@ -87,15 +86,25 @@ namespace LUI.controls
         {
             InitializeComponent();
             Commander = commander;
+
+            Load += HandleLoad;
+
             Graph.MouseClick += new MouseEventHandler(Graph_Click);
-            Graph.XMin = (float)Commander.Calibration[0];
-            Graph.XMax = (float)Commander.Calibration[Commander.Calibration.Length - 1];
+            Graph.YLabelFormat = "g";
             LowerBound = (int)Commander.Camera.Width / 6;
             UpperBound = (int)Commander.Camera.Width * 5 / 6;
 
             CameraGain.Minimum = Commander.Camera.MinMCPGain;
             CameraGain.Maximum = Commander.Camera.MaxMCPGain;
             CameraGain.Value = Commander.Camera.MCPGain;
+        }
+
+        private void HandleLoad(object sender, EventArgs e)
+        {
+            Commander.CalibrationChanged += HandleCalibrationChanged;
+            Graph.XLeft = (float)Commander.Calibration[0];
+            Graph.XRight = (float)Commander.Calibration[Commander.Calibration.Length - 1];
+            RedrawLines();
         }
 
         /// <summary>
@@ -112,6 +121,7 @@ namespace LUI.controls
         {
             Commander.Camera.AcquisitionMode = AndorCamera.AcquisitionModeSingle;
             Commander.Camera.TriggerMode = AndorCamera.TriggerModeExternalExposure;
+            Commander.Camera.DDGTriggerMode = AndorCamera.DDGTriggerModeExternal;
             Commander.Camera.ReadMode = AndorCamera.ReadModeFVB;
             //TODO Need local sample size and no. scans
             WorkArgs args = (WorkArgs)e.Argument;
@@ -145,11 +155,11 @@ namespace LUI.controls
 
                 int n = i % args.NAvg; // Reset NAvg CMA
                 if (n == 0) npeak = nsum = 0;
-                nsum = (nsum + n * nsum) / (n + 1);
-                npeak = (npeak + n * npeak) / (n + 1);
+                nsum = (sum + n * nsum) / (n + 1);
+                npeak = (peak + n * npeak) / (n + 1);
 
                 WorkProgress progress = new WorkProgress(Array.ConvertAll((int[])DataBuffer, x => (double)x), cmasum, cmapeak, nsum, npeak, Dialog.PROGRESS_DATA);
-                worker.ReportProgress(i / args.NScans, progress);
+                worker.ReportProgress(i * 100 / args.NScans, progress);
             }
             Data.DivideArray(CumulativeDataBuffer, args.NScans);
             e.Result = Array.ConvertAll((int[])CumulativeDataBuffer, x=> (double)x);
@@ -157,15 +167,16 @@ namespace LUI.controls
 
         private void Collect_Click(object sender, EventArgs e)
         {
-            Collect.Enabled = false;
+            Collect.Enabled = NScan.Enabled = CameraGain.Enabled = false;
+            Abort.Enabled = true;
             worker = new BackgroundWorker();
             worker.DoWork += new System.ComponentModel.DoWorkEventHandler(AlignmentWork);
             worker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(AlignmentProgress);
+            worker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(AlignmentComplete);
             worker.WorkerSupportsCancellation = true;
             worker.WorkerReportsProgress = true;
             worker.RunWorkerAsync(new WorkArgs((int)NScan.Value, (int)NAverage.Value));
             Graph.ClearData();
-            Graph.Invalidate();
             CumulativeLight = null;
         }
 
@@ -211,6 +222,7 @@ namespace LUI.controls
             if (e.Error != null)
             {
                 // Handle the exception thrown in the worker thread
+                MessageBox.Show(e.Error.ToString());
             }
             else if (e.Cancelled)
             {
@@ -223,7 +235,8 @@ namespace LUI.controls
                 DisplayComplete();
             }
             StatusProgress.Value = 100;
-            Collect.Enabled = true;
+            Collect.Enabled = NScan.Enabled = CameraGain.Enabled = true;
+            Abort.Enabled = false;
         }
 
         private void Clear_Click(object sender, EventArgs e)
@@ -252,8 +265,8 @@ namespace LUI.controls
         private void RedrawLines()
         {
             Graph.ClearAnnotation();
-            Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[0], LowerBound);
-            Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[0], UpperBound);
+            Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[0], Commander.Calibration[LowerBound]);
+            Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[0], Commander.Calibration[UpperBound]);
             Graph.Invalidate();
         }
 
@@ -426,10 +439,10 @@ namespace LUI.controls
 
         public void HandleCalibrationChanged(object sender, EventArgs args)
         {
-            Graph.XMin = (float)Commander.Calibration[0];
-            Graph.XMax = (float)Commander.Calibration[Commander.Calibration.Length - 1];
-            Graph.Clear();
-            Display();
+            Graph.XLeft = (float)Commander.Calibration[0];
+            Graph.XRight = (float)Commander.Calibration[Commander.Calibration.Length - 1];
+            Graph.ClearAxes();
+            Graph.Invalidate();
         }
 
         private void NAverage_ValueChanged(object sender, EventArgs e)

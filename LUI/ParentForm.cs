@@ -24,7 +24,6 @@ namespace LUI
 
         TROSControl TROSControl;
         CalibrateControl CalibrateControl;
-        AlignControl AlignControl;
         LaserPowerControl LaserPowerControl;
         ResidualsControl ResidualsControl;
 
@@ -32,7 +31,6 @@ namespace LUI
         {
             get
             {
-                if (AlignControl.IsBusy) return State.ALIGN;
                 if (ResidualsControl.IsBusy) return State.RESIDUALS;
                 if (CalibrateControl.IsBusy) return State.CALIBRATE;
                 //if (TROSControl.IsBusy) return State.TROS;
@@ -51,19 +49,15 @@ namespace LUI
 
             CalibrateControl = new CalibrateControl(Commander);
             CalibrationPage.Controls.Add(CalibrateControl);
-            Commander.CalibrationChanged += CalibrateControl.HandleCalibrationChanged;
-
-            AlignControl = new AlignControl(Commander);
-            AlignPage.Controls.Add(AlignControl);
-            Commander.CalibrationChanged += AlignControl.HandleCalibrationChanged;
+            //Commander.CalibrationChanged += CalibrateControl.HandleCalibrationChanged;
 
             LaserPowerControl = new LaserPowerControl(Commander);
             PowerPage.Controls.Add(LaserPowerControl);
-            Commander.CalibrationChanged += LaserPowerControl.HandleCalibrationChanged;
+            //Commander.CalibrationChanged += LaserPowerControl.HandleCalibrationChanged;
 
             ResidualsControl = new ResidualsControl(Commander);
             ResidualsPage.Controls.Add(ResidualsControl);
-            Commander.CalibrationChanged += ResidualsControl.HandleCalibrationChanged;
+            //Commander.CalibrationChanged += ResidualsControl.HandleCalibrationChanged;
         }
 
         private static void MakeEmebeddable(Form Form)
@@ -78,6 +72,8 @@ namespace LUI
         {
             base.OnFormClosing(e);
             Commander.Camera.Close();
+            Commander.BeamFlags.CloseLaserAndFlash();
+            Commander.BeamFlags.EnsurePortDisposed();
         }
 
     }

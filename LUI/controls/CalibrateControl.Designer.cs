@@ -45,6 +45,7 @@
             this.CloseLaser = new System.Windows.Forms.Button();
             this.OpenLaser = new System.Windows.Forms.Button();
             this.CalPanel = new System.Windows.Forms.Panel();
+            this.RSquaredLabel = new LUI.controls.DisabledRichTextBox();
             this.InterceptLabel = new System.Windows.Forms.Label();
             this.SlopeLabel = new System.Windows.Forms.Label();
             this.SaveCal = new System.Windows.Forms.Button();
@@ -57,7 +58,6 @@
             this.Wavelength = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.RemoveCalItem = new System.Windows.Forms.Button();
             this.Graph = new LUI.controls.GraphControl();
-            this.RSquaredLabel = new LUI.controls.DisabledRichTextBox();
             this.TableLayout.SuspendLayout();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
@@ -188,6 +188,7 @@
             // 
             // Abort
             // 
+            this.Abort.Enabled = false;
             this.Abort.Location = new System.Drawing.Point(6, 53);
             this.Abort.Name = "Abort";
             this.Abort.Size = new System.Drawing.Size(68, 28);
@@ -262,6 +263,18 @@
             this.CalPanel.Name = "CalPanel";
             this.CalPanel.Size = new System.Drawing.Size(824, 210);
             this.CalPanel.TabIndex = 7;
+            // 
+            // RSquaredLabel
+            // 
+            this.RSquaredLabel.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.RSquaredLabel.Location = new System.Drawing.Point(632, 13);
+            this.RSquaredLabel.Name = "RSquaredLabel";
+            this.RSquaredLabel.ReadOnly = true;
+            this.RSquaredLabel.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
+            this.RSquaredLabel.Size = new System.Drawing.Size(34, 14);
+            this.RSquaredLabel.TabIndex = 17;
+            this.RSquaredLabel.Text = "R2";
+            this.RSquaredLabel.WordWrap = false;
             // 
             // InterceptLabel
             // 
@@ -374,8 +387,8 @@
             this.Graph.ColorOrder = ((System.Collections.Generic.List<System.Drawing.Color>)(resources.GetObject("Graph.ColorOrder")));
             this.TableLayout.SetColumnSpan(this.Graph, 3);
             this.Graph.InitialScaleHeight = 0F;
-            this.Graph.InitialXMax = 1023F;
-            this.Graph.InitialXMin = 0F;
+            this.Graph.InitialXRight = 1023F;
+            this.Graph.InitialXLeft = 0F;
             this.Graph.InitialYMax = float.NegativeInfinity;
             this.Graph.InitialYMin = float.PositiveInfinity;
             this.Graph.Location = new System.Drawing.Point(2, 2);
@@ -396,24 +409,12 @@
             this.Graph.TabIndex = 8;
             this.Graph.XAxisHeight = 0.1F;
             this.Graph.XLabelFormat = "f0";
-            this.Graph.XMax = 1023F;
-            this.Graph.XMin = 0F;
+            this.Graph.XRight = 1023F;
+            this.Graph.XLeft = 0F;
             this.Graph.YAxisWidth = 0.05F;
             this.Graph.YLabelFormat = "n3";
             this.Graph.YMax = float.NegativeInfinity;
             this.Graph.YMin = float.PositiveInfinity;
-            // 
-            // RSquaredLabel
-            // 
-            this.RSquaredLabel.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.RSquaredLabel.Location = new System.Drawing.Point(632, 13);
-            this.RSquaredLabel.Name = "RSquaredLabel";
-            this.RSquaredLabel.ReadOnly = true;
-            this.RSquaredLabel.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
-            this.RSquaredLabel.Size = new System.Drawing.Size(34, 14);
-            this.RSquaredLabel.TabIndex = 17;
-            this.RSquaredLabel.Text = "R2";
-            this.RSquaredLabel.WordWrap = false;
             // 
             // CalibrateControl
             // 

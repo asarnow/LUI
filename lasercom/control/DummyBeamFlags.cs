@@ -9,7 +9,7 @@ namespace lasercom.control
     {
         public DummyBeamFlags()
         {
-
+            
         }
     }
 }

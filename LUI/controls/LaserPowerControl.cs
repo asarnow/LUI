@@ -41,9 +41,15 @@ namespace LUI.controls
         {
             InitializeComponent();
             Commander = commander;
+            Load += HandleLoad;
             Graph.MouseClick += new MouseEventHandler(Graph_Click);
-            Graph.XMin = (float)Commander.Calibration[0];
-            Graph.XMax = (float)Commander.Calibration[Commander.Calibration.Length - 1];
+        }
+
+        void HandleLoad(object sender, EventArgs e)
+        {
+            Commander.CalibrationChanged += HandleCalibrationChanged;
+            Graph.XLeft = (float)Commander.Calibration[0];
+            Graph.XRight = (float)Commander.Calibration[Commander.Calibration.Length - 1];
         }
 
         public void AlignmentWork(object sender, DoWorkEventArgs e)
@@ -250,6 +256,7 @@ namespace LUI.controls
         private void Display()
         {
             Graph.ClearData();
+            Graph.Invalidate();
 
             if (Light != null)
             {
@@ -261,10 +268,10 @@ namespace LUI.controls
 
         public void HandleCalibrationChanged(object sender, EventArgs args)
         {
-            Graph.XMin = (float)Commander.Calibration[0];
-            Graph.XMax = (float)Commander.Calibration[Commander.Calibration.Length - 1];
-            Graph.Clear();
-            Display();
+            Graph.XLeft = (float)Commander.Calibration[0];
+            Graph.XRight = (float)Commander.Calibration[Commander.Calibration.Length - 1];
+            Graph.ClearAxes();
+            Graph.Invalidate();
         }
 
     }

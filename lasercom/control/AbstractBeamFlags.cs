@@ -78,6 +78,11 @@ namespace lasercom.control
             LaserState = State.Closed;
             FlashState = State.Closed;
         }
+
+        virtual public void EnsurePortDisposed()
+        {
+
+        }
     }
 }
 
