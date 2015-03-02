@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
 using log4net;
+using LUI.gpib;
 using NationalInstruments.NI4882;
 
 namespace lasercom.ddg
@@ -78,7 +78,12 @@ namespace lasercom.ddg
             }
         }
 
-        public DDG535(int address):base(address)
+        //public DDG535(int address):base(address)
+        //{
+        //    ReadAllDelays();
+        //}
+
+        public DDG535(IGPIBProvider GPIBProvider) : base(GPIBProvider)
         {
             ReadAllDelays();
         }
@@ -86,7 +91,7 @@ namespace lasercom.ddg
         private void SetDelay(string DelayOutput, string setting)
         {
             string command = SetDelayTimeCommand + DelayOutput + "," + setting;
-            LoggedWrite(command);
+            GPIBProvider.LoggedWrite(command);
         }
 
         public void SetADelay(double delay, string relative = T0Output)
@@ -121,7 +126,7 @@ namespace lasercom.ddg
         {
             string command = SetDelayTimeCommand + AOutput;
             // e.g. "1,+0.001000000000"
-            string response = LoggedQuery(command);
+            string response = GPIBProvider.LoggedQuery(command);
             if (response != null && response.StartsWith(AOutput + ","))
             {
                 _ADelay = response;
@@ -132,7 +137,7 @@ namespace lasercom.ddg
         {
             string command = SetDelayTimeCommand + BOutput;
             // e.g. "1,+0.001000000000"
-            string response = LoggedQuery(command);
+            string response = GPIBProvider.LoggedQuery(command);
             if (response != null && response.StartsWith(BOutput + ","))
             {
                 _BDelay = response;
@@ -143,7 +148,7 @@ namespace lasercom.ddg
         {
             string command = SetDelayTimeCommand + COutput;
             // e.g. "1,+0.001000000000"
-            string response = LoggedQuery(command);
+            string response = GPIBProvider.LoggedQuery(command);
             if (response != null && response.StartsWith(COutput + ","))
             {
                 _CDelay = response;
@@ -154,7 +159,7 @@ namespace lasercom.ddg
         {
             string command = SetDelayTimeCommand + DOutput;
             // e.g. "1,+0.001000000000"
-            string response = LoggedQuery(command);
+            string response = GPIBProvider.LoggedQuery(command);
             if (response != null && response.StartsWith(DOutput + ","))
             {
                 _DDelay = response;

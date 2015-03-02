@@ -7,7 +7,6 @@ namespace lasercom.ddg
 {
     public interface IDigitalDelayGenerator
     {
-        void LoggedWrite(String command);
 
         void SetADelay(double delay);
         void SetBDelay(double delay);

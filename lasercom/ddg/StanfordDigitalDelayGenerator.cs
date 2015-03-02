@@ -1,6 +1,7 @@
 ﻿using System;
 using NationalInstruments.NI4882;
 using log4net;
+using LUI.gpib;
 
 //  <summary>
 //      Represents a Stanford DDG.
@@ -11,62 +12,12 @@ namespace lasercom.ddg
     public abstract class StanfordDigitalDelayGenerator:IDigitalDelayGenerator
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        
-        public Address Address {get; set; }
-        public Device Device { get; set; }
 
-        public StanfordDigitalDelayGenerator(int address, int boardNumber = Constants.BoardNumber)
+        public IGPIBProvider GPIBProvider { get; set; }
+
+        public StanfordDigitalDelayGenerator(IGPIBProvider _GPIBProvider)
         {
-            Address = new Address((byte)address);
-            Device = new Device(boardNumber, Address);
-        }
-
-        public void LoggedWrite(string command)
-        {
-            Log.Debug("GPIB Command: " + command);
-            try
-            {
-                Device.Write(command);
-            }
-            catch (GpibException e)
-            {
-                Log.Error(e.Message);
-            }
-            catch (InvalidOperationException e)
-            {
-                Log.Error(e.InnerException.Message);
-            }
-            
-        }
-
-        public string LoggedQuery(string command)
-        {
-            Log.Debug("GPIB Command: " + command);
-
-            try
-            {
-                Device.Write(command);
-            }
-            catch (GpibException e)
-            {
-                Log.Error(e.Message);
-                return null;
-            }
-            catch (InvalidOperationException e)
-            {
-                Log.Error(e.InnerException.Message);
-                return null;
-            }
-
-            string response = Device.ReadString();
-            Log.Debug("GPIB Response: " + response);
-            return response;
-        }
-
-
-        void IDigitalDelayGenerator.LoggedWrite(string command)
-        {
-            throw new NotImplementedException();
+            GPIBProvider = _GPIBProvider;
         }
 
         void IDigitalDelayGenerator.SetADelay(double delay)

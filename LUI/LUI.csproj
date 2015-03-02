@@ -139,37 +139,31 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
-    <Compile Include="controls\CalibrateControl.cs">
+    <Compile Include="tabs\CalibrateControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="controls\CalibrateControl.Designer.cs">
+    <Compile Include="tabs\CalibrateControl.Designer.cs">
       <DependentUpon>CalibrateControl.cs</DependentUpon>
     </Compile>
     <Compile Include="config\Config.cs" />
     <Compile Include="config\GPIBDevice.cs" />
     <Compile Include="config\SerialDevice.cs" />
-    <Compile Include="controls\AlignControl.cs">
+    <Compile Include="tabs\ResidualsControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="controls\AlignControl.Designer.cs">
-      <DependentUpon>AlignControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="controls\ResidualsControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="controls\ResidualsControl.Designer.cs">
+    <Compile Include="tabs\ResidualsControl.Designer.cs">
       <DependentUpon>ResidualsControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="controls\LaserPowerControl.cs">
+    <Compile Include="tabs\LaserPowerControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="controls\LaserPowerControl.Designer.cs">
+    <Compile Include="tabs\LaserPowerControl.Designer.cs">
       <DependentUpon>LaserPowerControl.cs</DependentUpon>
     </Compile>
     <Compile Include="controls\DisabledRichTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="controls\LUIControl.cs">
+    <Compile Include="tabs\LUIControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="ParentForm.cs">
@@ -193,11 +187,11 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Settings.cs" />
-    <Compile Include="controls\TROSControl.cs">
+    <Compile Include="tabs\TROSControl.cs">
       <SubType>UserControl</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
-    <Compile Include="controls\TROSControl.Designer.cs">
+    <Compile Include="tabs\TROSControl.Designer.cs">
       <DependentUpon>TROSControl.cs</DependentUpon>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
@@ -210,16 +204,13 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="controls\CalibrateControl.resx">
+    <EmbeddedResource Include="tabs\CalibrateControl.resx">
       <DependentUpon>CalibrateControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="controls\AlignControl.resx">
-      <DependentUpon>AlignControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="controls\ResidualsControl.resx">
+    <EmbeddedResource Include="tabs\ResidualsControl.resx">
       <DependentUpon>ResidualsControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="controls\LaserPowerControl.resx">
+    <EmbeddedResource Include="tabs\LaserPowerControl.resx">
       <DependentUpon>LaserPowerControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ParentForm.resx">
@@ -228,7 +219,7 @@
     <EmbeddedResource Include="OptionsForm.resx">
       <DependentUpon>OptionsForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="controls\TROSControl.resx">
+    <EmbeddedResource Include="tabs\TROSControl.resx">
       <DependentUpon>TROSControl.cs</DependentUpon>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
