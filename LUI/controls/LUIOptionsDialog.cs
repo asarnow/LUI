@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace LUI.controls
 {
-    public partial class LUIOptionsDialog : UserControl
+    public abstract partial class LUIOptionsDialog : UserControl
     {
         public LUIOptionsDialog()
         {
@@ -29,5 +29,6 @@ namespace LUI.controls
 
         }
 
+        public abstract void OnApply();
     }
 }

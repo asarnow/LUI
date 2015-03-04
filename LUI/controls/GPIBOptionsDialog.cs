@@ -7,15 +7,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO.Ports;
-using lasercom;
 
 namespace LUI.controls
 {
-    public partial class BeamFlagOptionsDialog : LUIOptionsDialog
+    public partial class GPIBOptionsDialog : LUIOptionsDialog
     {
-
-        public BeamFlagOptionsDialog(Size Size, bool Visibility)
+        public GPIBOptionsDialog(Size Size, bool Visibility)
         {
             InitializeComponent();
             this.Size = Size;
@@ -23,9 +20,9 @@ namespace LUI.controls
             Init();
         }
 
-        public BeamFlagOptionsDialog(Size Size) : this(Size, true) {}
+        public GPIBOptionsDialog(Size Size) : this(Size, true) {}
 
-        public BeamFlagOptionsDialog()
+        public GPIBOptionsDialog()
         {
             InitializeComponent();
             Init();
@@ -34,14 +31,7 @@ namespace LUI.controls
         private void Init()
         {
             SuspendLayout();
-
-            List<string> ports = Util.EnumerateSerialPorts();
-            LabeledControl<ComboBox> Port = new LabeledControl<ComboBox>(new ComboBox(), "Serial Port");
-            Port.Control.DropDownStyle = ComboBoxStyle.DropDownList;
-            Port.Control.Items.AddRange(ports.ToArray());
-
-            Controls.Add(Port);
-
+            ListView GPIBProviders = new ListView();
             ResumeLayout(false);
         }
 

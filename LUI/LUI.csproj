@@ -149,6 +149,24 @@
     <Compile Include="controls\BeamFlagOptionsDialog.Designer.cs">
       <DependentUpon>BeamFlagOptionsDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="controls\CameraOptionsDialog.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="controls\CameraOptionsDialog.Designer.cs">
+      <DependentUpon>CameraOptionsDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\DDGOptionsDialog.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="controls\DDGOptionsDialog.Designer.cs">
+      <DependentUpon>DDGOptionsDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\GPIBOptionsDialog.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="controls\GPIBOptionsDialog.Designer.cs">
+      <DependentUpon>GPIBOptionsDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="controls\LabeledControl.cs">
       <SubType>Component</SubType>
     </Compile>

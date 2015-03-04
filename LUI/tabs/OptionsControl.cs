@@ -65,6 +65,27 @@ namespace LUI.tabs
             OptionsListView.Items.Add(BeamFlagOptionsItem);
             OptionsPanel.Controls.Add(BeamFlagOptionsDialog);
 
+            CameraOptionsDialog CameraOptionsDialog = new CameraOptionsDialog(OptionsPanel.Size, false);
+            CameraOptionsDialog.Dock = DockStyle.Fill;
+            ListViewItem CameraOptionsItem = new ListViewItem("Camera", Instruments);
+            CameraOptionsItem.Tag = CameraOptionsDialog;
+            OptionsListView.Items.Add(CameraOptionsItem);
+            OptionsPanel.Controls.Add(CameraOptionsDialog);
+
+            GPIBOptionsDialog GPIBOptionsDialog = new GPIBOptionsDialog(OptionsPanel.Size, false);
+            GPIBOptionsDialog.Dock = DockStyle.Fill;
+            ListViewItem GPIBOptionsItem = new ListViewItem("GPIB Controllers", Instruments);
+            GPIBOptionsItem.Tag = GPIBOptionsDialog;
+            OptionsListView.Items.Add(GPIBOptionsItem);
+            OptionsPanel.Controls.Add(GPIBOptionsDialog);
+
+            DDGOptionsDialog DDGOptionsDialog = new DDGOptionsDialog(OptionsPanel.Size, false);
+            DDGOptionsDialog.Dock = DockStyle.Fill;
+            ListViewItem DDGOptionsItem = new ListViewItem("Digital Delay Generators", Instruments);
+            DDGOptionsItem.Tag = DDGOptionsDialog;
+            OptionsListView.Items.Add(DDGOptionsItem);
+            OptionsPanel.Controls.Add(DDGOptionsDialog);
+
             OptionsListView.Items[0].Selected = true;
 
             ResumeLayout(false);

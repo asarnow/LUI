@@ -32,9 +32,10 @@ namespace LUI.controls
 
         private void Init()
         {
+            SuspendLayout();
+
             LabeledControl<ComboBox> LogLevel = new LabeledControl<ComboBox>(new ComboBox(), "Log Level");
             LogLevel.Control.DropDownStyle = ComboBoxStyle.DropDownList;
-
             
             string[] loglevels = { "All", "Debug", "Info", "Warn", "Error", "Fatal", "Off" };
             LogLevel.Control.Items.AddRange(loglevels);
@@ -48,6 +49,13 @@ namespace LUI.controls
             };
 
             Controls.Add(LogLevel);
+
+            ResumeLayout(false);
+        }
+
+        public override void OnApply()
+        {
+            throw new NotImplementedException();
         }
     }
 }
