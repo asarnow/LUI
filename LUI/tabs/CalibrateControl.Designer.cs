@@ -1,4 +1,4 @@
-﻿namespace LUI.controls
+﻿namespace LUI.tabs
 {
     partial class CalibrateControl
     {
@@ -468,6 +468,6 @@
         private System.Windows.Forms.TextBox Intercept;
         private System.Windows.Forms.Label InterceptLabel;
         private System.Windows.Forms.Label SlopeLabel;
-        private DisabledRichTextBox RSquaredLabel;
+        private controls.DisabledRichTextBox RSquaredLabel;
     }
 }

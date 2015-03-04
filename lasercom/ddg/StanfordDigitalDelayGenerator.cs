@@ -14,10 +14,12 @@ namespace lasercom.ddg
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public IGPIBProvider GPIBProvider { get; set; }
+        public byte GPIBAddress { get; set; }
 
-        public StanfordDigitalDelayGenerator(IGPIBProvider _GPIBProvider)
+        public StanfordDigitalDelayGenerator(IGPIBProvider _GPIBProvider, byte _GPIBAddress)
         {
             GPIBProvider = _GPIBProvider;
+            GPIBAddress = _GPIBAddress;
         }
 
         void IDigitalDelayGenerator.SetADelay(double delay)

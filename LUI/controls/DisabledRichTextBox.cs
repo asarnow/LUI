@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LUI.controls
 {
-    class DisabledRichTextBox : System.Windows.Forms.RichTextBox
+    public class DisabledRichTextBox : System.Windows.Forms.RichTextBox
     {
         private const int WM_SETFOCUS = 0x07;
         private const int WM_ENABLE = 0x0A;

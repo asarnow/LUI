@@ -7,7 +7,7 @@ namespace LUI.gpib
 {
     public interface IGPIBProvider
     {
-        void LoggedWrite(string command);
-        string LoggedQuery(string command);
+        void LoggedWrite(byte address, string command);
+        string LoggedQuery(byte address, string command);
     }
 }

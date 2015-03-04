@@ -7,8 +7,9 @@ using System.Windows.Forms;
 using System.Windows.Threading;
 using lasercom;
 using lasercom.io;
+using LUI.controls;
 
-namespace LUI.controls
+namespace LUI.tabs
 {
     public partial class ResidualsControl : LUIControl
     {

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using lasercom;
-using LUI.controls;
+using LUI.tabs;
 
 namespace LUI
 {
@@ -26,6 +26,7 @@ namespace LUI
         CalibrateControl CalibrateControl;
         LaserPowerControl LaserPowerControl;
         ResidualsControl ResidualsControl;
+        OptionsControl OptionsControl;
 
         public State TaskBusy
         {
@@ -43,6 +44,10 @@ namespace LUI
         {
             InitializeComponent();
             Commander = commander;
+
+            OptionsControl = new OptionsControl();
+            OptionsControl.Size = OptionsPage.Size;
+            OptionsPage.Controls.Add(OptionsControl);
 
             TROSControl = new TROSControl(Commander);
             TROSPage.Controls.Add(TROSControl);

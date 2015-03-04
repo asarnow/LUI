@@ -129,6 +129,10 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -139,6 +143,27 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
+    <Compile Include="controls\BeamFlagOptionsDialog.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="controls\BeamFlagOptionsDialog.Designer.cs">
+      <DependentUpon>BeamFlagOptionsDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\LabeledControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="controls\LoggingOptionsDialog.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="controls\LoggingOptionsDialog.Designer.cs">
+      <DependentUpon>LoggingOptionsDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\LUIOptionsDialog.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="controls\LUIOptionsDialog.Designer.cs">
+      <DependentUpon>LUIOptionsDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="tabs\CalibrateControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -163,7 +188,7 @@
     <Compile Include="controls\DisabledRichTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="tabs\LUIControl.cs">
+    <Compile Include="controls\LUIControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="ParentForm.cs">
@@ -174,11 +199,11 @@
     </Compile>
     <Compile Include="GUI.cs" />
     <Compile Include="Options.cs" />
-    <Compile Include="OptionsForm.cs">
-      <SubType>Form</SubType>
+    <Compile Include="tabs\OptionsControl.cs">
+      <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="OptionsForm.Designer.cs">
-      <DependentUpon>OptionsForm.cs</DependentUpon>
+    <Compile Include="tabs\OptionsControl.Designer.cs">
+      <DependentUpon>OptionsControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
@@ -198,12 +223,19 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="controls\BeamFlagOptionsDialog.resx">
+      <DependentUpon>BeamFlagOptionsDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\LoggingOptionsDialog.resx">
+      <DependentUpon>LoggingOptionsDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="tabs\CalibrateControl.resx">
       <DependentUpon>CalibrateControl.cs</DependentUpon>
     </EmbeddedResource>
@@ -216,8 +248,8 @@
     <EmbeddedResource Include="ParentForm.resx">
       <DependentUpon>ParentForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="OptionsForm.resx">
-      <DependentUpon>OptionsForm.cs</DependentUpon>
+    <EmbeddedResource Include="tabs\OptionsControl.resx">
+      <DependentUpon>OptionsControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="tabs\TROSControl.resx">
       <DependentUpon>TROSControl.cs</DependentUpon>

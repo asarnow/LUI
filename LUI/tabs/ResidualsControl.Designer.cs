@@ -1,4 +1,4 @@
-﻿namespace LUI.controls
+﻿namespace LUI.tabs
 {
     partial class ResidualsControl
     {

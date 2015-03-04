@@ -11,6 +11,7 @@ namespace lasercom
         // Library constants
         public const Double GroundState = double.PositiveInfinity;
         public const Double DarkState = double.NegativeInfinity;
+        public const int SerialPortCloseDelay = 200;
 
         // Default option values
         public const float DefaultTemperatureF = 20F;

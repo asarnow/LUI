@@ -7,32 +7,38 @@ using NationalInstruments.NI4882;
 
 namespace LUI.gpib
 {
-    class NIGPIBProvider : IGPIBProvider
+    class NIGPIBProvider : GPIBProvider
     {
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public Board Board { get; set; }
-        public Address Address { get; set; }
-        public Device Device { get; set; }
+        //public Address Address { get; set; }
+        //public Device Device { get; set; }
 
-        public NIGPIBProvider(int _Address, int _BoardNumber)
+        public NIGPIBProvider(int _BoardNumber)
         {
             Board = new Board(_BoardNumber);
             Board.BecomeActiveController(true);
             AddressCollection Addresses = Board.FindListeners();
-            
 
-
-            Address = new Address((byte)_Address);
-            Device = new Device(_BoardNumber, Address);
+            //Address = new Address((byte)_Address);
+            //Device = new Device(_BoardNumber, Address);
         }
 
-        public void LoggedWrite(string command)
+        override protected void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                Board.Dispose();
+            }
+        }
+
+        override public void LoggedWrite(byte address, string command)
         {
             Log.Debug("GPIB Command: " + command);
             try
             {
-                Device.Write(command);
+                Board.Write(new Address(address), command);
+                //Device.Write(command);
             }
             catch (GpibException e)
             {
@@ -45,13 +51,13 @@ namespace LUI.gpib
 
         }
 
-        public string LoggedQuery(string command)
+        override public string LoggedQuery(byte address, string command)
         {
             Log.Debug("GPIB Command: " + command);
-
             try
             {
-                Device.Write(command);
+                Board.Write(new Address(address), command);
+                //Device.Write(command);
             }
             catch (GpibException e)
             {
@@ -63,8 +69,8 @@ namespace LUI.gpib
                 Log.Error(e.InnerException.Message);
                 return null;
             }
-
-            string response = Device.ReadString();
+            //string response = Device.ReadString();
+            string response = Board.ReadString(new Address(address));
             Log.Debug("GPIB Response: " + response);
             return response;
         }

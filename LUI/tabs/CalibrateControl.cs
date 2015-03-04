@@ -11,8 +11,9 @@ using System.Runtime.CompilerServices;
 using lasercom;
 using System.IO;
 using lasercom.io;
+using LUI.controls;
 
-namespace LUI.controls
+namespace LUI.tabs
 {
     public partial class CalibrateControl : LUIControl
     {
