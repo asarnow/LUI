@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using log4net;
-using LUI.gpib;
+using lasercom.gpib;
 using NationalInstruments.NI4882;
 
 namespace lasercom.ddg

@@ -37,9 +37,12 @@ namespace lasercom.control
             CloseLaserAndFlash();
         }
 
-        public String GetPortName()
+        public string PortName
         {
-            return _port.PortName;
+            get
+            {
+                return _port.PortName;
+            }
         }
 
         public override void OpenLaser()

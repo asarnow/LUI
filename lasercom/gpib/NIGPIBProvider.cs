@@ -5,7 +5,7 @@ using System.Text;
 using log4net;
 using NationalInstruments.NI4882;
 
-namespace LUI.gpib
+namespace lasercom.gpib
 {
     class NIGPIBProvider : GPIBProvider
     {

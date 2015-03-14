@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using lasercom;
 
-namespace LUI.gpib
+namespace lasercom.gpib
 {
     class PrologixGPIBProvider : GPIBProvider
     {

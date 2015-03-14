@@ -112,11 +112,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="camera\CameraParameters.cs" />
     <Compile Include="camera\DummyAndorCamera.cs" />
     <Compile Include="camera\DummyCamera.cs" />
     <Compile Include="control\AbstractBeamFlags.cs" />
     <Compile Include="camera\AndorCamera.cs" />
     <Compile Include="control\AbstractPump.cs" />
+    <Compile Include="control\BeamFlagParameters.cs" />
     <Compile Include="control\BeamFlags.cs" />
     <Compile Include="camera\CameraTempControlled.cs" />
     <Compile Include="Data.cs" />

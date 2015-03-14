@@ -4,7 +4,7 @@
 //      XML class for serial device (e.g. beam flags, pump).
 //  </summary>
 
-namespace LUI.Config
+namespace LUI.config
 {
     class SerialDevice
     {
