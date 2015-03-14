@@ -4,7 +4,7 @@
 //      Class for XML describing a configured GPIB device (e.g. Stanford DDG).
 //  </summary>
 
-namespace LUI.Config
+namespace LUI.config
 {
     class GPIBDevice
     {

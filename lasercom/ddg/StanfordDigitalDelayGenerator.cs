@@ -1,7 +1,7 @@
 ﻿using System;
 using NationalInstruments.NI4882;
 using log4net;
-using LUI.gpib;
+using lasercom.gpib;
 
 //  <summary>
 //      Represents a Stanford DDG.

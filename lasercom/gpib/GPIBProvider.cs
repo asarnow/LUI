@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using log4net;
 
-namespace LUI.gpib
+namespace lasercom.gpib
 {
     abstract class GPIBProvider : IGPIBProvider, IDisposable
     {

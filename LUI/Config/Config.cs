@@ -2,19 +2,35 @@
 using System.Collections.Generic;
 using System.Xml.Serialization;
 using System.IO;
+using lasercom.gpib;
+using lasercom.control;
+using lasercom.camera;
+using lasercom.ddg;
 
 //  <summary>
 //      Class for managing LUI XML config files.
 //  </summary>
 
-namespace LUI.Config
+namespace LUI.config
 {
     [XmlRoot( "LUIConfig" )]
-    class Config
+    class LUIConfig
     {
-        [XmlArray("GPIBDevices")]
-        [XmlArrayItem("GPIBDevice", typeof (GPIBDevice))]
-        public List<GPIBDevice> GpibDevices { get; set; }
+        [XmlArray("GPIBProviders")]
+        [XmlArrayItem("GPIBProviderParameters", typeof (GPIBProviderParameters))]
+        public List<GPIBProviderParameters> GPIBProviders { get; set; }
+
+        [XmlArray("BeamFlags")]
+        [XmlArrayItem("BeamFlag", typeof(BeamFlagParameters))]
+        public List<BeamFlagParameters> BeamFlags { get; set; }
+
+        [XmlArray("Cameras")]
+        [XmlArrayItem("Camera", typeof(CameraParameters))]
+        public List<CameraParameters> Cameras { get; set; }
+
+        [XmlArray("DelayGenerators")]
+        [XmlArrayItem("DDG", typeof(DelayGeneratorParameters))]
+        public List<DelayGeneratorParameters> DelayGenerators { get; set; }
 
         [XmlArray("SerialDevices")]
         [XmlArrayItem("SerialDevice", typeof(SerialDevice))]
@@ -23,35 +39,35 @@ namespace LUI.Config
         
 
         
-        public Config()
+        public LUIConfig()
         {
-            GpibDevices = new List<GPIBDevice>();
+            GPIBProviders = new List<GPIBProviderParameters>();
             SerialDevices = new List<SerialDevice>();
         }
 
         public void SerializeToXml(string filePath)
         {
-            XmlSerializer serializer = new XmlSerializer(typeof (Config));
+            XmlSerializer serializer = new XmlSerializer(typeof (LUIConfig));
             using (TextWriter writer = new StreamWriter(filePath))
             {
                 serializer.Serialize(writer, this);
             }
         }
 
-        public Config DeserializeFromXml(string filePath)
+        public LUIConfig DeserializeFromXml(string filePath)
         {
-            XmlSerializer deserializer = new XmlSerializer(typeof (Config));
+            XmlSerializer deserializer = new XmlSerializer(typeof (LUIConfig));
             Object obj;
             using (TextReader reader = new StreamReader(filePath))
             {
                 obj = deserializer.Deserialize(reader);
             }
-            return (Config) obj;
+            return (LUIConfig) obj;
         }
 
-        public void AddGpibDevice(GPIBDevice device)
+        public void AddGPIBProviderParameters(GPIBProviderParameters device)
         {
-            GpibDevices.Add(device);
+            GPIBProviders.Add(device);
         }
 
         public void AddSerialDevice(SerialDevice device)
