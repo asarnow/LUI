@@ -164,6 +164,12 @@ namespace lasercom
             return cal;
         }
 
+        /// <summary>
+        /// Linear least squares fit of variables in x to variables in y.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns>Tuple containing slope, y-intercept and R^2</returns>
         public static Tuple<double,double,double> LinearLeastSquares(double[] x, double[] y)
         {
             double n = x.Length;

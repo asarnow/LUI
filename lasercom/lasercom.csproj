@@ -121,6 +121,7 @@
     <Compile Include="camera\CameraTempControlled.cs" />
     <Compile Include="Data.cs" />
     <Compile Include="ddg\DummyDigitalDelayGenerator.cs" />
+    <Compile Include="extensions\LasercomExtensions.cs" />
     <Compile Include="gpib\GPIBProvider.cs" />
     <Compile Include="gpib\GPIBProviderFactory.cs" />
     <Compile Include="gpib\GPIBProviderParameters.cs" />

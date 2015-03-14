@@ -11,12 +11,7 @@ namespace LUI.gpib
 {
     class PrologixGPIBProvider : GPIBProvider
     {
-
-        SerialPort _port;
-
-        int Timeout { get; set; }
-        const int DefaultTimeout = 500;
-
+        #region Constants
         const string USBTerminator = "\r\n";
         const char ControllerEscape = (char)27; // ESC character
         const string ControllerCommandInitiator = "++";
@@ -34,7 +29,20 @@ namespace LUI.gpib
         const int EOSCR = 1;
         const int EOSLF = 2;
         const int EOSNone = 3;
-        
+        #endregion
+
+        SerialPort _port;
+
+        public string PortName
+        {
+            get
+            {
+                return _port.PortName;
+            }
+        }
+
+        int Timeout { get; set; }
+        const int DefaultTimeout = 500;
 
         public PrologixGPIBProvider(string PortName)
             : this(PortName, DefaultTimeout)
@@ -44,7 +52,7 @@ namespace LUI.gpib
 
         public PrologixGPIBProvider(string PortName, int Timeout)
         {
-            #region port configuration
+            #region Serial port configuration
             
             _port = new SerialPort(PortName);
             _port.BaudRate = 115200;
