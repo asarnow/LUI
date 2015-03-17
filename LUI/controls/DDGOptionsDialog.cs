@@ -44,7 +44,7 @@ namespace LUI.controls
             ListPanel.Dock = DockStyle.Left;
             Controls.Add(ListPanel);
 
-            #region DDG list and DDG configuration panel
+            #region DDG list and DDG configuration panel setup
             ListView DelayGenerators = new ListView();
             DelayGenerators.SelectedIndexChanged += SelectedDDGChanged;
             DelayGenerators.Dock = DockStyle.Top;
@@ -71,7 +71,7 @@ namespace LUI.controls
             ListPanel.Controls.Add(DelayGenerators);
             #endregion
 
-            #region DDG configuration subpanel
+            #region DDG configuration panel
             Panel ConfigSubPanel = new Panel();
             ConfigSubPanel.Dock = DockStyle.Fill;
             ConfigPanel.Controls.Add(ConfigSubPanel);
@@ -83,15 +83,28 @@ namespace LUI.controls
             DDGTypes.ForEach(x => {
                 DelayGeneratorTypes.Control.Items.Add(x);
             });
-            DelayGeneratorTypes.TabIndexChanged += DelayGeneratorTypes_TabIndexChanged;
+            DelayGeneratorTypes.Control.SelectedIndexChanged += SelectedDelayGeneratorTypeChanged;
             DelayGeneratorTypes.Dock = DockStyle.Top;
             ConfigPanel.Controls.Add(DelayGeneratorTypes);
+            #endregion
+
+            #region Type-specific configuration
+            Panel DDG535Config = new Panel();
+            DDG535Config.Dock = DockStyle.Fill;
+            DDG535Config.Visible = false;
+
+            Panel DummyDDGConfig = new Panel();
+            DummyDDGConfig.Dock = DockStyle.Fill;
+            DummyDDGConfig.Visible = false;
+
+            ConfigSubPanel.Controls.Add(DDG535Config);
+            ConfigSubPanel.Controls.Add(DummyDDGConfig);
             #endregion
 
             ResumeLayout(false);
         }
 
-        void DelayGeneratorTypes_TabIndexChanged(object sender, EventArgs e)
+        void SelectedDelayGeneratorTypeChanged(object sender, EventArgs e)
         {
             Type t = (Type)DelayGeneratorTypes.Control.SelectedItem;
             

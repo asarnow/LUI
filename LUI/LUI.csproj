@@ -167,6 +167,9 @@
     <Compile Include="controls\GPIBOptionsDialog.Designer.cs">
       <DependentUpon>GPIBOptionsDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="controls\GPIBProviderConfigPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="controls\LabeledControl.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -181,6 +184,12 @@
     </Compile>
     <Compile Include="controls\LUIOptionsDialog.Designer.cs">
       <DependentUpon>LUIOptionsDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\NIConfigPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="controls\PrologixConfigPanel.cs">
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="tabs\CalibrateControl.cs">
       <SubType>UserControl</SubType>

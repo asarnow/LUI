@@ -10,7 +10,7 @@ namespace lasercom.gpib
 
         static IGPIBProvider CreateGPIBProvider(GPIBProviderParameters p)
         {
-            return (IGPIBProvider)System.Activator.CreateInstance(Type.GetType(p.ProviderType), p.ToConstructorArray());
+            return (IGPIBProvider)System.Activator.CreateInstance(p.ProviderType, p.ToConstructorArray());
         }
 
         

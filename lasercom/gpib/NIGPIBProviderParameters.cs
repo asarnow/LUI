@@ -5,7 +5,7 @@ using System.Text;
 
 namespace lasercom.gpib
 {
-    class NIGPIBProviderParameters : GPIBProviderParameters
+    public class NIGPIBProviderParameters : GPIBProviderParameters
     {
         private int _BoardNumber;
         public int BoardNumber
@@ -14,19 +14,25 @@ namespace lasercom.gpib
             {
                 return _BoardNumber;
             }
-            private set
+            set
             {
                 _BoardNumber = value;
             }
         }
 
-        public NIGPIBProviderParameters(string ProviderType, int BoardNumber) : base(ProviderType)
+        public NIGPIBProviderParameters()
+            : base(typeof(NIGPIBProvider))
+        {
+
+        }
+
+        public NIGPIBProviderParameters(Type ProviderType, int BoardNumber) : base(ProviderType)
         {
             this.BoardNumber = BoardNumber;
         }
 
         public NIGPIBProviderParameters(int BoardNumber)
-            : this("NIGPIBProvider", BoardNumber)
+            : this(typeof(NIGPIBProvider), BoardNumber)
         {
 
         }

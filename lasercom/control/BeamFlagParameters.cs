@@ -5,7 +5,7 @@ using System.Text;
 
 namespace lasercom.control
 {
-    class BeamFlagParameters
+    public class BeamFlagParameters
     {
         public string PortName { get; set; }
     }

@@ -8,7 +8,7 @@
     <ProjectGuid>{F77054EF-38F5-4303-9E65-AA033A17E215}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LUI</RootNamespace>
+    <RootNamespace>lasercom</RootNamespace>
     <AssemblyName>lasercom</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>
@@ -122,6 +122,7 @@
     <Compile Include="control\BeamFlags.cs" />
     <Compile Include="camera\CameraTempControlled.cs" />
     <Compile Include="Data.cs" />
+    <Compile Include="ddg\DelayGeneratorParameters.cs" />
     <Compile Include="ddg\DummyDigitalDelayGenerator.cs" />
     <Compile Include="extensions\LasercomExtensions.cs" />
     <Compile Include="gpib\GPIBProvider.cs" />

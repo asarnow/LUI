@@ -5,20 +5,26 @@ using System.Text;
 
 namespace lasercom.gpib
 {
-    class PrologixGPIBProviderParameters : GPIBProviderParameters
+    public class PrologixGPIBProviderParameters : GPIBProviderParameters
     {
         public string PortName { get; set; }
         public int Timeout { get; set; }
 
-        public PrologixGPIBProviderParameters(string ProviderType, string PortName, int Timeout)
+        public PrologixGPIBProviderParameters(Type ProviderType, string PortName, int Timeout)
             : base(ProviderType)
         {
             this.PortName = PortName;
             this.Timeout = Timeout;
         }
 
+        public PrologixGPIBProviderParameters()
+            : base(typeof(PrologixGPIBProvider))
+        {
+
+        }
+
         public PrologixGPIBProviderParameters(string PortName, int Timeout)
-            : this("PrologixGPIBProvider", PortName, Timeout)
+            : this(typeof(PrologixGPIBProvider), PortName, Timeout)
         {
 
         }

@@ -36,9 +36,6 @@ namespace LUI.config
         [XmlArrayItem("SerialDevice", typeof(SerialDevice))]
         public List<SerialDevice> SerialDevices { get; set; }
 
-        
-
-        
         public LUIConfig()
         {
             GPIBProviders = new List<GPIBProviderParameters>();

@@ -6,13 +6,13 @@ using lasercom;
 
 namespace lasercom.camera
 {
-    class CameraParameters
+    public class CameraParameters
     {
         Type CameraType;
 
         public CameraParameters(ICamera Camera)
         {
-            CameraType = typeof(Camera);
+            CameraType = Camera.GetType();
         }
     }
 }

@@ -7,8 +7,8 @@ namespace lasercom.gpib
 {
     public abstract class GPIBProviderParameters
     {
-        private string _ProviderType;
-        public string ProviderType
+        private Type _ProviderType;
+        public Type ProviderType
         {
             get
             {
@@ -20,7 +20,17 @@ namespace lasercom.gpib
             }
         }
 
-        public GPIBProviderParameters(string ProviderType)
+        public string Name { get; set; }
+
+        public string ProviderTypeName
+        {
+            get
+            {
+                return ProviderType.Name;
+            }
+        }
+
+        public GPIBProviderParameters(Type ProviderType)
         {
             this.ProviderType = ProviderType;
         }
