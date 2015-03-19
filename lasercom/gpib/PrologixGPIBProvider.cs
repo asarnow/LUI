@@ -9,7 +9,7 @@ using lasercom;
 
 namespace lasercom.gpib
 {
-    class PrologixGPIBProvider : GPIBProvider
+    public class PrologixGpibProvider : GpibProvider
     {
         #region Constants
         const string USBTerminator = "\r\n";
@@ -44,13 +44,13 @@ namespace lasercom.gpib
         int Timeout { get; set; }
         const int DefaultTimeout = 500;
 
-        public PrologixGPIBProvider(string PortName)
+        public PrologixGpibProvider(string PortName)
             : this(PortName, DefaultTimeout)
         {
 
         }
 
-        public PrologixGPIBProvider(string PortName, int Timeout)
+        public PrologixGpibProvider(string PortName, int Timeout)
         {
             #region Serial port configuration
             

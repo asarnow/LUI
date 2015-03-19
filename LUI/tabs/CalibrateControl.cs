@@ -12,10 +12,11 @@ using lasercom;
 using System.IO;
 using lasercom.io;
 using LUI.controls;
+using lasercom.camera;
 
 namespace LUI.tabs
 {
-    public partial class CalibrateControl : LUIControl
+    public partial class CalibrateControl : LuiControl
     {
         private BackgroundWorker ioWorker;
         private Dispatcher Dispatcher;

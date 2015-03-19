@@ -10,10 +10,10 @@ namespace lasercom.camera
 {
     class DummyAndorCamera : AndorCamera
     {
-        AndorSDK AndorSdk = null;
+        new AndorSDK AndorSdk = null;
 
         private int _ReadMode;
-        public int ReadMode
+        new public int ReadMode
         {
             get { return _ReadMode; }
             set
@@ -23,7 +23,7 @@ namespace lasercom.camera
         }
 
         private int _AcquisitionMode;
-        public int AcquisitionMode
+        new public int AcquisitionMode
         {
             get { return _AcquisitionMode; }
             set
@@ -33,7 +33,7 @@ namespace lasercom.camera
         }
 
         private int _TriggerMode;
-        public int TriggerMode
+        new public int TriggerMode
         {
             get { return _TriggerMode; }
             set
@@ -43,7 +43,7 @@ namespace lasercom.camera
         }
 
         private int _TriggerInvert;
-        public int TriggerInvert
+        new public int TriggerInvert
         {
             get { return _TriggerInvert; }
             set
@@ -53,7 +53,7 @@ namespace lasercom.camera
         }
 
         private float _TriggerLevel;
-        public float TriggerLevel
+        new public float TriggerLevel
         {
             get { return _TriggerLevel; }
             set
@@ -63,7 +63,7 @@ namespace lasercom.camera
         }
 
         private int _DDGTriggerMode;
-        public int DDGTriggerMode
+        new public int DDGTriggerMode
         {
             get { return _DDGTriggerMode; }
             set
@@ -73,7 +73,7 @@ namespace lasercom.camera
         }
 
         private int _GateMode;
-        public int GateMode
+        new public int GateMode
         {
             get { return _GateMode; }
             set
@@ -82,8 +82,16 @@ namespace lasercom.camera
             }
         }
 
+        new public bool HasIntensifier
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         private int _MCPGating;
-        public int MCPGating
+        new public int MCPGating
         {
             get { return _MCPGating; }
             set
@@ -93,7 +101,7 @@ namespace lasercom.camera
         }
 
         private int _MCPGain;
-        public int MCPGain
+        new public int IntensifierGain
         {
             get { return _MCPGain; }
             set
@@ -103,7 +111,7 @@ namespace lasercom.camera
         }
 
         private int _NumberAccumulations;
-        public int NumberAccumulations
+        new public int NumberAccumulations
         {
             get { return _NumberAccumulations; }
             set
@@ -113,7 +121,7 @@ namespace lasercom.camera
         }
 
         private ImageArea _Image;
-        public ImageArea Image
+        new public ImageArea Image
         {
             get { return _Image; }
             set
@@ -137,21 +145,6 @@ namespace lasercom.camera
             get
             {
                 return _Width;
-            }
-        }
-
-        public class ImageArea
-        {
-            public readonly int hbin, vbin, hstart, hend, vstart, vend;
-            public ImageArea(int hbin, int vbin, int hstart, int hend, int vstart, int vend)
-            {
-                this.hbin = hbin;
-                this.vbin = vbin;
-                this.hstart = hstart;
-                this.hend = hend;
-                this.vstart = vstart;
-                this.vend = vend;
-
             }
         }
 

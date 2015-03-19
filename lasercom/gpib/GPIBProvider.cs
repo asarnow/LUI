@@ -6,7 +6,7 @@ using log4net;
 
 namespace lasercom.gpib
 {
-    abstract class GPIBProvider : IGPIBProvider, IDisposable
+    abstract public class GpibProvider : IGpibProvider
     {
         protected static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 

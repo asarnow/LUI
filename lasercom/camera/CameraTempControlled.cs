@@ -14,13 +14,19 @@ using ATMCD32CS;
 //      Temperature controlled camera.
 //  </summary>
 
-namespace lasercom
+namespace lasercom.camera
 {
 
     public class CameraTempControlled:AndorCamera
     {
 
-        public CameraTempControlled(String dir):base(dir)
+        public CameraTempControlled(string dir, int temperature)
+            : base(dir)
+        {
+            EquilibrateTemperature(temperature);
+        }
+
+        public CameraTempControlled(string dir):base(dir)
         {
             EquilibrateTemperature(Constants.DefaultTemperature);
         }

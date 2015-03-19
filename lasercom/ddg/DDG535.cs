@@ -85,7 +85,7 @@ namespace lasercom.ddg
         //    ReadAllDelays();
         //}
 
-        public DDG535(IGPIBProvider GPIBProvider, byte GPIBAddress) : base(GPIBProvider, GPIBAddress)
+        public DDG535(IGpibProvider GPIBProvider, byte GPIBAddress) : base(GPIBProvider, GPIBAddress)
         {
             ReadAllDelays();
         }

@@ -6,6 +6,11 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using lasercom;
+using lasercom.camera;
+using lasercom.control;
+using lasercom.ddg;
+using lasercom.gpib;
 using LUI.controls;
 
 namespace LUI.tabs
@@ -14,10 +19,7 @@ namespace LUI.tabs
     {
         ListView OptionsListView;
 
-        LoggingOptionsDialog LoggingOptionsDialog;
-        BeamFlagOptionsDialog BeamFlagOptionsDialog;
-
-        LUIOptionsDialog ActiveDialog;
+        LuiOptionsDialog ActiveDialog;
 
         public OptionsControl()
         {
@@ -51,35 +53,41 @@ namespace LUI.tabs
             ListViewGroup Instruments = new ListViewGroup("Instruments", HorizontalAlignment.Left);
             OptionsListView.Groups.Add(Instruments);
 
-            LoggingOptionsDialog = new LoggingOptionsDialog(OptionsPanel.Size, false);
+            LoggingOptionsDialog LoggingOptionsDialog = new LoggingOptionsDialog(OptionsPanel.Size, false);
             LoggingOptionsDialog.Dock = DockStyle.Fill;
             ListViewItem LoggingOptionsItem = new ListViewItem("Logging", General);
             LoggingOptionsItem.Tag = LoggingOptionsDialog;
             OptionsListView.Items.Add(LoggingOptionsItem);
             OptionsPanel.Controls.Add(LoggingOptionsDialog);
 
-            BeamFlagOptionsDialog = new BeamFlagOptionsDialog(OptionsPanel.Size, false);
+            LuiOptionsListDialog<AbstractBeamFlags,BeamFlagsParameters> BeamFlagOptionsDialog =
+                new LuiOptionsListDialog<AbstractBeamFlags, BeamFlagsParameters>(OptionsPanel.Size, false);
             BeamFlagOptionsDialog.Dock = DockStyle.Fill;
             ListViewItem BeamFlagOptionsItem = new ListViewItem("Beam Flags", Instruments);
             BeamFlagOptionsItem.Tag = BeamFlagOptionsDialog;
             OptionsListView.Items.Add(BeamFlagOptionsItem);
             OptionsPanel.Controls.Add(BeamFlagOptionsDialog);
 
-            CameraOptionsDialog CameraOptionsDialog = new CameraOptionsDialog(OptionsPanel.Size, false);
+            LuiOptionsListDialog<ICamera, CameraParameters> CameraOptionsDialog = 
+                new LuiOptionsListDialog<ICamera, CameraParameters>(OptionsPanel.Size, false);
             CameraOptionsDialog.Dock = DockStyle.Fill;
             ListViewItem CameraOptionsItem = new ListViewItem("Camera", Instruments);
             CameraOptionsItem.Tag = CameraOptionsDialog;
             OptionsListView.Items.Add(CameraOptionsItem);
             OptionsPanel.Controls.Add(CameraOptionsDialog);
 
-            GPIBOptionsDialog GPIBOptionsDialog = new GPIBOptionsDialog(OptionsPanel.Size, false);
+            LuiOptionsListDialog<IGpibProvider, GpibProviderParameters> GPIBOptionsDialog =
+                new LuiOptionsListDialog<IGpibProvider, GpibProviderParameters>(OptionsPanel.Size, false);
             GPIBOptionsDialog.Dock = DockStyle.Fill;
+            GPIBOptionsDialog.AddConfigPanel(new NIConfigPanel());
+            GPIBOptionsDialog.AddConfigPanel(new PrologixConfigPanel());
             ListViewItem GPIBOptionsItem = new ListViewItem("GPIB Controllers", Instruments);
             GPIBOptionsItem.Tag = GPIBOptionsDialog;
             OptionsListView.Items.Add(GPIBOptionsItem);
             OptionsPanel.Controls.Add(GPIBOptionsDialog);
 
-            DDGOptionsDialog DDGOptionsDialog = new DDGOptionsDialog(OptionsPanel.Size, false);
+            LuiOptionsListDialog<IDigitalDelayGenerator, DelayGeneratorParameters> DDGOptionsDialog = 
+                new LuiOptionsListDialog<IDigitalDelayGenerator, DelayGeneratorParameters>(OptionsPanel.Size, false);
             DDGOptionsDialog.Dock = DockStyle.Fill;
             ListViewItem DDGOptionsItem = new ListViewItem("Digital Delay Generators", Instruments);
             DDGOptionsItem.Tag = DDGOptionsDialog;
@@ -108,7 +116,7 @@ namespace LUI.tabs
             if (OptionsListView.SelectedItems.Count != 0)
             {
                 ListViewItem selectedItem = OptionsListView.SelectedItems[0];
-                ActiveDialog = (LUIOptionsDialog)selectedItem.Tag;
+                ActiveDialog = (LuiOptionsDialog)selectedItem.Tag;
             }
 
             if (ActiveDialog != null)

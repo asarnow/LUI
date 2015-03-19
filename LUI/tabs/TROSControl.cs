@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using System.Windows.Threading;
 using lasercom;
+using lasercom.camera;
 using lasercom.ddg;
 
 namespace LUI

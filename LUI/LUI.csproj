@@ -52,7 +52,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>LUI.GUI</StartupObject>
+    <StartupObject>LUI.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -143,31 +143,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
-    <Compile Include="controls\BeamFlagOptionsDialog.cs">
+    <Compile Include="controls\LuiOptionsListDialog.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="controls\BeamFlagOptionsDialog.Designer.cs">
-      <DependentUpon>BeamFlagOptionsDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="controls\CameraOptionsDialog.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="controls\CameraOptionsDialog.Designer.cs">
-      <DependentUpon>CameraOptionsDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="controls\DDGOptionsDialog.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="controls\DDGOptionsDialog.Designer.cs">
-      <DependentUpon>DDGOptionsDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="controls\GPIBOptionsDialog.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="controls\GPIBOptionsDialog.Designer.cs">
-      <DependentUpon>GPIBOptionsDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="controls\GPIBProviderConfigPanel.cs">
+    <Compile Include="controls\LuiObjectConfigPanel.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="controls\LabeledControl.cs">
@@ -179,11 +158,8 @@
     <Compile Include="controls\LoggingOptionsDialog.Designer.cs">
       <DependentUpon>LoggingOptionsDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="controls\LUIOptionsDialog.cs">
+    <Compile Include="controls\LuiOptionsDialog.cs">
       <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="controls\LUIOptionsDialog.Designer.cs">
-      <DependentUpon>LUIOptionsDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="controls\NIConfigPanel.cs">
       <SubType>Component</SubType>
@@ -197,9 +173,7 @@
     <Compile Include="tabs\CalibrateControl.Designer.cs">
       <DependentUpon>CalibrateControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="config\Config.cs" />
-    <Compile Include="config\GPIBDevice.cs" />
-    <Compile Include="config\SerialDevice.cs" />
+    <Compile Include="config\LuiConfig.cs" />
     <Compile Include="tabs\ResidualsControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -215,7 +189,7 @@
     <Compile Include="controls\DisabledRichTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="controls\LUIControl.cs">
+    <Compile Include="controls\LuiControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="ParentForm.cs">
@@ -224,7 +198,7 @@
     <Compile Include="ParentForm.Designer.cs">
       <DependentUpon>ParentForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="tabs\OptionsControl.cs">
       <SubType>UserControl</SubType>
@@ -232,7 +206,6 @@
     <Compile Include="tabs\OptionsControl.Designer.cs">
       <DependentUpon>OptionsControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -257,9 +230,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="controls\BeamFlagOptionsDialog.resx">
-      <DependentUpon>BeamFlagOptionsDialog.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="controls\LoggingOptionsDialog.resx">
       <DependentUpon>LoggingOptionsDialog.cs</DependentUpon>
     </EmbeddedResource>

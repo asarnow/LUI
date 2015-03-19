@@ -5,15 +5,33 @@ using System.Text;
 
 namespace lasercom.gpib
 {
-    class GPIBProviderFactory
+    public class GpibProviderFactory
     {
 
-        static IGPIBProvider CreateGPIBProvider(GPIBProviderParameters p)
+        public static IGpibProvider CreateGPIBProvider(GpibProviderParameters p)
         {
-            return (IGPIBProvider)System.Activator.CreateInstance(p.ProviderType, p.ToConstructorArray());
+            return (IGpibProvider)System.Activator.CreateInstance(p.Type, p.ConstructorArray);
         }
 
-        
+        public static GpibProviderParameters CreateGPIBProviderParameters(GpibProviderParameters p)
+        {
+            GpibProviderParameters q = new GpibProviderParameters();
+            q.Type = p.Type;
+            q.Name = p.Name;
+            q.PortName = p.PortName;
+            q.Timeout = p.Timeout;
+            q.BoardNumber = p.BoardNumber;
+            return q;
+        }
+
+        public static void CopyParameters(GpibProviderParameters p, GpibProviderParameters q)
+        {
+            p.Type = q.Type;
+            p.Name = q.Name;
+            p.PortName = q.PortName;
+            p.Timeout = q.Timeout;
+            p.BoardNumber = q.BoardNumber;
+        }
 
     }
 }

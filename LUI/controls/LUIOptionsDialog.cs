@@ -10,20 +10,20 @@ using System.Windows.Forms;
 
 namespace LUI.controls
 {
-    public abstract partial class LUIOptionsDialog : UserControl
+    public abstract class LuiOptionsDialog : UserControl
     {
-        public LUIOptionsDialog()
+        public LuiOptionsDialog()
         {
-            InitializeComponent();
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         }
 
-        public LUIOptionsDialog(Size Size, bool Visibility) : this()
+        public LuiOptionsDialog(Size Size, bool Visibility) : this()
         {
             this.Size = Size;
             this.Visible = Visibility;
         }
 
-        public LUIOptionsDialog(Size Size)
+        public LuiOptionsDialog(Size Size)
             : this(Size, true)
         {
 

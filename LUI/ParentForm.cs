@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using lasercom;
+using LUI.config;
 using LUI.tabs;
 
 namespace LUI
@@ -18,6 +19,7 @@ namespace LUI
     /// </summary>
     public partial class ParentForm : Form
     {
+        LuiConfig Config;
         Commander Commander;
 
         public enum State { IDLE, TROS, CALIBRATE, ALIGN, POWER, RESIDUALS }
@@ -40,11 +42,19 @@ namespace LUI
             }
         }
 
-        public ParentForm(Commander commander)
+        public ParentForm(LuiConfig Config)
         {
             InitializeComponent();
-            Commander = commander;
 
+            if (Config.Ready)
+            {
+                Commander = Config.CreateCommander();
+            }
+            else
+            {
+                Commander = new Commander();
+            }
+            
             OptionsControl = new OptionsControl();
             OptionsControl.Size = OptionsPage.Size;
             OptionsPage.Controls.Add(OptionsControl);
@@ -63,6 +73,11 @@ namespace LUI
             ResidualsControl = new ResidualsControl(Commander);
             ResidualsPage.Controls.Add(ResidualsControl);
             //Commander.CalibrationChanged += ResidualsControl.HandleCalibrationChanged;
+
+            if (!Config.Ready)
+            {
+                Tabs.SelectedTab = OptionsPage;
+            }
         }
 
         private static void MakeEmebeddable(Form Form)

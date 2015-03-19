@@ -6,7 +6,7 @@ using ATMCD32CS;
 #endif
 
 
-namespace lasercom
+namespace lasercom.camera
 {
     /// <summary>
     /// Class representing a generic Andor camera.
@@ -123,6 +123,14 @@ namespace lasercom
             }
         }
 
+        public bool HasIntensifier
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         private int _MCPGating;
         public int MCPGating
         {
@@ -135,7 +143,7 @@ namespace lasercom
         }
 
         private int _MinMCPGain;
-        public int MinMCPGain
+        public int MinIntensifierGain
         {
             get
             {
@@ -143,7 +151,7 @@ namespace lasercom
             }
         }
         private int _MaxMCPGain;
-        public int MaxMCPGain
+        public int MaxIntensifierGain
         {
             get
             {
@@ -152,7 +160,7 @@ namespace lasercom
         }
 
         private int _MCPGain;
-        public int MCPGain
+        public int IntensifierGain
         {
             get { return _MCPGain; }
             set
@@ -296,7 +304,7 @@ namespace lasercom
                 //TriggerInvert = Constants.TriggerInvertRising;
                 //TriggerLevel = Constants.DefaultTriggerLevel; // TTL signal is 4.0V
                 AndorSdk.GetMCPGainRange(ref _MinMCPGain, ref _MaxMCPGain);
-                MCPGain = Constants.DefaultMCPGain;
+                IntensifierGain = Constants.DefaultMCPGain;
             }
         }
 

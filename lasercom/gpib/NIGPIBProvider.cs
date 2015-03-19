@@ -7,14 +7,14 @@ using NationalInstruments.NI4882;
 
 namespace lasercom.gpib
 {
-    class NIGPIBProvider : GPIBProvider
+    public class NIGpibProvider : GpibProvider
     {
 
         public Board Board { get; set; }
         //public Address Address { get; set; }
         //public Device Device { get; set; }
 
-        public NIGPIBProvider(int _BoardNumber)
+        public NIGpibProvider(int _BoardNumber)
         {
             Board = new Board(_BoardNumber);
             Board.BecomeActiveController(true);

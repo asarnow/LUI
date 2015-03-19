@@ -6,12 +6,13 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Threading;
 using lasercom;
+using lasercom.camera;
 using lasercom.io;
 using LUI.controls;
 
 namespace LUI.tabs
 {
-    public partial class ResidualsControl : LUIControl
+    public partial class ResidualsControl : LuiControl
     {
         private BackgroundWorker ioWorker;
 
@@ -95,9 +96,16 @@ namespace LUI.tabs
             LowerBound = (int)Commander.Camera.Width / 6;
             UpperBound = (int)Commander.Camera.Width * 5 / 6;
 
-            CameraGain.Minimum = Commander.Camera.MinMCPGain;
-            CameraGain.Maximum = Commander.Camera.MaxMCPGain;
-            CameraGain.Value = Commander.Camera.MCPGain;
+            if (Commander.Camera.HasIntensifier)
+            {
+                CameraGain.Minimum = Commander.Camera.MinIntensifierGain;
+                CameraGain.Maximum = Commander.Camera.MaxIntensifierGain;
+                CameraGain.Value = Commander.Camera.IntensifierGain;
+            }
+            else
+            {
+                CameraGain.Enabled = false;
+            }
         }
 
         private void HandleLoad(object sender, EventArgs e)
@@ -454,7 +462,7 @@ namespace LUI.tabs
         private void CameraGain_ValueChanged(object sender, EventArgs e)
         {
             //TODO Safety check
-            Commander.Camera.MCPGain = (int)CameraGain.Value;
+            Commander.Camera.IntensifierGain = (int)CameraGain.Value;
         }
 
         private void SaveProfile_Click(object sender, EventArgs e)

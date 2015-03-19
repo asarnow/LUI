@@ -8,8 +8,8 @@ namespace lasercom.camera
 {
     class DummyCamera : ICamera
     {
-        public int Width { get; set; }
-        public int Height { get; set; }
+        public uint Width { get; set; }
+        public uint Height { get; set; }
 
         public int[] FullResolutionImage()
         {
@@ -29,6 +29,99 @@ namespace lasercom.camera
         public void Close()
         {
 
+        }
+
+
+        public uint AcqSize
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public int AcquisitionMode
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public int TriggerMode
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public int DDGTriggerMode
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public int ReadMode
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public bool HasIntensifier
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public int IntensifierGain
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public int MinIntensifierGain
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public int MaxIntensifierGain
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public uint Acquire(int[] DataBuffer)
+        {
+            throw new NotImplementedException();
         }
     }
 }

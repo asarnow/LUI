@@ -6,12 +6,13 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Threading;
 using lasercom;
+using lasercom.camera;
 using lasercom.io;
 using LUI.controls;
 
 namespace LUI.tabs
 {
-    public partial class LaserPowerControl : LUIControl
+    public partial class LaserPowerControl : LuiControl
     {
         private BackgroundWorker ioWorker;
         private Dispatcher Dispatcher;

@@ -21,7 +21,7 @@ namespace lasercom
 
     public class Commander
     {
-        public AndorCamera Camera { get; set; }
+        public ICamera Camera { get; set; }
         public AbstractBeamFlags BeamFlags { get; set; }
         public IDigitalDelayGenerator DDG { get; set; }
         public AbstractPump Pump { get; set; }
@@ -48,12 +48,19 @@ namespace lasercom
 
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public Commander(AndorCamera camera, AbstractBeamFlags beamFlags, IDigitalDelayGenerator ddg)
+        public Commander(ICamera camera, AbstractBeamFlags beamFlags, IDigitalDelayGenerator ddg = null)
         {
             Camera = camera;
             BeamFlags = beamFlags;
             DDG = ddg;
             Calibration = Array.ConvertAll(Enumerable.Range(1, (int)Camera.Width).ToArray<int>(), x => (double)x);
+        }
+
+        public Commander(CameraParameters camera, BeamFlagsParameters beamFlags, DelayGeneratorParameters ddg = null)
+        {
+            Camera = CameraFactory.CreateCamera(camera);
+            BeamFlags = BeamFlagsFactory.CreateBeamFlags(beamFlags);
+            DDG = ddg == null ? null : DelayGeneratorFactory.CreateDelayGenerator(ddg);
         }
 
         public Commander() : this(new DummyAndorCamera(), new DummyBeamFlags(), new DummyDigitalDelayGenerator())

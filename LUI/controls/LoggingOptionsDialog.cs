@@ -12,7 +12,7 @@ using log4net;
 
 namespace LUI.controls
 {
-    public partial class LoggingOptionsDialog : LUIOptionsDialog
+    public partial class LoggingOptionsDialog : LuiOptionsDialog
     {
         public LoggingOptionsDialog(Size Size, bool Visibility)
         {

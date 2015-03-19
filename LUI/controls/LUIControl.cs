@@ -12,7 +12,7 @@ using lasercom;
 
 namespace LUI.controls
 {
-    public partial class LUIControl : UserControl
+    public partial class LuiControl : UserControl
     {
         public Commander Commander { get; set; }
         protected BackgroundWorker worker;
