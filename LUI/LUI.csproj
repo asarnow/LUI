@@ -143,10 +143,34 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
+    <Compile Include="controls\config\BeamFlagsConfigPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="controls\config\AndorCameraConfigPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="controls\config\CameraTempControlledConfigPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="controls\config\DDG535ConfigPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="controls\config\DummyAndorCameraConfigPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="controls\config\DummyBeamFlagsConfigPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="controls\config\DummyCameraConfigPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="controls\config\DummyDigitalDelayGeneratorConfigPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="controls\LuiOptionsListDialog.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="controls\LuiObjectConfigPanel.cs">
+    <Compile Include="controls\config\LuiObjectConfigPanel.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="controls\LabeledControl.cs">
@@ -161,10 +185,10 @@
     <Compile Include="controls\LuiOptionsDialog.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="controls\NIConfigPanel.cs">
+    <Compile Include="controls\config\NIConfigPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="controls\PrologixConfigPanel.cs">
+    <Compile Include="controls\config\PrologixConfigPanel.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="tabs\CalibrateControl.cs">

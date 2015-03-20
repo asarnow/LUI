@@ -106,6 +106,7 @@ namespace LUI.controls
             ObjectTypes.Control.DropDownStyle = ComboBoxStyle.DropDownList;
             ObjectTypes.Control.DisplayMember = "Name";
             List<Type> AvailableTypes = typeof(T).GetSubclasses(true);
+            AvailableTypes.Sort((x,y) => x.Name.CompareTo(y.Name));
             AvailableTypes.ForEach(x => {
                 ObjectTypes.Control.Items.Add(x);
             });
@@ -122,11 +123,6 @@ namespace LUI.controls
             ConfigPanels = new Dictionary<Type, LuiObjectConfigPanel>();
 
             ResumeLayout(false);
-
-            #region Set default selected items
-            ConfigPanels[(Type)ObjectTypes.Control.SelectedItem].Visible = true;
-            ObjectView.SelectedIndices.Add(0);
-            #endregion
         }
 
         public void AddConfigPanel(LuiObjectConfigPanel c)
@@ -137,6 +133,12 @@ namespace LUI.controls
             c.ConfigChanged += UpdateSelectedObject;
             ConfigSubPanel.Controls.Add(c);
             ConfigPanels.Add(c.Target, c);
+        }
+
+        public void SetDefaultSelectedItems()
+        {
+            ConfigPanels[(Type)ObjectTypes.Control.SelectedItem].Visible = true;
+            ObjectView.SelectedIndices.Add(0);
         }
 
         private void UpdateSelectedObject(object sender, EventArgs e)

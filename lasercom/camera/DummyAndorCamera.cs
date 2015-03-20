@@ -8,7 +8,7 @@ using System.Diagnostics;
 
 namespace lasercom.camera
 {
-    class DummyAndorCamera : AndorCamera
+    public class DummyAndorCamera : AndorCamera
     {
         new AndorSDK AndorSdk = null;
 

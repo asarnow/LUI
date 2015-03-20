@@ -62,6 +62,9 @@ namespace LUI.tabs
 
             LuiOptionsListDialog<AbstractBeamFlags,BeamFlagsParameters> BeamFlagOptionsDialog =
                 new LuiOptionsListDialog<AbstractBeamFlags, BeamFlagsParameters>(OptionsPanel.Size, false);
+            BeamFlagOptionsDialog.AddConfigPanel(new BeamFlagsConfigPanel());
+            BeamFlagOptionsDialog.AddConfigPanel(new DummyBeamFlagsConfigPanel());
+            BeamFlagOptionsDialog.SetDefaultSelectedItems();
             BeamFlagOptionsDialog.Dock = DockStyle.Fill;
             ListViewItem BeamFlagOptionsItem = new ListViewItem("Beam Flags", Instruments);
             BeamFlagOptionsItem.Tag = BeamFlagOptionsDialog;
@@ -70,6 +73,11 @@ namespace LUI.tabs
 
             LuiOptionsListDialog<ICamera, CameraParameters> CameraOptionsDialog = 
                 new LuiOptionsListDialog<ICamera, CameraParameters>(OptionsPanel.Size, false);
+            CameraOptionsDialog.AddConfigPanel(new AndorCameraConfigPanel());
+            CameraOptionsDialog.AddConfigPanel(new CameraTempControlledConfigPanel());
+            CameraOptionsDialog.AddConfigPanel(new DummyAndorCameraConfigPanel());
+            CameraOptionsDialog.AddConfigPanel(new DummyCameraConfigPanel());
+            CameraOptionsDialog.SetDefaultSelectedItems();
             CameraOptionsDialog.Dock = DockStyle.Fill;
             ListViewItem CameraOptionsItem = new ListViewItem("Camera", Instruments);
             CameraOptionsItem.Tag = CameraOptionsDialog;
@@ -78,9 +86,10 @@ namespace LUI.tabs
 
             LuiOptionsListDialog<IGpibProvider, GpibProviderParameters> GPIBOptionsDialog =
                 new LuiOptionsListDialog<IGpibProvider, GpibProviderParameters>(OptionsPanel.Size, false);
-            GPIBOptionsDialog.Dock = DockStyle.Fill;
             GPIBOptionsDialog.AddConfigPanel(new NIConfigPanel());
             GPIBOptionsDialog.AddConfigPanel(new PrologixConfigPanel());
+            GPIBOptionsDialog.SetDefaultSelectedItems();
+            GPIBOptionsDialog.Dock = DockStyle.Fill;
             ListViewItem GPIBOptionsItem = new ListViewItem("GPIB Controllers", Instruments);
             GPIBOptionsItem.Tag = GPIBOptionsDialog;
             OptionsListView.Items.Add(GPIBOptionsItem);
@@ -88,6 +97,9 @@ namespace LUI.tabs
 
             LuiOptionsListDialog<IDigitalDelayGenerator, DelayGeneratorParameters> DDGOptionsDialog = 
                 new LuiOptionsListDialog<IDigitalDelayGenerator, DelayGeneratorParameters>(OptionsPanel.Size, false);
+            DDGOptionsDialog.AddConfigPanel(new DDG535ConfigPanel());
+            DDGOptionsDialog.AddConfigPanel(new DummyDigitalDelayGeneratorConfigPanel());
+            DDGOptionsDialog.SetDefaultSelectedItems();
             DDGOptionsDialog.Dock = DockStyle.Fill;
             ListViewItem DDGOptionsItem = new ListViewItem("Digital Delay Generators", Instruments);
             DDGOptionsItem.Tag = DDGOptionsDialog;

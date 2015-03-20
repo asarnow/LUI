@@ -6,7 +6,7 @@ using System.Text;
 
 namespace lasercom.camera
 {
-    class DummyCamera : ICamera
+    public class DummyCamera : ICamera
     {
         public uint Width { get; set; }
         public uint Height { get; set; }
