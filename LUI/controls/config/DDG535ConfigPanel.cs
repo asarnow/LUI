@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace LUI.controls
 {
-    class DDG535ConfigPanel : LuiObjectConfigPanel
+    class DDG535ConfigPanel : LuiObjectConfigPanel<DelayGeneratorParameters>
     {
 
         LabeledControl<ComboBox> GpibAddress;
@@ -28,16 +28,14 @@ namespace LUI.controls
             this.Controls.Add(GpibAddress);
         }
 
-        public override void CopyFrom(LuiObjectParameters p)
+        public override void CopyFrom(DelayGeneratorParameters other)
         {
-            DelayGeneratorParameters q = (DelayGeneratorParameters)p;
-            GpibAddress.Control.SelectedItem = q.GPIBAddress;
+            GpibAddress.Control.SelectedItem = other.GpibAddress;
         }
 
-        public override void CopyTo(LuiObjectParameters p)
+        public override void CopyTo(DelayGeneratorParameters other)
         {
-            DelayGeneratorParameters q = (DelayGeneratorParameters)p;
-            q.GPIBAddress = (byte)GpibAddress.Control.SelectedItem;
+            other.GpibAddress = (byte)GpibAddress.Control.SelectedItem;
         }
 
     }

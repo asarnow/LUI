@@ -7,7 +7,7 @@ using lasercom.objects;
 
 namespace lasercom.camera
 {
-    public class CameraParameters : LuiObjectParameters
+    public class CameraParameters : LuiObjectParameters<CameraParameters>
     {
 
         public string Dir { get; set; }
@@ -40,6 +40,37 @@ namespace lasercom.camera
             : base()
         {
 
+        }
+
+        public override void Copy(CameraParameters other)
+        {
+            base.Copy(other);
+            this.Type = other.Type;
+            this.Name = other.Name;
+            this.Dir = other.Dir;
+            this.Temperature = other.Temperature;
+        }
+
+        public override bool Equals(CameraParameters other)
+        {
+            bool iseq = base.Equals(other);
+            if (!iseq) return iseq;
+            
+            if (Type == typeof(AndorCamera))
+            {
+                iseq &= Dir == other.Dir;
+            }
+            else  if (Type == typeof(CameraTempControlled))
+            {
+                iseq &= Dir == other.Dir;
+                iseq &= Temperature == other.Temperature;
+            }
+            return iseq;
+        }
+
+        public override bool Equals(object other)
+        {
+            return Equals(other as CameraParameters);
         }
     }
 }

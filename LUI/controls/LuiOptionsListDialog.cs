@@ -7,7 +7,7 @@ using lasercom.objects;
 
 namespace LUI.controls
 {
-    public class LuiOptionsListDialog<T,P> : LuiOptionsDialog where P:LuiObjectParameters,new()
+    public class LuiOptionsListDialog<T,P> : LuiOptionsDialog where P:LuiObjectParameters<P>,new()
     {
         LabeledControl<ComboBox> ObjectTypes;
         LabeledControl<TextBox> ObjectName;
@@ -16,9 +16,9 @@ namespace LUI.controls
 
         Panel ConfigSubPanel;
 
-        Dictionary<Type, LuiObjectConfigPanel> ConfigPanels;
+        Dictionary<Type, LuiObjectConfigPanel<P>> ConfigPanels;
 
-        Dictionary<string, T> Objects;
+        //Dictionary<string, T> Objects;
 
         /// <summary>
         /// Extends ListViewItem to hold two generic parameter objects.
@@ -120,12 +120,12 @@ namespace LUI.controls
             ConfigPanel.Controls.Add(ObjectTypes);
             #endregion
 
-            ConfigPanels = new Dictionary<Type, LuiObjectConfigPanel>();
+            ConfigPanels = new Dictionary<Type, LuiObjectConfigPanel<P>>();
 
             ResumeLayout(false);
         }
 
-        public void AddConfigPanel(LuiObjectConfigPanel c)
+        public void AddConfigPanel(LuiObjectConfigPanel<P> c)
         {
             c.FlowDirection = FlowDirection.TopDown;
             c.Dock = DockStyle.Fill;
@@ -144,8 +144,8 @@ namespace LUI.controls
         private void UpdateSelectedObject(object sender, EventArgs e)
         {
             LuiObjectItem selectedItem = (LuiObjectItem)ObjectView.SelectedItems[0];
-            P gpibParameters = (P)selectedItem.Transient;
-            ConfigPanels[gpibParameters.Type].CopyTo(gpibParameters);
+            P luiParameters = (P)selectedItem.Transient;
+            ConfigPanels[luiParameters.Type].CopyTo(luiParameters);
         }
 
         private void SelectedObjectChanged(object sender, EventArgs e)
@@ -225,7 +225,7 @@ namespace LUI.controls
         public void AddObject(P p)
         {
             LuiObjectItem newItem = new LuiObjectItem(p.Name);
-            //newItem.Transient = (LUIObjectParameters)Activator.CreateInstance(gpibParameters.ProviderType);
+            //newItem.Transient = (LUIObjectParameters)Activator.CreateInstance(luiParameters.ProviderType);
             newItem.Transient = p;
             newItem.Persistent = null;
             ObjectView.Items.Insert(ObjectView.Items.Count - 1, newItem);
@@ -239,31 +239,30 @@ namespace LUI.controls
         public override void OnApply()
         {
             // Persist all entries excet dummy
-            /*
-            for (int i = 0; i < GPIBProviderView.Items.Count - 1; i++)
+            for (int i = 0; i < ObjectView.Items.Count - 1; i++)
             {   
-                GPIBProviderItem item = (GPIBProviderItem)GPIBProviderView.Items[i];
+                LuiObjectItem item = (LuiObjectItem)ObjectView.Items[i];
                 if (item.Persistent == null)
                 {
-                    item.Persistent = GPIBProviderFactory.CreateGPIBProviderParameters(item.Transient);
+                    item.Persistent = new P();
+                    item.Persistent.Copy(item.Transient);
                 }
                 else if (!item.Persistent.Equals(item.Transient))
                 {
-                    GPIBProviderFactory.CopyParameters(item.Persistent, item.Transient);
-                    
+                    item.Persistent.Copy(item.Transient);
                 }
-                T provider = null;
-                if (GPIBProviders.TryGetValue(item.Persistent.Name, out provider))
-                {
-                    GPIBProviders[item.Persistent.Name].Dispose();
-                    GPIBProviders[item.Persistent.Name] = GPIBProviderFactory.CreateGPIBProvider(item.Persistent);
-                }
-                else
-                {
-                    GPIBProviders.Add(item.Persistent.Name, GPIBProviderFactory.CreateGPIBProvider(item.Persistent));
-                }
+                //T provider = default(T);
+                //if (Objects.TryGetValue(item.Persistent.Name, out provider))
+                //{
+                    //Objects[item.Persistent.Name].Dispose();
+                    //Objects[item.Persistent.Name] = GPIBProviderFactory.CreateGPIBProvider(item.Persistent);
+                //}
+                //else
+                //{
+                    //Objects.Add(item.Persistent.Name, GPIBProviderFactory.CreateGPIBProvider(item.Persistent));
+                //}
             }
-            */
+            
         }
     }
 }

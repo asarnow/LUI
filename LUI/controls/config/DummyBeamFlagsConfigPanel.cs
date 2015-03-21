@@ -7,7 +7,7 @@ using lasercom.control;
 
 namespace LUI.controls
 {
-    class DummyBeamFlagsConfigPanel : LuiObjectConfigPanel
+    class DummyBeamFlagsConfigPanel : LuiObjectConfigPanel<BeamFlagsParameters>
     {
 
         public override Type Target
@@ -21,12 +21,12 @@ namespace LUI.controls
 
         }
 
-        public override void CopyTo(lasercom.objects.LuiObjectParameters p)
+        public override void CopyTo(BeamFlagsParameters other)
         {
             
         }
 
-        public override void CopyFrom(lasercom.objects.LuiObjectParameters p)
+        public override void CopyFrom(BeamFlagsParameters other)
         {
             
         }

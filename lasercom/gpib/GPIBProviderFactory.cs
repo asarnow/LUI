@@ -24,14 +24,5 @@ namespace lasercom.gpib
             return q;
         }
 
-        public static void CopyParameters(GpibProviderParameters p, GpibProviderParameters q)
-        {
-            p.Type = q.Type;
-            p.Name = q.Name;
-            p.PortName = q.PortName;
-            p.Timeout = q.Timeout;
-            p.BoardNumber = q.BoardNumber;
-        }
-
     }
 }

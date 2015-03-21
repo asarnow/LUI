@@ -9,11 +9,10 @@ using lasercom.objects;
 
 namespace LUI.controls
 {
-    class PrologixConfigPanel : LuiObjectConfigPanel
+    class PrologixConfigPanel : LuiObjectConfigPanel<GpibProviderParameters>
     {
         LabeledControl<ComboBox> PrologixCOMPort;
         LabeledControl<NumericUpDown> PrologixTimeout;
-        //LabeledControl<TextBox> ProviderName;
 
         override public Type Target
         {
@@ -26,33 +25,26 @@ namespace LUI.controls
         public PrologixConfigPanel()
             : base()
         {
-            //ProviderName = new LabeledControl<TextBox>(new TextBox(), "Name:");
-            //ProviderName.Control.TextChanged += (s, e) => ConfigChanged(s, e);
             PrologixCOMPort = new LabeledControl<ComboBox>(new ComboBox(), "COM Port:");
             lasercom.Util.EnumerateSerialPorts().ForEach(x => PrologixCOMPort.Control.Items.Add(x));
             PrologixCOMPort.Control.SelectedIndexChanged += (s, e) => ConfigChanged(s, e);
             PrologixTimeout = new LabeledControl<NumericUpDown>(new NumericUpDown(), "Timeout (ms):");
             PrologixTimeout.Control.Increment = 1;
             PrologixTimeout.Control.ValueChanged += (s, e) => ConfigChanged(s, e);
-            //this.Controls.Add(ProviderName);
             this.Controls.Add(PrologixCOMPort);
             this.Controls.Add(PrologixTimeout);
         }
 
-        override public void CopyTo(LuiObjectParameters q)
+        override public void CopyTo(GpibProviderParameters other)
         {
-            GpibProviderParameters p = (GpibProviderParameters)q;
-            //p.Name = ProviderName.Control.Text;
-            p.PortName = (string)PrologixCOMPort.Control.SelectedItem;
-            p.Timeout = (int)PrologixTimeout.Control.Value;
+            other.PortName = (string)PrologixCOMPort.Control.SelectedItem;
+            other.Timeout = (int)PrologixTimeout.Control.Value;
         }
 
-        override public void CopyFrom(LuiObjectParameters q)
+        override public void CopyFrom(GpibProviderParameters other)
         {
-            GpibProviderParameters p = (GpibProviderParameters)q;
-            //ProviderName.Control.Text = p.Name;
-            PrologixCOMPort.Control.SelectedItem = p.PortName;
-            PrologixTimeout.Control.Value = p.Timeout;
+            PrologixCOMPort.Control.SelectedItem = other.PortName;
+            PrologixTimeout.Control.Value = other.Timeout;
         }
     }
 }

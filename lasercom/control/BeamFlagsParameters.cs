@@ -6,7 +6,7 @@ using lasercom.objects;
 
 namespace lasercom.control
 {
-    public class BeamFlagsParameters : LuiObjectParameters
+    public class BeamFlagsParameters : LuiObjectParameters<BeamFlagsParameters>
     {        
 
         public string PortName { get; set; }
@@ -35,6 +35,23 @@ namespace lasercom.control
         {
 
         }
-        
+
+        public override void Copy(BeamFlagsParameters other)
+        {
+            base.Copy(other);
+            this.PortName = other.PortName;
+        }
+
+        public override bool Equals(BeamFlagsParameters other)
+        {
+            bool iseq = base.Equals(other);
+            if (!iseq) return iseq;
+
+            if (Type == typeof(BeamFlags))
+            {
+                iseq &= this.PortName == other.PortName;
+            }
+            return iseq;
+        }
     }
 }

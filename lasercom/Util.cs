@@ -97,5 +97,15 @@ namespace lasercom
             return ports;
         }
 
+        /// <summary>
+        /// Simple Bernstein hash. Use to combine hash codes of multiple objects.
+        /// </summary>
+        /// <param name="h1"></param>
+        /// <param name="h2"></param>
+        /// <returns></returns>
+        public static int Hash(int h1, int h2)
+        {
+            return (h1 << 5) * h2;
+        }
     }
 }

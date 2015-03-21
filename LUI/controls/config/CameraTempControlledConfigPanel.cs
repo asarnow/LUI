@@ -28,18 +28,16 @@ namespace LUI.controls
             this.Controls.Add(Temperature);
         }
 
-        public override void CopyFrom(LuiObjectParameters p)
+        public override void CopyFrom(CameraParameters other)
         {
-            base.CopyFrom(p);
-            CameraParameters q = (CameraParameters)p;
-            Temperature.Control.Value = q.Temperature;
+            base.CopyFrom(other);
+            Temperature.Control.Value = other.Temperature;
         }
 
-        public override void CopyTo(LuiObjectParameters p)
+        public override void CopyTo(CameraParameters other)
         {
-            base.CopyTo(p);
-            CameraParameters q = (CameraParameters)p;
-            q.Temperature = (int)Temperature.Control.Value;
+            base.CopyTo(other);
+            other.Temperature = (int)Temperature.Control.Value;
         }
     }
 }

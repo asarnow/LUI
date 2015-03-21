@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace LUI.controls
 {
-    class BeamFlagsConfigPanel : LuiObjectConfigPanel
+    class BeamFlagsConfigPanel : LuiObjectConfigPanel<BeamFlagsParameters>
     {
         LabeledControl<ComboBox> COMPort;
 
@@ -30,17 +30,16 @@ namespace LUI.controls
             //this.Controls.Add(ProviderName);
             this.Controls.Add(COMPort);
         }
+        
 
-        override public void CopyTo(LuiObjectParameters q)
+        override public void CopyTo(BeamFlagsParameters other)
         {
-            BeamFlagsParameters p = (BeamFlagsParameters)q;
-            p.PortName = (string)COMPort.Control.SelectedItem;
+            other.PortName = (string)COMPort.Control.SelectedItem;
         }
 
-        override public void CopyFrom(LuiObjectParameters q)
+        override public void CopyFrom(BeamFlagsParameters other)
         {
-            BeamFlagsParameters p = (BeamFlagsParameters)q;
-            COMPort.Control.SelectedItem = p.PortName;
+            COMPort.Control.SelectedItem = other.PortName;
         }
     }
 }

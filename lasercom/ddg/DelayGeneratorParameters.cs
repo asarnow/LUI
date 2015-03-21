@@ -7,13 +7,13 @@ using lasercom.objects;
 
 namespace lasercom.ddg
 {
-    public class DelayGeneratorParameters : LuiObjectParameters
+    public class DelayGeneratorParameters : LuiObjectParameters<DelayGeneratorParameters>
     {
-        public byte GPIBAddress { get; set; }
-        public string GPIBProviderName { get; set; }
+        public byte GpibAddress { get; set; }
+        public string GpibProviderName { get; set; }
         
         [System.Xml.Serialization.XmlIgnore]
-        public IGpibProvider GPIBProvider { get; set; }
+        public IGpibProvider GpibProvider { get; set; }
 
         public override object[] ConstructorArray
         {
@@ -21,7 +21,7 @@ namespace lasercom.ddg
             { 
                 object[] arr = null;
                 if (Type == typeof(DDG535)){
-                    arr = new object[] { GPIBProvider, GPIBAddress };
+                    arr = new object[] { GpibProvider, GpibAddress };
                 }
                 return arr;
             }
@@ -37,6 +37,30 @@ namespace lasercom.ddg
             : base()
         {
 
+        }
+
+        public override void Copy(DelayGeneratorParameters other)
+        {
+            base.Copy(other);
+            this.GpibAddress = other.GpibAddress;
+            this.GpibProviderName = other.GpibProviderName;
+        }
+
+        public override bool Equals(DelayGeneratorParameters other)
+        {
+            bool iseq = base.Equals(other);
+            if (!iseq) return iseq;
+
+            if (Type == typeof(DDG535))
+            {
+                iseq &= GpibAddress == other.GpibAddress &&
+                        GpibProviderName == other.GpibProviderName;
+            }
+            return iseq;
+        }
+        public override bool Equals(object other)
+        {
+            return Equals(other as DelayGeneratorParameters);
         }
     }
 }

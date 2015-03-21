@@ -9,10 +9,9 @@ using lasercom.objects;
 
 namespace LUI.controls
 {
-    class NIConfigPanel : LuiObjectConfigPanel
+    class NIConfigPanel : LuiObjectConfigPanel<GpibProviderParameters>
     {
         LabeledControl<ComboBox> NIBoardNumber;
-        //LabeledControl<TextBox> ProviderName;
 
         override public Type Target
         {
@@ -25,30 +24,21 @@ namespace LUI.controls
         public NIConfigPanel()
             : base()
         {
-            //ProviderName = new LabeledControl<TextBox>(new TextBox(), "Name:");
-            //ProviderName.Control.TextChanged += (s, e) => ConfigChanged(s, e);
-            //ProviderName.Anchor = AnchorStyles.Left;
             NIBoardNumber = new LabeledControl<ComboBox>(new ComboBox(), "Board:");
             NIBoardNumber.Control.DropDownStyle = ComboBoxStyle.DropDownList;
             NIBoardNumber.Control.Items.Add(0);
             NIBoardNumber.Control.SelectedIndexChanged += (s, e) => ConfigChanged(s, e);
-            //NIBoardNumber.Anchor = AnchorStyles.Bottom;
-            //this.Controls.Add(ProviderName);
             this.Controls.Add(NIBoardNumber);
         }
 
-        override public void CopyTo(LuiObjectParameters q)
+        override public void CopyTo(GpibProviderParameters other)
         {
-            GpibProviderParameters p = (GpibProviderParameters)q;
-            p.BoardNumber = (int)NIBoardNumber.Control.SelectedItem;
-            //p.Name = ProviderName.Control.Text;
+            other.BoardNumber = (int)NIBoardNumber.Control.SelectedItem;
         }
 
-        override public void CopyFrom(LuiObjectParameters q)
+        override public void CopyFrom(GpibProviderParameters other)
         {
-            GpibProviderParameters p = (GpibProviderParameters)q;
-            NIBoardNumber.Control.SelectedItem = p.BoardNumber;
-            //ProviderName.Control.Text = p.Name;
+            NIBoardNumber.Control.SelectedItem = other.BoardNumber;
         }
     }
 }

@@ -1,14 +1,13 @@
-﻿using lasercom.ddg;
-using lasercom.objects;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using lasercom.ddg;
 
 namespace LUI.controls
 {
-    class DummyDigitalDelayGeneratorConfigPanel : LuiObjectConfigPanel
+    class DummyDigitalDelayGeneratorConfigPanel : LuiObjectConfigPanel<DelayGeneratorParameters>
     {
 
         public override Type Target
@@ -22,12 +21,12 @@ namespace LUI.controls
 
         }
 
-        public override void CopyFrom(LuiObjectParameters p)
+        public override void CopyFrom(DelayGeneratorParameters other)
         {
    
         }
 
-        public override void CopyTo(LuiObjectParameters p)
+        public override void CopyTo(DelayGeneratorParameters other)
         {
 
         }

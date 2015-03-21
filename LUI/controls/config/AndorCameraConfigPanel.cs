@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace LUI.controls
 {
-    class AndorCameraConfigPanel : LuiObjectConfigPanel
+    class AndorCameraConfigPanel : LuiObjectConfigPanel<CameraParameters>
     {
         protected LabeledControl<TextBox> Dir;
 
@@ -27,16 +27,14 @@ namespace LUI.controls
             this.Controls.Add(Dir);
         }
 
-        public override void CopyFrom(LuiObjectParameters p)
+        public override void CopyFrom(CameraParameters other)
         {
-            CameraParameters q = (CameraParameters)p;
-            q.Dir = Dir.Control.Text;
+            other.Dir = Dir.Control.Text;
         }
 
-        public override void CopyTo(LuiObjectParameters p)
+        public override void CopyTo(CameraParameters other)
         {
-            CameraParameters q = (CameraParameters)p;
-            Dir.Control.Text = q.Dir;
+            Dir.Control.Text = other.Dir;
         }
     }
 }

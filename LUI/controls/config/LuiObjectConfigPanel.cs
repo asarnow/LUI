@@ -9,7 +9,7 @@ using lasercom.objects;
 
 namespace LUI.controls
 {
-    public abstract class LuiObjectConfigPanel : FlowLayoutPanel
+    public abstract class LuiObjectConfigPanel<T> : FlowLayoutPanel where T : LuiObjectParameters<T>
     {
         public EventHandler ConfigChanged;
         public abstract Type Target
@@ -22,7 +22,7 @@ namespace LUI.controls
 
         }
 
-        public abstract void CopyTo(LuiObjectParameters p);
-        public abstract void CopyFrom(LuiObjectParameters p);
+        public abstract void CopyTo(T other);
+        public abstract void CopyFrom(T other);
     }
 }

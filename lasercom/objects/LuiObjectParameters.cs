@@ -5,7 +5,7 @@ using System.Text;
 
 namespace lasercom.objects
 {
-    public abstract class LuiObjectParameters
+    public abstract class LuiObjectParameters<T> : IEquatable<T> where T : LuiObjectParameters<T>
     {
         private Type _Type;
 
@@ -30,6 +30,10 @@ namespace lasercom.objects
             {
                 return Type.Name;
             }
+            set
+            {
+                _Type = Type.GetType(value);
+            }
         }
 
         public abstract object[] ConstructorArray { get; }
@@ -44,5 +48,25 @@ namespace lasercom.objects
             Type = t;
         }
 
+        public virtual void Copy(T other)
+        {
+            this.Type = other.Type;
+            this.Name = other.Name;
+        }
+
+        public override bool Equals(object other)
+        {
+            if (other == null) return false;
+            return Equals(other as T);
+        }
+
+        public virtual bool Equals(T other)
+        {
+            if (other == null || GetType() != other.GetType())
+                return false;
+            bool iseq = Type == other.Type &&
+                        Name == other.Name;
+            return iseq;
+        }
     }
 }

@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using lasercom.objects;
+using System.Reflection;
 
 namespace lasercom.gpib
 {
-    public class GpibProviderParameters : LuiObjectParameters
+    public class GpibProviderParameters : LuiObjectParameters<GpibProviderParameters>
     {
         private int _BoardNumber;
         public int BoardNumber
@@ -53,43 +54,55 @@ namespace lasercom.gpib
 
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(GpibProviderParameters other)
         {
-            if (obj == null || GetType() != obj.GetType())
-                return false;
-
-            GpibProviderParameters p = (GpibProviderParameters)obj;
-            bool iseq = Type == p.Type &&
-                        Name == p.Name;
+            bool iseq = base.Equals(other);
             if (Type == typeof(NIGpibProvider))
             {
-                iseq &= BoardNumber == p.BoardNumber;
+                iseq &= BoardNumber == other.BoardNumber;
             }
             else if (Type == typeof(PrologixGpibProvider))
             {
-                iseq &= PortName == p.PortName &&
-                        Timeout == p.Timeout;
+                iseq &= PortName == other.PortName &&
+                        Timeout == other.Timeout;
             }
             return iseq;
         }
 
+        public override bool Equals(object other)
+        {
+            return Equals(other as GpibProviderParameters);
+        }
+
         public override int GetHashCode()
         {
-            if (Type == typeof(NIGpibProvider))
+            unchecked // Overflow is fine, just wrap
             {
-                return Name.GetHashCode() * BoardNumber.GetHashCode();
+                int hash = Name.GetHashCode();
+                if (Type == typeof(NIGpibProvider))
+                {
+                    hash = Util.Hash(hash,BoardNumber.GetHashCode());
+                }
+                else if (Type == typeof(PrologixGpibProvider))
+                {
+                    hash = Util.Hash(hash, PortName.GetHashCode());
+                    hash = Util.Hash(hash, Timeout.GetHashCode());
+                }
+                return hash;
             }
-            else if (Type == typeof(PrologixGpibProvider))
-            {
-                return Name.GetHashCode() * PortName.GetHashCode() * Timeout.GetHashCode();
-            }
-            return 0;
         }
 
         //public static override bool operator==(GPIBProvider p, GPIBProvider q){
         //    return p.Equals(q);
         //}
 
+        public override void Copy(GpibProviderParameters other)
+        {
+            base.Copy(other);
+            this.PortName = other.PortName;
+            this.Timeout = other.Timeout;
+            this.BoardNumber = other.BoardNumber;
+        }
     }
 }
 
