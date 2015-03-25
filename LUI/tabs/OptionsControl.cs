@@ -19,7 +19,6 @@ namespace LUI.tabs
     public class OptionsControl : UserControl
     {
         ListView OptionsListView;
-        Button Apply;
         LuiOptionsDialog ActiveDialog;
 
         public OptionsControl(LuiConfig Config)
@@ -48,7 +47,7 @@ namespace LUI.tabs
             OptionsListView.Columns.Add(new ColumnHeader());
             OptionsListView.View = View.Details;
             OptionsListView.ShowGroups = true;
-            OptionsListView.SelectedIndexChanged += SelectedOptionsDialogChanged;
+            OptionsListView.SelectedIndexChanged += HandleSelectedOptionsDialogChanged;
             ListPanel.Controls.Add(OptionsListView);
 
             #region Options dialogs
@@ -116,7 +115,7 @@ namespace LUI.tabs
 
             SetConfig(Config);
 
-            Apply = new Button();
+            Button Apply = new Button();
             Apply.Text = "Apply";
             Apply.Size = new Size(91, 34);
             Apply.Anchor = ((System.Windows.Forms.AnchorStyles)
@@ -139,7 +138,7 @@ namespace LUI.tabs
         private void Apply_Click(object sender, EventArgs e)
         {
             foreach (ListViewItem item in OptionsListView.Items) ((LuiOptionsDialog)item.Tag).HandleApply(sender, e);
-            Apply.Enabled = false;
+            ((Button)sender).Enabled = false;
         }
 
         private void Close_Click(object sender, EventArgs e)
@@ -147,7 +146,7 @@ namespace LUI.tabs
 
         }
 
-        private void SelectedOptionsDialogChanged(object sender, EventArgs e)
+        private void HandleSelectedOptionsDialogChanged(object sender, EventArgs e)
         {
             if (ActiveDialog != null) ActiveDialog.Visible = false;
 
