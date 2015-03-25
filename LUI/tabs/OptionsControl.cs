@@ -138,7 +138,7 @@ namespace LUI.tabs
 
         private void Apply_Click(object sender, EventArgs e)
         {
-            foreach (ListViewItem item in OptionsListView.Items) ((LuiOptionsDialog)item.Tag).OnApply(sender, e);
+            foreach (ListViewItem item in OptionsListView.Items) ((LuiOptionsDialog)item.Tag).HandleApply(sender, e);
             Apply.Enabled = false;
         }
 

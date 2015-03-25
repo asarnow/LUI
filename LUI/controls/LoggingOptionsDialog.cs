@@ -49,12 +49,12 @@ namespace LUI.controls
 
             Controls.Add(LogLevel);
 
-            ConfigChanged += (s, e) => OnConfigChanged();
+            ConfigChanged += (s, e) => HandleConfigChanged(s, e);
 
             ResumeLayout(false);
         }
 
-        public override void OnApply(object sender, EventArgs e)
+        public override void HandleApply(object sender, EventArgs e)
         {
             string LevelName = (string)LogLevel.Control.SelectedItem;
             Config.ApplicationParameters.LogLevel = LevelName;
@@ -62,7 +62,7 @@ namespace LUI.controls
             //((Hierarchy)LogManager.GetRepository()).RaiseConfigurationChanged(EventArgs.Empty);
         }
 
-        public void OnConfigChanged()
+        public override void HandleConfigChanged(object sender, EventArgs e)
         {
             LogLevel.Control.SelectedItem = Config.ApplicationParameters.LogLevel;
         }

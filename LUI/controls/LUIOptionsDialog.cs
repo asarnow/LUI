@@ -59,6 +59,7 @@ namespace LUI.controls
             if (handler != null) handler(this, e);
         }
 
-        public abstract void OnApply(object sender, EventArgs e);
+        public abstract void HandleConfigChanged(object sender, EventArgs e);
+        public abstract void HandleApply(object sender, EventArgs e);
     }
 }

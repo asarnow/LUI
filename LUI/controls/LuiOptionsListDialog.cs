@@ -137,7 +137,7 @@ namespace LUI.controls
 
             ConfigPanels = new Dictionary<Type, LuiObjectConfigPanel<P>>();
 
-            ConfigChanged += (sender, e) => OnConfigChanged();
+            ConfigChanged += (sender, e) => HandleConfigChanged(sender, e);
 
             ResumeLayout(false);
         }
@@ -263,7 +263,7 @@ namespace LUI.controls
             throw new NotImplementedException();
         }
 
-        public override void OnApply(object sender, EventArgs e)
+        public override void HandleApply(object sender, EventArgs e)
         {
             // Persist all entries excet dummy
             for (int i = 0; i < ObjectView.Items.Count - 1; i++)
@@ -279,10 +279,10 @@ namespace LUI.controls
                     item.Persistent.Copy(item.Transient);
                 }
             }
-            // Config.ParameterLists[typeof(P)] = PersistentItems;
+            Config.ParameterLists[typeof(P)] = PersistentItems;
         }
 
-        public void OnConfigChanged()
+        public override void HandleConfigChanged(object sender, EventArgs e)
         {
             PersistentItems = (List<P>)Config.ParameterLists[typeof(P)];
         }
