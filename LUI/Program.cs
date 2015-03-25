@@ -21,7 +21,7 @@ namespace LUI
         static void Main(string[] args)
         {
             #region Parse command line options
-            string configfile = "./config.xml";
+            string configfile = LUI.Constants.DefaultConfigFileLocation;
             bool show_help = false;
             var p = new OptionSet() {
                 {"f|file", "Configuration file",
@@ -48,24 +48,35 @@ namespace LUI
             }
             #endregion
 
-            #region Deserialize XML config
-            LuiConfig config;
+            #region Deserialize XML and setup LuiConfig
+            LuiConfig Config;
+            
             try
             {
                 XmlSerializer serializer = new XmlSerializer(typeof(LuiConfig));
                 StreamReader reader = new StreamReader(configfile);
-                config = (LuiConfig)serializer.Deserialize(reader);
+                Config = (LuiConfig)serializer.Deserialize(reader);
                 reader.Close();
             }
-            catch (FileNotFoundException e)
+            catch (Exception ex)
             {
-                config = new LuiConfig();
+                if (ex is FileNotFoundException)
+                {
+                    Config = new LuiConfig();
+                }
+                else
+                {
+                    throw;
+                }
             }
+
+            Config.ApplicationParameters.ConfigFile = configfile;
+            Config.ConfigureLogging();
             #endregion
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new ParentForm(config));
+            Application.Run(new ParentForm(Config));
         }
 
         static void ShowHelp(OptionSet p)

@@ -24,7 +24,7 @@ namespace LUI.controls
         {
             GpibAddress = new LabeledControl<ComboBox>(new ComboBox(), "GPIB Address:");
             for (byte b = byte.MinValue; b < byte.MaxValue; b++) GpibAddress.Control.Items.Add(b);
-            GpibAddress.Control.SelectedIndexChanged += (s, e) => ConfigChanged(s, e);
+            GpibAddress.Control.SelectedIndexChanged += (s,e) => OnOptionsChanged(e);
             this.Controls.Add(GpibAddress);
         }
 

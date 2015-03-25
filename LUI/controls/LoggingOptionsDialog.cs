@@ -9,11 +9,16 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using log4net.Core;
 using log4net;
+using LUI.config;
+using log4net.Repository.Hierarchy;
+using LUI.tabs;
 
 namespace LUI.controls
 {
     public partial class LoggingOptionsDialog : LuiOptionsDialog
     {
+        LabeledControl<ComboBox> LogLevel;
+
         public LoggingOptionsDialog(Size Size, bool Visibility)
         {
             InitializeComponent();
@@ -34,28 +39,32 @@ namespace LUI.controls
         {
             SuspendLayout();
 
-            LabeledControl<ComboBox> LogLevel = new LabeledControl<ComboBox>(new ComboBox(), "Log Level");
+            LogLevel = new LabeledControl<ComboBox>(new ComboBox(), "Log Level");
             LogLevel.Control.DropDownStyle = ComboBoxStyle.DropDownList;
-            
-            string[] loglevels = { "All", "Debug", "Info", "Warn", "Error", "Fatal", "Off" };
-            LogLevel.Control.Items.AddRange(loglevels);
-            LogLevel.Control.SelectedIndex = 1; // Default level.
 
-            //LogLevel.SelectedIndexChanged += (sender, args) =>
-            {
-                // Update the log level of the root logger and raise configuration changed event.
-                //((log4net.Repository.Hierarchy.Hierarchy)LogManager.GetRepository()).Root.Level = (Level)LogLevel.SelectedItem;
-                //((log4net.Repository.Hierarchy.Hierarchy)LogManager.GetRepository()).RaiseConfigurationChanged(EventArgs.Empty);
-            };
+            Hierarchy h = (Hierarchy)LogManager.GetRepository();
+            foreach (Level l in h.LevelMap.AllLevels) LogLevel.Control.Items.Add(l.DisplayName);
+
+            LogLevel.Control.SelectedIndexChanged += (s, e) => OnOptionsChanged(e);
 
             Controls.Add(LogLevel);
+
+            ConfigChanged += (s, e) => OnConfigChanged();
 
             ResumeLayout(false);
         }
 
-        public override void OnApply()
+        public override void OnApply(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            string LevelName = (string)LogLevel.Control.SelectedItem;
+            Config.ApplicationParameters.LogLevel = LevelName;
+            //((Hierarchy)LogManager.GetRepository()).Root.Level = ((Hierarchy)LogManager.GetRepository()).LevelMap[LevelName];
+            //((Hierarchy)LogManager.GetRepository()).RaiseConfigurationChanged(EventArgs.Empty);
+        }
+
+        public void OnConfigChanged()
+        {
+            LogLevel.Control.SelectedItem = Config.ApplicationParameters.LogLevel;
         }
     }
 }

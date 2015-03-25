@@ -27,7 +27,7 @@ namespace LUI.controls
             NIBoardNumber = new LabeledControl<ComboBox>(new ComboBox(), "Board:");
             NIBoardNumber.Control.DropDownStyle = ComboBoxStyle.DropDownList;
             NIBoardNumber.Control.Items.Add(0);
-            NIBoardNumber.Control.SelectedIndexChanged += (s, e) => ConfigChanged(s, e);
+            NIBoardNumber.Control.SelectedIndexChanged += (s, e) => OnOptionsChanged(e);
             this.Controls.Add(NIBoardNumber);
         }
 

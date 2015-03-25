@@ -12,18 +12,22 @@ using lasercom.control;
 using lasercom.ddg;
 using lasercom.gpib;
 using LUI.controls;
+using LUI.config;
 
 namespace LUI.tabs
 {
-    public partial class OptionsControl : UserControl
+    public class OptionsControl : UserControl
     {
         ListView OptionsListView;
-
+        Button Apply;
         LuiOptionsDialog ActiveDialog;
 
-        public OptionsControl()
+        public OptionsControl(LuiConfig Config)
         {
-            InitializeComponent();
+            AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            Name = "OptionsControl";
+            Load += new System.EventHandler(this.OnLoad);
 
             SuspendLayout();
 
@@ -35,19 +39,19 @@ namespace LUI.tabs
             ListPanel.Dock = DockStyle.Left;
             Controls.Add(ListPanel);
 
-            OptionsListView = new ListView();
+            OptionsListView = new OptionsListView();
             OptionsListView.Dock = DockStyle.Fill;
-            ListPanel.Controls.Add(OptionsListView);
-            //Controls.Add(OptionsListView);
-            OptionsListView.HideSelection = false;
+            OptionsListView.HideSelection = false; // Maintain highlighting if user changes control focus.
+            OptionsListView.MultiSelect = false;
             //OptionsListView.LabelWrap = false;
             OptionsListView.HeaderStyle = ColumnHeaderStyle.None;
             OptionsListView.Columns.Add(new ColumnHeader());
-            OptionsListView.Columns[0].Width = OptionsListView.Width;
             OptionsListView.View = View.Details;
             OptionsListView.ShowGroups = true;
             OptionsListView.SelectedIndexChanged += SelectedOptionsDialogChanged;
-                
+            ListPanel.Controls.Add(OptionsListView);
+
+            #region Options dialogs
             ListViewGroup General = new ListViewGroup("General", HorizontalAlignment.Left);
             OptionsListView.Groups.Add(General);
             ListViewGroup Instruments = new ListViewGroup("Instruments", HorizontalAlignment.Left);
@@ -105,15 +109,37 @@ namespace LUI.tabs
             DDGOptionsItem.Tag = DDGOptionsDialog;
             OptionsListView.Items.Add(DDGOptionsItem);
             OptionsPanel.Controls.Add(DDGOptionsDialog);
+            #endregion
+            
+            OptionsListView.Columns[0].Width = -1; // Sets width to that of widest item.
+            OptionsListView.Items[0].Selected = true; // Default options dialog.
 
-            OptionsListView.Items[0].Selected = true;
+            SetConfig(Config);
+
+            Apply = new Button();
+            Apply.Text = "Apply";
+            Apply.Size = new Size(91, 34);
+            Apply.Anchor = ((System.Windows.Forms.AnchorStyles)
+                       ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            Apply.Click += Apply_Click;
+            Apply.Enabled = false;
+            foreach(ListViewItem item in OptionsListView.Items) ((LuiOptionsDialog)item.Tag).OptionsChanged += (s, e) => Apply.Enabled = true;
+            OptionsPanel.Controls.Add(Apply);
+            Apply.BringToFront();
 
             ResumeLayout(false);
         }
 
         private void OnLoad(object sender, EventArgs e)
         {
+            // Selecting the ListView causes selected item to be highlighted with system color.
+            OptionsListView.Select();
+        }
 
+        private void Apply_Click(object sender, EventArgs e)
+        {
+            foreach (ListViewItem item in OptionsListView.Items) ((LuiOptionsDialog)item.Tag).OnApply(sender, e);
+            Apply.Enabled = false;
         }
 
         private void Close_Click(object sender, EventArgs e)
@@ -138,5 +164,12 @@ namespace LUI.tabs
             }
         }
 
+        public void SetConfig(LuiConfig Config)
+        {
+            foreach (ListViewItem it in OptionsListView.Items)
+            {
+                ((LuiOptionsDialog)it.Tag).Config = Config;
+            }
+        }
     }
 }

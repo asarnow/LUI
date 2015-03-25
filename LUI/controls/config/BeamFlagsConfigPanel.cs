@@ -26,7 +26,7 @@ namespace LUI.controls
         {
             COMPort = new LabeledControl<ComboBox>(new ComboBox(), "COM Port:");
             lasercom.Util.EnumerateSerialPorts().ForEach(x => COMPort.Control.Items.Add(x));
-            COMPort.Control.SelectedIndexChanged += (s, e) => ConfigChanged(s, e);
+            COMPort.Control.SelectedIndexChanged += (s, e) => OnOptionsChanged(e);
             //this.Controls.Add(ProviderName);
             this.Controls.Add(COMPort);
         }

@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using lasercom.extensions;
 using lasercom.objects;
+using LUI.config;
 
 namespace LUI.controls
 {
@@ -18,7 +19,22 @@ namespace LUI.controls
 
         Dictionary<Type, LuiObjectConfigPanel<P>> ConfigPanels;
 
-        //Dictionary<string, T> Objects;
+        public List<P> PersistentItems
+        {
+            get
+            {
+                List<P> luiParameters = new List<P>(ObjectView.Items.Count);
+                foreach (LuiObjectItem it in ObjectView.Items) luiParameters.Add(it.Persistent);
+                return luiParameters;
+            }
+            set
+            {
+                ObjectView.Items.Clear();
+                foreach (P luiParameters in value) AddObject(luiParameters);
+                AddDummyItem(); // Add the "New..." row.
+                SetDefaultSelectedItems();
+            }
+        }
 
         /// <summary>
         /// Extends ListViewItem to hold two generic parameter objects.
@@ -61,7 +77,7 @@ namespace LUI.controls
             ListPanel.Dock = DockStyle.Left;
             Controls.Add(ListPanel);
 
-            ObjectView = new ListView();
+            ObjectView = new OptionsListView();
             ObjectView.HeaderStyle = ColumnHeaderStyle.None;
             ObjectView.Columns.Add(new ColumnHeader());
             ObjectView.Columns[0].Width = ObjectView.Width;
@@ -71,8 +87,7 @@ namespace LUI.controls
             ObjectView.HideSelection = false;
             ObjectView.MultiSelect = false;
             ObjectView.SelectedIndexChanged += SelectedObjectChanged;
-            LuiObjectItem nextItem = new LuiObjectItem("New..."); // Dummy item
-            ObjectView.Items.Add(nextItem);
+            AddDummyItem(); // Add the "New..." row.
 
             Panel ListControlsPanel = new Panel();
             ListControlsPanel.Dock = DockStyle.Top;
@@ -122,7 +137,18 @@ namespace LUI.controls
 
             ConfigPanels = new Dictionary<Type, LuiObjectConfigPanel<P>>();
 
+            ConfigChanged += (sender, e) => OnConfigChanged();
+
             ResumeLayout(false);
+        }
+
+        /// <summary>
+        /// Adds the "New..." item dummy.
+        /// </summary>
+        private void AddDummyItem()
+        {
+            LuiObjectItem nextItem = new LuiObjectItem("New..."); // Dummy item
+            ObjectView.Items.Add(nextItem);
         }
 
         public void AddConfigPanel(LuiObjectConfigPanel<P> c)
@@ -130,7 +156,8 @@ namespace LUI.controls
             c.FlowDirection = FlowDirection.TopDown;
             c.Dock = DockStyle.Fill;
             c.Visible = false;
-            c.ConfigChanged += UpdateSelectedObject;
+            c.OptionsChanged += UpdateSelectedObject;
+            c.OptionsChanged += (s, e) => this.OnOptionsChanged(e);
             ConfigSubPanel.Controls.Add(c);
             ConfigPanels.Add(c.Target, c);
         }
@@ -138,7 +165,7 @@ namespace LUI.controls
         public void SetDefaultSelectedItems()
         {
             ConfigPanels[(Type)ObjectTypes.Control.SelectedItem].Visible = true;
-            ObjectView.SelectedIndices.Add(0);
+            ObjectView.SelectedIndices.Add(ObjectView.Items.Count - 1);
         }
 
         private void UpdateSelectedObject(object sender, EventArgs e)
@@ -236,7 +263,7 @@ namespace LUI.controls
             throw new NotImplementedException();
         }
 
-        public override void OnApply()
+        public override void OnApply(object sender, EventArgs e)
         {
             // Persist all entries excet dummy
             for (int i = 0; i < ObjectView.Items.Count - 1; i++)
@@ -251,18 +278,13 @@ namespace LUI.controls
                 {
                     item.Persistent.Copy(item.Transient);
                 }
-                //T provider = default(T);
-                //if (Objects.TryGetValue(item.Persistent.Name, out provider))
-                //{
-                    //Objects[item.Persistent.Name].Dispose();
-                    //Objects[item.Persistent.Name] = GPIBProviderFactory.CreateGPIBProvider(item.Persistent);
-                //}
-                //else
-                //{
-                    //Objects.Add(item.Persistent.Name, GPIBProviderFactory.CreateGPIBProvider(item.Persistent));
-                //}
             }
-            
+            // Config.ParameterLists[typeof(P)] = PersistentItems;
+        }
+
+        public void OnConfigChanged()
+        {
+            PersistentItems = (List<P>)Config.ParameterLists[typeof(P)];
         }
     }
 }

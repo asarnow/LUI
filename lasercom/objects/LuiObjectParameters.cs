@@ -5,7 +5,13 @@ using System.Text;
 
 namespace lasercom.objects
 {
-    public abstract class LuiObjectParameters<T> : IEquatable<T> where T : LuiObjectParameters<T>
+    public abstract class LuiObjectParameters
+    {
+
+    }
+
+    public abstract class LuiObjectParameters<T> : LuiObjectParameters, 
+        IEquatable<T> where T : LuiObjectParameters<T>
     {
         private Type _Type;
 
@@ -67,6 +73,11 @@ namespace lasercom.objects
             bool iseq = Type == other.Type &&
                         Name == other.Name;
             return iseq;
+        }
+
+        public override int GetHashCode()
+        {
+            return Util.Hash(Type.GetHashCode(), Name.GetHashCode());
         }
     }
 }

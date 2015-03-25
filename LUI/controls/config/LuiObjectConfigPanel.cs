@@ -11,7 +11,7 @@ namespace LUI.controls
 {
     public abstract class LuiObjectConfigPanel<T> : FlowLayoutPanel where T : LuiObjectParameters<T>
     {
-        public EventHandler ConfigChanged;
+        public event EventHandler OptionsChanged;
         public abstract Type Target
         {
             get;
@@ -20,6 +20,12 @@ namespace LUI.controls
         public LuiObjectConfigPanel()
         {
 
+        }
+
+        protected virtual void OnOptionsChanged(EventArgs e)
+        {
+            EventHandler handler = OptionsChanged;
+            if (handler != null) handler(this, EventArgs.Empty);
         }
 
         public abstract void CopyTo(T other);

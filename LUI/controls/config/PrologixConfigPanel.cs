@@ -27,10 +27,10 @@ namespace LUI.controls
         {
             PrologixCOMPort = new LabeledControl<ComboBox>(new ComboBox(), "COM Port:");
             lasercom.Util.EnumerateSerialPorts().ForEach(x => PrologixCOMPort.Control.Items.Add(x));
-            PrologixCOMPort.Control.SelectedIndexChanged += (s, e) => ConfigChanged(s, e);
+            PrologixCOMPort.Control.SelectedIndexChanged += (s, e) => OnOptionsChanged(e);
             PrologixTimeout = new LabeledControl<NumericUpDown>(new NumericUpDown(), "Timeout (ms):");
             PrologixTimeout.Control.Increment = 1;
-            PrologixTimeout.Control.ValueChanged += (s, e) => ConfigChanged(s, e);
+            PrologixTimeout.Control.ValueChanged += (s, e) => OnOptionsChanged(e);
             this.Controls.Add(PrologixCOMPort);
             this.Controls.Add(PrologixTimeout);
         }

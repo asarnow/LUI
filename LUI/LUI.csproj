@@ -142,6 +142,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="config\LuiApplicationParameters.cs" />
+    <Compile Include="config\TextBoxAppender.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="controls\config\BeamFlagsConfigPanel.cs">
       <SubType>Component</SubType>
@@ -191,6 +193,9 @@
     <Compile Include="controls\config\PrologixConfigPanel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="controls\OptionsListView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="tabs\CalibrateControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -219,16 +224,10 @@
     <Compile Include="ParentForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ParentForm.Designer.cs">
-      <DependentUpon>ParentForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="tabs\OptionsControl.cs">
       <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="tabs\OptionsControl.Designer.cs">
-      <DependentUpon>OptionsControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -265,12 +264,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="tabs\LaserPowerControl.resx">
       <DependentUpon>LaserPowerControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ParentForm.resx">
-      <DependentUpon>ParentForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="tabs\OptionsControl.resx">
-      <DependentUpon>OptionsControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="tabs\TROSControl.resx">
       <DependentUpon>TROSControl.cs</DependentUpon>
