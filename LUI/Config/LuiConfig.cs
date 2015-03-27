@@ -180,7 +180,7 @@ namespace LUI.config
             IEnumerable<LuiObjectParameters> plist;
             bool found = ParameterLists.TryGetValue(p.GetType(), out plist);
             if (!found) ParameterLists.Add(p.GetType(), new List<LuiObjectParameters>());
-            ((IList<LuiObjectParameters>)plist).Add(p);
+            ((IList<LuiObjectParameters>)ParameterLists[p.GetType()]).Add(p);
         }
 
         public void ReplaceParameters<P>(IEnumerable<P> parameters) where P:LuiObjectParameters<P>
