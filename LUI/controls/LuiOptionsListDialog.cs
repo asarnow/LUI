@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using lasercom.extensions;
 using lasercom.objects;
@@ -19,7 +20,7 @@ namespace LUI.controls
 
         Dictionary<Type, LuiObjectConfigPanel<P>> ConfigPanels;
 
-        public IList<P> PersistentItems
+        public IEnumerable<P> PersistentItems
         {
             get
             {
@@ -279,12 +280,12 @@ namespace LUI.controls
                     item.Persistent.Copy(item.Transient);
                 }
             }
-            Config.ParameterLists[typeof(P)] = (IList<LuiObjectParameters>)PersistentItems;
+            Config.ReplaceParameters(PersistentItems);
         }
 
         public override void HandleConfigChanged(object sender, EventArgs e)
         {
-            PersistentItems = (IList<P>)Config.ParameterLists[typeof(P)];
+            PersistentItems = Config.ParameterLists[typeof(P)].Cast<P>();
         }
     }
 }

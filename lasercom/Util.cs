@@ -105,7 +105,7 @@ namespace lasercom
         /// <returns></returns>
         public static int Hash(int h1, int h2)
         {
-            return (h1 << 5) * h2;
+            unchecked { return (h1 << 5) * h2; } // Hash should wrap around.
         }
     }
 }

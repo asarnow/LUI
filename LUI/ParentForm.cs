@@ -186,8 +186,8 @@ namespace LUI
         {
             base.OnFormClosing(e);
             Commander.Camera.Close();
-            Commander.BeamFlags.CloseLaserAndFlash();
-            Commander.BeamFlags.EnsurePortDisposed();
+            Commander.BeamFlag.CloseLaserAndFlash();
+            Commander.BeamFlag.EnsurePortDisposed();
         }
 
     }

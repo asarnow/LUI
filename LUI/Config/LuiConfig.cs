@@ -6,6 +6,7 @@ using lasercom.gpib;
 using lasercom.control;
 using lasercom.camera;
 using lasercom.ddg;
+using lasercom.extensions;
 using lasercom;
 using lasercom.objects;
 using log4net.Appender;
@@ -21,11 +22,21 @@ using System.Linq.Expressions;
 
 namespace LUI.config
 {
-    [XmlRoot( "LUIConfig" )]
+    [XmlRoot( "LuiConfig" )]
     public class LuiConfig : IXmlSerializable
     {
-        public Dictionary<Type, IList<LuiObjectParameters>> ParameterLists;
+        public Dictionary<Type, IEnumerable<LuiObjectParameters>> ParameterLists;
 
+        #region Application parameters
+        /* Application parameters have:
+         *   Private fields
+         *   Public getters and setters
+         *   Public properties
+         *   
+         * The properties have no side effects and are used for serialization.
+         * The Get/Set methods either trigger events indicating that the
+         * configuration has changed or directly change the application state.
+         */
         #region ConfigFile
         private string _ConfigFile;
         public string ConfigFile
@@ -100,12 +111,13 @@ namespace LUI.config
             _LogLevel = val;
         }
         #endregion
+        #endregion
 
         public bool Ready
         {
             get
             {
-                throw new NotImplementedException();
+                return false;
             }
         }
 
@@ -122,8 +134,12 @@ namespace LUI.config
             _LogFile = LUI.Constants.DefaultLogFileLocation;
             _LogLevel = LUI.Constants.DefaultLogLevel;
 
-            ParameterLists = new Dictionary<Type, IList<LuiObjectParameters>>();
-
+            ParameterLists = new Dictionary<Type, IEnumerable<LuiObjectParameters>>();
+            // Prepopulate parameter lists using all concrete LuiObjectParameters subclasses.
+            foreach (Type type in typeof(LuiObjectParameters).GetSubclasses(true))
+            {
+                ParameterLists.Add(type, new List<LuiObjectParameters>());
+            }
         }
 
         public Commander CreateCommander()
@@ -161,10 +177,15 @@ namespace LUI.config
 
         public void AddParameters(LuiObjectParameters p)
         {
-            IList<LuiObjectParameters> plist;
+            IEnumerable<LuiObjectParameters> plist;
             bool found = ParameterLists.TryGetValue(p.GetType(), out plist);
             if (!found) ParameterLists.Add(p.GetType(), new List<LuiObjectParameters>());
-            ParameterLists[p.GetType()].Add(p);
+            ((IList<LuiObjectParameters>)plist).Add(p);
+        }
+
+        public void ReplaceParameters<P>(IEnumerable<P> parameters) where P:LuiObjectParameters<P>
+        {
+            ParameterLists[typeof(P)] = parameters;
         }
 
         public System.Xml.Schema.XmlSchema GetSchema()
@@ -227,7 +248,7 @@ namespace LUI.config
 
             // Write the LuiObjectParameters.
             writer.WriteStartElement("LuiObjectParametersList");
-            foreach (KeyValuePair<Type, IList<LuiObjectParameters>> kvp in ParameterLists)
+            foreach (KeyValuePair<Type, IEnumerable<LuiObjectParameters>> kvp in ParameterLists)
             {
                 // Write list of specific LuiObjectParameters subtype.
                 writer.WriteStartElement(kvp.Key.Name + "List");

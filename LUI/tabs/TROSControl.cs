@@ -99,22 +99,22 @@ namespace LUI
 
         private void OpenLaser_Click(object sender, EventArgs e)
         {
-            Commander.BeamFlags.OpenLaser();
+            Commander.BeamFlag.OpenLaser();
         }
 
         private void CloseLaser_Click(object sender, EventArgs e)
         {
-            Commander.BeamFlags.CloseLaser();
+            Commander.BeamFlag.CloseLaser();
         }
 
         private void OpenLamp_Click(object sender, EventArgs e)
         {
-            Commander.BeamFlags.OpenFlash();
+            Commander.BeamFlag.OpenFlash();
         }
 
         private void CloseLamp_Click(object sender, EventArgs e)
         {
-            Commander.BeamFlags.CloseFlash();
+            Commander.BeamFlag.CloseFlash();
         }
 
         private bool BlankDialog()

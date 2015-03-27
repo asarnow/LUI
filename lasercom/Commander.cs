@@ -21,8 +21,13 @@ namespace lasercom
 
     public class Commander
     {
+        public Dictionary<string, ICamera> Cameras;
+        public Dictionary<string, AbstractBeamFlags> BeamFlags;
+        public Dictionary<string, IDigitalDelayGenerator> DelayGenerators;
+        public Dictionary<string, AbstractPump> Pumps;
+
         public ICamera Camera { get; set; }
-        public AbstractBeamFlags BeamFlags { get; set; }
+        public AbstractBeamFlags BeamFlag { get; set; }
         public IDigitalDelayGenerator DDG { get; set; }
         public AbstractPump Pump { get; set; }
         public List<Double> Delays { get; set; }
@@ -51,7 +56,7 @@ namespace lasercom
         public Commander(ICamera camera, AbstractBeamFlags beamFlags, IDigitalDelayGenerator ddg = null)
         {
             Camera = camera;
-            BeamFlags = beamFlags;
+            BeamFlag = beamFlags;
             DDG = ddg;
             Calibration = Array.ConvertAll(Enumerable.Range(1, (int)Camera.Width).ToArray<int>(), x => (double)x);
         }
@@ -59,7 +64,7 @@ namespace lasercom
         public Commander(CameraParameters camera, BeamFlagsParameters beamFlags, DelayGeneratorParameters ddg = null)
         {
             Camera = CameraFactory.CreateCamera(camera);
-            BeamFlags = BeamFlagsFactory.CreateBeamFlags(beamFlags);
+            BeamFlag = BeamFlagsFactory.CreateBeamFlags(beamFlags);
             DDG = ddg == null ? null : DelayGeneratorFactory.CreateDelayGenerator(ddg);
         }
 
@@ -91,47 +96,47 @@ namespace lasercom
 
         public int[] Dark()
         {
-            BeamFlags.CloseLaserAndFlash();
+            BeamFlag.CloseLaserAndFlash();
             return Camera.Acquire();
         }
 
         public uint Dark(int[] DataBuffer)
         {
-            BeamFlags.CloseLaserAndFlash();
+            BeamFlag.CloseLaserAndFlash();
             return Camera.Acquire(DataBuffer);
         }
 
         public int[] Flash()
         {
-            BeamFlags.CloseLaserAndFlash();
-            BeamFlags.OpenFlash();
+            BeamFlag.CloseLaserAndFlash();
+            BeamFlag.OpenFlash();
             int[] data = Camera.Acquire();
-            BeamFlags.CloseLaserAndFlash();
+            BeamFlag.CloseLaserAndFlash();
             return data;
         }
 
         public uint Flash(int[] DataBuffer)
         {
-            BeamFlags.CloseLaserAndFlash();
-            BeamFlags.OpenFlash();
+            BeamFlag.CloseLaserAndFlash();
+            BeamFlag.OpenFlash();
             uint ret = Camera.Acquire(DataBuffer);
-            BeamFlags.CloseLaserAndFlash();
+            BeamFlag.CloseLaserAndFlash();
             return ret;
         }
 
         public int[] Trans()
         {
-            BeamFlags.OpenLaserAndFlash();
+            BeamFlag.OpenLaserAndFlash();
             int[] data = Camera.Acquire();
-            BeamFlags.CloseLaserAndFlash();
+            BeamFlag.CloseLaserAndFlash();
             return data;
         }
 
         public uint Trans(int[] DataBuffer)
         {
-            BeamFlags.OpenLaserAndFlash();
+            BeamFlag.OpenLaserAndFlash();
             uint ret = Camera.Acquire(DataBuffer);
-            BeamFlags.CloseLaserAndFlash();
+            BeamFlag.CloseLaserAndFlash();
             return ret;
         }
 
