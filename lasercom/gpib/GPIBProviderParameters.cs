@@ -10,6 +10,7 @@ namespace lasercom.gpib
     public class GpibProviderParameters : LuiObjectParameters<GpibProviderParameters>
     {
         private int _BoardNumber;
+        [System.Xml.Serialization.XmlAttribute]
         public int BoardNumber
         {
             get
@@ -22,7 +23,10 @@ namespace lasercom.gpib
             }
         }
 
+        [System.Xml.Serialization.XmlAttribute]
         public string PortName { get; set; }
+
+        [System.Xml.Serialization.XmlAttribute]
         public int Timeout { get; set; }
 
         override public object[] ConstructorArray

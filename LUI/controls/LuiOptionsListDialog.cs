@@ -19,7 +19,7 @@ namespace LUI.controls
 
         Dictionary<Type, LuiObjectConfigPanel<P>> ConfigPanels;
 
-        public List<P> PersistentItems
+        public IList<P> PersistentItems
         {
             get
             {
@@ -279,12 +279,12 @@ namespace LUI.controls
                     item.Persistent.Copy(item.Transient);
                 }
             }
-            Config.ParameterLists[typeof(P)] = PersistentItems;
+            Config.ParameterLists[typeof(P)] = (IList<LuiObjectParameters>)PersistentItems;
         }
 
         public override void HandleConfigChanged(object sender, EventArgs e)
         {
-            PersistentItems = (List<P>)Config.ParameterLists[typeof(P)];
+            PersistentItems = (IList<P>)Config.ParameterLists[typeof(P)];
         }
     }
 }

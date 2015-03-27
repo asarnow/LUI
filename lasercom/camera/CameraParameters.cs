@@ -9,8 +9,10 @@ namespace lasercom.camera
 {
     public class CameraParameters : LuiObjectParameters<CameraParameters>
     {
-
+        [System.Xml.Serialization.XmlAttribute]
         public string Dir { get; set; }
+
+        [System.Xml.Serialization.XmlAttribute]
         public int Temperature { get; set; }
 
         override public object[] ConstructorArray

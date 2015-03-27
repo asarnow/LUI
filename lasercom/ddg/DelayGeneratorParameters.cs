@@ -9,7 +9,10 @@ namespace lasercom.ddg
 {
     public class DelayGeneratorParameters : LuiObjectParameters<DelayGeneratorParameters>
     {
+        [System.Xml.Serialization.XmlAttribute]
         public byte GpibAddress { get; set; }
+
+        [System.Xml.Serialization.XmlAttribute]
         public string GpibProviderName { get; set; }
         
         [System.Xml.Serialization.XmlIgnore]

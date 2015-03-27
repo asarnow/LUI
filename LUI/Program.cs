@@ -70,7 +70,7 @@ namespace LUI
                 }
             }
 
-            Config.ApplicationParameters.ConfigFile = configfile;
+            Config.ConfigFile = configfile;
             Config.ConfigureLogging();
             #endregion
 

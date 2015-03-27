@@ -10,11 +10,23 @@ namespace lasercom.objects
 
     }
 
-    public abstract class LuiObjectParameters<T> : LuiObjectParameters, 
-        IEquatable<T> where T : LuiObjectParameters<T>
+    public abstract class LuiObjectParameters<P> : LuiObjectParameters, 
+        IEquatable<P> where P : LuiObjectParameters<P>
     {
-        private Type _Type;
+        [System.Xml.Serialization.XmlAttribute]
+        public string ParametersTypeName
+        {
+            get
+            {
+                return this.GetType().AssemblyQualifiedName;
+            }
+            set
+            {
 
+            }
+        }
+
+        private Type _Type;
         [System.Xml.Serialization.XmlIgnore]
         public Type Type
         {
@@ -28,13 +40,15 @@ namespace lasercom.objects
             }
         }
 
+        [System.Xml.Serialization.XmlAttribute]
         public string Name { get; set; }
 
+        [System.Xml.Serialization.XmlAttribute]
         public string TypeName
         {
             get
             {
-                return Type.Name;
+                return Type.FullName;
             }
             set
             {
@@ -54,7 +68,7 @@ namespace lasercom.objects
             Type = t;
         }
 
-        public virtual void Copy(T other)
+        public virtual void Copy(P other)
         {
             this.Type = other.Type;
             this.Name = other.Name;
@@ -63,10 +77,10 @@ namespace lasercom.objects
         public override bool Equals(object other)
         {
             if (other == null) return false;
-            return Equals(other as T);
+            return Equals(other as P);
         }
 
-        public virtual bool Equals(T other)
+        public virtual bool Equals(P other)
         {
             if (other == null || GetType() != other.GetType())
                 return false;

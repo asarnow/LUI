@@ -13,6 +13,7 @@ using log4net;
 using log4net.Repository.Hierarchy;
 using log4net.Layout;
 using log4net.Core;
+using System.Linq.Expressions;
 
 //  <summary>
 //      Class for managing LUI XML config files.
@@ -21,42 +22,90 @@ using log4net.Core;
 namespace LUI.config
 {
     [XmlRoot( "LUIConfig" )]
-    public class LuiConfig
+    public class LuiConfig : IXmlSerializable
     {
-        [XmlElement(typeof(LuiApplicationParameters))]
-        public LuiApplicationParameters ApplicationParameters { get; set; }
+        public Dictionary<Type, IList<LuiObjectParameters>> ParameterLists;
 
-        [XmlArray("GPIBProviders")]
-        [XmlArrayItem("GPIBProviderParameters", typeof(GpibProviderParameters))]
-        public List<GpibProviderParameters> GpibProviders { get; set; }
+        #region ConfigFile
+        private string _ConfigFile;
+        public string ConfigFile
+        {
+            get
+            {
+                return _ConfigFile;
+            }
+            set
+            {
+                _ConfigFile = value;
+            }
+        }
 
-        [XmlArray("BeamFlags")]
-        [XmlArrayItem("BeamFlag", typeof(BeamFlagsParameters))]
-        public List<BeamFlagsParameters> BeamFlags { get; set; }
+        public string GetConfigFile()
+        {
+            return _ConfigFile;
+        }
 
-        [XmlArray("Cameras")]
-        [XmlArrayItem("Camera", typeof(CameraParameters))]
-        public List<CameraParameters> Cameras { get; set; }
+        public void SetConfigFile(string val)
+        {
+            _ConfigFile = val;
+        }
+        #endregion
 
-        [XmlArray("DelayGenerators")]
-        [XmlArrayItem("DDG", typeof(DelayGeneratorParameters))]
-        public List<DelayGeneratorParameters> DelayGenerators { get; set; }
+        #region LogFile
+        private string _LogFile;
+        public string LogFile
+        {
+            get
+            {
+                return _LogFile;
+            }
+            set
+            {
+                _LogFile = value;
+            }
+        }
 
-        //[XmlArray("SerialDevices")]
-        //[XmlArrayItem("SerialDevice", typeof(SerialDevice))]
-        //public List<SerialDevice> SerialDevices { get; set; }
+        public string GetLogFile()
+        {
+            return _LogFile;
+        }
 
-        [XmlIgnore]
-        public Dictionary<Type, object> ParameterLists;
+        public void SetLogFile(string val)
+        {
+            _LogFile = val;
+        }
+        #endregion
 
-        [System.Xml.Serialization.XmlIgnore]
+        #region LogLevel
+        private string _LogLevel;
+        public string LogLevel
+        {
+            get
+            {
+                return _LogLevel;
+            }
+            set
+            {
+                _LogLevel = value;
+            }
+        }
+
+        public string GetLogLevel()
+        {
+            return _LogLevel;
+        }
+
+        public void SetLogLevel(string val)
+        {
+            _LogLevel = val;
+        }
+        #endregion
+
         public bool Ready
         {
             get
             {
-                return (Cameras.Count > 0 && 
-                        DelayGenerators.Count > 0 && 
-                        BeamFlags.Count > 0);
+                throw new NotImplementedException();
             }
         }
 
@@ -66,32 +115,20 @@ namespace LUI.config
 
         }
 
-        public LuiConfig(string ConfigFile)
+        public LuiConfig(string configFile)
         {
-            ApplicationParameters = new LuiApplicationParameters();
-            ApplicationParameters.ConfigFile = ConfigFile;
-            ApplicationParameters.LogFile = LUI.Constants.DefaultLogFileLocation;
-            ApplicationParameters.LogLevel = LUI.Constants.DefaultLogLevel;
+            // Set the private fields directly to avoid setter side effects.
+            _ConfigFile = configFile;
+            _LogFile = LUI.Constants.DefaultLogFileLocation;
+            _LogLevel = LUI.Constants.DefaultLogLevel;
 
-            ParameterLists = new Dictionary<Type, object>();
+            ParameterLists = new Dictionary<Type, IList<LuiObjectParameters>>();
 
-            GpibProviders = new List<GpibProviderParameters>();
-            ParameterLists.Add(typeof(GpibProviderParameters), GpibProviders);
-            
-            BeamFlags = new List<BeamFlagsParameters>();
-            ParameterLists.Add(typeof(BeamFlagsParameters), BeamFlags);
-
-            Cameras = new List<CameraParameters>();
-            ParameterLists.Add(typeof(CameraParameters), Cameras);
-
-            DelayGenerators = new List<DelayGeneratorParameters>();
-            ParameterLists.Add(typeof(DelayGeneratorParameters), DelayGenerators);
         }
 
         public Commander CreateCommander()
         {
-            Commander Commander = new Commander(Cameras[0], BeamFlags[0], DelayGenerators[0]);
-            return Commander;
+            throw new NotImplementedException();
         }
 
         public void ConfigureLogging()
@@ -107,7 +144,7 @@ namespace LUI.config
 
             FileAppender fileAppender = new FileAppender();
             fileAppender.AppendToFile = true;
-            fileAppender.File = ApplicationParameters.LogFile;
+            fileAppender.File = LogFile;
             fileAppender.Layout = patternLayout;
             fileAppender.LockingModel = new FileAppender.ExclusiveLock();
             fileAppender.ActivateOptions();
@@ -118,8 +155,100 @@ namespace LUI.config
             //textBoxAppender.TextBoxName = "";
             //hierarchy.Root.AddAppender(textBoxAppender);
 
-            hierarchy.Root.Level = hierarchy.LevelMap[ApplicationParameters.LogLevel];
+            hierarchy.Root.Level = hierarchy.LevelMap[LogLevel];
             hierarchy.Configured = true;
+        }
+
+        public void AddParameters(LuiObjectParameters p)
+        {
+            IList<LuiObjectParameters> plist;
+            bool found = ParameterLists.TryGetValue(p.GetType(), out plist);
+            if (!found) ParameterLists.Add(p.GetType(), new List<LuiObjectParameters>());
+            ParameterLists[p.GetType()].Add(p);
+        }
+
+        public System.Xml.Schema.XmlSchema GetSchema()
+        {
+            return null;
+        }
+
+        public void ReadXml(System.Xml.XmlReader reader)
+        {
+            // Root element NOT handled automatically.
+            reader.MoveToContent();
+            bool empty = reader.IsEmptyElement;
+            //reader.ReadStartElement(); // Read root element.
+            if (!empty)
+            {
+                // Application parameters.
+                reader.ReadToFollowing("ApplicationParameters");
+                using (var subtree = reader.ReadSubtree())
+                {
+                    subtree.MoveToContent();
+                    while (subtree.Read())
+                    {
+                        if (subtree.IsStartElement())
+                            typeof(LuiConfig).GetProperty(subtree.Name).SetValue(this, subtree.ReadElementContentAsString());
+                    }
+                }
+                // LuiObjectParamters lists.
+                reader.ReadToFollowing("LuiObjectParametersList");
+                using (var subtree = reader.ReadSubtree())
+                {
+                    subtree.MoveToContent();
+                    while (subtree.Read())
+                    {
+                        subtree.MoveToContent();
+                        if (!subtree.Name.EndsWith("List") && subtree.IsStartElement())
+                        {
+                            // Previously serialized runtime type.
+                            Type type = Type.GetType(reader.GetAttribute("ParametersTypeName"));
+                            var serializer = new XmlSerializer(type);
+                            LuiObjectParameters p = (LuiObjectParameters)serializer.Deserialize(subtree.ReadSubtree());
+                            AddParameters(p);
+                        }
+                        
+                    }
+                }
+                
+                //reader.ReadEndElement(); // End root.
+            }
+        }
+
+        public void WriteXml(System.Xml.XmlWriter writer)
+        {
+            // Root element <LuiConfig> start/end handled automatically.
+            // Write the individual options.
+            writer.WriteStartElement("ApplicationParameters");
+            writer.WriteElementString(GetPropertyName(() => ConfigFile), ConfigFile.ToString());
+            writer.WriteElementString(GetPropertyName(() => LogFile), LogFile.ToString());
+            writer.WriteElementString(GetPropertyName(() => LogLevel), LogLevel.ToString());
+            writer.WriteEndElement();
+
+            // Write the LuiObjectParameters.
+            writer.WriteStartElement("LuiObjectParametersList");
+            foreach (KeyValuePair<Type, IList<LuiObjectParameters>> kvp in ParameterLists)
+            {
+                // Write list of specific LuiObjectParameters subtype.
+                writer.WriteStartElement(kvp.Key.Name + "List");
+                foreach (LuiObjectParameters p in kvp.Value)
+                {
+                    var serializer = new XmlSerializer(p.GetType()); // Uses exact runtime type!
+                    serializer.Serialize(writer, p);
+                }
+                writer.WriteEndElement();
+            }
+            writer.WriteEndElement();
+        }
+
+        private static string GetPropertyName<T>(Expression<Func<T>> property)
+        {
+            var me = property.Body as MemberExpression;
+            if (me == null)
+            {
+                throw new ArgumentException();
+            }
+            return me.Member.Name;
         }
     }
 

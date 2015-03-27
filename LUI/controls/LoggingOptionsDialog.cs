@@ -57,14 +57,14 @@ namespace LUI.controls
         public override void HandleApply(object sender, EventArgs e)
         {
             string LevelName = (string)LogLevel.Control.SelectedItem;
-            Config.ApplicationParameters.LogLevel = LevelName;
+            Config.LogLevel = LevelName;
             //((Hierarchy)LogManager.GetRepository()).Root.Level = ((Hierarchy)LogManager.GetRepository()).LevelMap[LevelName];
             //((Hierarchy)LogManager.GetRepository()).RaiseConfigurationChanged(EventArgs.Empty);
         }
 
         public override void HandleConfigChanged(object sender, EventArgs e)
         {
-            LogLevel.Control.SelectedItem = Config.ApplicationParameters.LogLevel;
+            LogLevel.Control.SelectedItem = Config.LogLevel;
         }
     }
 }
