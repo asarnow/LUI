@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using LUI.config;
 using lasercom.gpib;
@@ -64,11 +65,12 @@ namespace LUI_Unit_Tests
             Assert.AreEqual(testConfig.ConfigFile, Config.ConfigFile);
             Assert.AreEqual(testConfig.LogFile, Config.LogFile);
             Assert.AreEqual(testConfig.LogLevel, Config.LogLevel);
-            foreach (KeyValuePair<Type, IList<LuiObjectParameters>> kvp in Config.ParameterLists)
+            foreach (KeyValuePair<Type, IEnumerable<LuiObjectParameters>> kvp in Config.ParameterLists)
             {
-                for (int i = 0; i < kvp.Value.Count; i++)
+                IList<LuiObjectParameters> list = (IList<LuiObjectParameters>)kvp.Value;
+                for (int i = 0; i < list.Count; i++)
                 {
-                    Assert.AreEqual(kvp.Value[i], testConfig.ParameterLists[kvp.Key][i]);
+                    Assert.AreEqual(list[i], ((IList<LuiObjectParameters>)testConfig.ParameterLists[kvp.Key])[i]);
                 }
             }
         }

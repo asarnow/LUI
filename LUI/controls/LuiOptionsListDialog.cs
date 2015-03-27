@@ -31,8 +31,8 @@ namespace LUI.controls
             set
             {
                 ObjectView.Items.Clear();
-                foreach (P luiParameters in value) AddObject(luiParameters);
                 AddDummyItem(); // Add the "New..." row.
+                foreach (P luiParameters in value) AddObject(luiParameters);
                 SetDefaultSelectedItems();
             }
         }
