@@ -117,10 +117,21 @@ namespace lasercom.control
             FlashState = State.Closed;
         }
 
-        public override void EnsurePortDisposed()
+        private void EnsurePortDisposed()
         {
-            _port.Close();
-            _port.Dispose();
+            if (_port != null)
+            {
+                if (_port.IsOpen) _port.Close();
+                _port.Dispose();
+            }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                EnsurePortDisposed();
+            }
         }
     }
 }

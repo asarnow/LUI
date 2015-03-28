@@ -3,6 +3,7 @@
 //      implement this interface.
 //  </summary>
 
+using lasercom.objects;
 namespace lasercom.camera
 {
     /// <summary>
@@ -33,8 +34,6 @@ namespace lasercom.camera
         int[] Acquire();
 
         uint Acquire(int[] DataBuffer);
-
-        void Close();
 
     }
 }

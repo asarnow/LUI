@@ -19,7 +19,7 @@ namespace LUI
     /// </summary>
     public partial class ParentForm : Form
     {
-        LuiConfig Config;
+        //LuiConfig Config;
         Commander Commander;
 
         public enum State { IDLE, TROS, CALIBRATE, ALIGN, POWER, RESIDUALS }
@@ -54,6 +54,9 @@ namespace LUI
         public ParentForm(LuiConfig Config)
         {
             SuspendLayout();
+
+            // Dispose resources when the form is closed;
+            FormClosed += (s,e) => Config.Dispose();
 
             AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -185,9 +188,6 @@ namespace LUI
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             base.OnFormClosing(e);
-            Commander.Camera.Close();
-            Commander.BeamFlag.CloseLaserAndFlash();
-            Commander.BeamFlag.EnsurePortDisposed();
         }
 
     }

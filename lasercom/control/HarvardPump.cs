@@ -23,7 +23,7 @@ namespace lasercom.control
             return _port.PortName;
         }
 
-        new public State Toggle()
+        public override State Toggle()
         {
             switch (CurrentState)
             {
@@ -37,21 +37,30 @@ namespace lasercom.control
             return CurrentState;
         }
 
-        new public void SetOpen()
+        public override void SetOpen()
         {
             CurrentState = State.Open;
             _port.Open(); //TODO Which is which?
         }
 
-        new public void SetClosed()
+        public override void SetClosed()
         {
             CurrentState = State.Closed;
             _port.Close();
         }
 
-        new public State GetState()
+        public override State GetState()
         {
             return CurrentState;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (_port.IsOpen) _port.Close();
+                _port.Dispose();
+            }
         }
     }
 }

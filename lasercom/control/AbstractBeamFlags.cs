@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using lasercom;
+using lasercom.objects;
 
 namespace lasercom.control
 {
-    public abstract class AbstractBeamFlags
+    public abstract class AbstractBeamFlags: LuiObject
     {        
         public enum State { Open, Closed }
         public State FlashState { get; set; }
@@ -79,10 +80,6 @@ namespace lasercom.control
             FlashState = State.Closed;
         }
 
-        virtual public void EnsurePortDisposed()
-        {
-
-        }
     }
 }
 

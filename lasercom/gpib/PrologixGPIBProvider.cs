@@ -9,7 +9,7 @@ using lasercom;
 
 namespace lasercom.gpib
 {
-    public class PrologixGpibProvider : GpibProvider
+    public class PrologixGpibProvider : AbstractGpibProvider
     {
         #region Constants
         const string USBTerminator = "\r\n";
@@ -87,7 +87,7 @@ namespace lasercom.gpib
             Thread.Sleep(Constants.SerialPortCloseDelay); // Prevents subsequent call from interfering with close.
         }
 
-        override protected void Dispose(bool disposing)
+        protected override void Dispose(bool disposing)
         {
             if (disposing)
             {

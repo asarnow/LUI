@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using log4net;
+using lasercom.objects;
 
 namespace lasercom.gpib
 {
-    abstract public class GpibProvider : IGpibProvider
+    public abstract class AbstractGpibProvider : LuiObject, IGpibProvider
     {
         protected static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -14,12 +15,5 @@ namespace lasercom.gpib
 
         abstract public string LoggedQuery(byte address, string command);
 
-        abstract protected void Dispose(bool disposing);
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
     }
 }

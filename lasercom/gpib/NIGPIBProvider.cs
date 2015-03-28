@@ -7,7 +7,7 @@ using NationalInstruments.NI4882;
 
 namespace lasercom.gpib
 {
-    public class NIGpibProvider : GpibProvider
+    public class NIGpibProvider : AbstractGpibProvider
     {
 
         public Board Board { get; set; }
@@ -24,7 +24,7 @@ namespace lasercom.gpib
             //Device = new Device(_BoardNumber, Address);
         }
 
-        override protected void Dispose(bool disposing)
+        protected override void Dispose(bool disposing)
         {
             if (disposing)
             {

@@ -45,8 +45,11 @@ namespace lasercom.camera
 
         public override void Close()
         {
-            AndorSdk.CoolerOFF();
-            AndorSdk.ShutDown();
+            if (AndorSdk != null)
+            {
+                AndorSdk.CoolerOFF();
+                AndorSdk.ShutDown();
+            }
         }
 
     }

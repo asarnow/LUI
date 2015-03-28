@@ -6,98 +6,47 @@ using System.Text;
 
 namespace lasercom.camera
 {
-    public class DummyCamera : ICamera
+    public class DummyCamera : AbstractCamera
     {
-        public uint Width { get; set; }
-        public uint Height { get; set; }
+        private uint _Width;
+        public override uint Width
+        {
+            get
+            {
+                return _Width;
+            }
+        }
 
-        public int[] FullResolutionImage()
+        private uint _Height;
+        public override uint Height
+        {
+            get
+            {
+                return _Height;
+            }
+        }
+
+        public override int[] FullResolutionImage()
         {
             return null;
         }
 
-        public int[] CountsFvb()
+        public override int[] CountsFvb()
         {
             return null;
         }
 
-        public int[] Acquire()
+        public override int[] Acquire()
         {
             return null;
         }
 
-        public void Close()
-        {
-
-        }
-
-
-        public uint AcqSize
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public int AcquisitionMode
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public int TriggerMode
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public int DDGTriggerMode
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public int ReadMode
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public bool HasIntensifier
+        public override uint AcqSize
         {
             get { throw new NotImplementedException(); }
         }
 
-        public int IntensifierGain
+        public override int AcquisitionMode
         {
             get
             {
@@ -109,17 +58,75 @@ namespace lasercom.camera
             }
         }
 
-        public int MinIntensifierGain
+        public override int TriggerMode
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override int DDGTriggerMode
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override int ReadMode
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override bool HasIntensifier
         {
             get { throw new NotImplementedException(); }
         }
 
-        public int MaxIntensifierGain
+        public override int IntensifierGain
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override int MinIntensifierGain
         {
             get { throw new NotImplementedException(); }
         }
 
-        public uint Acquire(int[] DataBuffer)
+        public override int MaxIntensifierGain
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public override uint Acquire(int[] DataBuffer)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void Dispose(bool disposing)
         {
             throw new NotImplementedException();
         }

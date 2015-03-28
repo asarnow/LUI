@@ -74,5 +74,23 @@ namespace lasercom.camera
         {
             return Equals(other as CameraParameters);
         }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = Util.Hash(Type.GetHashCode(), Name.GetHashCode());
+                if (Type == typeof(AndorCamera))
+                {
+                    hash = Util.Hash(hash, Dir.GetHashCode());
+                }
+                else if (Type == typeof(CameraTempControlled))
+                {
+                    hash = Util.Hash(hash, Dir.GetHashCode());
+                    hash = Util.Hash(hash, Temperature.GetHashCode());
+                }
+                return hash;
+            }
+        }
     }
 }

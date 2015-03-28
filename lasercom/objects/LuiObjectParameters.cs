@@ -7,12 +7,9 @@ namespace lasercom.objects
 {
     public abstract class LuiObjectParameters
     {
+        [System.Xml.Serialization.XmlAttribute]
+        public string Name { get; set; }
 
-    }
-
-    public abstract class LuiObjectParameters<P> : LuiObjectParameters, 
-        IEquatable<P> where P : LuiObjectParameters<P>
-    {
         [System.Xml.Serialization.XmlAttribute]
         public string ParametersTypeName
         {
@@ -41,9 +38,6 @@ namespace lasercom.objects
         }
 
         [System.Xml.Serialization.XmlAttribute]
-        public string Name { get; set; }
-
-        [System.Xml.Serialization.XmlAttribute]
         public string TypeName
         {
             get
@@ -55,7 +49,11 @@ namespace lasercom.objects
                 _Type = Type.GetType(value);
             }
         }
+    }
 
+    public abstract class LuiObjectParameters<P> : LuiObjectParameters, 
+        IEquatable<P> where P : LuiObjectParameters<P>
+    {
         public abstract object[] ConstructorArray { get; }
 
         public LuiObjectParameters()

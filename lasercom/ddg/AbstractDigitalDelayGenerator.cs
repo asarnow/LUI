@@ -6,7 +6,7 @@ using System.Text;
 
 namespace lasercom.ddg
 {
-    public interface IDigitalDelayGenerator
+    public abstract class AbstractDigitalDelayGenerator : LuiObject, IDigitalDelayGenerator
     {
 
     }

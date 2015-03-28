@@ -12,7 +12,7 @@ namespace lasercom.camera
     /// Class representing a generic Andor camera.
     /// Specific Andor camera types should inherit from this class.
     /// </summary>
-    public class AndorCamera:ICamera
+    public class AndorCamera:AbstractCamera
     {
         // Andor constants and commands
         public const int ReadModeFVB = 0;
@@ -47,7 +47,7 @@ namespace lasercom.camera
         public AndorSDK.AndorCapabilities Capabilities;
 
         private int _ReadMode;
-        public int ReadMode
+        public override int ReadMode
         {
             get { return _ReadMode; }
             set
@@ -58,7 +58,7 @@ namespace lasercom.camera
         }
 
         private int _AcquisitionMode;
-        public int AcquisitionMode
+        public override int AcquisitionMode
         {
             get { return _AcquisitionMode; }
             set
@@ -69,7 +69,7 @@ namespace lasercom.camera
         }
 
         private int _TriggerMode;
-        public int TriggerMode
+        public override int TriggerMode
         {
             get { return _TriggerMode; }
             set
@@ -80,7 +80,7 @@ namespace lasercom.camera
         }
 
         private int _TriggerInvert;
-        public int TriggerInvert
+        public virtual int TriggerInvert
         {
             get { return _TriggerInvert; }
             set
@@ -91,7 +91,7 @@ namespace lasercom.camera
         }
 
         private float _TriggerLevel;
-        public float TriggerLevel
+        public virtual float TriggerLevel
         {
             get { return _TriggerLevel; }
             set
@@ -102,7 +102,7 @@ namespace lasercom.camera
         }
 
         private int _DDGTriggerMode;
-        public int DDGTriggerMode
+        public override int DDGTriggerMode
         {
             get { return _DDGTriggerMode; }
             set
@@ -113,7 +113,7 @@ namespace lasercom.camera
         }
 
         private int _GateMode;
-        public int GateMode
+        public virtual int GateMode
         {
             get { return _GateMode; }
             set
@@ -123,7 +123,7 @@ namespace lasercom.camera
             }
         }
 
-        public bool HasIntensifier
+        public override bool HasIntensifier
         {
             get
             {
@@ -143,7 +143,7 @@ namespace lasercom.camera
         }
 
         private int _MinMCPGain;
-        public int MinIntensifierGain
+        public override int MinIntensifierGain
         {
             get
             {
@@ -151,7 +151,7 @@ namespace lasercom.camera
             }
         }
         private int _MaxMCPGain;
-        public int MaxIntensifierGain
+        public override int MaxIntensifierGain
         {
             get
             {
@@ -160,7 +160,7 @@ namespace lasercom.camera
         }
 
         private int _MCPGain;
-        public int IntensifierGain
+        public override int IntensifierGain
         {
             get { return _MCPGain; }
             set
@@ -193,7 +193,7 @@ namespace lasercom.camera
         }
 
         private uint _Height;
-        virtual public uint Height
+        override public uint Height
         {
             get
             {
@@ -202,7 +202,7 @@ namespace lasercom.camera
         }
 
         private uint _Width;
-        virtual public uint Width
+        override public uint Width
         { 
             get
             {
@@ -244,7 +244,7 @@ namespace lasercom.camera
             }
         }
 
-        public uint AcqSize
+        public override uint AcqSize
         {
             get
             {
@@ -313,7 +313,7 @@ namespace lasercom.camera
             if (AndorSdk != null) AndorSdk.ShutDown();
         }
 
-        public virtual int[] FullResolutionImage()
+        public override int[] FullResolutionImage()
         {
             uint npx = Width * Height;
             int[] data = new int[npx];
@@ -327,7 +327,7 @@ namespace lasercom.camera
             return data;
         }
 
-        public virtual int[] CountsFvb()
+        public override int[] CountsFvb()
         {
             uint npx = Width;
             AndorSdk.SetReadMode(Constants.ReadModeFVB);
@@ -339,7 +339,7 @@ namespace lasercom.camera
             return data;
         }
 
-        public virtual int[] Acquire()
+        public override int[] Acquire()
         {
             uint npx = AcqSize;
             int[] data = new int[npx];
@@ -363,7 +363,7 @@ namespace lasercom.camera
         /// </summary>
         /// <param name="DataBuffer"></param>
         /// <returns></returns>
-        public virtual uint Acquire(int[] DataBuffer)
+        public override uint Acquire(int[] DataBuffer)
         {
             uint npx = (uint)DataBuffer.Length;
             AndorSdk.StartAcquisition();
@@ -412,5 +412,13 @@ namespace lasercom.camera
             AndorSdk.SetImage(Image.hbin, Image.vbin, Image.hstart, Image.hend, Image.vstart, Image.vend);
         }
 
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                Close();
+            }
+        }
     }
 }

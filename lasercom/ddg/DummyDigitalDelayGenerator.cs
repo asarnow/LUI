@@ -5,7 +5,7 @@ using System.Text;
 
 namespace lasercom.ddg
 {
-    public class DummyDigitalDelayGenerator:IDigitalDelayGenerator
+    public class DummyDigitalDelayGenerator:AbstractDigitalDelayGenerator
     {
 
         public DummyDigitalDelayGenerator()
@@ -73,6 +73,11 @@ namespace lasercom.ddg
         public double GetDDelay()
         {
             return DDelay;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            // Do nothing.
         }
     }
 }

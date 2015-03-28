@@ -15,6 +15,7 @@ using log4net.Repository.Hierarchy;
 using log4net.Layout;
 using log4net.Core;
 using System.Linq.Expressions;
+using System.Linq;
 
 //  <summary>
 //      Class for managing LUI XML config files.
@@ -23,9 +24,10 @@ using System.Linq.Expressions;
 namespace LUI.config
 {
     [XmlRoot( "LuiConfig" )]
-    public class LuiConfig : IXmlSerializable
+    public class LuiConfig : IXmlSerializable, IDisposable
     {
-        public Dictionary<Type, IEnumerable<LuiObjectParameters>> ParameterLists;
+        public Dictionary<Type, IEnumerable<LuiObjectParameters>> ParameterLists { get; set; }
+        public Dictionary<LuiObjectParameters, LuiObject> LuiObjectTable { get; set; }
 
         #region Application parameters
         /* Application parameters have:
@@ -134,6 +136,8 @@ namespace LUI.config
             _LogFile = LUI.Constants.DefaultLogFileLocation;
             _LogLevel = LUI.Constants.DefaultLogLevel;
 
+            LuiObjectTable = new Dictionary<LuiObjectParameters, LuiObject>();
+
             ParameterLists = new Dictionary<Type, IEnumerable<LuiObjectParameters>>();
             // Prepopulate parameter lists using all concrete LuiObjectParameters subclasses.
             foreach (Type type in typeof(LuiObjectParameters).GetSubclasses(true))
@@ -175,17 +179,55 @@ namespace LUI.config
             hierarchy.Configured = true;
         }
 
-        public void AddParameters(LuiObjectParameters p)
+        private void AddParameters(LuiObjectParameters p)
         {
             IEnumerable<LuiObjectParameters> plist;
             bool found = ParameterLists.TryGetValue(p.GetType(), out plist);
             if (!found) ParameterLists.Add(p.GetType(), new List<LuiObjectParameters>());
             ((IList<LuiObjectParameters>)ParameterLists[p.GetType()]).Add(p);
+            LuiObjectTable.Add(p, null);
         }
 
-        public void ReplaceParameters<P>(IEnumerable<P> parameters) where P:LuiObjectParameters<P>
+        public void ReplaceParameters<P>(IEnumerable<P> NewParameters) where P:LuiObjectParameters<P>
         {
-            ParameterLists[typeof(P)] = parameters;
+            IEnumerable<LuiObjectParameters> OldParameters = ParameterLists[typeof(P)];
+
+            var DefinitelyNew = NewParameters.Where(p => !OldParameters.Any(q => q.Name != p.Name));
+            var DefinitelyOld = OldParameters.Where(p => !NewParameters.Any(q => q.Name != p.Name));
+
+            // Dispose all definitely old entries.
+            foreach (P p in DefinitelyOld)
+            {
+                var LuiObject = LuiObjectTable[p];
+                LuiObject.Dispose();
+                LuiObjectTable.Remove(p);
+            }
+            // Create all definitely new entries.
+            foreach (P p in DefinitelyNew)
+            {
+                LuiObjectTable.Add(p, null);
+            }
+
+            // Find old parameters with same name as new parameters.
+            // Gonna break down and use LINQ here.
+            var sameNames = from p in OldParameters
+                            join q in NewParameters on p.Name equals q.Name
+                            select new { Old = p, New = q };
+
+            foreach (var pair in sameNames)
+            {
+                if (!pair.Old.Equals(pair.New)) // Existing entry needs update.
+                {
+                    var LuiObject = LuiObjectTable[pair.Old];
+                    LuiObject.Dispose();
+                    LuiObjectTable.Remove(pair.Old);
+                    LuiObjectTable.Add(pair.New, null); // New entry for q's object
+                }
+            }
+
+            var Parameters = DefinitelyNew.Union(sameNames.Select(p => p.New)).ToList(); 
+            
+            ParameterLists[typeof(P)] = Parameters;
         }
 
         public System.Xml.Schema.XmlSchema GetSchema()
@@ -270,6 +312,23 @@ namespace LUI.config
                 throw new ArgumentException();
             }
             return me.Member.Name;
+        }
+
+        protected void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                foreach (var kvp in LuiObjectTable)
+                {
+                    if (kvp.Value != null) kvp.Value.Dispose();
+                }
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 

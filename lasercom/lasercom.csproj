@@ -112,6 +112,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="camera\AbstractCamera.cs" />
     <Compile Include="camera\CameraFactory.cs" />
     <Compile Include="camera\CameraParameters.cs" />
     <Compile Include="camera\DummyAndorCamera.cs" />
@@ -124,11 +125,12 @@
     <Compile Include="camera\CameraTempControlled.cs" />
     <Compile Include="control\BeamFlagsFactory.cs" />
     <Compile Include="Data.cs" />
+    <Compile Include="ddg\AbstractDigitalDelayGenerator.cs" />
     <Compile Include="ddg\DelayGeneratorFactory.cs" />
     <Compile Include="ddg\DelayGeneratorParameters.cs" />
     <Compile Include="ddg\DummyDigitalDelayGenerator.cs" />
     <Compile Include="extensions\LasercomExtensions.cs" />
-    <Compile Include="gpib\GpibProvider.cs" />
+    <Compile Include="gpib\AbstractGpibProvider.cs" />
     <Compile Include="gpib\GpibProviderFactory.cs" />
     <Compile Include="gpib\GpibProviderParameters.cs" />
     <Compile Include="gpib\IGpibProvider.cs" />
@@ -143,6 +145,8 @@
     <Compile Include="Constants.cs" />
     <Compile Include="ddg\StanfordDigitalDelayGenerator.cs" />
     <Compile Include="camera\ICamera.cs" />
+    <Compile Include="objects\ILuiObject.cs" />
+    <Compile Include="objects\LuiObject.cs" />
     <Compile Include="objects\LuiObjectParameters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="control\HarvardPump.cs" />

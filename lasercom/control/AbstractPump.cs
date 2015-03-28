@@ -1,4 +1,5 @@
-﻿using System;
+﻿using lasercom.objects;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,12 +9,12 @@ using System.Text;
 //  </summary>
 namespace lasercom.control
 {
-    public abstract class AbstractPump
+    public abstract class AbstractPump : LuiObject
     {
         public enum State { Open, Closed }
         public State CurrentState;
 
-        public State Toggle()
+        public virtual State Toggle()
         {
             switch (CurrentState)
             {
@@ -27,20 +28,21 @@ namespace lasercom.control
             return CurrentState;
         }
 
-        public void SetOpen()
+        public virtual void SetOpen()
         {
             CurrentState = State.Open;
             //TODO Which is which?
         }
 
-        public void SetClosed()
+        public virtual void SetClosed()
         {
             CurrentState = State.Closed;
         }
 
-        public State GetState()
+        public virtual State GetState()
         {
             return CurrentState;
         }
+
     }
 }

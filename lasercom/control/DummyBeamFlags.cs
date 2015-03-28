@@ -11,5 +11,10 @@ namespace lasercom.control
         {
             
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            // Do nothing.
+        }
     }
 }

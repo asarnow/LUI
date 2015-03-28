@@ -65,5 +65,19 @@ namespace lasercom.ddg
         {
             return Equals(other as DelayGeneratorParameters);
         }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = Util.Hash(Type.GetHashCode(), Name.GetHashCode());
+                if (Type == typeof(DDG535))
+                {
+                    hash = Util.Hash(hash, GpibProviderName.GetHashCode());
+                    hash = Util.Hash(hash, GpibAddress.GetHashCode());
+                }
+                return hash;
+            }
+        }
     }
 }

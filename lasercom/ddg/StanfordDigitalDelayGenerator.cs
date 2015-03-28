@@ -9,7 +9,7 @@ using lasercom.gpib;
 
 namespace lasercom.ddg
 {
-    public abstract class StanfordDigitalDelayGenerator:IDigitalDelayGenerator
+    public abstract class StanfordDigitalDelayGenerator:AbstractDigitalDelayGenerator
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -22,44 +22,13 @@ namespace lasercom.ddg
             GPIBAddress = _GPIBAddress;
         }
 
-        void IDigitalDelayGenerator.SetADelay(double delay)
+        protected override void Dispose(bool disposing)
         {
-            throw new NotImplementedException();
+            if (disposing)
+            {
+                // Nothing to dispose of.
+            }
         }
 
-        void IDigitalDelayGenerator.SetBDelay(double delay)
-        {
-            throw new NotImplementedException();
-        }
-
-        void IDigitalDelayGenerator.SetCDelay(double delay)
-        {
-            throw new NotImplementedException();
-        }
-
-        void IDigitalDelayGenerator.SetDDelay(double delay)
-        {
-            throw new NotImplementedException();
-        }
-
-        double IDigitalDelayGenerator.GetADelay()
-        {
-            throw new NotImplementedException();
-        }
-
-        double IDigitalDelayGenerator.GetBDelay()
-        {
-            throw new NotImplementedException();
-        }
-
-        double IDigitalDelayGenerator.GetCDelay()
-        {
-            throw new NotImplementedException();
-        }
-
-        double IDigitalDelayGenerator.GetDDelay()
-        {
-            throw new NotImplementedException();
-        }
     }
 }
