@@ -7,7 +7,10 @@ using lasercom.objects;
 
 namespace lasercom.control
 {
-    public abstract class AbstractBeamFlags: LuiObject
+    /// <summary>
+    /// Base class for all beam flag classes.
+    /// </summary>
+    public abstract class AbstractBeamFlags: LuiObject, IBeamFlags
     {        
         public enum State { Open, Closed }
         public State FlashState { get; set; }

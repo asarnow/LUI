@@ -5,6 +5,12 @@ using System.Text;
 
 namespace lasercom.objects
 {
+
+    /// <summary>
+    /// Nongeneric base for all instrument parameters.
+    /// Permits access of fields shared by all instrument parameters without
+    /// knowing the exact runtime parameters class.
+    /// </summary>
     public abstract class LuiObjectParameters
     {
         [System.Xml.Serialization.XmlAttribute]
@@ -51,6 +57,10 @@ namespace lasercom.objects
         }
     }
 
+    /// <summary>
+    /// Self-constrained generic base class for all instrument parameters.
+    /// </summary>
+    /// <typeparam name="P"></typeparam>
     public abstract class LuiObjectParameters<P> : LuiObjectParameters, 
         IEquatable<P> where P : LuiObjectParameters<P>
     {

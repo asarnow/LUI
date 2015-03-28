@@ -5,6 +5,10 @@ using System.Text;
 
 namespace lasercom
 {
+    /// <summary>
+    /// Provides methods for the manipulation of numerical data,
+    /// including array math, statistics and optical calculations.
+    /// </summary>
     public static class Data
     {
 

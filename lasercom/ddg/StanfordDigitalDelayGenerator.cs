@@ -9,6 +9,9 @@ using lasercom.gpib;
 
 namespace lasercom.ddg
 {
+    /// <summary>
+    /// Base class for Stanford Instruments DDGs.
+    /// </summary>
     public abstract class StanfordDigitalDelayGenerator:AbstractDigitalDelayGenerator
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);

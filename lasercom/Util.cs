@@ -11,7 +11,10 @@ using System.Collections;
 
 namespace lasercom
 {
-    public class Util
+    /// <summary>
+    /// Provides a variety of utility methods.
+    /// </summary>
+    public static class Util
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 

@@ -8,6 +8,9 @@ using NationalInstruments.NI4882;
 
 namespace lasercom.ddg
 {
+    /// <summary>
+    /// Represents a Stanford Instruments DDG 535.
+    /// </summary>
     public class DDG535:StanfordDigitalDelayGenerator
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);

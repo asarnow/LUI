@@ -8,6 +8,9 @@ using System.Threading;
 
 namespace lasercom.extensions
 {
+    /// <summary>
+    /// Defines extension methods useful in lasercom and LUI.
+    /// </summary>
     public static class LasercomExtensions
     {
         /// <summary>

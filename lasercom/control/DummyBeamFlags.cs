@@ -5,6 +5,9 @@ using System.Text;
 
 namespace lasercom.control
 {
+    /// <summary>
+    /// Dummy beam flags object implemented using no-ops.
+    /// </summary>
     public class DummyBeamFlags:AbstractBeamFlags
     {
         public DummyBeamFlags()

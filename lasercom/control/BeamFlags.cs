@@ -1,12 +1,6 @@
 ﻿using System;
 using System.IO.Ports;
 
-//  <summary>
-//      Represents the beam flag microcontroller (232 SDA12).
-//      If different microcontrollers are used, an interface and abstract
-//      class should be added for the beam flags classes to inherit from.
-//  </summary>
-
 namespace lasercom.control
 {
     /// <summary>

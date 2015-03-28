@@ -208,8 +208,7 @@ namespace LUI.config
                 LuiObjectTable.Add(p, null);
             }
 
-            // Find old parameters with same name as new parameters.
-            // Gonna break down and use LINQ here.
+            // Find old parameters with same name as new parameters using LINQ.
             var sameNames = from p in OldParameters
                             join q in NewParameters on p.Name equals q.Name
                             select new { Old = p, New = q };
@@ -221,12 +220,12 @@ namespace LUI.config
                     var LuiObject = LuiObjectTable[pair.Old];
                     LuiObject.Dispose();
                     LuiObjectTable.Remove(pair.Old);
-                    LuiObjectTable.Add(pair.New, null); // New entry for q's object
+                    LuiObjectTable.Add(pair.New, null);
                 }
             }
 
+            // Replace parameter list with list of new and updated parameters.
             var Parameters = DefinitelyNew.Union(sameNames.Select(p => p.New)).ToList(); 
-            
             ParameterLists[typeof(P)] = Parameters;
         }
 

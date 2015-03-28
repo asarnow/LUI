@@ -1,12 +1,12 @@
 ﻿using System;
 using System.IO.Ports;
 
-//  <summary>
-//      Represents the syringe pump.
-//  </summary>
-
 namespace lasercom.control
 {
+    /// <summary>
+    /// Represents a Harvard Apparatus syringe pump using the custom
+    /// flip-flop box and foot-pedal hack.
+    /// </summary>
     class HarvardPump:AbstractPump
     {
         private readonly SerialPort _port;

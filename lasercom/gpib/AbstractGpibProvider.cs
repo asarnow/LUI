@@ -7,6 +7,9 @@ using lasercom.objects;
 
 namespace lasercom.gpib
 {
+    /// <summary>
+    /// Base class for all GPIB providers.
+    /// </summary>
     public abstract class AbstractGpibProvider : LuiObject, IGpibProvider
     {
         protected static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);

@@ -9,6 +9,9 @@ using lasercom;
 
 namespace lasercom.gpib
 {
+    /// <summary>
+    /// Provide GPIB using Prologix USB GPIB controller.
+    /// </summary>
     public class PrologixGpibProvider : AbstractGpibProvider
     {
         #region Constants

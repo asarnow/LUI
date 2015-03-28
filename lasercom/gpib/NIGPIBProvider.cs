@@ -7,6 +7,9 @@ using NationalInstruments.NI4882;
 
 namespace lasercom.gpib
 {
+    /// <summary>
+    /// Provide GPIB using NI 488.2 PCI card.
+    /// </summary>
     public class NIGpibProvider : AbstractGpibProvider
     {
 

@@ -124,6 +124,8 @@
     <Compile Include="control\BeamFlags.cs" />
     <Compile Include="camera\CameraTempControlled.cs" />
     <Compile Include="control\BeamFlagsFactory.cs" />
+    <Compile Include="control\IBeamFlags.cs" />
+    <Compile Include="control\IPump.cs" />
     <Compile Include="Data.cs" />
     <Compile Include="ddg\AbstractDigitalDelayGenerator.cs" />
     <Compile Include="ddg\DelayGeneratorFactory.cs" />

@@ -5,6 +5,9 @@ using System.Text;
 
 namespace lasercom.ddg
 {
+    /// <summary>
+    /// Dummy DDG implementing required methods as no-ops.
+    /// </summary>
     public class DummyDigitalDelayGenerator:AbstractDigitalDelayGenerator
     {
 

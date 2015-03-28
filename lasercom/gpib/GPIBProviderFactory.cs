@@ -5,6 +5,9 @@ using System.Text;
 
 namespace lasercom.gpib
 {
+    /// <summary>
+    /// Instantiate concrete GPIB providers from parameters.
+    /// </summary>
     public class GpibProviderFactory
     {
 

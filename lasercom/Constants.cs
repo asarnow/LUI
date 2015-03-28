@@ -1,11 +1,10 @@
-﻿//  <summary>
-//      Constants used in LUI.
-//  </summary>    
-
-using System;
+﻿using System;
 
 namespace lasercom
 {
+    /// <summary>
+    /// Constant values used in lasercom.
+    /// </summary>
     public static class Constants
     {
         // Library constants

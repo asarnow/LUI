@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-//  <summary>
-//      AbstractPump is an abstract class for concrete Pump objects to inherit.
-//  </summary>
 namespace lasercom.control
 {
-    public abstract class AbstractPump : LuiObject
+    /// <summary>
+    /// Base class for all pumps.
+    /// </summary>
+    public abstract class AbstractPump : LuiObject, IPump
     {
         public enum State { Open, Closed }
         public State CurrentState;

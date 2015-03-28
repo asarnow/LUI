@@ -7,6 +7,10 @@ using lasercom.objects;
 
 namespace lasercom.ddg
 {
+    /// <summary>
+    /// Stores parameters for instantiation of a DDG and provides
+    /// fpr their serialization to XML.
+    /// </summary>
     public class DelayGeneratorParameters : LuiObjectParameters<DelayGeneratorParameters>
     {
         [System.Xml.Serialization.XmlAttribute]

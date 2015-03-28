@@ -7,6 +7,10 @@ using System.Reflection;
 
 namespace lasercom.gpib
 {
+    /// <summary>
+    /// Stores parameters for instantiation of a GPIB provider and provides
+    /// for their serialization to XML.
+    /// </summary>
     public class GpibProviderParameters : LuiObjectParameters<GpibProviderParameters>
     {
         private int _BoardNumber;
