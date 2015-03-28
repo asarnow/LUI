@@ -137,7 +137,7 @@ namespace lasercom
             return g;
         }
 
-        public static int[] Guassian(int n, double scale, double mean, double sigma)
+        public static int[] Gaussian(int n, int scale, double mean, double sigma)
         {
             int[] g = new int[n];
             for (int i = 0; i < g.Length; i++)

@@ -176,12 +176,12 @@ namespace lasercom.camera
                     break;
                 case "Flash":
                     if (line > 200)
-                        data = Data.Guassian((int)Width, 32000, Width * 1 / 3, Width / 10);
+                        data = Data.Gaussian((int)Width, 32000, Width * 1 / 3, Width / 10);
                     else
                         data = Data.Uniform((int)Width, 2000);
                     break;
                 case "Trans":
-                    data = Data.Guassian((int)Width, 32000, Width * 2 / 3, Width / 10);
+                    data = Data.Gaussian((int)Width, 32000, Width * 2 / 3, Width / 10);
                     break;
             }
             return data;
@@ -199,12 +199,12 @@ namespace lasercom.camera
                     break;
                 case "Flash":
                     if (line > 200)
-                        data = Data.Guassian((int)Width, 32000, Width * 1/3, Width / 10);
+                        data = Data.Gaussian((int)Width, 32000, Width * 1/3, Width / 10);
                     else
                         data = Data.Uniform((int)Width, 2000);
                     break;
                 case "Trans":
-                    data = Data.Guassian((int)Width, 32000, Width * 2/3, Width / 10);
+                    data = Data.Gaussian((int)Width, 32000, Width * 2/3, Width / 10);
                     break;
             }
             data.CopyTo(DataBuffer, 0);
