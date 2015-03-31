@@ -50,17 +50,19 @@ namespace LUI_Unit_Tests
         [TestMethod]
         public void TestXmlSerialization()
         {
-            var serializer = new XmlSerializer(Config.GetType());
-            using (var writer = new StreamWriter(Config.ConfigFile))
-            {
-                serializer.Serialize(writer, Config);
-            }
+            //var serializer = new XmlSerializer(Config.GetType());
+            //using (var writer = new StreamWriter(Config.ConfigFile))
+            //{
+            //    serializer.Serialize(writer, Config);
+            //}
+            Config.Save();
 
-            LuiConfig testConfig = null;
-            using (var reader = new StreamReader(ConfigFile))
-            {
-                testConfig = (LuiConfig)serializer.Deserialize(reader);
-            }
+            //LuiConfig testConfig = null;
+            //using (var reader = new StreamReader(ConfigFile))
+            //{
+            //    testConfig = (LuiConfig)serializer.Deserialize(reader);
+            //}
+            LuiConfig testConfig = LuiConfig.FromFile(ConfigFile);
             
             Assert.AreEqual(testConfig.ConfigFile, Config.ConfigFile);
             Assert.AreEqual(testConfig.LogFile, Config.LogFile);

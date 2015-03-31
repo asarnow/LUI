@@ -131,10 +131,9 @@ namespace LUI.config
 
         public LuiConfig(string configFile)
         {
-            // Set the private fields directly to avoid setter side effects.
-            _ConfigFile = configFile;
-            _LogFile = LUI.Constants.DefaultLogFileLocation;
-            _LogLevel = LUI.Constants.DefaultLogLevel;
+            ConfigFile = configFile;
+            LogFile = LUI.Constants.DefaultLogFileLocation;
+            LogLevel = LUI.Constants.DefaultLogLevel;
 
             LuiObjectTable = new Dictionary<LuiObjectParameters, LuiObject>();
 
@@ -179,7 +178,7 @@ namespace LUI.config
             hierarchy.Configured = true;
         }
 
-        private void AddParameters(LuiObjectParameters p)
+        public void AddParameters(LuiObjectParameters p)
         {
             IEnumerable<LuiObjectParameters> plist;
             bool found = ParameterLists.TryGetValue(p.GetType(), out plist);
@@ -192,14 +191,18 @@ namespace LUI.config
         {
             IEnumerable<LuiObjectParameters> OldParameters = ParameterLists[typeof(P)];
 
-            var DefinitelyNew = NewParameters.Where(p => !OldParameters.Any(q => q.Name != p.Name));
-            var DefinitelyOld = OldParameters.Where(p => !NewParameters.Any(q => q.Name != p.Name));
+            // New parameters where all old parameters have different name.
+            // Same as "New parameters where not any old parameters have same name."
+            // I.e. Where(p => !OldParameters.Any(q => q.Name == p.Name));
+            var DefinitelyNew = NewParameters.Where(p => OldParameters.All(q => q.Name != p.Name));
+            // Old parameters where all new parameters have different name.
+            var DefinitelyOld = OldParameters.Where(p => NewParameters.All(q => q.Name != p.Name));
 
             // Dispose all definitely old entries.
             foreach (P p in DefinitelyOld)
             {
                 var LuiObject = LuiObjectTable[p];
-                LuiObject.Dispose();
+                if (LuiObject != null) LuiObject.Dispose();
                 LuiObjectTable.Remove(p);
             }
             // Create all definitely new entries.
@@ -218,7 +221,7 @@ namespace LUI.config
                 if (!pair.Old.Equals(pair.New)) // Existing entry needs update.
                 {
                     var LuiObject = LuiObjectTable[pair.Old];
-                    LuiObject.Dispose();
+                    if (LuiObject != null) LuiObject.Dispose();
                     LuiObjectTable.Remove(pair.Old);
                     LuiObjectTable.Add(pair.New, null);
                 }
@@ -324,10 +327,35 @@ namespace LUI.config
             }
         }
 
+        public void Save()
+        {
+            Save(ConfigFile);
+        }
+
+        public void Save(string FileName)
+        {
+            var serializer = new XmlSerializer(typeof(LuiConfig));
+            using (var writer = new StreamWriter(FileName))
+            {
+                serializer.Serialize(writer, this);
+            }
+        }
+
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        public static LuiConfig FromFile(string FileName)
+        {
+            var serializer = new XmlSerializer(typeof(LuiConfig));
+            LuiConfig Config = null;
+            using (var reader = new StreamReader(FileName))
+            {
+                Config = (LuiConfig)serializer.Deserialize(reader);
+            }
+            return Config;
         }
     }
 
