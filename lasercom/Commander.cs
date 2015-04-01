@@ -21,11 +21,6 @@ namespace lasercom
 
     public class Commander
     {
-        public Dictionary<string, ICamera> Cameras;
-        public Dictionary<string, AbstractBeamFlags> BeamFlags;
-        public Dictionary<string, IDigitalDelayGenerator> DelayGenerators;
-        public Dictionary<string, AbstractPump> Pumps;
-
         public ICamera Camera { get; set; }
         public AbstractBeamFlags BeamFlag { get; set; }
         public IDigitalDelayGenerator DDG { get; set; }
