@@ -110,5 +110,30 @@ namespace lasercom
         {
             unchecked { return (h1 << 5) * h2; } // Hash should wrap around.
         }
+
+        public static int Hash(int h1, object o)
+        {
+            if (o == null) return h1;
+            return Hash(h1, o.GetHashCode());
+        }
+
+        public static int Hash(object o1, object o2)
+        {
+            if (o1 == null && o2 == null)
+            {
+                return 0;
+            } else if (o1 != null)
+            {
+                return o1.GetHashCode();
+            }
+            else if (o2 != null)
+            {
+                return o2.GetHashCode();
+            }
+            else
+            {
+                return Hash(o1.GetHashCode(), o2.GetHashCode());
+            }
+        }
     }
 }

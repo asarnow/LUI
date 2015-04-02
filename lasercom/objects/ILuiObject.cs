@@ -8,7 +8,7 @@ namespace lasercom.objects
     /// <summary>
     /// Aggregates interfaces and defines public operations of LuiObject subtypes.
     /// </summary>
-    interface ILuiObject : IDisposable
+    public interface ILuiObject : IDisposable
     {
         
     }

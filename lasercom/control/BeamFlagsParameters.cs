@@ -53,5 +53,18 @@ namespace lasercom.control
             }
             return iseq;
         }
+
+        public override int GetHashCode()
+        {
+            unchecked // Overflow is fine, just wrap
+            {
+                int hash = Util.Hash(Type, Name);
+                if (Type == typeof(BeamFlags))
+                {
+                    hash = Util.Hash(hash, PortName);
+                }
+                return hash;
+            }
+        }
     }
 }

@@ -17,5 +17,10 @@ namespace lasercom.objects
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+
+        public static ILuiObject Create<P>(LuiObjectParameters<P> p) where P:LuiObjectParameters<P>
+        {
+            return (ILuiObject)Activator.CreateInstance(p.Type, p.ConstructorArray);
+        }
     }
 }

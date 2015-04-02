@@ -86,15 +86,15 @@ namespace lasercom.gpib
         {
             unchecked // Overflow is fine, just wrap
             {
-                int hash = Name.GetHashCode();
+                int hash = Util.Hash(Type, Name);
                 if (Type == typeof(NIGpibProvider))
                 {
-                    hash = Util.Hash(hash,BoardNumber.GetHashCode());
+                    hash = Util.Hash(hash,BoardNumber);
                 }
                 else if (Type == typeof(PrologixGpibProvider))
                 {
-                    hash = Util.Hash(hash, PortName.GetHashCode());
-                    hash = Util.Hash(hash, Timeout.GetHashCode());
+                    hash = Util.Hash(hash, PortName);
+                    hash = Util.Hash(hash, Timeout);
                 }
                 return hash;
             }

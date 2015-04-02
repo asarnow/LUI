@@ -99,7 +99,7 @@ namespace lasercom.objects
 
         public override int GetHashCode()
         {
-            return Util.Hash(Type.GetHashCode(), Name.GetHashCode());
+            return Util.Hash(Type, Name);
         }
     }
 }

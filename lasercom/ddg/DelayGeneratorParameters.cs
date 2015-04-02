@@ -74,7 +74,7 @@ namespace lasercom.ddg
         {
             unchecked
             {
-                int hash = Util.Hash(Type.GetHashCode(), Name.GetHashCode());
+                int hash = Util.Hash(Type, Name);
                 if (Type == typeof(DDG535))
                 {
                     hash = Util.Hash(hash, GpibProviderName.GetHashCode());
