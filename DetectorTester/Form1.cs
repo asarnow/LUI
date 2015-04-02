@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using lasercom.objects;
 
 namespace DetectorTester
 {
@@ -157,7 +158,7 @@ namespace DetectorTester
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             base.OnFormClosing(e);
-            Commander.Camera.Close();
+            ((LuiObject)Commander.Camera).Dispose();
         }
 
         private void clearButton_Click(object sender, EventArgs e)
