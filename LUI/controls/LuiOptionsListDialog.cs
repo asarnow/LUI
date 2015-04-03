@@ -105,13 +105,13 @@ namespace LUI.controls
             Add.Dock = DockStyle.Left;
             Add.Text = "Add";
             Add.Click += Add_Click;
-            Add.Click += (s, e) => OnOptionsChanged(e);
+            Add.Click += (s, e) => OnOptionsChanged(s, e);
 
             Remove = new Button();
             Remove.Dock = DockStyle.Left;
             Remove.Text = "Remove";
             Remove.Click += Remove_Click;
-            Remove.Click += (s, e) => OnOptionsChanged(e);
+            Remove.Click += (s, e) => OnOptionsChanged(s, e);
 
             ListControlsPanel.Controls.Add(Remove);
             ListControlsPanel.Controls.Add(Add);
@@ -167,7 +167,7 @@ namespace LUI.controls
             c.Dock = DockStyle.Fill;
             c.Visible = false;
             c.OptionsChanged += UpdateSelectedObject;
-            c.OptionsChanged += (s, e) => OnOptionsChanged(e);
+            c.OptionsChanged += (s, e) => OnOptionsChanged(s, e);
             ConfigSubPanel.Controls.Add(c);
             ConfigPanels.Add(c.Target, c);
         }
@@ -300,11 +300,17 @@ namespace LUI.controls
             PersistentItems = Config.LuiObjectTableIndex[typeof(P)].Keys.AsEnumerable().Cast<P>();
         }
 
-        protected override void OnOptionsChanged(EventArgs e)
+        protected override void OnOptionsChanged(object sender, EventArgs e)
         {
             LuiObjectItem dummyRow = (LuiObjectItem)ObjectView.Items[ObjectView.Items.Count - 1];
-            if (dummyRow.Selected) return;
-            base.OnOptionsChanged(e);
+            var button = sender as Button; // Null if cast fails.
+            // If the "New..." item is selected, skip event unless
+            // event sent by Remove button. (Correctly enables Apply button).
+            if (dummyRow.Selected && !(button != null && button == Remove))
+            {
+                return;
+            }            
+            base.OnOptionsChanged(sender, e);
         }
     }
 }

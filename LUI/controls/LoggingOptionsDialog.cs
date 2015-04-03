@@ -45,7 +45,7 @@ namespace LUI.controls
             Hierarchy h = (Hierarchy)LogManager.GetRepository();
             foreach (Level l in h.LevelMap.AllLevels) LogLevel.Control.Items.Add(l.DisplayName);
 
-            LogLevel.Control.SelectedIndexChanged += (s, e) => OnOptionsChanged(e);
+            LogLevel.Control.SelectedIndexChanged += (s, e) => OnOptionsChanged(s, e);
 
             Controls.Add(LogLevel);
 

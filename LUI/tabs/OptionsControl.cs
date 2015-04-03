@@ -22,9 +22,29 @@ namespace LUI.tabs
         protected static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         ListView OptionsListView;
         LuiOptionsDialog ActiveDialog;
-        Button Apply;
+        Button ApplyConfig;
+        Button SaveConfig;
+        Button LoadConfig;
 
-        public OptionsControl(LuiConfig Config)
+        private LuiConfig _Config;
+        private LuiConfig Config
+        {
+            get
+            {
+                return _Config;
+            }
+            set
+            {
+                if (_Config != null) _Config.Dispose();
+                _Config = value;
+                foreach (ListViewItem it in OptionsListView.Items)
+                {
+                    ((LuiOptionsDialog)it.Tag).Config = Config;
+                }
+            }
+        }
+
+        public OptionsControl(LuiConfig config)
         {
             SuspendLayout();
 
@@ -32,6 +52,7 @@ namespace LUI.tabs
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             Name = "OptionsControl";
 
+            #region Panels and list of options dialogs
             Panel OptionsPanel = new Panel();
             OptionsPanel.Dock = DockStyle.Fill;
             Controls.Add(OptionsPanel);
@@ -53,6 +74,7 @@ namespace LUI.tabs
             OptionsListView.ShowGroups = true;
             OptionsListView.SelectedIndexChanged += HandleSelectedOptionsDialogChanged;
             ListPanel.Controls.Add(OptionsListView);
+            #endregion
 
             #region Options dialogs
             ListViewGroup General = new ListViewGroup("General", HorizontalAlignment.Left);
@@ -115,19 +137,44 @@ namespace LUI.tabs
             #endregion
 
             OptionsListView.Columns[0].Width = -1; // Sets width to that of widest item.
-            
-            SetConfig(Config); // Note OptionsChanged and ConfigChanged handlers are not yet bound.
 
-            Apply = new Button();
-            Apply.Text = "Apply";
-            Apply.Size = new Size(91, 34);
-            Apply.Anchor = ((System.Windows.Forms.AnchorStyles)
-                       ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            Apply.Click += Apply_Click;
-            Apply.Enabled = false;
+            // Note OptionsChanged and ConfigChanged handlers are not yet bound.
+            //SetConfig(config);
+            Config = config;
 
-            OptionsPanel.Controls.Add(Apply);
-            Apply.BringToFront();
+            #region Buttons
+            FlowLayoutPanel ButtonPanel = new FlowLayoutPanel();
+            ButtonPanel.FlowDirection = FlowDirection.RightToLeft;
+            ButtonPanel.Anchor = ((System.Windows.Forms.AnchorStyles)
+                        ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            ButtonPanel.AutoSize = true;
+            ButtonPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+
+            ApplyConfig = new Button();
+            ApplyConfig.Text = "Apply";
+            ApplyConfig.Size = new Size(91, 34);
+            ApplyConfig.Click += ApplyConfig_Click;
+            ApplyConfig.Enabled = false;
+
+            SaveConfig = new Button();
+            SaveConfig.Text = "Save";
+            SaveConfig.Size = new Size(91, 34);
+            SaveConfig.Enabled = false;
+            SaveConfig.Click += SaveConfig_Click;
+
+            LoadConfig = new Button();
+            LoadConfig.Text = "Load";
+            LoadConfig.Size = new Size(91, 34);
+            LoadConfig.Click += LoadConfig_Click;
+
+            ButtonPanel.Controls.Add(LoadConfig);
+            ButtonPanel.Controls.Add(SaveConfig);
+            ButtonPanel.Controls.Add(ApplyConfig);
+
+            OptionsPanel.Controls.Add(ButtonPanel);
+
+            ButtonPanel.BringToFront();
+            #endregion
 
             ResumeLayout(false);
         }
@@ -138,8 +185,8 @@ namespace LUI.tabs
             {
                 var luiOptionsDialog = (LuiOptionsDialog)item.Tag;
                 // Set in OnLoad so initialization doesn't trigger the events.
-                luiOptionsDialog.OptionsChanged += (s, ev) => Apply.Enabled = true;
-                luiOptionsDialog.ConfigChanged += (s, ev) => Apply.Enabled = true;
+                luiOptionsDialog.OptionsChanged += (s, ev) => ApplyConfig.Enabled = true;
+                luiOptionsDialog.ConfigChanged += (s, ev) => ApplyConfig.Enabled = true;
 
                 // Control initialization doesn't happen until control is visible,
                 // so we defer setting visibility until the control is loaded.
@@ -152,15 +199,31 @@ namespace LUI.tabs
             base.OnLoad(e); // Forward to base class event handler.
         }
 
-        private void Apply_Click(object sender, EventArgs e)
+        private void ApplyConfig_Click(object sender, EventArgs e)
         {
             foreach (ListViewItem item in OptionsListView.Items) ((LuiOptionsDialog)item.Tag).HandleApply(sender, e);
-            ((Button)sender).Enabled = false;
+            //((Button)sender).Enabled = false;
+            ApplyConfig.Enabled = false;
+            SaveConfig.Enabled = true;
         }
 
-        private void Close_Click(object sender, EventArgs e)
+        private void SaveConfig_Click(object sender, EventArgs e)
         {
+            Config.Save();
+            SaveConfig.Enabled = false;
+        }
 
+        private void LoadConfig_Click(object sender, EventArgs e)
+        {
+            var ofd = new OpenFileDialog();
+            //ofd.RestoreDirectory = true;
+            ofd.Filter = "XML Files|*.xml";
+            ofd.FileName = "config.xml";
+
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                Config = LuiConfig.FromFile(ofd.FileName);
+            }
         }
 
         private void HandleSelectedOptionsDialogChanged(object sender, EventArgs e)
@@ -180,12 +243,5 @@ namespace LUI.tabs
             }
         }
 
-        public void SetConfig(LuiConfig Config)
-        {
-            foreach (ListViewItem it in OptionsListView.Items)
-            {
-                ((LuiOptionsDialog)it.Tag).Config = Config;
-            }
-        }
     }
 }

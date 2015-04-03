@@ -53,7 +53,7 @@ namespace LUI.controls
 
         }
 
-        protected virtual void OnOptionsChanged(EventArgs e)
+        protected virtual void OnOptionsChanged(object sender, EventArgs e)
         {
             EventHandler handler = OptionsChanged;
             if (handler != null) handler(this, e);
