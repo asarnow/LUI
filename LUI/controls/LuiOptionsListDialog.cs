@@ -137,10 +137,12 @@ namespace LUI.controls
             });
             ObjectTypes.Control.SelectedIndex = 0;
             ObjectTypes.Control.SelectedIndexChanged += SelectedObjectTypeChanged;
+            ObjectTypes.Control.SelectionChangeCommitted += OnOptionsChanged; // Caused by user input.
             
             ObjectName = new LabeledControl<TextBox>(new TextBox(), "Name:");
             ObjectName.Dock = DockStyle.Top;
             ObjectName.Control.TextChanged += SelectedObjectNameChanged;
+            ObjectName.Control.KeyDown += OnOptionsChanged; // Caused by user input.
             ConfigPanel.Controls.Add(ObjectName);
             ConfigPanel.Controls.Add(ObjectTypes);
             #endregion
@@ -237,7 +239,7 @@ namespace LUI.controls
         {
             LuiObjectItem selectedItem = (LuiObjectItem)ObjectView.SelectedItems[0];
             selectedItem.Transient.Name = ObjectName.Control.Text;
-            if (selectedItem.Index != ObjectView.Items.Count - 1)
+            if (selectedItem.Index != ObjectView.Items.Count - 1) // If not the "New..." item.
             {
                 selectedItem.Text = selectedItem.Transient.Name;
             }
@@ -306,10 +308,9 @@ namespace LUI.controls
         protected override void OnOptionsChanged(object sender, EventArgs e)
         {
             LuiObjectItem dummyRow = (LuiObjectItem)ObjectView.Items[ObjectView.Items.Count - 1];
-            var button = sender as Button; // Null if cast fails.
             // If the "New..." item is selected, skip event unless
             // event sent by Remove button. (Correctly enables Apply button).
-            if (dummyRow.Selected && !(button != null && button == Remove))
+            if (dummyRow.Selected && sender != Remove)
             {
                 return;
             }            

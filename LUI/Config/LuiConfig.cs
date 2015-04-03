@@ -227,9 +227,9 @@ namespace LUI.config
             }
 
             // Find old parameters with same name as new parameters using LINQ.
-            var sameNames = from p in OldParameters
+            var sameNames = (from p in OldParameters
                             join q in NewParameters on p.Name equals q.Name
-                            select new { Old = p, New = q };
+                            select new { Old = p, New = q }).ToList(); // Same ToList() copy trick.
 
             foreach (var pair in sameNames)
             {
