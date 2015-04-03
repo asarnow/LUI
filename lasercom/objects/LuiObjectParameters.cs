@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
+
 
 namespace lasercom.objects
 {
@@ -11,12 +13,13 @@ namespace lasercom.objects
     /// Permits access of fields shared by all instrument parameters without
     /// knowing the exact runtime parameters class.
     /// </summary>
+    [DataContract]
     public abstract class LuiObjectParameters
     {
-        [System.Xml.Serialization.XmlAttribute]
+        [DataMember]
         public string Name { get; set; }
 
-        [System.Xml.Serialization.XmlAttribute]
+        [DataMember]
         public string ParametersTypeName
         {
             get
@@ -30,7 +33,6 @@ namespace lasercom.objects
         }
 
         private Type _Type;
-        [System.Xml.Serialization.XmlIgnore]
         public Type Type
         {
             get
@@ -43,7 +45,7 @@ namespace lasercom.objects
             }
         }
 
-        [System.Xml.Serialization.XmlAttribute]
+        [DataMember]
         public string TypeName
         {
             get
@@ -55,6 +57,26 @@ namespace lasercom.objects
                 _Type = Type.GetType(value);
             }
         }
+
+        private IList<LuiObjectParameters> _Dependencies;
+        [DataMember(Name = "Dependencies")]
+        public IList<LuiObjectParameters> Dependencies
+        {
+            get
+            {
+                return _Dependencies;
+            }
+            set
+            {
+                _Dependencies = value;
+            }
+        }
+
+        public abstract ISet<Type> DependencyTypes
+        {
+            get;
+        }
+
     }
 
     /// <summary>

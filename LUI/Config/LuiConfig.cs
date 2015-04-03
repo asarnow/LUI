@@ -16,6 +16,7 @@ using log4net.Layout;
 using log4net.Core;
 using System.Linq.Expressions;
 using System.Linq;
+using System.Runtime.Serialization;
 
 //  <summary>
 //      Class for managing LUI XML config files.
@@ -277,6 +278,11 @@ namespace LUI.config
                     }
                 }
                 // LuiObjectParamters lists.
+                var settings = new DataContractSerializerSettings();
+                settings.PreserveObjectReferences = true;
+                settings.KnownTypes = typeof(LuiObjectParameters).GetSubclasses(true);
+                var serializer = new DataContractSerializer(typeof(LuiObjectParameters), settings);
+
                 reader.ReadToFollowing("LuiObjectParametersList");
                 using (var subtree = reader.ReadSubtree())
                 {
@@ -287,9 +293,8 @@ namespace LUI.config
                         if (!subtree.Name.EndsWith("List") && subtree.IsStartElement())
                         {
                             // Previously serialized runtime type.
-                            Type type = Type.GetType(reader.GetAttribute("ParametersTypeName"));
-                            var serializer = new XmlSerializer(type);
-                            LuiObjectParameters p = (LuiObjectParameters)serializer.Deserialize(subtree.ReadSubtree());
+                            //Type type = Type.GetType(reader.GetAttribute("ParametersTypeName"));
+                            LuiObjectParameters p = (LuiObjectParameters)serializer.ReadObject(subtree.ReadSubtree());
                             AddParameters(p);
                         }
                         
@@ -311,6 +316,9 @@ namespace LUI.config
             writer.WriteEndElement();
 
             // Write the LuiObjectParameters.
+            var settings = new DataContractSerializerSettings();
+            settings.PreserveObjectReferences = true;
+
             writer.WriteStartElement("LuiObjectParametersList");
             foreach (KeyValuePair<Type, Dictionary<LuiObjectParameters, ILuiObject>> kvp in LuiObjectTableIndex)
             //foreach (KeyValuePair<Type, IEnumerable<LuiObjectParameters>> kvp in ParameterLists)
@@ -319,8 +327,10 @@ namespace LUI.config
                 writer.WriteStartElement(kvp.Key.Name + "List");
                 foreach (LuiObjectParameters p in kvp.Value.Keys)
                 {
-                    var serializer = new XmlSerializer(p.GetType()); // Uses exact runtime type!
-                    serializer.Serialize(writer, p);
+                    //var serializer = new XmlSerializer(p.GetType()); // Uses exact runtime type!
+                    //serializer.Serialize(writer, p);
+                    var serializer = new DataContractSerializer(p.GetType(), settings);
+                    serializer.WriteObject(writer, p);
                 }
                 writer.WriteEndElement();
             }
@@ -397,6 +407,20 @@ namespace LUI.config
             //IEnumerable<LuiObjectParameters> parameters = ParameterLists[t];
             // Type dependency = p.Type; // Should be loop over p.Dependencies
             
+        }
+
+        private void PopulateDependencies()
+        {
+            foreach (var subtable in LuiObjectTableIndex.Values) // List of subtables
+            {
+                foreach (var kvp in subtable) // parameter/object pair
+                {
+                    foreach (Type t in kvp.Key.DependencyTypes)
+                    {
+                          
+                    }
+                }
+            }
         }
     }
 

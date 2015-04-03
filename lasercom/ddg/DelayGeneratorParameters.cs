@@ -83,5 +83,10 @@ namespace lasercom.ddg
                 return hash;
             }
         }
+
+        public override ISet<Type> DependencyTypes
+        {
+            get { return new HashSet<Type>(new Type[] { typeof(GpibProviderParameters) }); }
+        }
     }
 }

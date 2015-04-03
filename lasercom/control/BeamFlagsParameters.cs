@@ -66,5 +66,10 @@ namespace lasercom.control
                 return hash;
             }
         }
+
+        public override ISet<Type> DependencyTypes
+        {
+            get { return new HashSet<Type>(); }
+        }
     }
 }

@@ -111,6 +111,11 @@ namespace lasercom.gpib
             this.Timeout = other.Timeout;
             this.BoardNumber = other.BoardNumber;
         }
+
+        public override ISet<Type> DependencyTypes
+        {
+            get { return new HashSet<Type>(); }
+        }
     }
 }
 
