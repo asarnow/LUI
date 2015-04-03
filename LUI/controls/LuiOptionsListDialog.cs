@@ -264,7 +264,6 @@ namespace LUI.controls
         public void AddObject(P p)
         {
             LuiObjectItem newItem = new LuiObjectItem(p.Name);
-            //newItem.Transient = (LUIObjectParameters)Activator.CreateInstance(luiParameters.ProviderType);
             newItem.Transient = p;
             newItem.Persistent = null;
             ObjectView.Items.Insert(ObjectView.Items.Count - 1, newItem);
@@ -294,10 +293,14 @@ namespace LUI.controls
             Config.ReplaceParameters(PersistentItems);
         }
 
+        public override void Update(LuiConfig config)
+        {
+            PersistentItems = config.LuiObjectTableIndex[typeof(P)].Keys.AsEnumerable().Cast<P>();
+        }
+
         public override void HandleConfigChanged(object sender, EventArgs e)
         {
-            //PersistentItems = Config.ParameterLists[typeof(P)].Cast<P>();
-            PersistentItems = Config.LuiObjectTableIndex[typeof(P)].Keys.AsEnumerable().Cast<P>();
+            MatchConfig(Config);
         }
 
         protected override void OnOptionsChanged(object sender, EventArgs e)
