@@ -25,7 +25,13 @@ namespace LUI.controls
             get
             {
                 List<P> luiParameters = new List<P>(ObjectView.Items.Count);
-                foreach (LuiObjectItem it in ObjectView.Items) luiParameters.Add(it.Persistent);
+                //foreach (LuiObjectItem it in ObjectView.Items) luiParameters.Add(it.Persistent);
+                // Skip the "New..." row.
+                for (int i = 0; i < ObjectView.Items.Count - 1; i++)
+                {
+                    LuiObjectItem it = (LuiObjectItem)ObjectView.Items[i];
+                    luiParameters.Add(it.Persistent);
+                }
                 return luiParameters;
             }
             set
@@ -88,6 +94,7 @@ namespace LUI.controls
             ObjectView.HideSelection = false;
             ObjectView.MultiSelect = false;
             ObjectView.SelectedIndexChanged += SelectedObjectChanged;
+            //ObjectView.ItemSelectionChanged += SelectedObjectChanged;
             AddDummyItem(); // Add the "New..." row.
 
             Panel ListControlsPanel = new Panel();
@@ -98,11 +105,13 @@ namespace LUI.controls
             Add.Dock = DockStyle.Left;
             Add.Text = "Add";
             Add.Click += Add_Click;
+            Add.Click += (s, e) => OnOptionsChanged(e);
 
             Remove = new Button();
             Remove.Dock = DockStyle.Left;
             Remove.Text = "Remove";
             Remove.Click += Remove_Click;
+            Remove.Click += (s, e) => OnOptionsChanged(e);
 
             ListControlsPanel.Controls.Add(Remove);
             ListControlsPanel.Controls.Add(Add);
@@ -158,7 +167,7 @@ namespace LUI.controls
             c.Dock = DockStyle.Fill;
             c.Visible = false;
             c.OptionsChanged += UpdateSelectedObject;
-            c.OptionsChanged += (s, e) => this.OnOptionsChanged(e);
+            c.OptionsChanged += (s, e) => OnOptionsChanged(e);
             ConfigSubPanel.Controls.Add(c);
             ConfigPanels.Add(c.Target, c);
         }
@@ -200,7 +209,9 @@ namespace LUI.controls
             }
             
             P p = (P)selectedItem.Transient;
-            ConfigPanels[p.Type].CopyFrom(p);
+            ConfigPanels[p.Type].TriggerEvents = false; // Deactivate LuiConfigPanel's OnOptionsChanged.
+            ConfigPanels[p.Type].CopyFrom(p); // No OnOptionsChanged => Apply button not enabled.
+            ConfigPanels[p.Type].TriggerEvents = true; // Reactivate OnOptionsChanged.
             ObjectTypes.Control.SelectedItem = p.Type;
             ObjectName.Control.Text = p.Name;
         }
@@ -285,7 +296,15 @@ namespace LUI.controls
 
         public override void HandleConfigChanged(object sender, EventArgs e)
         {
-            PersistentItems = Config.ParameterLists[typeof(P)].Cast<P>();
+            //PersistentItems = Config.ParameterLists[typeof(P)].Cast<P>();
+            PersistentItems = Config.LuiObjectTableIndex[typeof(P)].Keys.AsEnumerable().Cast<P>();
+        }
+
+        protected override void OnOptionsChanged(EventArgs e)
+        {
+            LuiObjectItem dummyRow = (LuiObjectItem)ObjectView.Items[ObjectView.Items.Count - 1];
+            if (dummyRow.Selected) return;
+            base.OnOptionsChanged(e);
         }
     }
 }

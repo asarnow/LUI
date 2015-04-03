@@ -11,6 +11,11 @@ namespace LUI.controls
 {
     public abstract class LuiObjectConfigPanel<T> : FlowLayoutPanel where T : LuiObjectParameters<T>
     {
+        /// <summary>
+        /// If TriggerEvents is false, OnOptionsChanged will not call the event handler.
+        /// </summary>
+        public bool TriggerEvents { get; set; }
+
         public event EventHandler OptionsChanged;
         public abstract Type Target
         {
@@ -19,13 +24,13 @@ namespace LUI.controls
 
         public LuiObjectConfigPanel()
         {
-
+            TriggerEvents = true;
         }
 
-        protected virtual void OnOptionsChanged(EventArgs e)
+        protected virtual void OnOptionsChanged(object sender, EventArgs e)
         {
-            EventHandler handler = OptionsChanged;
-            if (handler != null) handler(this, EventArgs.Empty);
+            var handler = OptionsChanged;
+            if (TriggerEvents && handler != null) handler(this, e);
         }
 
         public abstract void CopyTo(T other);

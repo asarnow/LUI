@@ -26,8 +26,9 @@ namespace LUI.config
     [XmlRoot( "LuiConfig" )]
     public class LuiConfig : IXmlSerializable, IDisposable
     {
-        public Dictionary<Type, IEnumerable<LuiObjectParameters>> ParameterLists { get; set; }
-        public Dictionary<LuiObjectParameters, LuiObject> LuiObjectTable { get; set; }
+        //public Dictionary<Type, IEnumerable<LuiObjectParameters>> ParameterLists { get; set; }
+        public Dictionary<Type, Dictionary<LuiObjectParameters, ILuiObject>> LuiObjectTableIndex { get; set; }
+        //public Dictionary<LuiObjectParameters, ILuiObject> LuiObjectTable { get; set; }
 
         #region Application parameters
         /* Application parameters have:
@@ -110,6 +111,8 @@ namespace LUI.config
 
         public void SetLogLevel(string val)
         {
+            ((Hierarchy)LogManager.GetRepository()).Root.Level = ((Hierarchy)LogManager.GetRepository()).LevelMap[val];
+            ((Hierarchy)LogManager.GetRepository()).RaiseConfigurationChanged(EventArgs.Empty);
             _LogLevel = val;
         }
         #endregion
@@ -135,13 +138,15 @@ namespace LUI.config
             LogFile = LUI.Constants.DefaultLogFileLocation;
             LogLevel = LUI.Constants.DefaultLogLevel;
 
-            LuiObjectTable = new Dictionary<LuiObjectParameters, LuiObject>();
+            //LuiObjectTable = new Dictionary<LuiObjectParameters, ILuiObject>();
+            LuiObjectTableIndex = new Dictionary<Type, Dictionary<LuiObjectParameters, ILuiObject>>();
 
-            ParameterLists = new Dictionary<Type, IEnumerable<LuiObjectParameters>>();
+            //ParameterLists = new Dictionary<Type, IEnumerable<LuiObjectParameters>>();
             // Prepopulate parameter lists using all concrete LuiObjectParameters subclasses.
             foreach (Type type in typeof(LuiObjectParameters).GetSubclasses(true))
             {
-                ParameterLists.Add(type, new List<LuiObjectParameters>());
+                //ParameterLists.Add(type, new List<LuiObjectParameters>());
+                LuiObjectTableIndex.Add(type, new Dictionary<LuiObjectParameters, ILuiObject>());
             }
         }
 
@@ -180,35 +185,45 @@ namespace LUI.config
 
         public void AddParameters(LuiObjectParameters p)
         {
-            IEnumerable<LuiObjectParameters> plist;
-            bool found = ParameterLists.TryGetValue(p.GetType(), out plist);
-            if (!found) ParameterLists.Add(p.GetType(), new List<LuiObjectParameters>());
-            ((IList<LuiObjectParameters>)ParameterLists[p.GetType()]).Add(p);
-            LuiObjectTable.Add(p, null);
+            //IEnumerable<LuiObjectParameters> plist;
+            //bool found = ParameterLists.TryGetValue(p.GetType(), out plist);
+            //if (!found) ParameterLists.Add(p.GetType(), new List<LuiObjectParameters>());
+            //((IList<LuiObjectParameters>)ParameterLists[p.GetType()]).Add(p);
+            //LuiObjectTable.Add(p, null);
+
+            Dictionary<LuiObjectParameters, ILuiObject> subtable;
+            bool found = LuiObjectTableIndex.TryGetValue(p.GetType(), out subtable);
+            if (!found) LuiObjectTableIndex.Add(p.GetType(), new Dictionary<LuiObjectParameters, ILuiObject>());
+            LuiObjectTableIndex[p.GetType()].Add(p, null);
         }
 
         public void ReplaceParameters<P>(IEnumerable<P> NewParameters) where P:LuiObjectParameters<P>
         {
-            IEnumerable<LuiObjectParameters> OldParameters = ParameterLists[typeof(P)];
+            //IEnumerable<LuiObjectParameters> OldParameters = ParameterLists[typeof(P)];
+            IEnumerable<LuiObjectParameters> OldParameters = LuiObjectTableIndex[typeof(P)].Keys.AsEnumerable();
 
             // New parameters where all old parameters have different name.
             // Same as "New parameters where not any old parameters have same name."
             // I.e. Where(p => !OldParameters.Any(q => q.Name == p.Name));
             var DefinitelyNew = NewParameters.Where(p => OldParameters.All(q => q.Name != p.Name));
             // Old parameters where all new parameters have different name.
-            var DefinitelyOld = OldParameters.Where(p => NewParameters.All(q => q.Name != p.Name));
+            // Adding ToList() makes a copy which can be iterated while modifying the source enumerable.
+            var DefinitelyOld = OldParameters.Where(p => NewParameters.All(q => q.Name != p.Name)).ToList();
 
             // Dispose all definitely old entries.
             foreach (P p in DefinitelyOld)
             {
-                var LuiObject = LuiObjectTable[p];
-                if (LuiObject != null) LuiObject.Dispose();
-                LuiObjectTable.Remove(p);
+                //var luiObject = LuiObjectTable[p];
+                var luiObject = LuiObjectTableIndex[p.GetType()][p];
+                if (luiObject != null) luiObject.Dispose();
+                //LuiObjectTable.Remove(p);
+                LuiObjectTableIndex[p.GetType()].Remove(p); // Only legal because DefinitelyOld copied with ToList().
             }
             // Create all definitely new entries.
             foreach (P p in DefinitelyNew)
             {
-                LuiObjectTable.Add(p, null);
+                //LuiObjectTable.Add(p, null);
+                LuiObjectTableIndex[p.GetType()].Add(p, null);
             }
 
             // Find old parameters with same name as new parameters using LINQ.
@@ -220,16 +235,21 @@ namespace LUI.config
             {
                 if (!pair.Old.Equals(pair.New)) // Existing entry needs update.
                 {
-                    var LuiObject = LuiObjectTable[pair.Old];
-                    if (LuiObject != null) LuiObject.Dispose();
-                    LuiObjectTable.Remove(pair.Old);
-                    LuiObjectTable.Add(pair.New, null);
+                    //var luiObject = LuiObjectTable[pair.Old];
+                    var luiObject = LuiObjectTableIndex[pair.Old.GetType()][pair.Old];
+                    if (luiObject != null) luiObject.Dispose();
+                    //LuiObjectTable.Remove(pair.Old);
+                    //LuiObjectTable.Add(pair.New, null);
+                    LuiObjectTableIndex[pair.Old.GetType()].Remove(pair.Old);
+                    LuiObjectTableIndex[pair.New.GetType()].Add(pair.New, null);
                 }
             }
 
+            // At this point, all entries in the object table are null EXCEPT ones with no changed parameters.
+
             // Replace parameter list with list of new and updated parameters.
-            var Parameters = DefinitelyNew.Union(sameNames.Select(p => p.New)).ToList(); 
-            ParameterLists[typeof(P)] = Parameters;
+            //var Parameters = DefinitelyNew.Union(sameNames.Select(p => p.New)).ToList(); 
+            //ParameterLists[typeof(P)] = Parameters;
         }
 
         public System.Xml.Schema.XmlSchema GetSchema()
@@ -292,11 +312,12 @@ namespace LUI.config
 
             // Write the LuiObjectParameters.
             writer.WriteStartElement("LuiObjectParametersList");
-            foreach (KeyValuePair<Type, IEnumerable<LuiObjectParameters>> kvp in ParameterLists)
+            foreach (KeyValuePair<Type, Dictionary<LuiObjectParameters, ILuiObject>> kvp in LuiObjectTableIndex)
+            //foreach (KeyValuePair<Type, IEnumerable<LuiObjectParameters>> kvp in ParameterLists)
             {
                 // Write list of specific LuiObjectParameters subtype.
                 writer.WriteStartElement(kvp.Key.Name + "List");
-                foreach (LuiObjectParameters p in kvp.Value)
+                foreach (LuiObjectParameters p in kvp.Value.Keys)
                 {
                     var serializer = new XmlSerializer(p.GetType()); // Uses exact runtime type!
                     serializer.Serialize(writer, p);
@@ -320,9 +341,12 @@ namespace LUI.config
         {
             if (disposing)
             {
-                foreach (var kvp in LuiObjectTable)
+                foreach (var subtable in LuiObjectTableIndex.Values) // List of subtables
                 {
-                    if (kvp.Value != null) kvp.Value.Dispose();
+                    foreach (var kvp in subtable) // parameter/object pair
+                    {
+                        if (kvp.Value != null) kvp.Value.Dispose();
+                    }
                 }
             }
         }
@@ -356,6 +380,23 @@ namespace LUI.config
                 Config = (LuiConfig)serializer.Deserialize(reader);
             }
             return Config;
+        }
+
+        public void InstantiateConfiguration()
+        {
+            Stack<Type> TypeStack = new Stack<Type>(LuiObjectTableIndex.Keys.AsEnumerable());
+
+            Type type;
+            while((type = TypeStack.Pop()) != null){
+                
+            }
+        }
+
+        public void InstantiateDependencies(Type t)
+        {
+            //IEnumerable<LuiObjectParameters> parameters = ParameterLists[t];
+            // Type dependency = p.Type; // Should be loop over p.Dependencies
+            
         }
     }
 

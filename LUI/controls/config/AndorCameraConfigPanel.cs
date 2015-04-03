@@ -23,7 +23,7 @@ namespace LUI.controls
         {
             Dir = new LabeledControl<TextBox>(new TextBox(), "Andor INI Dir:");
             Dir.Control.Text = "./";
-            Dir.Control.TextChanged += (s, e) => OnOptionsChanged(e);
+            Dir.Control.TextChanged += (s, e) => OnOptionsChanged(s,e);
             this.Controls.Add(Dir);
         }
 

@@ -16,7 +16,7 @@ namespace LUI.controls
     {
         public event EventHandler OptionsChanged;
 
-        protected event EventHandler ConfigChanged;
+        public event EventHandler ConfigChanged;
 
         private LuiConfig _Config;
         public virtual LuiConfig Config

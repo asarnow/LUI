@@ -67,12 +67,12 @@ namespace LUI_Unit_Tests
             Assert.AreEqual(testConfig.ConfigFile, Config.ConfigFile);
             Assert.AreEqual(testConfig.LogFile, Config.LogFile);
             Assert.AreEqual(testConfig.LogLevel, Config.LogLevel);
-            foreach (KeyValuePair<Type, IEnumerable<LuiObjectParameters>> kvp in Config.ParameterLists)
+            foreach (KeyValuePair<Type, Dictionary<LuiObjectParameters, ILuiObject>> kvp in Config.LuiObjectTableIndex)
             {
-                IList<LuiObjectParameters> list = (IList<LuiObjectParameters>)kvp.Value;
+                IList<LuiObjectParameters> list = (IList<LuiObjectParameters>)kvp.Value.Keys.ToList();
                 for (int i = 0; i < list.Count; i++)
                 {
-                    Assert.AreEqual(list[i], ((IList<LuiObjectParameters>)testConfig.ParameterLists[kvp.Key])[i]);
+                    Assert.AreEqual(list[i], ((IList<LuiObjectParameters>)testConfig.LuiObjectTableIndex[kvp.Key].Keys.ToList())[i]);
                 }
             }
         }
