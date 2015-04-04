@@ -24,16 +24,12 @@ namespace LUI.controls
         {
             get
             {
-                //List<P> luiParameters = new List<P>(ObjectView.Items.Count);
-                //foreach (LuiObjectItem it in ObjectView.Items) luiParameters.Add(it.Persistent);
                 // Skip the "New..." row.
                 for (int i = 0; i < ObjectView.Items.Count - 1; i++)
                 {
                     LuiObjectItem it = (LuiObjectItem)ObjectView.Items[i];
-                    //luiParameters.Add(it.Persistent);
                     yield return it.Persistent;
                 }
-                //return luiParameters;
             }
             set
             {

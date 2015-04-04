@@ -27,9 +27,7 @@ namespace LUI.config
     [XmlRoot( "LuiConfig" )]
     public class LuiConfig : IXmlSerializable, IDisposable
     {
-        //public Dictionary<Type, IEnumerable<LuiObjectParameters>> ParameterLists { get; set; }
         public Dictionary<Type, Dictionary<LuiObjectParameters, ILuiObject>> LuiObjectTableIndex { get; set; }
-        //public Dictionary<LuiObjectParameters, ILuiObject> LuiObjectTable { get; set; }
 
         #region Application parameters
         /* Application parameters have:
@@ -156,14 +154,11 @@ namespace LUI.config
             LogFile = LUI.Constants.DefaultLogFileLocation;
             LogLevel = LUI.Constants.DefaultLogLevel;
 
-            //LuiObjectTable = new Dictionary<LuiObjectParameters, ILuiObject>();
             LuiObjectTableIndex = new Dictionary<Type, Dictionary<LuiObjectParameters, ILuiObject>>();
 
-            //ParameterLists = new Dictionary<Type, IEnumerable<LuiObjectParameters>>();
             // Prepopulate parameter lists using all concrete LuiObjectParameters subclasses.
             foreach (Type type in typeof(LuiObjectParameters).GetSubclasses(true))
             {
-                //ParameterLists.Add(type, new List<LuiObjectParameters>());
                 LuiObjectTableIndex.Add(type, new Dictionary<LuiObjectParameters, ILuiObject>());
             }
         }
@@ -237,12 +232,6 @@ namespace LUI.config
 
         public void AddParameters(LuiObjectParameters p)
         {
-            //IEnumerable<LuiObjectParameters> plist;
-            //bool found = ParameterLists.TryGetValue(p.GetType(), out plist);
-            //if (!found) ParameterLists.Add(p.GetType(), new List<LuiObjectParameters>());
-            //((IList<LuiObjectParameters>)ParameterLists[p.GetType()]).Add(p);
-            //LuiObjectTable.Add(p, null);
-
             Dictionary<LuiObjectParameters, ILuiObject> subtable;
             bool found = LuiObjectTableIndex.TryGetValue(p.GetType(), out subtable);
             if (!found) LuiObjectTableIndex.Add(p.GetType(), new Dictionary<LuiObjectParameters, ILuiObject>());
@@ -251,7 +240,6 @@ namespace LUI.config
 
         public void ReplaceParameters<P>(IEnumerable<P> NewParameters) where P:LuiObjectParameters<P>
         {
-            //IEnumerable<LuiObjectParameters> OldParameters = ParameterLists[typeof(P)];
             IEnumerable<LuiObjectParameters> OldParameters = LuiObjectTableIndex[typeof(P)].Keys.AsEnumerable();
 
             // New parameters where all old parameters have different name.
@@ -265,16 +253,13 @@ namespace LUI.config
             // Dispose all definitely old entries.
             foreach (P p in DefinitelyOld)
             {
-                //var luiObject = LuiObjectTable[p];
                 var luiObject = LuiObjectTableIndex[p.GetType()][p];
                 if (luiObject != null) luiObject.Dispose();
-                //LuiObjectTable.Remove(p);
                 LuiObjectTableIndex[p.GetType()].Remove(p); // Only legal because DefinitelyOld copied with ToList().
             }
             // Create all definitely new entries.
             foreach (P p in DefinitelyNew)
             {
-                //LuiObjectTable.Add(p, null);
                 LuiObjectTableIndex[p.GetType()].Add(p, null);
             }
 
@@ -287,11 +272,8 @@ namespace LUI.config
             {
                 if (!pair.Old.Equals(pair.New)) // Existing entry needs update.
                 {
-                    //var luiObject = LuiObjectTable[pair.Old];
                     var luiObject = LuiObjectTableIndex[pair.Old.GetType()][pair.Old];
                     if (luiObject != null) luiObject.Dispose();
-                    //LuiObjectTable.Remove(pair.Old);
-                    //LuiObjectTable.Add(pair.New, null);
                     LuiObjectTableIndex[pair.Old.GetType()].Remove(pair.Old);
                     LuiObjectTableIndex[pair.New.GetType()].Add(pair.New, null);
                 }
@@ -343,8 +325,6 @@ namespace LUI.config
                         subtree.MoveToContent();
                         if (!subtree.Name.EndsWith("List") && subtree.IsStartElement())
                         {
-                            // Previously serialized runtime type.
-                            //Type type = Type.GetType(reader.GetAttribute("ParametersTypeName"));
                             LuiObjectParameters p = (LuiObjectParameters)serializer.ReadObject(subtree.ReadSubtree());
                             AddParameters(p);
                         }
@@ -374,14 +354,11 @@ namespace LUI.config
 
             writer.WriteStartElement("LuiObjectParametersList");
             foreach (KeyValuePair<Type, Dictionary<LuiObjectParameters, ILuiObject>> kvp in LuiObjectTableIndex)
-            //foreach (KeyValuePair<Type, IEnumerable<LuiObjectParameters>> kvp in ParameterLists)
             {
                 // Write list of specific LuiObjectParameters subtype.
                 writer.WriteStartElement(kvp.Key.Name + "List");
                 foreach (LuiObjectParameters p in kvp.Value.Keys)
                 {
-                    //var serializer = new XmlSerializer(p.GetType()); // Uses exact runtime type!
-                    //serializer.Serialize(writer, p);
                     serializer.WriteObject(writer, p);
                 }
                 writer.WriteEndElement();
