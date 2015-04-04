@@ -306,7 +306,7 @@ namespace LUI.config
 
         public System.Xml.Schema.XmlSchema GetSchema()
         {
-            return null;
+            return null; // This method is deprecated, framework documentation says to return null.
         }
 
         public void ReadXml(System.Xml.XmlReader reader)
@@ -361,9 +361,9 @@ namespace LUI.config
             // Root element <LuiConfig> start/end handled automatically.
             // Write the individual options.
             writer.WriteStartElement("ApplicationParameters");
-            writer.WriteElementString(GetPropertyName(() => ConfigFile), ConfigFile.ToString());
-            writer.WriteElementString(GetPropertyName(() => LogFile), LogFile.ToString());
-            writer.WriteElementString(GetPropertyName(() => LogLevel), LogLevel.ToString());
+            writer.WriteElementString(Util.GetPropertyName(() => ConfigFile), ConfigFile.ToString());
+            writer.WriteElementString(Util.GetPropertyName(() => LogFile), LogFile.ToString());
+            writer.WriteElementString(Util.GetPropertyName(() => LogLevel), LogLevel.ToString());
             writer.WriteEndElement();
 
             // Write the LuiObjectParameters.
@@ -389,16 +389,10 @@ namespace LUI.config
             writer.WriteEndElement();
         }
 
-        private static string GetPropertyName<T>(Expression<Func<T>> property)
-        {
-            var me = property.Body as MemberExpression;
-            if (me == null)
-            {
-                throw new ArgumentException();
-            }
-            return me.Member.Name;
-        }
-
+        /// <summary>
+        /// Disposes all LuiObjects in the LuiObject table.
+        /// </summary>
+        /// <param name="disposing"></param>
         protected void Dispose(bool disposing)
         {
             if (disposing)
@@ -413,11 +407,18 @@ namespace LUI.config
             }
         }
 
+        /// <summary>
+        /// Serializes the LuiConfig instance to ConfigFile.
+        /// </summary>
         public void Save()
         {
             Save(ConfigFile);
         }
 
+        /// <summary>
+        /// Serializes the LuiConfig instance to a file.
+        /// </summary>
+        /// <param name="FileName"></param>
         public void Save(string FileName)
         {
             var serializer = new XmlSerializer(typeof(LuiConfig));
@@ -433,6 +434,11 @@ namespace LUI.config
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// Deserializes a LuiConfig instance from XML file.
+        /// </summary>
+        /// <param name="FileName"></param>
+        /// <returns></returns>
         public static LuiConfig FromFile(string FileName)
         {
             var serializer = new XmlSerializer(typeof(LuiConfig));
@@ -446,6 +452,8 @@ namespace LUI.config
 
         public void InstantiateConfiguration()
         {
+            // The topological sort ensures dependencies are resolved in a legal order.
+            // Cyclic dependencies will result in exceptions.
             IEnumerable<LuiObjectParameters> dependencyOrderedParameters = Util.TopologicalSort(LuiObjectParameters, p => p.Dependencies);
             foreach (var p in dependencyOrderedParameters)
             {
@@ -454,13 +462,6 @@ namespace LUI.config
                     SetObject(p, LuiObject.Create(p));
                 }
             }
-        }
-
-        public void InstantiateDependencies(Type t)
-        {
-            //IEnumerable<LuiObjectParameters> parameters = ParameterLists[t];
-            // Type dependency = p.Type; // Should be loop over p.Dependencies
-            
         }
 
     }

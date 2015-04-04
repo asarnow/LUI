@@ -8,6 +8,7 @@ using log4net;
 using System.Threading;
 using System.Reflection;
 using System.Collections;
+using System.Linq.Expressions;
 
 namespace lasercom
 {
@@ -44,9 +45,37 @@ namespace lasercom
             }
         }
 
+        /// <summary>
+        /// Returns the name of a property as a string.
+        /// Usage: GetPropertyName(() => Property)
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="property"></param>
+        /// <returns></returns>
+        public static string GetPropertyName<T>(Expression<Func<T>> property)
+        {
+            var me = property.Body as MemberExpression;
+            if (me == null)
+            {
+                throw new ArgumentException();
+            }
+            return me.Member.Name;
+        }
+
+        /// <summary>
+        /// Provides access to the native QueryDosDevice system call.
+        /// </summary>
+        /// <param name="lpDeviceName"></param>
+        /// <param name="lpTargetPath"></param>
+        /// <param name="ucchMax"></param>
+        /// <returns></returns>
         [DllImport("kernel32.dll")]
         static extern uint QueryDosDevice(string lpDeviceName, IntPtr lpTargetPath, uint ucchMax);
 
+        /// <summary>
+        /// Enumerates the available COM ports using QueryDosDevice.
+        /// </summary>
+        /// <returns></returns>
         public static List<string> EnumerateSerialPorts()
         {
             int ERROR_INSUFFICIENT_BUFFER = 122;
@@ -111,12 +140,24 @@ namespace lasercom
             unchecked { return (h1 << 5) * h2; } // Hash should wrap around.
         }
 
+        /// <summary>
+        /// Combines hash with object's hash after null check.
+        /// </summary>
+        /// <param name="h1"></param>
+        /// <param name="o"></param>
+        /// <returns></returns>
         public static int Hash(int h1, object o)
         {
             if (o == null) return h1;
             return Hash(h1, o.GetHashCode());
         }
 
+        /// <summary>
+        /// Combines object hashes after null check.
+        /// </summary>
+        /// <param name="o1"></param>
+        /// <param name="o2"></param>
+        /// <returns></returns>
         public static int Hash(object o1, object o2)
         {
             if (o1 == null && o2 == null)
@@ -136,6 +177,13 @@ namespace lasercom
             }
         }
 
+        /// <summary>
+        /// Topological sorting for dependency resolution.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="nodes">Enumerable of nodes.</param>
+        /// <param name="connected">Function returning enumerable over a node's children.</param>
+        /// <returns></returns>
         public static IEnumerable<T> TopologicalSort<T>(this IEnumerable<T> nodes,
                                                 Func<T, IEnumerable<T>> connected)
         {
