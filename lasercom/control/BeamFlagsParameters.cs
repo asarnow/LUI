@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using lasercom.objects;
 
 namespace lasercom.control
 {
+    [DataContract]
     public class BeamFlagsParameters : LuiObjectParameters<BeamFlagsParameters>
     {        
-
+        [DataMember]
         public string PortName { get; set; }
 
         public BeamFlagsParameters(Type Type, string PortName) : base(Type)
@@ -67,9 +69,5 @@ namespace lasercom.control
             }
         }
 
-        public override ISet<Type> DependencyTypes
-        {
-            get { return new HashSet<Type>(); }
-        }
     }
 }

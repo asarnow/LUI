@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using lasercom.gpib;
 using lasercom.objects;
@@ -11,16 +12,22 @@ namespace lasercom.ddg
     /// Stores parameters for instantiation of a DDG and provides
     /// fpr their serialization to XML.
     /// </summary>
+    [DataContract]
     public class DelayGeneratorParameters : LuiObjectParameters<DelayGeneratorParameters>
     {
-        [System.Xml.Serialization.XmlAttribute]
+        [DataMember]
         public byte GpibAddress { get; set; }
-
-        [System.Xml.Serialization.XmlAttribute]
-        public string GpibProviderName { get; set; }
         
-        [System.Xml.Serialization.XmlIgnore]
-        public IGpibProvider GpibProvider { get; set; }
+        [DataMember]
+        public GpibProviderParameters GpibProvider { get; set; }
+
+        public override LuiObjectParameters[] Dependencies
+        {
+            get
+            {
+                return new LuiObjectParameters[] {GpibProvider};
+            }
+        }
 
         public override object[] ConstructorArray
         {
@@ -50,7 +57,7 @@ namespace lasercom.ddg
         {
             base.Copy(other);
             this.GpibAddress = other.GpibAddress;
-            this.GpibProviderName = other.GpibProviderName;
+            this.GpibProvider = other.GpibProvider;
         }
 
         public override bool Equals(DelayGeneratorParameters other)
@@ -61,7 +68,10 @@ namespace lasercom.ddg
             if (Type == typeof(DDG535))
             {
                 iseq &= GpibAddress == other.GpibAddress &&
-                        GpibProviderName == other.GpibProviderName;
+                        ( GpibProvider==other.GpibProvider || (GpibProvider !=null && GpibProvider.Equals(other.GpibProvider)) );
+                // Equal if (addresses are the same AND (providers ref. equal OR (provider is not null AND equals other provider)).
+                // Note that providers will be ref. equal if both are null and that due to short circuiting
+                // GpibProvider.Equals wont be called if GpibProvider is null.
             }
             return iseq;
         }
@@ -77,16 +87,11 @@ namespace lasercom.ddg
                 int hash = Util.Hash(Type, Name);
                 if (Type == typeof(DDG535))
                 {
-                    hash = Util.Hash(hash, GpibProviderName);
+                    hash = Util.Hash(hash, GpibProvider);
                     hash = Util.Hash(hash, GpibAddress);
                 }
                 return hash;
             }
-        }
-
-        public override ISet<Type> DependencyTypes
-        {
-            get { return new HashSet<Type>(new Type[] { typeof(GpibProviderParameters) }); }
         }
     }
 }

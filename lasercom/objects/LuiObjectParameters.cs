@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
+using lasercom.extensions;
 
 
 namespace lasercom.objects
@@ -14,23 +15,11 @@ namespace lasercom.objects
     /// knowing the exact runtime parameters class.
     /// </summary>
     [DataContract]
+    [KnownType("GetKnownTypes")]
     public abstract class LuiObjectParameters
     {
         [DataMember]
         public string Name { get; set; }
-
-        [DataMember]
-        public string ParametersTypeName
-        {
-            get
-            {
-                return this.GetType().AssemblyQualifiedName;
-            }
-            set
-            {
-
-            }
-        }
 
         private Type _Type;
         public Type Type
@@ -58,35 +47,30 @@ namespace lasercom.objects
             }
         }
 
-        private IList<LuiObjectParameters> _Dependencies;
-        [DataMember(Name = "Dependencies")]
-        public IList<LuiObjectParameters> Dependencies
+        public virtual LuiObjectParameters[] Dependencies
         {
             get
             {
-                return _Dependencies;
-            }
-            set
-            {
-                _Dependencies = value;
+                return new LuiObjectParameters[0];
             }
         }
 
-        public abstract ISet<Type> DependencyTypes
+        public abstract object[] ConstructorArray { get; }
+
+        static Type[] GetKnownTypes()
         {
-            get;
+            return typeof(LuiObjectParameters).GetSubclasses(true).ToArray();
         }
-
     }
 
     /// <summary>
     /// Self-constrained generic base class for all instrument parameters.
     /// </summary>
     /// <typeparam name="P"></typeparam>
+    [DataContract]
     public abstract class LuiObjectParameters<P> : LuiObjectParameters, 
         IEquatable<P> where P : LuiObjectParameters<P>
     {
-        public abstract object[] ConstructorArray { get; }
 
         public LuiObjectParameters()
         {

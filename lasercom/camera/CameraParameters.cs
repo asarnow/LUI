@@ -1,18 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using lasercom;
 using lasercom.objects;
 
 namespace lasercom.camera
 {
+    [DataContract]
     public class CameraParameters : LuiObjectParameters<CameraParameters>
     {
-        [System.Xml.Serialization.XmlAttribute]
+        [DataMember]
         public string Dir { get; set; }
 
-        [System.Xml.Serialization.XmlAttribute]
+        [DataMember]
         public int Temperature { get; set; }
 
         override public object[] ConstructorArray
@@ -93,9 +95,5 @@ namespace lasercom.camera
             }
         }
 
-        public override ISet<Type> DependencyTypes
-        {
-            get { return new HashSet<Type>(); }
-        }
     }
 }

@@ -127,6 +127,23 @@ namespace LUI.config
             }
         }
 
+        /// <summary>
+        /// Enumerates all the parameters in the object table.
+        /// </summary>
+        public IEnumerable<LuiObjectParameters> LuiObjectParameters
+        {
+            get
+            {
+                foreach (var subtable in LuiObjectTableIndex.Values) // List of subtables
+                    {
+                        foreach (var kvp in subtable) // parameter/object pair
+                        {
+                            yield return kvp.Key;
+                        }
+                    }
+            }
+        }
+
         public LuiConfig()
             : this(LUI.Constants.DefaultConfigFileLocation)
         {
@@ -182,6 +199,40 @@ namespace LUI.config
 
             hierarchy.Root.Level = hierarchy.LevelMap[LogLevel];
             hierarchy.Configured = true;
+        }
+
+        //public T GetObject<P, T>(P p)
+        //    where P : LuiObjectParameters<P>
+        //    where T : ILuiObject<P>; // This signature could be sweet if ILuiObject<P> where P:LuiObjectParameters<P>
+
+        public ILuiObject GetObject(LuiObjectParameters p)
+        {
+            return LuiObjectTableIndex[p.GetType()][p];
+        }
+
+        public void SetObject(LuiObjectParameters p, ILuiObject o)
+        {
+            LuiObjectTableIndex[p.GetType()][p] = o;
+        }
+
+        /// <summary>
+        /// Get all the parameters of a particular type, as that type.
+        /// </summary>
+        /// <typeparam name="P"></typeparam>
+        /// <returns></returns>
+        public IEnumerable<P> GetParameters<P>() where P:LuiObjectParameters<P>
+        {
+            return LuiObjectTableIndex[typeof(P)].Keys.AsEnumerable().Cast<P>();
+        }
+
+        /// <summary>
+        /// Get the parameters of a particular type as nongeneric parameters.
+        /// </summary>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        public IEnumerable<LuiObjectParameters> GetParameters(Type t)
+        {
+            return LuiObjectTableIndex[t].Keys.AsEnumerable();
         }
 
         public void AddParameters(LuiObjectParameters p)
@@ -318,6 +369,8 @@ namespace LUI.config
             // Write the LuiObjectParameters.
             var settings = new DataContractSerializerSettings();
             settings.PreserveObjectReferences = true;
+            settings.KnownTypes = typeof(LuiObjectParameters).GetSubclasses(true);
+            var serializer = new DataContractSerializer(typeof(LuiObjectParameters), settings);
 
             writer.WriteStartElement("LuiObjectParametersList");
             foreach (KeyValuePair<Type, Dictionary<LuiObjectParameters, ILuiObject>> kvp in LuiObjectTableIndex)
@@ -329,7 +382,6 @@ namespace LUI.config
                 {
                     //var serializer = new XmlSerializer(p.GetType()); // Uses exact runtime type!
                     //serializer.Serialize(writer, p);
-                    var serializer = new DataContractSerializer(p.GetType(), settings);
                     serializer.WriteObject(writer, p);
                 }
                 writer.WriteEndElement();
@@ -394,11 +446,13 @@ namespace LUI.config
 
         public void InstantiateConfiguration()
         {
-            Stack<Type> TypeStack = new Stack<Type>(LuiObjectTableIndex.Keys.AsEnumerable());
-
-            Type type;
-            while((type = TypeStack.Pop()) != null){
-                
+            IEnumerable<LuiObjectParameters> dependencyOrderedParameters = Util.TopologicalSort(LuiObjectParameters, p => p.Dependencies);
+            foreach (var p in dependencyOrderedParameters)
+            {
+                if (GetObject(p) == null)
+                {
+                    SetObject(p, LuiObject.Create(p));
+                }
             }
         }
 
@@ -409,19 +463,6 @@ namespace LUI.config
             
         }
 
-        private void PopulateDependencies()
-        {
-            foreach (var subtable in LuiObjectTableIndex.Values) // List of subtables
-            {
-                foreach (var kvp in subtable) // parameter/object pair
-                {
-                    foreach (Type t in kvp.Key.DependencyTypes)
-                    {
-                          
-                    }
-                }
-            }
-        }
     }
 
 }

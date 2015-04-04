@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using lasercom.objects;
 using System.Reflection;
+using System.Runtime.Serialization;
 
 namespace lasercom.gpib
 {
@@ -11,10 +12,11 @@ namespace lasercom.gpib
     /// Stores parameters for instantiation of a GPIB provider and provides
     /// for their serialization to XML.
     /// </summary>
+    [DataContract]
     public class GpibProviderParameters : LuiObjectParameters<GpibProviderParameters>
     {
         private int _BoardNumber;
-        [System.Xml.Serialization.XmlAttribute]
+        [DataMember]
         public int BoardNumber
         {
             get
@@ -27,10 +29,10 @@ namespace lasercom.gpib
             }
         }
 
-        [System.Xml.Serialization.XmlAttribute]
+        [DataMember]
         public string PortName { get; set; }
 
-        [System.Xml.Serialization.XmlAttribute]
+        [DataMember]
         public int Timeout { get; set; }
 
         override public object[] ConstructorArray
@@ -65,6 +67,8 @@ namespace lasercom.gpib
         public override bool Equals(GpibProviderParameters other)
         {
             bool iseq = base.Equals(other);
+            if (!iseq) return iseq;
+
             if (Type == typeof(NIGpibProvider))
             {
                 iseq &= BoardNumber == other.BoardNumber;
@@ -112,10 +116,6 @@ namespace lasercom.gpib
             this.BoardNumber = other.BoardNumber;
         }
 
-        public override ISet<Type> DependencyTypes
-        {
-            get { return new HashSet<Type>(); }
-        }
     }
 }
 

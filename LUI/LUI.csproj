@@ -170,6 +170,9 @@
     <Compile Include="controls\config\DummyDigitalDelayGeneratorConfigPanel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="controls\config\DummyGpibProviderConfigPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="controls\LuiOptionsListDialog.cs">
       <SubType>UserControl</SubType>
     </Compile>

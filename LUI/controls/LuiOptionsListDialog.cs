@@ -24,15 +24,16 @@ namespace LUI.controls
         {
             get
             {
-                List<P> luiParameters = new List<P>(ObjectView.Items.Count);
+                //List<P> luiParameters = new List<P>(ObjectView.Items.Count);
                 //foreach (LuiObjectItem it in ObjectView.Items) luiParameters.Add(it.Persistent);
                 // Skip the "New..." row.
                 for (int i = 0; i < ObjectView.Items.Count - 1; i++)
                 {
                     LuiObjectItem it = (LuiObjectItem)ObjectView.Items[i];
-                    luiParameters.Add(it.Persistent);
+                    //luiParameters.Add(it.Persistent);
+                    yield return it.Persistent;
                 }
-                return luiParameters;
+                //return luiParameters;
             }
             set
             {
@@ -40,6 +41,17 @@ namespace LUI.controls
                 AddDummyItem(); // Add the "New..." row.
                 foreach (P luiParameters in value) AddObject(luiParameters);
                 SetDefaultSelectedItems();
+            }
+        }
+
+        public IEnumerable<P> TransientItems
+        {
+            get
+            {
+                for (int i = 0; i < ObjectView.Items.Count - 1; i++)
+                {
+                    yield return ((LuiObjectItem)ObjectView.Items[i]).Transient;
+                }
             }
         }
 
@@ -297,7 +309,7 @@ namespace LUI.controls
 
         public override void Update(LuiConfig config)
         {
-            PersistentItems = config.LuiObjectTableIndex[typeof(P)].Keys.AsEnumerable().Cast<P>();
+            PersistentItems = config.GetParameters<P>();
         }
 
         public override void HandleConfigChanged(object sender, EventArgs e)

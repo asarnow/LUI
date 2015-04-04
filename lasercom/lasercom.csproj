@@ -134,6 +134,7 @@
     <Compile Include="ddg\DummyDigitalDelayGenerator.cs" />
     <Compile Include="extensions\LasercomExtensions.cs" />
     <Compile Include="gpib\AbstractGpibProvider.cs" />
+    <Compile Include="gpib\DummyGpibProvider.cs" />
     <Compile Include="gpib\GpibProviderFactory.cs" />
     <Compile Include="gpib\GpibProviderParameters.cs" />
     <Compile Include="gpib\IGpibProvider.cs" />

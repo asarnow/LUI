@@ -101,6 +101,7 @@ namespace LUI.tabs
                 new LuiOptionsListDialog<IGpibProvider, GpibProviderParameters>(OptionsPanel.Size);
             GPIBOptionsDialog.AddConfigPanel(new NIConfigPanel());
             GPIBOptionsDialog.AddConfigPanel(new PrologixConfigPanel());
+            GPIBOptionsDialog.AddConfigPanel(new DummyGpibProviderConfigPanel());
             GPIBOptionsDialog.SetDefaultSelectedItems();
             GPIBOptionsDialog.Dock = DockStyle.Fill;
             ListViewItem GPIBOptionsItem = new ListViewItem("GPIB Controllers", Instruments);
@@ -110,7 +111,7 @@ namespace LUI.tabs
 
             LuiOptionsListDialog<IDigitalDelayGenerator, DelayGeneratorParameters> DDGOptionsDialog = 
                 new LuiOptionsListDialog<IDigitalDelayGenerator, DelayGeneratorParameters>(OptionsPanel.Size);
-            DDGOptionsDialog.AddConfigPanel(new DDG535ConfigPanel());
+            DDGOptionsDialog.AddConfigPanel(new DDG535ConfigPanel(GPIBOptionsDialog));
             DDGOptionsDialog.AddConfigPanel(new DummyDigitalDelayGeneratorConfigPanel());
             DDGOptionsDialog.SetDefaultSelectedItems();
             DDGOptionsDialog.Dock = DockStyle.Fill;
