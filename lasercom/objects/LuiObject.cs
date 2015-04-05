@@ -27,5 +27,11 @@ namespace lasercom.objects
         {
             return (ILuiObject)Activator.CreateInstance(p.Type, p.ConstructorArray);
         }
+
+        public static ILuiObject Create(LuiObjectParameters p, IEnumerable<ILuiObject> dependencies)
+        {
+            IEnumerable<object> args = p.ConstructorArray.AsEnumerable().Concat(dependencies);
+            return (ILuiObject)Activator.CreateInstance(p.Type, args);
+        }
     }
 }

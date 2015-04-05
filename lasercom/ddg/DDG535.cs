@@ -5,6 +5,7 @@ using System.Text;
 using log4net;
 using lasercom.gpib;
 using NationalInstruments.NI4882;
+using lasercom.objects;
 
 namespace lasercom.ddg
 {
@@ -88,7 +89,7 @@ namespace lasercom.ddg
         //    ReadAllDelays();
         //}
 
-        public DDG535(IGpibProvider GPIBProvider, byte GPIBAddress) : base(GPIBProvider, GPIBAddress)
+        public DDG535(byte GPIBAddress, params ILuiObject[] dependencies) : base(GPIBAddress, dependencies)
         {
             ReadAllDelays();
         }

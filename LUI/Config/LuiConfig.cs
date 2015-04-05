@@ -431,12 +431,13 @@ namespace LUI.config
         {
             // The topological sort ensures dependencies are resolved in a legal order.
             // Cyclic dependencies will result in exceptions.
-            IEnumerable<LuiObjectParameters> dependencyOrderedParameters = Util.TopologicalSort(LuiObjectParameters, p => p.Dependencies);
+            IEnumerable<LuiObjectParameters> dependencyOrderedParameters = LuiObjectParameters.TopologicalSort(p => p.Dependencies);
             foreach (var p in dependencyOrderedParameters)
             {
                 if (GetObject(p) == null)
                 {
-                    SetObject(p, LuiObject.Create(p));
+                    IEnumerable<ILuiObject> dependencies = p.Dependencies.Select(d => GetObject(d));
+                    SetObject(p, LuiObject.Create(p, dependencies));
                 }
             }
         }

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Linq;
 using NationalInstruments.NI4882;
 using log4net;
 using lasercom.gpib;
+using lasercom.objects;
 
 //  <summary>
 //      Represents a Stanford DDG.
@@ -19,9 +21,9 @@ namespace lasercom.ddg
         public IGpibProvider GPIBProvider { get; set; }
         public byte GPIBAddress { get; set; }
 
-        public StanfordDigitalDelayGenerator(IGpibProvider _GPIBProvider, byte _GPIBAddress)
+        public StanfordDigitalDelayGenerator(byte _GPIBAddress, params ILuiObject[] dependencies)
         {
-            GPIBProvider = _GPIBProvider;
+            GPIBProvider = (IGpibProvider)dependencies.First(d => d is IGpibProvider);
             GPIBAddress = _GPIBAddress;
         }
 
