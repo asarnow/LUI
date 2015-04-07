@@ -163,11 +163,6 @@ namespace LUI.config
             }
         }
 
-        public Commander CreateCommander()
-        {
-            throw new NotImplementedException();
-        }
-
         public void ConfigureLogging()
         {
             var tracer = new TraceAppender();
@@ -439,6 +434,19 @@ namespace LUI.config
                     IEnumerable<ILuiObject> dependencies = p.Dependencies.Select(d => GetObject(d));
                     SetObject(p, LuiObject.Create(p, dependencies));
                 }
+            }
+        }
+
+        public void InstantiateWithDependencies(LuiObjectParameters p)
+        {
+            if (GetObject(p) == null)
+            {
+                var ordered = p.Dependencies.TopologicalSort(q => q.Dependencies);
+                foreach (var q in ordered)
+                {
+                    InstantiateWithDependencies(q);
+                }
+                SetObject(p, LuiObject.Create(p, p.Dependencies.Select(d => GetObject(d))));
             }
         }
 

@@ -124,6 +124,7 @@ namespace lasercom.control
         {
             if (disposing)
             {
+                CloseLaserAndFlash();
                 EnsurePortDisposed();
             }
         }

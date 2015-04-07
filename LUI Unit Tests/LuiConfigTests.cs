@@ -10,6 +10,7 @@ using lasercom.objects;
 using System.Collections.Generic;
 using lasercom.ddg;
 using lasercom;
+using lasercom.extensions;
 
 namespace LUI_Unit_Tests
 {
@@ -128,7 +129,7 @@ namespace LUI_Unit_Tests
         [TestMethod]
         public void TestInstantiation()
         {
-            IEnumerable<LuiObjectParameters> dependencyOrderedParameters = Util.TopologicalSort(Config.LuiObjectParameters, p => p.Dependencies);
+            IEnumerable<LuiObjectParameters> dependencyOrderedParameters = Config.LuiObjectParameters.TopologicalSort(p => p.Dependencies);
 
             bool ddg = false;
             bool gpib = false;

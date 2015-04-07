@@ -78,7 +78,7 @@ namespace lasercom
         /// <returns></returns>
         public static List<string> EnumerateSerialPorts()
         {
-            int ERROR_INSUFFICIENT_BUFFER = 122;
+            const int ERROR_INSUFFICIENT_BUFFER = 122;
             // Allocate some memory to get a list of all system devices.
             // Start with a small size and dynamically give more space until we have enough room.
             int returnSize = 0;
@@ -174,34 +174,6 @@ namespace lasercom
             else
             {
                 return Hash(o1.GetHashCode(), o2.GetHashCode());
-            }
-        }
-
-        /// <summary>
-        /// Topological sorting for dependency resolution.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="nodes">Enumerable of nodes.</param>
-        /// <param name="connected">Function returning enumerable over a node's children.</param>
-        /// <returns></returns>
-        public static IEnumerable<T> TopologicalSort<T>(this IEnumerable<T> nodes,
-                                                Func<T, IEnumerable<T>> connected)
-        {
-            var elems = nodes.ToDictionary(node => node,
-                                           node => new HashSet<T>(connected(node)));
-            while (elems.Count > 0)
-            {
-                var elem = elems.FirstOrDefault(x => x.Value.Count == 0);
-                if (elem.Key == null)
-                {
-                    throw new ArgumentException("Cyclic connections are not allowed");
-                }
-                elems.Remove(elem.Key);
-                foreach (var selem in elems)
-                {
-                    selem.Value.Remove(elem.Key);
-                }
-                yield return elem.Key;
             }
         }
     }
