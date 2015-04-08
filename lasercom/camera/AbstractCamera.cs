@@ -67,6 +67,19 @@ namespace lasercom.camera
         {
             get;
         }
+        
+        private double[] _Calibration;
+        public double[] Calibration
+        {
+            get
+            {
+                return _Calibration;
+            }
+            set
+            {
+                _Calibration = value;
+            }
+        }
 
         public abstract int[] CountsFvb();
 

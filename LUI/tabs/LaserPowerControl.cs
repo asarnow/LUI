@@ -12,7 +12,7 @@ using LUI.controls;
 
 namespace LUI.tabs
 {
-    public partial class LaserPowerControl : LuiControl
+    public partial class LaserPowerControl : LuiTab
     {
         private BackgroundWorker ioWorker;
         private Dispatcher Dispatcher;

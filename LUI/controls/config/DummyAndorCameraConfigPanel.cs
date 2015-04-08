@@ -7,7 +7,7 @@ using lasercom.camera;
 
 namespace LUI.controls
 {
-    class DummyAndorCameraConfigPanel : LuiObjectConfigPanel<CameraParameters>
+    class DummyAndorCameraConfigPanel : CameraConfigPanel
     {
 
         public override Type Target
@@ -23,12 +23,12 @@ namespace LUI.controls
 
         public override void CopyFrom(CameraParameters other)
         {
-            
+            base.CopyFrom(other);
         }
 
         public override void CopyTo(CameraParameters other)
         {
-            
+            base.CopyTo(other);
         }
     }
 }

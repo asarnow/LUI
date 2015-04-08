@@ -21,7 +21,18 @@ namespace lasercom
 
     public class Commander
     {
-        public ICamera Camera { get; set; }
+        private ICamera _Camera;
+        public ICamera Camera
+        {
+            get
+            {
+                return _Camera;
+            }
+            set
+            {
+                _Camera = value;
+            }
+        }
         public AbstractBeamFlags BeamFlag { get; set; }
         public IDigitalDelayGenerator DDG { get; set; }
         public AbstractPump Pump { get; set; }
@@ -48,30 +59,11 @@ namespace lasercom
 
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public Commander(ICamera camera, AbstractBeamFlags beamFlags, IDigitalDelayGenerator ddg = null)
+        public Commander(ICamera camera = null, AbstractBeamFlags beamFlags = null, IDigitalDelayGenerator ddg = null)
         {
             Camera = camera;
             BeamFlag = beamFlags;
             DDG = ddg;
-            Calibration = Array.ConvertAll(Enumerable.Range(1, (int)Camera.Width).ToArray<int>(), x => (double)x);
-        }
-
-        public Commander(CameraParameters camera, BeamFlagsParameters beamFlags, DelayGeneratorParameters ddg = null)
-        {
-            Camera = CameraFactory.CreateCamera(camera);
-            BeamFlag = BeamFlagsFactory.CreateBeamFlags(beamFlags);
-            DDG = ddg == null ? null : DelayGeneratorFactory.CreateDelayGenerator(ddg);
-        }
-
-        public Commander() : this(new DummyAndorCamera(), new DummyBeamFlags(), new DummyDigitalDelayGenerator())
-        {
-            //Camera = new DummyAndorCamera();
-            //BeamFlags = new BeamFlags("COM1");
-            //BeamFlags = new DummyBeamFlags();
-            //int address = 0;
-            //DDG = new DDG535(address);
-            //DDG = new DummyDigitalDelayGenerator();
-            //Pump = new HarvardPump("COM3");
         }
 
         public void SetDelays(string file)

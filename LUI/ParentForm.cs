@@ -141,7 +141,7 @@ namespace LUI
 
             if (Config.Ready)
             {
-                Commander = Config.CreateCommander();
+                //Commander = Config.CreateCommander();
             }
             else
             {
@@ -155,16 +155,16 @@ namespace LUI
             TROSControl = new TROSControl(Commander);
             TROSPage.Controls.Add(TROSControl);
 
-            CalibrateControl = new CalibrateControl(Commander);
+            CalibrateControl = new CalibrateControl(Config);
             CalibrateControl.Dock = DockStyle.Fill;
             CalibrationPage.Controls.Add(CalibrateControl);
             //Commander.CalibrationChanged += CalibrateControl.HandleCalibrationChanged;
-
+            
             LaserPowerControl = new LaserPowerControl(Commander);
             PowerPage.Controls.Add(LaserPowerControl);
             //Commander.CalibrationChanged += LaserPowerControl.HandleCalibrationChanged;
 
-            ResidualsControl = new ResidualsControl(Commander);
+            ResidualsControl = new ResidualsControl(Config);
             ResidualsPage.Controls.Add(ResidualsControl);
             //Commander.CalibrationChanged += ResidualsControl.HandleCalibrationChanged;
 

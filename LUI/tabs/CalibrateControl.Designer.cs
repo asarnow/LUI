@@ -58,6 +58,7 @@
             this.Wavelength = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.RemoveCalItem = new System.Windows.Forms.Button();
             this.Graph = new LUI.controls.GraphControl();
+            this.objectSelectPanel1 = new LUI.controls.ObjectSelectPanel();
             this.TableLayout.SuspendLayout();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
@@ -248,6 +249,7 @@
             // CalPanel
             // 
             this.TableLayout.SetColumnSpan(this.CalPanel, 3);
+            this.CalPanel.Controls.Add(this.objectSelectPanel1);
             this.CalPanel.Controls.Add(this.RSquaredLabel);
             this.CalPanel.Controls.Add(this.InterceptLabel);
             this.CalPanel.Controls.Add(this.SlopeLabel);
@@ -387,8 +389,8 @@
             this.Graph.ColorOrder = ((System.Collections.Generic.List<System.Drawing.Color>)(resources.GetObject("Graph.ColorOrder")));
             this.TableLayout.SetColumnSpan(this.Graph, 3);
             this.Graph.InitialScaleHeight = 0F;
-            this.Graph.InitialXRight = 1023F;
             this.Graph.InitialXLeft = 0F;
+            this.Graph.InitialXRight = 1023F;
             this.Graph.InitialYMax = float.NegativeInfinity;
             this.Graph.InitialYMin = float.PositiveInfinity;
             this.Graph.Location = new System.Drawing.Point(2, 2);
@@ -409,12 +411,21 @@
             this.Graph.TabIndex = 8;
             this.Graph.XAxisHeight = 0.1F;
             this.Graph.XLabelFormat = "f0";
-            this.Graph.XRight = 1023F;
             this.Graph.XLeft = 0F;
+            this.Graph.XRight = 1023F;
             this.Graph.YAxisWidth = 0.05F;
             this.Graph.YLabelFormat = "n3";
             this.Graph.YMax = float.NegativeInfinity;
             this.Graph.YMin = float.PositiveInfinity;
+            // 
+            // objectSelectPanel1
+            // 
+            this.objectSelectPanel1.AutoSize = true;
+            this.objectSelectPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.objectSelectPanel1.Location = new System.Drawing.Point(256, 174);
+            this.objectSelectPanel1.Name = "objectSelectPanel1";
+            this.objectSelectPanel1.Size = new System.Drawing.Size(389, 33);
+            this.objectSelectPanel1.TabIndex = 18;
             // 
             // CalibrateControl
             // 
@@ -469,5 +480,6 @@
         private System.Windows.Forms.Label InterceptLabel;
         private System.Windows.Forms.Label SlopeLabel;
         private controls.DisabledRichTextBox RSquaredLabel;
+        private controls.ObjectSelectPanel objectSelectPanel1;
     }
 }

@@ -13,10 +13,11 @@ using System.IO;
 using lasercom.io;
 using LUI.controls;
 using lasercom.camera;
+using LUI.config;
 
 namespace LUI.tabs
 {
-    public partial class CalibrateControl : LuiControl
+    public partial class CalibrateControl : LuiTab
     {
         private BackgroundWorker ioWorker;
         private Dispatcher Dispatcher;
@@ -131,11 +132,11 @@ namespace LUI.tabs
             public readonly CalibrateControl UI;
         }
 
-        public CalibrateControl(Commander commander)
+        public CalibrateControl(LuiConfig config) : base(config)
         {
-            InitializeComponent();
-            Commander = commander;
 
+            InitializeComponent();
+            
             Load += HandleLoad;
             
             Graph.MouseClick += new MouseEventHandler(Graph_Click);

@@ -9,14 +9,26 @@ using System.Windows.Forms;
 using System.Windows.Threading;
 using System.Runtime.CompilerServices;
 using lasercom;
+using LUI.config;
 
 namespace LUI.controls
 {
-    public partial class LuiControl : UserControl
+    public class LuiTab : UserControl
     {
         public Commander Commander { get; set; }
+        public LuiConfig Config { get; set; }
         protected BackgroundWorker worker;
         protected bool wait;
+
+        public LuiTab(LuiConfig config)
+        {
+            Config = config;
+        }
+
+        public LuiTab()
+        {
+
+        }
 
         public bool IsBusy
         {
@@ -25,6 +37,8 @@ namespace LUI.controls
                 return worker.IsBusy;
             }
         }
+
+        public abstract void OnTabSelected(object sender, EventArgs e);
 
         public ParentForm.State TaskBusy()
         {

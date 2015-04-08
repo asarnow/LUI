@@ -7,12 +7,15 @@ using System.Windows.Forms;
 using System.Windows.Threading;
 using lasercom;
 using lasercom.camera;
+using lasercom.control;
 using lasercom.io;
+using lasercom.objects;
+using LUI.config;
 using LUI.controls;
 
 namespace LUI.tabs
 {
-    public partial class ResidualsControl : LuiControl
+    public partial class ResidualsControl : LuiTab
     {
         private BackgroundWorker ioWorker;
 
@@ -84,15 +87,55 @@ namespace LUI.tabs
             public readonly Dialog Status;
         }
 
-        public ResidualsControl(Commander commander)
+        public ResidualsControl(LuiConfig config) : base(config)
         {
+            Commander = new Commander();
+            
             InitializeComponent();
-            Commander = commander;
-
+            
             Load += HandleLoad;
 
             Graph.MouseClick += new MouseEventHandler(Graph_Click);
             Graph.YLabelFormat = "g";
+
+        }
+
+        private void HandleLoad(object sender, EventArgs e)
+        {
+            ObjectSelector.CameraChanged += HandleCameraChanged;
+
+            //Commander.CalibrationChanged += HandleCalibrationChanged;
+            //Graph.XLeft = (float)Commander.Calibration[0];
+            //Graph.XRight = (float)Commander.Calibration[Commander.Calibration.Length - 1];
+            RedrawLines();
+        }
+
+        public override void OnTabSelected(object sender, EventArgs e)
+        {
+            HandleConfigChanged(sender, e);
+        }
+
+        private void HandleConfigChanged(object sender, EventArgs e)
+        {
+            object selectedItem = ObjectSelector.Camera.SelectedItem;
+            ObjectSelector.Camera.Items.Clear();
+            Config.GetParameters(typeof(CameraParameters)).Select(p => ObjectSelector.Camera.Items.Add(p));
+            ObjectSelector.Camera.SelectedItem = selectedItem;
+            if (ObjectSelector.Camera.SelectedItem == null) ObjectSelector.Camera.SelectedIndex = 0;
+
+            selectedItem = ObjectSelector.BeamFlags.SelectedItem;
+            ObjectSelector.BeamFlags.Items.Clear();
+            Config.GetParameters(typeof(BeamFlagsParameters)).Select(p => ObjectSelector.Camera.Items.Add(p));
+            ObjectSelector.BeamFlags.SelectedItem = selectedItem;
+            if (ObjectSelector.BeamFlags.SelectedItem == null) ObjectSelector.BeamFlags.SelectedIndex = 0;
+        }
+
+        private void HandleCameraChanged(object sender, EventArgs e)
+        {
+            Commander.Camera = (ICamera)Config.GetObject((CameraParameters)ObjectSelector.Camera.SelectedItem);
+
+            HandleCalibrationChanged(sender, e);
+
             LowerBound = (int)Commander.Camera.Width / 6;
             UpperBound = (int)Commander.Camera.Width * 5 / 6;
 
@@ -108,12 +151,12 @@ namespace LUI.tabs
             }
         }
 
-        private void HandleLoad(object sender, EventArgs e)
+        public void HandleCalibrationChanged(object sender, EventArgs args)
         {
-            Commander.CalibrationChanged += HandleCalibrationChanged;
-            Graph.XLeft = (float)Commander.Calibration[0];
-            Graph.XRight = (float)Commander.Calibration[Commander.Calibration.Length - 1];
-            RedrawLines();
+            Graph.XLeft = (float)Commander.Camera.Calibration[0];
+            Graph.XRight = (float)Commander.Camera.Calibration[Commander.Camera.Calibration.Length - 1];
+            Graph.ClearAxes();
+            Graph.Invalidate();
         }
 
         /// <summary>
@@ -274,8 +317,8 @@ namespace LUI.tabs
         private void RedrawLines()
         {
             Graph.ClearAnnotation();
-            Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[0], Commander.Calibration[LowerBound]);
-            Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[0], Commander.Calibration[UpperBound]);
+            Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[0], Commander.Camera.Calibration[LowerBound]);
+            Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[0], Commander.Camera.Calibration[UpperBound]);
             Graph.Invalidate();
         }
 
@@ -365,25 +408,25 @@ namespace LUI.tabs
             if (ShowLast.Checked && LastLight != null)
             {
                 Graph.MarkerColor = Graph.ColorOrder[1];
-                Graph.DrawPoints(Commander.Calibration, LastLight);
+                Graph.DrawPoints(Commander.Camera.Calibration, LastLight);
             }
 
             if (ShowDifference.Checked && DiffLight != null)
             {
                 Graph.MarkerColor = Graph.ColorOrder[2];
-                Graph.DrawPoints(Commander.Calibration, DiffLight);
+                Graph.DrawPoints(Commander.Camera.Calibration, DiffLight);
             }
 
             if (Light != null)
             {
                 Graph.MarkerColor = Graph.ColorOrder[0];
-                Graph.DrawPoints(Commander.Calibration, Light);
+                Graph.DrawPoints(Commander.Camera.Calibration, Light);
             }
 
             if (CumulativeLight != null) // Always false while background task running.
             {
                 Graph.MarkerColor = Graph.ColorOrder[3];
-                Graph.DrawPoints(Commander.Calibration, CumulativeLight);
+                Graph.DrawPoints(Commander.Camera.Calibration, CumulativeLight);
             }
 
             Graph.Invalidate();
@@ -402,13 +445,13 @@ namespace LUI.tabs
                 if (ShowDifference.Checked && DiffLight != null)
                 {
                     Graph.MarkerColor = Graph.ColorOrder[2];
-                    Graph.DrawPoints(Commander.Calibration, DiffLight);
+                    Graph.DrawPoints(Commander.Camera.Calibration, DiffLight);
                 }
 
                 if (Light != null)
                 {
                     Graph.MarkerColor = Graph.ColorOrder[0];
-                    Graph.DrawPoints(Commander.Calibration, Light);
+                    Graph.DrawPoints(Commander.Camera.Calibration, Light);
                 }
                 Graph.Invalidate();
             }
@@ -431,7 +474,7 @@ namespace LUI.tabs
             if (CumulativeLight != null && PersistentGraphing.Checked)
             {
                 Graph.MarkerColor = Graph.ColorOrder[3];
-                Graph.DrawPoints(Commander.Calibration, CumulativeLight);
+                Graph.DrawPoints(Commander.Camera.Calibration, CumulativeLight);
             }
             Graph.Invalidate();
         }
@@ -444,14 +487,6 @@ namespace LUI.tabs
         private void ShowDifference_CheckedChanged(object sender, EventArgs e)
         {
             Display();
-        }
-
-        public void HandleCalibrationChanged(object sender, EventArgs args)
-        {
-            Graph.XLeft = (float)Commander.Calibration[0];
-            Graph.XRight = (float)Commander.Calibration[Commander.Calibration.Length - 1];
-            Graph.ClearAxes();
-            Graph.Invalidate();
         }
 
         private void NAverage_ValueChanged(object sender, EventArgs e)

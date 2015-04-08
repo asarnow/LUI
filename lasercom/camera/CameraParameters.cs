@@ -12,6 +12,9 @@ namespace lasercom.camera
     public class CameraParameters : LuiObjectParameters<CameraParameters>
     {
         [DataMember]
+        public string CalFile { get; set; }
+
+        [DataMember]
         public string Dir { get; set; }
 
         [DataMember]
@@ -24,11 +27,11 @@ namespace lasercom.camera
                 object[] arr = null;
                 if (Type == typeof(AndorCamera))
                 {
-                    arr = new object[] { Dir };
+                    arr = new object[] { CalFile, Dir };
                 }
                 else if (Type == typeof(CameraTempControlled))
                 {
-                    arr = new object[] { Dir, Temperature };
+                    arr = new object[] { CalFile, Dir, Temperature };
                 }
                 return arr;
             }
@@ -51,6 +54,7 @@ namespace lasercom.camera
             base.Copy(other);
             this.Type = other.Type;
             this.Name = other.Name;
+            this.CalFile = other.CalFile;
             this.Dir = other.Dir;
             this.Temperature = other.Temperature;
         }
@@ -59,7 +63,9 @@ namespace lasercom.camera
         {
             bool iseq = base.Equals(other);
             if (!iseq) return iseq;
-            
+
+            iseq &= this.CalFile == other.CalFile;
+
             if (Type == typeof(AndorCamera))
             {
                 iseq &= Dir == other.Dir;
@@ -82,6 +88,7 @@ namespace lasercom.camera
             unchecked
             {
                 int hash = Util.Hash(Type, Name);
+                hash = Util.Hash(hash, CalFile);
                 if (Type == typeof(AndorCamera))
                 {
                     hash = Util.Hash(hash, Dir);

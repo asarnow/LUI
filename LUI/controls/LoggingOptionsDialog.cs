@@ -62,7 +62,7 @@ namespace LUI.controls
         public override void HandleApply(object sender, EventArgs e)
         {
             string LevelName = (string)LogLevel.Control.SelectedItem;
-            Config.LogLevel = LevelName;
+            Config.SetLogLevel(LevelName);
         }
 
         public override void HandleConfigChanged(object sender, EventArgs e)

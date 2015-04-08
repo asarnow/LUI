@@ -151,6 +151,9 @@
     <Compile Include="controls\config\AndorCameraConfigPanel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="controls\config\CameraConfigPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="controls\config\CameraTempControlledConfigPanel.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -224,7 +227,7 @@
     <Compile Include="controls\DisabledRichTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="controls\LuiControl.cs">
+    <Compile Include="controls\LuiTab.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="ParentForm.cs">

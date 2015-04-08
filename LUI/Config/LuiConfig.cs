@@ -29,6 +29,9 @@ namespace LUI.config
     {
         public Dictionary<Type, Dictionary<LuiObjectParameters, ILuiObject>> LuiObjectTableIndex { get; set; }
 
+        public event EventHandler ConfigurationChanged;
+        public event EventHandler CalibrationChanged;
+
         #region Application parameters
         /* Application parameters have:
          *   Private fields

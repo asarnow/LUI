@@ -3,6 +3,7 @@
 using ATMCD64CS;
 #else
 using ATMCD32CS;
+using System.Linq;
 #endif
 
 
@@ -277,10 +278,8 @@ namespace lasercom.camera
                 
             }
         }
-
-        public AndorCamera() : this(".") {}
         
-        public AndorCamera(String dir)
+        public AndorCamera(string dir = ".", string CalFile = null)
         {
             if (dir != null)
             {
@@ -297,6 +296,10 @@ namespace lasercom.camera
                 AndorSdk.GetBitDepth(CurrentADChannel, ref _BitDepth);
 
                 Image = new ImageArea(1, 1, 1, (int)Width, 1, (int)Height);
+
+                if (CalFile == null)
+                    Calibration = Array.ConvertAll(Enumerable.Range(1, (int)Width).ToArray<int>(), x => (double)x);
+                // else load CalFile (or deal with CalFile only in factory)
 
                 GateMode = Constants.GatingModeSMBOnly;
                 MCPGating = Constants.MCPGatingOn;

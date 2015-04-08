@@ -52,6 +52,8 @@
             this.CloseLaser = new System.Windows.Forms.Button();
             this.OpenLaser = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.ShowDifference = new System.Windows.Forms.CheckBox();
+            this.ShowLast = new System.Windows.Forms.CheckBox();
             this.PersistentGraphing = new System.Windows.Forms.CheckBox();
             this.SaveProfile = new System.Windows.Forms.Button();
             this.DiffSum = new System.Windows.Forms.TextBox();
@@ -60,11 +62,10 @@
             this.PeakNLabel = new System.Windows.Forms.Label();
             this.PeakN = new System.Windows.Forms.TextBox();
             this.Counts = new System.Windows.Forms.TextBox();
-            this.ShowDifference = new System.Windows.Forms.CheckBox();
-            this.ShowLast = new System.Windows.Forms.CheckBox();
             this.LoadProfile = new System.Windows.Forms.Button();
             this.Peak = new System.Windows.Forms.TextBox();
             this.Graph = new LUI.controls.GraphControl();
+            this.ObjectSelector = new LUI.controls.ObjectSelectPanel();
             GainLabel = new System.Windows.Forms.Label();
             label1 = new System.Windows.Forms.Label();
             DiffSumLabel = new System.Windows.Forms.Label();
@@ -103,7 +104,7 @@
             // DiffSumLabel
             // 
             DiffSumLabel.AutoSize = true;
-            DiffSumLabel.Location = new System.Drawing.Point(202, 139);
+            DiffSumLabel.Location = new System.Drawing.Point(149, 101);
             DiffSumLabel.Name = "DiffSumLabel";
             DiffSumLabel.Size = new System.Drawing.Size(92, 13);
             DiffSumLabel.TabIndex = 15;
@@ -112,7 +113,7 @@
             // NAverageLabel
             // 
             NAverageLabel.AutoSize = true;
-            NAverageLabel.Location = new System.Drawing.Point(542, 62);
+            NAverageLabel.Location = new System.Drawing.Point(625, 100);
             NAverageLabel.Name = "NAverageLabel";
             NAverageLabel.Size = new System.Drawing.Size(90, 13);
             NAverageLabel.TabIndex = 13;
@@ -121,7 +122,7 @@
             // TotalCountsLabel
             // 
             TotalCountsLabel.AutoSize = true;
-            TotalCountsLabel.Location = new System.Drawing.Point(141, 56);
+            TotalCountsLabel.Location = new System.Drawing.Point(109, 75);
             TotalCountsLabel.Name = "TotalCountsLabel";
             TotalCountsLabel.Size = new System.Drawing.Size(67, 13);
             TotalCountsLabel.TabIndex = 8;
@@ -130,7 +131,7 @@
             // PeakLabel
             // 
             PeakLabel.AutoSize = true;
-            PeakLabel.Location = new System.Drawing.Point(141, 28);
+            PeakLabel.Location = new System.Drawing.Point(109, 47);
             PeakLabel.Name = "PeakLabel";
             PeakLabel.Size = new System.Drawing.Size(55, 13);
             PeakLabel.TabIndex = 7;
@@ -139,7 +140,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new System.Drawing.Point(647, 149);
+            label2.Location = new System.Drawing.Point(582, 75);
             label2.Name = "label2";
             label2.Size = new System.Drawing.Size(118, 13);
             label2.TabIndex = 18;
@@ -341,9 +342,12 @@
             // panel1
             // 
             this.tableLayoutPanel1.SetColumnSpan(this.panel1, 3);
-            this.panel1.Controls.Add(label2);
+            this.panel1.Controls.Add(this.ObjectSelector);
+            this.panel1.Controls.Add(this.ShowDifference);
+            this.panel1.Controls.Add(this.ShowLast);
             this.panel1.Controls.Add(this.PersistentGraphing);
             this.panel1.Controls.Add(this.SaveProfile);
+            this.panel1.Controls.Add(label2);
             this.panel1.Controls.Add(DiffSumLabel);
             this.panel1.Controls.Add(this.DiffSum);
             this.panel1.Controls.Add(NAverageLabel);
@@ -354,8 +358,6 @@
             this.panel1.Controls.Add(TotalCountsLabel);
             this.panel1.Controls.Add(PeakLabel);
             this.panel1.Controls.Add(this.Counts);
-            this.panel1.Controls.Add(this.ShowDifference);
-            this.panel1.Controls.Add(this.ShowLast);
             this.panel1.Controls.Add(this.LoadProfile);
             this.panel1.Controls.Add(this.Peak);
             this.panel1.Location = new System.Drawing.Point(2, 432);
@@ -364,12 +366,38 @@
             this.panel1.Size = new System.Drawing.Size(824, 210);
             this.panel1.TabIndex = 7;
             // 
+            // ShowDifference
+            // 
+            this.ShowDifference.AutoSize = true;
+            this.ShowDifference.Checked = true;
+            this.ShowDifference.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ShowDifference.Location = new System.Drawing.Point(582, 9);
+            this.ShowDifference.Name = "ShowDifference";
+            this.ShowDifference.Size = new System.Drawing.Size(105, 17);
+            this.ShowDifference.TabIndex = 4;
+            this.ShowDifference.Text = "Show Difference";
+            this.ShowDifference.UseVisualStyleBackColor = true;
+            this.ShowDifference.CheckedChanged += new System.EventHandler(this.ShowDifference_CheckedChanged);
+            // 
+            // ShowLast
+            // 
+            this.ShowLast.AutoSize = true;
+            this.ShowLast.Checked = true;
+            this.ShowLast.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ShowLast.Location = new System.Drawing.Point(582, 32);
+            this.ShowLast.Name = "ShowLast";
+            this.ShowLast.Size = new System.Drawing.Size(124, 17);
+            this.ShowLast.TabIndex = 3;
+            this.ShowLast.Text = "Show Loaded Profile";
+            this.ShowLast.UseVisualStyleBackColor = true;
+            this.ShowLast.CheckedChanged += new System.EventHandler(this.ShowLast_CheckedChanged);
+            // 
             // PersistentGraphing
             // 
             this.PersistentGraphing.AutoSize = true;
             this.PersistentGraphing.Checked = true;
             this.PersistentGraphing.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.PersistentGraphing.Location = new System.Drawing.Point(641, 129);
+            this.PersistentGraphing.Location = new System.Drawing.Point(582, 55);
             this.PersistentGraphing.Name = "PersistentGraphing";
             this.PersistentGraphing.Size = new System.Drawing.Size(118, 17);
             this.PersistentGraphing.TabIndex = 17;
@@ -389,7 +417,7 @@
             // 
             // DiffSum
             // 
-            this.DiffSum.Location = new System.Drawing.Point(96, 136);
+            this.DiffSum.Location = new System.Drawing.Point(43, 98);
             this.DiffSum.Name = "DiffSum";
             this.DiffSum.ReadOnly = true;
             this.DiffSum.Size = new System.Drawing.Size(100, 20);
@@ -399,7 +427,7 @@
             // 
             // NAverage
             // 
-            this.NAverage.Location = new System.Drawing.Point(500, 60);
+            this.NAverage.Location = new System.Drawing.Point(583, 98);
             this.NAverage.Maximum = new decimal(new int[] {
             127,
             0,
@@ -422,7 +450,7 @@
             // 
             // CountsN
             // 
-            this.CountsN.Location = new System.Drawing.Point(240, 49);
+            this.CountsN.Location = new System.Drawing.Point(182, 72);
             this.CountsN.Name = "CountsN";
             this.CountsN.ReadOnly = true;
             this.CountsN.Size = new System.Drawing.Size(100, 20);
@@ -433,7 +461,7 @@
             // PeakNLabel
             // 
             this.PeakNLabel.AutoSize = true;
-            this.PeakNLabel.Location = new System.Drawing.Point(346, 28);
+            this.PeakNLabel.Location = new System.Drawing.Point(288, 47);
             this.PeakNLabel.Name = "PeakNLabel";
             this.PeakNLabel.Size = new System.Drawing.Size(83, 13);
             this.PeakNLabel.TabIndex = 10;
@@ -441,7 +469,7 @@
             // 
             // PeakN
             // 
-            this.PeakN.Location = new System.Drawing.Point(240, 25);
+            this.PeakN.Location = new System.Drawing.Point(182, 44);
             this.PeakN.Name = "PeakN";
             this.PeakN.ReadOnly = true;
             this.PeakN.Size = new System.Drawing.Size(100, 20);
@@ -451,39 +479,13 @@
             // 
             // Counts
             // 
-            this.Counts.Location = new System.Drawing.Point(35, 53);
+            this.Counts.Location = new System.Drawing.Point(3, 72);
             this.Counts.Name = "Counts";
             this.Counts.ReadOnly = true;
             this.Counts.Size = new System.Drawing.Size(100, 20);
             this.Counts.TabIndex = 6;
             this.Counts.Text = "0";
             this.Counts.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // ShowDifference
-            // 
-            this.ShowDifference.AutoSize = true;
-            this.ShowDifference.Checked = true;
-            this.ShowDifference.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ShowDifference.Location = new System.Drawing.Point(641, 106);
-            this.ShowDifference.Name = "ShowDifference";
-            this.ShowDifference.Size = new System.Drawing.Size(105, 17);
-            this.ShowDifference.TabIndex = 4;
-            this.ShowDifference.Text = "Show Difference";
-            this.ShowDifference.UseVisualStyleBackColor = true;
-            this.ShowDifference.CheckedChanged += new System.EventHandler(this.ShowDifference_CheckedChanged);
-            // 
-            // ShowLast
-            // 
-            this.ShowLast.AutoSize = true;
-            this.ShowLast.Checked = true;
-            this.ShowLast.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ShowLast.Location = new System.Drawing.Point(641, 83);
-            this.ShowLast.Name = "ShowLast";
-            this.ShowLast.Size = new System.Drawing.Size(124, 17);
-            this.ShowLast.TabIndex = 3;
-            this.ShowLast.Text = "Show Loaded Profile";
-            this.ShowLast.UseVisualStyleBackColor = true;
-            this.ShowLast.CheckedChanged += new System.EventHandler(this.ShowLast_CheckedChanged);
             // 
             // LoadProfile
             // 
@@ -498,7 +500,7 @@
             // 
             // Peak
             // 
-            this.Peak.Location = new System.Drawing.Point(35, 25);
+            this.Peak.Location = new System.Drawing.Point(3, 44);
             this.Peak.Name = "Peak";
             this.Peak.ReadOnly = true;
             this.Peak.Size = new System.Drawing.Size(100, 20);
@@ -514,8 +516,8 @@
             this.Graph.ColorOrder = ((System.Collections.Generic.List<System.Drawing.Color>)(resources.GetObject("Graph.ColorOrder")));
             this.tableLayoutPanel1.SetColumnSpan(this.Graph, 3);
             this.Graph.InitialScaleHeight = 0F;
-            this.Graph.InitialXRight = 1023F;
             this.Graph.InitialXLeft = 0F;
+            this.Graph.InitialXRight = 1023F;
             this.Graph.InitialYMax = float.NegativeInfinity;
             this.Graph.InitialYMin = float.PositiveInfinity;
             this.Graph.Location = new System.Drawing.Point(2, 2);
@@ -536,12 +538,21 @@
             this.Graph.TabIndex = 8;
             this.Graph.XAxisHeight = 0.1F;
             this.Graph.XLabelFormat = "f0";
-            this.Graph.XRight = 1023F;
             this.Graph.XLeft = 0F;
+            this.Graph.XRight = 1023F;
             this.Graph.YAxisWidth = 0.05F;
             this.Graph.YLabelFormat = "n3";
             this.Graph.YMax = float.NegativeInfinity;
             this.Graph.YMin = float.PositiveInfinity;
+            // 
+            // ObjectSelector
+            // 
+            this.ObjectSelector.AutoSize = true;
+            this.ObjectSelector.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.ObjectSelector.Location = new System.Drawing.Point(3, 3);
+            this.ObjectSelector.Name = "ObjectSelector";
+            this.ObjectSelector.Size = new System.Drawing.Size(389, 33);
+            this.ObjectSelector.TabIndex = 19;
             // 
             // ResidualsControl
             // 
@@ -597,5 +608,6 @@
         private System.Windows.Forms.TextBox DiffSum;
         private System.Windows.Forms.Button SaveProfile;
         private System.Windows.Forms.CheckBox PersistentGraphing;
+        private controls.ObjectSelectPanel ObjectSelector;
     }
 }
