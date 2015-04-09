@@ -75,5 +75,17 @@ namespace lasercom.extensions
                 yield return elem.Key;
             }
         }
+        
+        public static void Raise(this EventHandler eventHandler, object sender, EventArgs e)
+        {
+            var handler = eventHandler;
+            if (handler != null) handler(sender, e);
+        }
+
+        public static void Raise<T>(this EventHandler<T> eventHandler, object sender, T e) where T:EventArgs
+        {
+            var handler = eventHandler;
+            if (handler != null) handler(sender, e);
+        }
     }
 }

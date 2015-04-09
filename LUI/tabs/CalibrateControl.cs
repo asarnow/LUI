@@ -14,11 +14,16 @@ using lasercom.io;
 using LUI.controls;
 using lasercom.camera;
 using LUI.config;
+using lasercom.objects;
+using lasercom.extensions;
+using lasercom.control;
 
 namespace LUI.tabs
 {
     public partial class CalibrateControl : LuiTab
     {
+        public event EventHandler<LuiObjectParametersEventArgs> CalibrationChanged;
+
         private BackgroundWorker ioWorker;
         private Dispatcher Dispatcher;
 
@@ -156,9 +161,52 @@ namespace LUI.tabs
 
         private void HandleLoad(object sender, EventArgs e)
         {
-            Commander.CalibrationChanged += HandleCalibrationChanged;
-            Graph.XLeft = (float)Commander.Calibration[0];
-            Graph.XRight = (float)Commander.Calibration[Commander.Calibration.Length - 1];
+            ObjectSelector.CameraChanged += HandleCameraChanged;
+            Graph.XLeft = (float)Commander.Camera.Calibration[0];
+            Graph.XRight = (float)Commander.Camera.Calibration[Commander.Camera.Calibration.Length - 1];
+        }
+
+        public void HandleParametersChanged(object sender, EventArgs e)
+        {
+            var selectedCamera = ObjectSelector.SelectedCamera;
+            ObjectSelector.Camera.Items.Clear();
+            Config.GetParameters(typeof(CameraParameters)).Select(p => ObjectSelector.Camera.Items.Add(p));
+            // One of next two lines will trigger CameraChanged event.
+            ObjectSelector.SelectedCamera = selectedCamera;
+            if (ObjectSelector.Camera.SelectedItem == null) ObjectSelector.Camera.SelectedIndex = 0;
+
+            var selectedBeamFlags = ObjectSelector.BeamFlags.SelectedItem;
+            ObjectSelector.BeamFlags.Items.Clear();
+            Config.GetParameters(typeof(BeamFlagsParameters)).Select(p => ObjectSelector.Camera.Items.Add(p));
+            ObjectSelector.BeamFlags.SelectedItem = selectedBeamFlags;
+            if (ObjectSelector.BeamFlags.SelectedItem == null) ObjectSelector.BeamFlags.SelectedIndex = 0;
+        }
+
+        private void HandleCameraChanged(object sender, EventArgs e)
+        {
+            Commander.Camera = (ICamera)Config.GetObject((CameraParameters)ObjectSelector.SelectedCamera);
+
+            // Update the graph with new camera's calibrated X-axis.
+            HandleCalibrationChanged(sender, new LuiObjectParametersEventArgs(ObjectSelector.SelectedCamera));
+
+            // Copy any needed state from camera.
+        }
+
+        public void HandleCalibrationChanged(object sender, LuiObjectParametersEventArgs args)
+        {
+            // If a different camera is selected, do nothing (until that camera is selected by the user).
+            if (!ObjectSelector.SelectedCamera.Equals(args.Argument)) return;
+
+            Graph.XLeft = (float)Commander.Camera.Calibration[0];
+            Graph.XRight = (float)Commander.Camera.Calibration[Commander.Camera.Calibration.Length - 1];
+            Graph.ClearAxes();
+            //if (OD != null)
+            //{
+            //    //Graph.ClearData();
+            //    Graph.ClearAxes();
+            //    //Graph.DrawPoints(Commander.Camera.Calibration, OD);
+            //}
+            RedrawLines();
         }
 
         public void CalibrateWork(object sender, DoWorkEventArgs e)
@@ -298,7 +346,7 @@ namespace LUI.tabs
             {
                 OD = (double[])e.Result;
                 for (int i = 0; i < OD.Length; i++) if (Double.IsNaN(OD[i]) || Double.IsInfinity(OD[i])) OD[i] = 0;
-                Graph.DrawPoints(Commander.Calibration, OD);
+                Graph.DrawPoints(Commander.Camera.Calibration, OD);
                 Graph.Invalidate();
                 ProgressLabel.Text = "Complete";
             }
@@ -351,14 +399,14 @@ namespace LUI.tabs
             {
                 CalibrationPoint p = CalibrationList[i];
                 //float X = Graph.XLeft + (float)p.Channel / (Commander.Camera.Width - 1) * Graph.XRange;
-                float X = (float)Commander.Calibration[p.Channel];
+                float X = (float)Commander.Camera.Calibration[p.Channel];
                 Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[i % Graph.ColorOrder.Count], X);
             }
             int newRowChannel = (int)(CalibrationListView.Rows[CalibrationListView.NewRowIndex].Cells["Channel"].Value ?? 0);
             if (CalibrationListView.Rows.Count > CalibrationList.Count && newRowChannel != 0)
             {
                 //float X = Graph.XLeft + (float)newRowChannel / (Commander.Camera.Width - 1) * Graph.XRange;
-                float X = (float)Commander.Calibration[newRowChannel];
+                float X = (float)Commander.Camera.Calibration[newRowChannel];
                 Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[i % Graph.ColorOrder.Count], X);
             }
             Graph.Invalidate();
@@ -454,8 +502,8 @@ namespace LUI.tabs
         {
             Tuple<double, double, double> fitdata = Data.LinearLeastSquares(CalibrationList.Select(it => (double)it.Channel).ToArray(),
                 CalibrationList.Select(it => (double)it.Wavelength).ToArray());
-            Commander.Calibration = Data.Calibrate((int)Commander.Camera.Width, fitdata.Item1, fitdata.Item2);
-
+            Commander.Camera.Calibration = Data.Calibrate((int)Commander.Camera.Width, fitdata.Item1, fitdata.Item2);
+            CalibrationChanged.Raise(this, new LuiObjectParametersEventArgs(ObjectSelector.SelectedCamera));            
             Slope.Text = fitdata.Item1.ToString("n4");
             Intercept.Text = fitdata.Item2.ToString("n4");
             RSquared.Text = fitdata.Item3.ToString("n6");
@@ -477,7 +525,7 @@ namespace LUI.tabs
                 case 1:
                     // CAL
                     try {
-                        FileIO.WriteVector<double>(saveFile.FileName, Commander.Calibration);
+                        FileIO.WriteVector<double>(saveFile.FileName, Commander.Camera.Calibration);
                     } catch (IOException ex)
                     {
                         MessageBox.Show(ex.ToString());
@@ -488,8 +536,8 @@ namespace LUI.tabs
                     try
                     {
                         MatFile mat = new MatFile(saveFile.FileName, "cal", 
-                            Commander.Calibration.Length, 1, "double");
-                        mat.WriteColumn(Commander.Calibration);
+                            Commander.Camera.Calibration.Length, 1, "double");
+                        mat.WriteColumn(Commander.Camera.Calibration);
                         mat.Dispose();
                     }
                     catch (IOException ex)
@@ -498,20 +546,6 @@ namespace LUI.tabs
                     }
                     break;
             }
-        }
-
-        public void HandleCalibrationChanged(object sender, EventArgs args)
-        {
-            Graph.XLeft = (float)Commander.Calibration[0];
-            Graph.XRight = (float)Commander.Calibration[Commander.Calibration.Length - 1];
-            Graph.ClearAxes();
-            //if (OD != null)
-            //{
-            //    //Graph.ClearData();
-            //    Graph.ClearAxes();
-            //    //Graph.DrawPoints(Commander.Calibration, OD);
-            //}
-            RedrawLines();
         }
 
     }

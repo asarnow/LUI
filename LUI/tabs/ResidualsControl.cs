@@ -92,16 +92,14 @@ namespace LUI.tabs
             Commander = new Commander();
             
             InitializeComponent();
-            
-            Load += HandleLoad;
 
             Graph.MouseClick += new MouseEventHandler(Graph_Click);
             Graph.YLabelFormat = "g";
 
         }
-
-        private void HandleLoad(object sender, EventArgs e)
+        protected override void OnLoad(EventArgs e)
         {
+            base.OnLoad(e);
             ObjectSelector.CameraChanged += HandleCameraChanged;
 
             //Commander.CalibrationChanged += HandleCalibrationChanged;
@@ -112,29 +110,31 @@ namespace LUI.tabs
 
         public override void OnTabSelected(object sender, EventArgs e)
         {
-            HandleConfigChanged(sender, e);
+            
         }
 
-        private void HandleConfigChanged(object sender, EventArgs e)
+        public void HandleParametersChanged(object sender, EventArgs e)
         {
-            object selectedItem = ObjectSelector.Camera.SelectedItem;
+            var selectedCamera = ObjectSelector.SelectedCamera;
             ObjectSelector.Camera.Items.Clear();
             Config.GetParameters(typeof(CameraParameters)).Select(p => ObjectSelector.Camera.Items.Add(p));
-            ObjectSelector.Camera.SelectedItem = selectedItem;
+            // One of next two lines will trigger CameraChanged event.
+            ObjectSelector.SelectedCamera = selectedCamera;
             if (ObjectSelector.Camera.SelectedItem == null) ObjectSelector.Camera.SelectedIndex = 0;
 
-            selectedItem = ObjectSelector.BeamFlags.SelectedItem;
+            var selectedBeamFlags = ObjectSelector.BeamFlags.SelectedItem;
             ObjectSelector.BeamFlags.Items.Clear();
             Config.GetParameters(typeof(BeamFlagsParameters)).Select(p => ObjectSelector.Camera.Items.Add(p));
-            ObjectSelector.BeamFlags.SelectedItem = selectedItem;
+            ObjectSelector.BeamFlags.SelectedItem = selectedBeamFlags;
             if (ObjectSelector.BeamFlags.SelectedItem == null) ObjectSelector.BeamFlags.SelectedIndex = 0;
         }
 
         private void HandleCameraChanged(object sender, EventArgs e)
         {
-            Commander.Camera = (ICamera)Config.GetObject((CameraParameters)ObjectSelector.Camera.SelectedItem);
+            Commander.Camera = (ICamera)Config.GetObject((CameraParameters)ObjectSelector.SelectedCamera);
 
-            HandleCalibrationChanged(sender, e);
+            // Update the graph with new camera's calibrated X-axis.
+            HandleCalibrationChanged(sender, new LuiObjectParametersEventArgs(ObjectSelector.SelectedCamera));
 
             LowerBound = (int)Commander.Camera.Width / 6;
             UpperBound = (int)Commander.Camera.Width * 5 / 6;
@@ -151,8 +151,11 @@ namespace LUI.tabs
             }
         }
 
-        public void HandleCalibrationChanged(object sender, EventArgs args)
+        public void HandleCalibrationChanged(object sender, LuiObjectParametersEventArgs args)
         {
+            // If a different camera is selected, do nothing (until that camera is selected by the user).
+            if (!ObjectSelector.SelectedCamera.Equals(args.Argument)) return;
+
             Graph.XLeft = (float)Commander.Camera.Calibration[0];
             Graph.XRight = (float)Commander.Camera.Calibration[Commander.Camera.Calibration.Length - 1];
             Graph.ClearAxes();

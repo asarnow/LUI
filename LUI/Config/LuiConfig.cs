@@ -29,8 +29,7 @@ namespace LUI.config
     {
         public Dictionary<Type, Dictionary<LuiObjectParameters, ILuiObject>> LuiObjectTableIndex { get; set; }
 
-        public event EventHandler ConfigurationChanged;
-        public event EventHandler CalibrationChanged;
+        public event EventHandler ParametersChanged;
 
         #region Application parameters
         /* Application parameters have:
@@ -278,10 +277,6 @@ namespace LUI.config
             }
 
             // At this point, all entries in the object table are null EXCEPT ones with no changed parameters.
-
-            // Replace parameter list with list of new and updated parameters.
-            //var Parameters = DefinitelyNew.Union(sameNames.Select(p => p.New)).ToList(); 
-            //ParameterLists[typeof(P)] = Parameters;
         }
 
         public System.Xml.Schema.XmlSchema GetSchema()
@@ -451,6 +446,11 @@ namespace LUI.config
                 }
                 SetObject(p, LuiObject.Create(p, p.Dependencies.Select(d => GetObject(d))));
             }
+        }
+
+        public void OnParametersChanged(object sender, EventArgs e)
+        {
+            ParametersChanged.Raise(sender, e);
         }
 
     }

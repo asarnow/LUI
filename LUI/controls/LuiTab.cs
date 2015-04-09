@@ -38,7 +38,10 @@ namespace LUI.controls
             }
         }
 
-        public abstract void OnTabSelected(object sender, EventArgs e);
+        public virtual void OnTabSelected(object sender, EventArgs e)
+        {
+
+        }
 
         public ParentForm.State TaskBusy()
         {

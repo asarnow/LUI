@@ -45,6 +45,7 @@
             this.CloseLaser = new System.Windows.Forms.Button();
             this.OpenLaser = new System.Windows.Forms.Button();
             this.CalPanel = new System.Windows.Forms.Panel();
+            this.ObjectSelector = new LUI.controls.ObjectSelectPanel();
             this.RSquaredLabel = new LUI.controls.DisabledRichTextBox();
             this.InterceptLabel = new System.Windows.Forms.Label();
             this.SlopeLabel = new System.Windows.Forms.Label();
@@ -58,7 +59,6 @@
             this.Wavelength = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.RemoveCalItem = new System.Windows.Forms.Button();
             this.Graph = new LUI.controls.GraphControl();
-            this.objectSelectPanel1 = new LUI.controls.ObjectSelectPanel();
             this.TableLayout.SuspendLayout();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
@@ -249,7 +249,7 @@
             // CalPanel
             // 
             this.TableLayout.SetColumnSpan(this.CalPanel, 3);
-            this.CalPanel.Controls.Add(this.objectSelectPanel1);
+            this.CalPanel.Controls.Add(this.ObjectSelector);
             this.CalPanel.Controls.Add(this.RSquaredLabel);
             this.CalPanel.Controls.Add(this.InterceptLabel);
             this.CalPanel.Controls.Add(this.SlopeLabel);
@@ -265,6 +265,15 @@
             this.CalPanel.Name = "CalPanel";
             this.CalPanel.Size = new System.Drawing.Size(824, 210);
             this.CalPanel.TabIndex = 7;
+            // 
+            // ObjectSelector
+            // 
+            this.ObjectSelector.AutoSize = true;
+            this.ObjectSelector.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.ObjectSelector.Location = new System.Drawing.Point(256, 174);
+            this.ObjectSelector.Name = "ObjectSelector";
+            this.ObjectSelector.Size = new System.Drawing.Size(389, 33);
+            this.ObjectSelector.TabIndex = 18;
             // 
             // RSquaredLabel
             // 
@@ -418,15 +427,6 @@
             this.Graph.YMax = float.NegativeInfinity;
             this.Graph.YMin = float.PositiveInfinity;
             // 
-            // objectSelectPanel1
-            // 
-            this.objectSelectPanel1.AutoSize = true;
-            this.objectSelectPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.objectSelectPanel1.Location = new System.Drawing.Point(256, 174);
-            this.objectSelectPanel1.Name = "objectSelectPanel1";
-            this.objectSelectPanel1.Size = new System.Drawing.Size(389, 33);
-            this.objectSelectPanel1.TabIndex = 18;
-            // 
             // CalibrateControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -480,6 +480,6 @@
         private System.Windows.Forms.Label InterceptLabel;
         private System.Windows.Forms.Label SlopeLabel;
         private controls.DisabledRichTextBox RSquaredLabel;
-        private controls.ObjectSelectPanel objectSelectPanel1;
+        private controls.ObjectSelectPanel ObjectSelector;
     }
 }

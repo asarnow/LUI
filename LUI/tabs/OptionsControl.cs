@@ -10,6 +10,7 @@ using lasercom;
 using lasercom.camera;
 using lasercom.control;
 using lasercom.ddg;
+using lasercom.extensions;
 using lasercom.gpib;
 using LUI.controls;
 using LUI.config;
@@ -27,6 +28,8 @@ namespace LUI.tabs
         Button LoadConfig;
 
         LuiConfig Config;
+
+        public event EventHandler OptionsApplied;
         
         public OptionsControl(LuiConfig config)
         {
@@ -213,6 +216,7 @@ namespace LUI.tabs
         private void ApplyConfig_Click(object sender, EventArgs e)
         {
             foreach (ListViewItem item in OptionsListView.Items) ((LuiOptionsDialog)item.Tag).HandleApply(sender, e);
+            OptionsApplied.Raise(this, EventArgs.Empty);
             ApplyConfig.Enabled = false; // Can't apply again until options change.
             SaveConfig.Enabled = true; // Can save config after apply.
         }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using lasercom.camera;
 
 namespace LUI.controls
 {
@@ -18,6 +19,18 @@ namespace LUI.controls
             get
             {
                 return _Camera.Control;
+            }
+        }
+
+        public CameraParameters SelectedCamera
+        {
+            get
+            {
+                return (CameraParameters)Camera.SelectedItem;
+            }
+            set
+            {
+                Camera.SelectedItem = value;
             }
         }
 

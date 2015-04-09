@@ -151,22 +151,28 @@ namespace LUI
             OptionsControl = new OptionsControl(Config);
             OptionsControl.Dock = DockStyle.Fill;
             OptionsPage.Controls.Add(OptionsControl);
+            OptionsControl.OptionsApplied += Config.OnParametersChanged;
 
             TROSControl = new TROSControl(Commander);
             TROSPage.Controls.Add(TROSControl);
+            //Config.ParametersChanged += TROSControl.HandleParametersChanged;
+            //CalibrateControl.CalibrationChanged += TROSControl.HandleCalibrationChanged;
 
             CalibrateControl = new CalibrateControl(Config);
             CalibrateControl.Dock = DockStyle.Fill;
             CalibrationPage.Controls.Add(CalibrateControl);
-            //Commander.CalibrationChanged += CalibrateControl.HandleCalibrationChanged;
+            Config.ParametersChanged += CalibrateControl.HandleParametersChanged;
+            CalibrateControl.CalibrationChanged += CalibrateControl.HandleCalibrationChanged;
             
             LaserPowerControl = new LaserPowerControl(Commander);
             PowerPage.Controls.Add(LaserPowerControl);
-            //Commander.CalibrationChanged += LaserPowerControl.HandleCalibrationChanged;
+            //Config.ParametersChanged += LaserPowerControl.HandleParametersChanged;
+            //CalibrateControl.CalibrationChanged += LaserPowerControl.HandleCalibrationChanged;
 
             ResidualsControl = new ResidualsControl(Config);
             ResidualsPage.Controls.Add(ResidualsControl);
-            //Commander.CalibrationChanged += ResidualsControl.HandleCalibrationChanged;
+            Config.ParametersChanged += ResidualsControl.HandleParametersChanged;
+            CalibrateControl.CalibrationChanged += ResidualsControl.HandleCalibrationChanged;
 
             if (!Config.Ready)
             {

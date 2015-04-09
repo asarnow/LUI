@@ -38,25 +38,6 @@ namespace lasercom
         public AbstractPump Pump { get; set; }
         public List<Double> Delays { get; set; }
 
-        public event EventHandler CalibrationChanged;
-        private double[] _Calibration;
-        public double[] Calibration
-        {
-            get
-            {
-                return _Calibration;
-            }
-            set
-            {
-                _Calibration = value;
-                EventHandler handler = CalibrationChanged;
-                if (handler != null)
-                {
-                    handler(this, EventArgs.Empty);
-                }
-            }
-        }
-
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public Commander(ICamera camera = null, AbstractBeamFlags beamFlags = null, IDigitalDelayGenerator ddg = null)

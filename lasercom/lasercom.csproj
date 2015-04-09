@@ -152,6 +152,7 @@
     <Compile Include="objects\ILuiObject.cs" />
     <Compile Include="objects\LuiObject.cs" />
     <Compile Include="objects\LuiObjectParameters.cs" />
+    <Compile Include="objects\LuiObjectParametersEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="control\HarvardPump.cs" />
     <Compile Include="Util.cs" />
