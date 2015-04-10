@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using lasercom.camera;
+using lasercom.control;
 
 namespace LUI.controls
 {
@@ -40,6 +41,18 @@ namespace LUI.controls
             get
             {
                 return _BeamFlags.Control;
+            }
+        }
+
+        public BeamFlagsParameters SelectedBeamFlags
+        {
+            get
+            {
+                return (BeamFlagsParameters)BeamFlags.SelectedItem;
+            }
+            set
+            {
+                BeamFlags.SelectedItem = value;
             }
         }
 
