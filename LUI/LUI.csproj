@@ -145,61 +145,61 @@
   <ItemGroup>
     <Compile Include="config\TextBoxAppender.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="controls\config\BeamFlagsConfigPanel.cs">
+    <Compile Include="controls\panel\config\BeamFlagsConfigPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="controls\config\AndorCameraConfigPanel.cs">
+    <Compile Include="controls\panel\config\AndorCameraConfigPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="controls\config\CameraConfigPanel.cs">
+    <Compile Include="controls\panel\config\CameraConfigPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="controls\config\CameraTempControlledConfigPanel.cs">
+    <Compile Include="controls\panel\config\CameraTempControlledConfigPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="controls\config\DDG535ConfigPanel.cs">
+    <Compile Include="controls\panel\config\DDG535ConfigPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="controls\config\DummyAndorCameraConfigPanel.cs">
+    <Compile Include="controls\panel\config\DummyAndorCameraConfigPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="controls\config\DummyBeamFlagsConfigPanel.cs">
+    <Compile Include="controls\panel\config\DummyBeamFlagsConfigPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="controls\config\DummyCameraConfigPanel.cs">
+    <Compile Include="controls\panel\config\DummyCameraConfigPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="controls\config\DummyDigitalDelayGeneratorConfigPanel.cs">
+    <Compile Include="controls\panel\config\DummyDigitalDelayGeneratorConfigPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="controls\config\DummyGpibProviderConfigPanel.cs">
+    <Compile Include="controls\panel\config\DummyGpibProviderConfigPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="controls\LuiOptionsListDialog.cs">
+    <Compile Include="controls\panel\LuiOptionsListDialog.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="controls\config\LuiObjectConfigPanel.cs">
+    <Compile Include="controls\panel\config\LuiObjectConfigPanel.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="controls\LabeledControl.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="controls\LoggingOptionsDialog.cs">
+    <Compile Include="controls\panel\LoggingOptionsDialog.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="controls\LoggingOptionsDialog.Designer.cs">
+    <Compile Include="controls\panel\LoggingOptionsDialog.Designer.cs">
       <DependentUpon>LoggingOptionsDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="controls\LuiOptionsDialog.cs">
+    <Compile Include="controls\panel\LuiOptionsDialog.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="controls\config\NIConfigPanel.cs">
+    <Compile Include="controls\panel\config\NIConfigPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="controls\config\PrologixConfigPanel.cs">
+    <Compile Include="controls\panel\config\PrologixConfigPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="controls\ObjectSelectPanel.cs">
+    <Compile Include="controls\panel\ObjectSelectPanel.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="controls\OptionsListView.cs">
@@ -212,23 +212,26 @@
       <DependentUpon>CalibrateControl.cs</DependentUpon>
     </Compile>
     <Compile Include="config\LuiConfig.cs" />
-    <Compile Include="tabs\ResidualsControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="tabs\ResidualsControl.Designer.cs">
-      <DependentUpon>ResidualsControl.cs</DependentUpon>
-    </Compile>
     <Compile Include="tabs\LaserPowerControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="tabs\LaserPowerControl.Designer.cs">
       <DependentUpon>LaserPowerControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="tabs\ResidualsControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="tabs\ResidualsControl.Designer.cs">
+      <DependentUpon>ResidualsControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="tabs\LuiTab.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="tabs\LuiTab.Designer.cs">
+      <DependentUpon>LuiTab.cs</DependentUpon>
+    </Compile>
     <Compile Include="controls\DisabledRichTextBox.cs">
       <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="controls\LuiTab.cs">
-      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="ParentForm.cs">
       <SubType>Form</SubType>
@@ -244,6 +247,12 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Settings.cs" />
+    <Compile Include="tabs\TroaControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="tabs\TroaControl.Designer.cs">
+      <DependentUpon>TroaControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="tabs\TROSControl.cs">
       <SubType>UserControl</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -262,17 +271,20 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="controls\LoggingOptionsDialog.resx">
+    <EmbeddedResource Include="controls\panel\LoggingOptionsDialog.resx">
       <DependentUpon>LoggingOptionsDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="tabs\CalibrateControl.resx">
       <DependentUpon>CalibrateControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="tabs\LaserPowerControl.resx">
+      <DependentUpon>LaserPowerControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="tabs\ResidualsControl.resx">
       <DependentUpon>ResidualsControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="tabs\LaserPowerControl.resx">
-      <DependentUpon>LaserPowerControl.cs</DependentUpon>
+    <EmbeddedResource Include="tabs\LuiTab.resx">
+      <DependentUpon>LuiTab.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="tabs\TROSControl.resx">
       <DependentUpon>TROSControl.cs</DependentUpon>

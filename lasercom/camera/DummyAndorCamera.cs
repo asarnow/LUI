@@ -4,6 +4,7 @@ using ATMCD64CS;
 #else
 using ATMCD32CS;
 using System.Diagnostics;
+using System.Linq;
 #endif
 
 namespace lasercom.camera
@@ -148,10 +149,12 @@ namespace lasercom.camera
             }
         }
 
-        public DummyAndorCamera() : base(null)
+        public DummyAndorCamera() : base()
         {
             _Width = 1024;
             _Height = 256;
+            Calibration = Array.ConvertAll(Enumerable.Range(1, (int)Width).ToArray<int>(), x => (double)x);
+            // else load CalFile (or deal with CalFile only in factory)
         }
 
         public override int[] FullResolutionImage()

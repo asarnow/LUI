@@ -1,22 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data;
 using System.Drawing;
-using System.IO;
-using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 using System.Windows.Threading;
 using lasercom;
 using lasercom.camera;
-using lasercom.io;
+using LUI.config;
 using LUI.controls;
 
 namespace LUI.tabs
 {
-    public partial class LaserPowerControl : LuiTab
+    public partial class LaserPowerControl : LUI.tabs.LuiTab
     {
-        private BackgroundWorker ioWorker;
-        private Dispatcher Dispatcher;
-
         double[] Light = null;
 
         int _SelectedChannel = -1;
@@ -39,22 +37,12 @@ namespace LUI.tabs
             PROGRESS_CALC
         }
 
-        public LaserPowerControl(Commander commander)
+        public LaserPowerControl(LuiConfig Config) : base(Config)
         {
             InitializeComponent();
-            Commander = commander;
-            Load += HandleLoad;
-            Graph.MouseClick += new MouseEventHandler(Graph_Click);
         }
 
-        void HandleLoad(object sender, EventArgs e)
-        {
-            Commander.CalibrationChanged += HandleCalibrationChanged;
-            Graph.XLeft = (float)Commander.Calibration[0];
-            Graph.XRight = (float)Commander.Calibration[Commander.Calibration.Length - 1];
-        }
-
-        public void AlignmentWork(object sender, DoWorkEventArgs e)
+        protected override void DoWork(object sender, DoWorkEventArgs e)
         {
             Commander.Camera.AcquisitionMode = AndorCamera.AcquisitionModeSingle;
             Commander.Camera.TriggerMode = AndorCamera.TriggerModeExternalExposure;
@@ -132,19 +120,7 @@ namespace LUI.tabs
             e.Result = DataBuffer;
         }
 
-        private void Collect_Click(object sender, EventArgs e)
-        {
-            Collect.Enabled = false;
-            int N = (int)Averages.Value;
-            worker = new BackgroundWorker();
-            worker.DoWork += new System.ComponentModel.DoWorkEventHandler(AlignmentWork);
-            worker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(AlignmentProgress);
-            worker.WorkerSupportsCancellation = true;
-            worker.WorkerReportsProgress = true;
-            worker.RunWorkerAsync(N);
-        }
-
-        public void AlignmentProgress(object sender, ProgressChangedEventArgs e)
+        protected override void WorkProgress(object sender, ProgressChangedEventArgs e)
         {
             Dialog operation = (Dialog)Enum.Parse(typeof(Dialog), (string)e.UserState);
             switch (operation)
@@ -180,7 +156,7 @@ namespace LUI.tabs
             }
         }
 
-        public void AlignmentComplete(object sender, RunWorkerCompletedEventArgs e)
+        protected override void WorkComplete(object sender, RunWorkerCompletedEventArgs e)
         {
             if (!e.Cancelled)
             {
@@ -197,13 +173,7 @@ namespace LUI.tabs
             Collect.Enabled = true;
         }
 
-        private void Clear_Click(object sender, EventArgs e)
-        {
-            Graph.Clear();
-            Graph.Invalidate();
-        }
-
-        private void Graph_Click(object sender, MouseEventArgs e)
+        protected override void Graph_Click(object sender, MouseEventArgs e)
         {
             // Selects a *physical channel* on the camera.
             SelectedChannel = (int)Math.Round(Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y))).X * (Commander.Camera.Width - 1));
@@ -262,19 +232,10 @@ namespace LUI.tabs
 
             if (Light != null)
             {
-                Graph.DrawPoints(Commander.Calibration, Light);
+                Graph.DrawPoints(Commander.Camera.Calibration, Light);
             }
 
             Graph.Invalidate();
         }
-
-        public void HandleCalibrationChanged(object sender, EventArgs args)
-        {
-            Graph.XLeft = (float)Commander.Calibration[0];
-            Graph.XRight = (float)Commander.Calibration[Commander.Calibration.Length - 1];
-            Graph.ClearAxes();
-            Graph.Invalidate();
-        }
-
     }
 }

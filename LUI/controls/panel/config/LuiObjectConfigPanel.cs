@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using lasercom.gpib;
+using lasercom.extensions;
 using lasercom.objects;
 
 namespace LUI.controls
@@ -41,8 +42,7 @@ namespace LUI.controls
         /// <param name="e"></param>
         protected virtual void OnOptionsChanged(object sender, EventArgs e)
         {
-            var handler = OptionsChanged;
-            if (TriggerEvents && handler != null) handler(this, e);
+            if (TriggerEvents) OptionsChanged.Raise(sender, e);
         }
 
         /// <summary>

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using LUI.config;
 using System.Runtime.CompilerServices;
+using lasercom.extensions;
 
 namespace LUI.controls
 {
@@ -85,8 +86,7 @@ namespace LUI.controls
         /// <param name="e"></param>
         protected virtual void OnOptionsChanged(object sender, EventArgs e)
         {
-            EventHandler handler = OptionsChanged;
-            if (handler != null) handler(this, e);
+            OptionsChanged.Raise(this, e);
         }
 
         /// <summary>

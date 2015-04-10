@@ -24,9 +24,6 @@ namespace LUI.tabs
     {
         public event EventHandler<LuiObjectParametersEventArgs> CalibrationChanged;
 
-        private BackgroundWorker ioWorker;
-        private Dispatcher Dispatcher;
-
         double[] OD = null;
 
         private int _SelectedChannel = -1;
@@ -142,9 +139,6 @@ namespace LUI.tabs
 
             InitializeComponent();
             
-            Load += HandleLoad;
-            
-            Graph.MouseClick += new MouseEventHandler(Graph_Click);
 
             CalibrationList.AllowEdit = true;
             CalibrationListView.DefaultValuesNeeded += CalibrationListView_DefaultValuesNeeded;
@@ -159,40 +153,7 @@ namespace LUI.tabs
             RSquaredLabel.SelectionLength = 0;
         }
 
-        private void HandleLoad(object sender, EventArgs e)
-        {
-            ObjectSelector.CameraChanged += HandleCameraChanged;
-            Graph.XLeft = (float)Commander.Camera.Calibration[0];
-            Graph.XRight = (float)Commander.Camera.Calibration[Commander.Camera.Calibration.Length - 1];
-        }
-
-        public void HandleParametersChanged(object sender, EventArgs e)
-        {
-            var selectedCamera = ObjectSelector.SelectedCamera;
-            ObjectSelector.Camera.Items.Clear();
-            Config.GetParameters(typeof(CameraParameters)).Select(p => ObjectSelector.Camera.Items.Add(p));
-            // One of next two lines will trigger CameraChanged event.
-            ObjectSelector.SelectedCamera = selectedCamera;
-            if (ObjectSelector.Camera.SelectedItem == null) ObjectSelector.Camera.SelectedIndex = 0;
-
-            var selectedBeamFlags = ObjectSelector.BeamFlags.SelectedItem;
-            ObjectSelector.BeamFlags.Items.Clear();
-            Config.GetParameters(typeof(BeamFlagsParameters)).Select(p => ObjectSelector.Camera.Items.Add(p));
-            ObjectSelector.BeamFlags.SelectedItem = selectedBeamFlags;
-            if (ObjectSelector.BeamFlags.SelectedItem == null) ObjectSelector.BeamFlags.SelectedIndex = 0;
-        }
-
-        private void HandleCameraChanged(object sender, EventArgs e)
-        {
-            Commander.Camera = (ICamera)Config.GetObject((CameraParameters)ObjectSelector.SelectedCamera);
-
-            // Update the graph with new camera's calibrated X-axis.
-            HandleCalibrationChanged(sender, new LuiObjectParametersEventArgs(ObjectSelector.SelectedCamera));
-
-            // Copy any needed state from camera.
-        }
-
-        public void HandleCalibrationChanged(object sender, LuiObjectParametersEventArgs args)
+        public override void HandleCalibrationChanged(object sender, LuiObjectParametersEventArgs args)
         {
             // If a different camera is selected, do nothing (until that camera is selected by the user).
             if (!ObjectSelector.SelectedCamera.Equals(args.Argument)) return;
@@ -200,16 +161,11 @@ namespace LUI.tabs
             Graph.XLeft = (float)Commander.Camera.Calibration[0];
             Graph.XRight = (float)Commander.Camera.Calibration[Commander.Camera.Calibration.Length - 1];
             Graph.ClearAxes();
-            //if (OD != null)
-            //{
-            //    //Graph.ClearData();
-            //    Graph.ClearAxes();
-            //    //Graph.DrawPoints(Commander.Camera.Calibration, OD);
-            //}
+
             RedrawLines();
         }
 
-        public void CalibrateWork(object sender, DoWorkEventArgs e)
+        protected override void DoWork(object sender, DoWorkEventArgs e)
         {
             Commander.Camera.AcquisitionMode = AndorCamera.AcquisitionModeSingle;
             Commander.Camera.TriggerMode = AndorCamera.TriggerModeExternalExposure;
@@ -287,24 +243,24 @@ namespace LUI.tabs
             e.Result = Data.OpticalDensity(DataBuffer, BlankBuffer, DarkBuffer);
         }
 
-        private void Collect_Click(object sender, EventArgs e)
+        protected override void Collect_Click(object sender, EventArgs e)
         {
-            Collect.Enabled = false;
+            Collect.Enabled = NScan.Enabled = false;
             Abort.Enabled = true;
             //Dispatcher = Dispatcher.CurrentDispatcher;
             Graph.ClearData();
             Graph.Invalidate();
-            int N = (int)Averages.Value;
+            int N = (int)NScan.Value;
             worker = new BackgroundWorker();
-            worker.DoWork += new System.ComponentModel.DoWorkEventHandler(CalibrateWork);
-            worker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(CalibrateProgress);
-            worker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(CalibrateComplete);
+            worker.DoWork += new System.ComponentModel.DoWorkEventHandler(DoWork);
+            worker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(WorkProgress);
+            worker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(WorkComplete);
             worker.WorkerSupportsCancellation = true;
             worker.WorkerReportsProgress = true;
             worker.RunWorkerAsync(new WorkArgs(N, this));
         }
 
-        public void CalibrateProgress(object sender, ProgressChangedEventArgs e)
+        protected override void WorkProgress(object sender, ProgressChangedEventArgs e)
         {
             Dialog operation = (Dialog)Enum.Parse(typeof(Dialog), (string)e.UserState);
             switch (operation)
@@ -340,7 +296,7 @@ namespace LUI.tabs
             }
         }
 
-        public void CalibrateComplete(object sender, RunWorkerCompletedEventArgs e)
+        protected override void WorkComplete(object sender, RunWorkerCompletedEventArgs e)
         {
             if (!e.Cancelled)
             {
@@ -359,13 +315,7 @@ namespace LUI.tabs
             Abort.Enabled = false;
         }
 
-        private void Clear_Click(object sender, EventArgs e)
-        {
-            Graph.Clear();
-            Graph.Invalidate();
-        }
-
-        private void Graph_Click(object sender, MouseEventArgs e)
+        protected override void Graph_Click(object sender, MouseEventArgs e)
         {
             //PointF p = Graph.ScreenToData(new Point(e.X, e.Y));
             //SelectedChannel = (int)Math.Round(p.X);

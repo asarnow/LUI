@@ -279,7 +279,7 @@ namespace lasercom.camera
             }
         }
         
-        public AndorCamera(string dir = ".", string CalFile = null)
+        public AndorCamera(string CalFile = null, string dir = ".")
         {
             if (dir != null)
             {
@@ -297,10 +297,6 @@ namespace lasercom.camera
 
                 Image = new ImageArea(1, 1, 1, (int)Width, 1, (int)Height);
 
-                if (CalFile == null)
-                    Calibration = Array.ConvertAll(Enumerable.Range(1, (int)Width).ToArray<int>(), x => (double)x);
-                // else load CalFile (or deal with CalFile only in factory)
-
                 GateMode = Constants.GatingModeSMBOnly;
                 MCPGating = Constants.MCPGatingOn;
 
@@ -309,6 +305,10 @@ namespace lasercom.camera
                 AndorSdk.GetMCPGainRange(ref _MinMCPGain, ref _MaxMCPGain);
                 IntensifierGain = Constants.DefaultMCPGain;
             }
+
+            if (CalFile == null)
+                Calibration = Array.ConvertAll(Enumerable.Range(1, (int)Width).ToArray<int>(), x => (double)x);
+            // else load CalFile (or deal with CalFile only in factory)
         }
 
         public virtual void Close()

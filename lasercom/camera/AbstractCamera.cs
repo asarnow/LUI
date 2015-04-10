@@ -68,7 +68,7 @@ namespace lasercom.camera
             get;
         }
         
-        private double[] _Calibration;
+        double[] _Calibration;
         public double[] Calibration
         {
             get

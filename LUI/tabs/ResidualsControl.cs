@@ -17,8 +17,6 @@ namespace LUI.tabs
 {
     public partial class ResidualsControl : LuiTab
     {
-        private BackgroundWorker ioWorker;
-
         private double[] Light = null;
         private double[] LastLight = null;
         private double[] CumulativeLight = null;
@@ -68,9 +66,9 @@ namespace LUI.tabs
             public readonly int NAvg;
         }
 
-        struct WorkProgress
+        struct ProgressObject
         {
-            public WorkProgress(object Data, int Counts, int Peak, int CountsN, int PeakN, Dialog Status)
+            public ProgressObject(object Data, int Counts, int Peak, int CountsN, int PeakN, Dialog Status)
             {
                 this.Data = Data;
                 this.Counts = Counts;
@@ -89,47 +87,16 @@ namespace LUI.tabs
 
         public ResidualsControl(LuiConfig config) : base(config)
         {
-            Commander = new Commander();
-            
             InitializeComponent();
-
-            Graph.MouseClick += new MouseEventHandler(Graph_Click);
             Graph.YLabelFormat = "g";
-
         }
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            ObjectSelector.CameraChanged += HandleCameraChanged;
-
-            //Commander.CalibrationChanged += HandleCalibrationChanged;
-            //Graph.XLeft = (float)Commander.Calibration[0];
-            //Graph.XRight = (float)Commander.Calibration[Commander.Calibration.Length - 1];
             RedrawLines();
         }
 
-        public override void OnTabSelected(object sender, EventArgs e)
-        {
-            
-        }
-
-        public void HandleParametersChanged(object sender, EventArgs e)
-        {
-            var selectedCamera = ObjectSelector.SelectedCamera;
-            ObjectSelector.Camera.Items.Clear();
-            Config.GetParameters(typeof(CameraParameters)).Select(p => ObjectSelector.Camera.Items.Add(p));
-            // One of next two lines will trigger CameraChanged event.
-            ObjectSelector.SelectedCamera = selectedCamera;
-            if (ObjectSelector.Camera.SelectedItem == null) ObjectSelector.Camera.SelectedIndex = 0;
-
-            var selectedBeamFlags = ObjectSelector.BeamFlags.SelectedItem;
-            ObjectSelector.BeamFlags.Items.Clear();
-            Config.GetParameters(typeof(BeamFlagsParameters)).Select(p => ObjectSelector.Camera.Items.Add(p));
-            ObjectSelector.BeamFlags.SelectedItem = selectedBeamFlags;
-            if (ObjectSelector.BeamFlags.SelectedItem == null) ObjectSelector.BeamFlags.SelectedIndex = 0;
-        }
-
-        private void HandleCameraChanged(object sender, EventArgs e)
+        public override void HandleCameraChanged(object sender, EventArgs e)
         {
             Commander.Camera = (ICamera)Config.GetObject((CameraParameters)ObjectSelector.SelectedCamera);
 
@@ -151,17 +118,6 @@ namespace LUI.tabs
             }
         }
 
-        public void HandleCalibrationChanged(object sender, LuiObjectParametersEventArgs args)
-        {
-            // If a different camera is selected, do nothing (until that camera is selected by the user).
-            if (!ObjectSelector.SelectedCamera.Equals(args.Argument)) return;
-
-            Graph.XLeft = (float)Commander.Camera.Calibration[0];
-            Graph.XRight = (float)Commander.Camera.Calibration[Commander.Camera.Calibration.Length - 1];
-            Graph.ClearAxes();
-            Graph.Invalidate();
-        }
-
         /// <summary>
         /// Alignment / Residuals background task logic.
         /// For both functions, we need to poll the camera continuously while
@@ -172,7 +128,7 @@ namespace LUI.tabs
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void AlignmentWork(object sender, DoWorkEventArgs e)
+        protected override void DoWork(object sender, DoWorkEventArgs e)
         {
             Commander.Camera.AcquisitionMode = AndorCamera.AcquisitionModeSingle;
             Commander.Camera.TriggerMode = AndorCamera.TriggerModeExternalExposure;
@@ -213,21 +169,21 @@ namespace LUI.tabs
                 nsum = (sum + n * nsum) / (n + 1);
                 npeak = (peak + n * npeak) / (n + 1);
 
-                WorkProgress progress = new WorkProgress(Array.ConvertAll((int[])DataBuffer, x => (double)x), cmasum, cmapeak, nsum, npeak, Dialog.PROGRESS_DATA);
+                ProgressObject progress = new ProgressObject(Array.ConvertAll((int[])DataBuffer, x => (double)x), cmasum, cmapeak, nsum, npeak, Dialog.PROGRESS_DATA);
                 worker.ReportProgress(i * 100 / args.NScans, progress);
             }
             Data.DivideArray(CumulativeDataBuffer, args.NScans);
             e.Result = Array.ConvertAll((int[])CumulativeDataBuffer, x=> (double)x);
         }
 
-        private void Collect_Click(object sender, EventArgs e)
+        protected override void Collect_Click(object sender, EventArgs e)
         {
             Collect.Enabled = NScan.Enabled = CameraGain.Enabled = false;
             Abort.Enabled = true;
             worker = new BackgroundWorker();
-            worker.DoWork += new System.ComponentModel.DoWorkEventHandler(AlignmentWork);
-            worker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(AlignmentProgress);
-            worker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(AlignmentComplete);
+            worker.DoWork += new System.ComponentModel.DoWorkEventHandler(DoWork);
+            worker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(WorkProgress);
+            worker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(WorkComplete);
             worker.WorkerSupportsCancellation = true;
             worker.WorkerReportsProgress = true;
             worker.RunWorkerAsync(new WorkArgs((int)NScan.Value, (int)NAverage.Value));
@@ -240,9 +196,9 @@ namespace LUI.tabs
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void AlignmentProgress(object sender, ProgressChangedEventArgs e)
+        protected override void WorkProgress(object sender, ProgressChangedEventArgs e)
         {
-            WorkProgress Progress = (WorkProgress)e.UserState;
+            ProgressObject Progress = (ProgressObject)e.UserState;
 
             switch (Progress.Status)
             {
@@ -272,7 +228,7 @@ namespace LUI.tabs
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void AlignmentComplete(object sender, RunWorkerCompletedEventArgs e)
+        protected override void WorkComplete(object sender, RunWorkerCompletedEventArgs e)
         {
             if (e.Error != null)
             {
@@ -294,13 +250,7 @@ namespace LUI.tabs
             Abort.Enabled = false;
         }
 
-        private void Clear_Click(object sender, EventArgs e)
-        {
-            Graph.Clear();
-            Graph.Invalidate();
-        }
-
-        private void Graph_Click(object sender, MouseEventArgs e)
+        protected override void Graph_Click(object sender, MouseEventArgs e)
         {
             SelectedChannel = (int)Math.Round(Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y))).X * (Commander.Camera.Width - 1));
 

@@ -20,15 +20,10 @@ namespace lasercom.camera
     public class CameraTempControlled:AndorCamera
     {
 
-        public CameraTempControlled(string dir, int temperature)
-            : base(dir)
+        public CameraTempControlled(string calfile, string dir, int temperature)
+            : base(calfile, dir)
         {
             EquilibrateTemperature(temperature);
-        }
-
-        public CameraTempControlled(string dir):base(dir)
-        {
-            EquilibrateTemperature(Constants.DefaultTemperature);
         }
 
         public void EquilibrateTemperature(int targetTemperature)

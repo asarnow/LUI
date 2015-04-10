@@ -11,6 +11,7 @@ using System.Windows.Threading;
 using lasercom;
 using lasercom.camera;
 using lasercom.ddg;
+using LUI.config;
 
 namespace LUI
 {
@@ -26,9 +27,9 @@ namespace LUI
             PROGRESS_CALC, PROGRESS_TRANS, PROGRESS_GROUND };
         private enum TROAPattern { SEPARATED }
 
-        public TROSControl(Commander commander)
+        public TROSControl(LuiConfig config)
         {
-            Commander = commander;
+            //Commander = commander;
             InitializeComponent();
             //Dispatcher = new Dispatcher();
             InitChart();

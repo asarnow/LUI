@@ -33,7 +33,7 @@ namespace LUI
         private TabPage PowerPage;
         private TabPage OptionsPage;
 
-        private TROSControl TROSControl;
+        private TroaControl TROSControl;
         private CalibrateControl CalibrateControl;
         private LaserPowerControl LaserPowerControl;
         private ResidualsControl ResidualsControl;
@@ -153,31 +153,28 @@ namespace LUI
             OptionsPage.Controls.Add(OptionsControl);
             OptionsControl.OptionsApplied += Config.OnParametersChanged;
 
-            TROSControl = new TROSControl(Commander);
-            TROSPage.Controls.Add(TROSControl);
-            //Config.ParametersChanged += TROSControl.HandleParametersChanged;
-            //CalibrateControl.CalibrationChanged += TROSControl.HandleCalibrationChanged;
-
             CalibrateControl = new CalibrateControl(Config);
             CalibrateControl.Dock = DockStyle.Fill;
             CalibrationPage.Controls.Add(CalibrateControl);
             Config.ParametersChanged += CalibrateControl.HandleParametersChanged;
             CalibrateControl.CalibrationChanged += CalibrateControl.HandleCalibrationChanged;
-            
-            LaserPowerControl = new LaserPowerControl(Commander);
+
+            TROSControl = new TroaControl(Config);
+            TROSPage.Controls.Add(TROSControl);
+            Config.ParametersChanged += TROSControl.HandleParametersChanged;
+            CalibrateControl.CalibrationChanged += TROSControl.HandleCalibrationChanged;
+
+            LaserPowerControl = new LaserPowerControl(Config);
             PowerPage.Controls.Add(LaserPowerControl);
-            //Config.ParametersChanged += LaserPowerControl.HandleParametersChanged;
-            //CalibrateControl.CalibrationChanged += LaserPowerControl.HandleCalibrationChanged;
+            Config.ParametersChanged += LaserPowerControl.HandleParametersChanged;
+            CalibrateControl.CalibrationChanged += LaserPowerControl.HandleCalibrationChanged;
 
             ResidualsControl = new ResidualsControl(Config);
             ResidualsPage.Controls.Add(ResidualsControl);
             Config.ParametersChanged += ResidualsControl.HandleParametersChanged;
             CalibrateControl.CalibrationChanged += ResidualsControl.HandleCalibrationChanged;
 
-            if (!Config.Ready)
-            {
-                Tabs.SelectedTab = OptionsPage;
-            }
+            Tabs.SelectedTab = HomePage;
 
             Tabs.ResumeLayout();
             ResumeLayout();
