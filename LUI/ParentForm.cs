@@ -20,7 +20,6 @@ namespace LUI
     public partial class ParentForm : Form
     {
         //LuiConfig Config;
-        Commander Commander;
 
         public enum State { IDLE, TROS, CALIBRATE, ALIGN, POWER, RESIDUALS }
 
@@ -139,14 +138,7 @@ namespace LUI
             Controls.Add(Tabs);
             #endregion
 
-            if (Config.Ready)
-            {
-                //Commander = Config.CreateCommander();
-            }
-            else
-            {
-                Commander = new Commander();
-            }
+            // Try to instantiate the config
 
             OptionsControl = new OptionsControl(Config);
             OptionsControl.Dock = DockStyle.Fill;

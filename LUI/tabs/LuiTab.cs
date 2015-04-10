@@ -45,6 +45,9 @@ namespace LUI.tabs
             base.OnLoad(e);
             ObjectSelector.CameraChanged += HandleCameraChanged;
             ObjectSelector.BeamFlagsChanged += HandleBeamFlagsChanged;
+
+            HandleParametersChanged(this, EventArgs.Empty);
+
             Graph.XLeft = (float)Commander.Camera.Calibration[0];
             Graph.XRight = (float)Commander.Camera.Calibration[Commander.Camera.Calibration.Length - 1];
         }
@@ -52,12 +55,12 @@ namespace LUI.tabs
         public virtual void HandleParametersChanged(object sender, EventArgs e)
         {
             var selectedCamera = ObjectSelector.SelectedCamera;
-            ObjectSelector.Camera.Items.Clear();
+            ObjectSelector.Cameras.Items.Clear();
             foreach (var p in Config.GetParameters(typeof(CameraParameters))) 
-                ObjectSelector.Camera.Items.Add(p);
+                ObjectSelector.Cameras.Items.Add(p);
             // One of next two lines will trigger CameraChanged event.
             ObjectSelector.SelectedCamera = selectedCamera;
-            if (ObjectSelector.Camera.SelectedItem == null) ObjectSelector.Camera.SelectedIndex = 0;
+            if (ObjectSelector.Cameras.SelectedItem == null) ObjectSelector.Cameras.SelectedIndex = 0;
 
             var selectedBeamFlags = ObjectSelector.BeamFlags.SelectedItem;
             ObjectSelector.BeamFlags.Items.Clear();

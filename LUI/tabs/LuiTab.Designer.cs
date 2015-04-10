@@ -220,15 +220,6 @@
             this.OpenLaser.Text = "Open Laser";
             this.OpenLaser.UseVisualStyleBackColor = true;
             // 
-            // panel1
-            // 
-            this.panel1.Controls.Add(this.ObjectSelector);
-            this.panel1.Location = new System.Drawing.Point(0, 432);
-            this.panel1.Margin = new System.Windows.Forms.Padding(2);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(824, 210);
-            this.panel1.TabIndex = 12;
-            // 
             // ObjectSelector
             // 
             this.ObjectSelector.AutoSize = true;
@@ -274,6 +265,15 @@
             this.Graph.YLabelFormat = "n3";
             this.Graph.YMax = float.NegativeInfinity;
             this.Graph.YMin = float.PositiveInfinity;
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.ObjectSelector);
+            this.panel1.Location = new System.Drawing.Point(0, 432);
+            this.panel1.Margin = new System.Windows.Forms.Padding(2);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(824, 210);
+            this.panel1.TabIndex = 12;
             // 
             // LuiTab
             // 

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using lasercom.camera;
 using lasercom.control;
+using lasercom.extensions;
 
 namespace LUI.controls
 {
@@ -14,12 +15,12 @@ namespace LUI.controls
         public event EventHandler CameraChanged;
         public event EventHandler BeamFlagsChanged;
 
-        LabeledControl<ComboBox> _Camera;
-        public ComboBox Camera
+        LabeledControl<ComboBox> _Cameras;
+        public ComboBox Cameras
         {
             get
             {
-                return _Camera.Control;
+                return _Cameras.Control;
             }
         }
 
@@ -27,11 +28,11 @@ namespace LUI.controls
         {
             get
             {
-                return (CameraParameters)Camera.SelectedItem;
+                return (CameraParameters)Cameras.SelectedItem;
             }
             set
             {
-                Camera.SelectedItem = value;
+                Cameras.SelectedItem = value;
             }
         }
 
@@ -63,16 +64,16 @@ namespace LUI.controls
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 
-            _Camera = new LabeledControl<ComboBox>(new ComboBox(), "Camera:");
-            Camera.DropDownStyle = ComboBoxStyle.DropDownList;
-            Camera.DisplayMember = "Name";
-            Camera.SelectedIndexChanged += CameraChanged;
-            Controls.Add(_Camera);
+            _Cameras = new LabeledControl<ComboBox>(new ComboBox(), "Camera:");
+            Cameras.DropDownStyle = ComboBoxStyle.DropDownList;
+            Cameras.DisplayMember = "Name";
+            Cameras.SelectedIndexChanged += (s,e) => CameraChanged.Raise(s,e);
+            Controls.Add(_Cameras);
 
             _BeamFlags = new LabeledControl<ComboBox>(new ComboBox(), "Beam Flags:");
             BeamFlags.DropDownStyle = ComboBoxStyle.DropDownList;
             BeamFlags.DisplayMember = "Name";
-            BeamFlags.SelectedIndexChanged += BeamFlagsChanged;
+            BeamFlags.SelectedIndexChanged += (s, e) => BeamFlagsChanged.Raise(s, e);
             Controls.Add(_BeamFlags);
         }
     }

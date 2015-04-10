@@ -13,7 +13,7 @@ using LUI.controls;
 
 namespace LUI.tabs
 {
-    public partial class LaserPowerControl : LUI.tabs.LuiTab
+    public partial class LaserPowerControl : LuiTab
     {
         double[] Light = null;
 
