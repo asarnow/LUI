@@ -33,6 +33,10 @@ namespace lasercom.camera
                 {
                     arr = new object[] { CalFile, Dir, Temperature };
                 }
+                else if (Type == typeof(DummyAndorCamera))
+                {
+                    arr = new object[0];
+                }
                 return arr;
             }
         }

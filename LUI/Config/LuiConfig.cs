@@ -27,6 +27,8 @@ namespace LUI.config
     [XmlRoot( "LuiConfig" )]
     public class LuiConfig : IXmlSerializable, IDisposable
     {
+        protected static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         public Dictionary<Type, Dictionary<LuiObjectParameters, ILuiObject>> LuiObjectTableIndex { get; set; }
 
         public event EventHandler ParametersChanged;
@@ -433,6 +435,20 @@ namespace LUI.config
                     SetObject(p, LuiObject.Create(p, dependencies));
                 }
             }
+        }
+
+        public bool TryInstantiateConfiguration()
+        {
+            try
+            {
+                InstantiateConfiguration();
+            }
+            catch (Exception e)
+            {
+                Log.Error(e);
+                return false;
+            }
+            return true;
         }
 
         public void InstantiateWithDependencies(LuiObjectParameters p)

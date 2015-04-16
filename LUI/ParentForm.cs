@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using lasercom;
+using log4net;
 using LUI.config;
 using LUI.tabs;
 
@@ -19,7 +20,9 @@ namespace LUI
     /// </summary>
     public partial class ParentForm : Form
     {
-        //LuiConfig Config;
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        private LuiConfig Config;
 
         public enum State { IDLE, TROS, CALIBRATE, ALIGN, POWER, RESIDUALS }
 
@@ -50,8 +53,10 @@ namespace LUI
             }
         }
 
-        public ParentForm(LuiConfig Config)
+        public ParentForm(LuiConfig config)
         {
+            Config = config;
+
             SuspendLayout();
 
             // Dispose resources when the form is closed;
@@ -138,12 +143,10 @@ namespace LUI
             Controls.Add(Tabs);
             #endregion
 
-            // Try to instantiate the config
-
             OptionsControl = new OptionsControl(Config);
             OptionsControl.Dock = DockStyle.Fill;
             OptionsPage.Controls.Add(OptionsControl);
-            OptionsControl.OptionsApplied += Config.OnParametersChanged;
+            OptionsControl.OptionsApplied += HandleOptionsApplied;
 
             CalibrateControl = new CalibrateControl(Config);
             CalibrateControl.Dock = DockStyle.Fill;
@@ -170,6 +173,8 @@ namespace LUI
 
             Tabs.ResumeLayout();
             ResumeLayout();
+
+            HandleOptionsApplied(this, EventArgs.Empty);
         }
 
         private static void MakeEmebeddable(Form Form)
@@ -178,6 +183,21 @@ namespace LUI
             Form.Visible = true;
             Form.FormBorderStyle = FormBorderStyle.None;
             Form.Dock = DockStyle.Fill;
+        }
+
+        private void HandleOptionsApplied(object sender, EventArgs e)
+        {
+            try
+            {
+                Config.InstantiateConfiguration();
+                Config.OnParametersChanged(sender, e);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+                MessageBox.Show("Configuration error: " + ex.Message);
+            }
+            
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
