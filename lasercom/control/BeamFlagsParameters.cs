@@ -22,7 +22,16 @@ namespace lasercom.control
         {
             get
             {
-                return new object[] {PortName};           
+                object[] arr = null;
+                if (Type == typeof(BeamFlags))
+                {
+                    arr = new object[] { PortName };
+                }
+                else if (Type == typeof(DummyBeamFlags))
+                {
+                    arr = new object[0];
+                }
+                return arr;
             }
         }
 

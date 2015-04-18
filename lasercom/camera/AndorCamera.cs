@@ -279,6 +279,8 @@ namespace lasercom.camera
             }
         }
         
+        public AndorCamera() : this(null, ".") { }
+
         public AndorCamera(string CalFile = null, string dir = ".")
         {
             if (dir != null)

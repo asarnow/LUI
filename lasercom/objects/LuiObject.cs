@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace lasercom.objects
@@ -31,7 +33,15 @@ namespace lasercom.objects
         public static ILuiObject Create(LuiObjectParameters p, IEnumerable<ILuiObject> dependencies)
         {
             IEnumerable<object> args = p.ConstructorArray.AsEnumerable().Concat(dependencies);
-            return (ILuiObject)Activator.CreateInstance(p.Type, args);
+            object[] ctorArgs = args.ToArray();
+            return (ILuiObject)Activator.CreateInstance(p.Type,
+                    BindingFlags.CreateInstance |
+                    BindingFlags.Public |
+                    BindingFlags.Instance |
+                    BindingFlags.OptionalParamBinding,
+                    null, 
+                    ctorArgs,
+                    CultureInfo.CurrentCulture);
         }
     }
 }
