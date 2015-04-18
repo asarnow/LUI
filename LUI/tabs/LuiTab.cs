@@ -35,6 +35,10 @@ namespace LUI.tabs
             Collect.Click += Collect_Click;
             Abort.Click += Abort_Click;
             Clear.Click += Clear_Click;
+            OpenLaser.Click += OpenLaser_Click;
+            CloseLaser.Click += CloseLaser_Click;
+            OpenLamp.Click += OpenLamp_Click;
+            CloseLamp.Click += CloseLamp_Click;
             Graph.MouseClick += Graph_Click;
         }
 
@@ -118,6 +122,26 @@ namespace LUI.tabs
         {
             Graph.Clear();
             Graph.Invalidate();
+        }
+
+        private void OpenLaser_Click(object sender, EventArgs e)
+        {
+            Commander.BeamFlag.OpenLaser();
+        }
+
+        private void CloseLaser_Click(object sender, EventArgs e)
+        {
+            Commander.BeamFlag.CloseLaser();
+        }
+
+        private void OpenLamp_Click(object sender, EventArgs e)
+        {
+            Commander.BeamFlag.OpenFlash();
+        }
+
+        private void CloseLamp_Click(object sender, EventArgs e)
+        {
+            Commander.BeamFlag.CloseFlash();
         }
 
         protected virtual void Graph_Click(object sender, MouseEventArgs e)

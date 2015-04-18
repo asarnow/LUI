@@ -494,25 +494,5 @@ namespace LUI.tabs
             }
         }
 
-        private void OpenLaser_Click(object sender, EventArgs e)
-        {
-            Commander.BeamFlag.OpenLaser();
-        }
-
-        private void CloseLaser_Click(object sender, EventArgs e)
-        {
-            Commander.BeamFlag.CloseLaser();
-        }
-
-        private void OpenLamp_Click(object sender, EventArgs e)
-        {
-            Commander.BeamFlag.OpenFlash();
-        }
-
-        private void CloseLamp_Click(object sender, EventArgs e)
-        {
-            Commander.BeamFlag.CloseFlash();
-        }
-
     }
 }

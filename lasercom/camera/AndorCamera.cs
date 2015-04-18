@@ -308,7 +308,7 @@ namespace lasercom.camera
                 IntensifierGain = Constants.DefaultMCPGain;
             }
 
-            if (CalFile == null)
+            if (CalFile == null || CalFile == "")
                 Calibration = Array.ConvertAll(Enumerable.Range(1, (int)Width).ToArray<int>(), x => (double)x);
             // else load CalFile (or deal with CalFile only in factory)
         }
