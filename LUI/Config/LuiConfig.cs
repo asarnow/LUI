@@ -43,6 +43,21 @@ namespace LUI.config
          * The Get/Set methods either trigger events indicating that the
          * configuration has changed or directly change the application state.
          */
+        #region Dry run
+        private bool _DryRun;
+        public bool DryRun
+        {
+            get
+            {
+                return _DryRun;
+            }
+            set
+            {
+                _DryRun = value;
+            }
+        }
+        #endregion
+
         #region ConfigFile
         private string _ConfigFile;
         public string ConfigFile
@@ -154,6 +169,7 @@ namespace LUI.config
 
         public LuiConfig(string configFile)
         {
+            DryRun = false;
             ConfigFile = configFile;
             LogFile = LUI.Constants.DefaultLogFileLocation;
             LogLevel = LUI.Constants.DefaultLogLevel;
@@ -424,6 +440,7 @@ namespace LUI.config
 
         public void InstantiateConfiguration()
         {
+            if (DryRun) return;
             // The topological sort ensures dependencies are resolved in a legal order.
             // Cyclic dependencies will result in exceptions.
             IEnumerable<LuiObjectParameters> dependencyOrderedParameters = LuiObjectParameters.TopologicalSort(p => p.Dependencies);
