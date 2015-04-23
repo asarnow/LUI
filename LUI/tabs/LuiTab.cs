@@ -188,19 +188,6 @@ namespace LUI.tabs
             return false;
         }
 
-        private Assembly ResolveAssemblies(object sender, ResolveEventArgs args)
-        {
-            {
-                var Dlls = new DirectoryInfo(@"C:\Users\da\Documents\Visual Studio 2012\Projects\LUI\lib").GetFiles("*.dll");
-                var Dll = Dlls.FirstOrDefault(fi => fi.Name == args.Name);
-                if (Dll == null)
-                {
-                    return null;
-                }
-                return Assembly.LoadFile(Dll.FullName);
-            };
-        }
-
         #region dialogs
 
         protected void BlockingBlankDialog()
