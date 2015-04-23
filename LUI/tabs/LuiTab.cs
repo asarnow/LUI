@@ -12,6 +12,7 @@ using lasercom.io;
 using lasercom.objects;
 using LUI.config;
 using LUI.controls;
+using System.Reflection;
 
 namespace LUI.tabs
 {
@@ -29,7 +30,7 @@ namespace LUI.tabs
         {
             Config = config;
             Commander = new Commander();
-            Commander.Camera = new DummyAndorCamera();
+            Commander.Camera = new DummyCamera();
             Commander.BeamFlag = new DummyBeamFlags();
             InitializeComponent();
             Collect.Click += Collect_Click;
@@ -50,7 +51,8 @@ namespace LUI.tabs
             ObjectSelector.CameraChanged += HandleCameraChanged;
             ObjectSelector.BeamFlagsChanged += HandleBeamFlagsChanged;
 
-            HandleParametersChanged(this, EventArgs.Empty);
+            if (!IsInDesignMode())
+                HandleParametersChanged(this, EventArgs.Empty);
 
             Graph.XLeft = (float)Commander.Camera.Calibration[0];
             Graph.XRight = (float)Commander.Camera.Calibration[Commander.Camera.Calibration.Length - 1];
@@ -175,6 +177,28 @@ namespace LUI.tabs
         public ParentForm.State TaskBusy()
         {
             return ((ParentForm)FindForm()).TaskBusy;
+        }
+
+        public static bool IsInDesignMode()
+        {
+            if (Application.ExecutablePath.IndexOf("devenv.exe", StringComparison.OrdinalIgnoreCase) > -1)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private Assembly ResolveAssemblies(object sender, ResolveEventArgs args)
+        {
+            {
+                var Dlls = new DirectoryInfo(@"C:\Users\da\Documents\Visual Studio 2012\Projects\LUI\lib").GetFiles("*.dll");
+                var Dll = Dlls.FirstOrDefault(fi => fi.Name == args.Name);
+                if (Dll == null)
+                {
+                    return null;
+                }
+                return Assembly.LoadFile(Dll.FullName);
+            };
         }
 
         #region dialogs

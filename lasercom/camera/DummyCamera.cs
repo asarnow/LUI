@@ -26,6 +26,13 @@ namespace lasercom.camera
             }
         }
 
+        public DummyCamera()
+        {
+            _Height = 255;
+            _Width = 1024;
+            Calibration = Array.ConvertAll(Enumerable.Range(1, (int)Width).ToArray<int>(), x => (double)x);
+        }
+
         public override int[] FullResolutionImage()
         {
             return null;
