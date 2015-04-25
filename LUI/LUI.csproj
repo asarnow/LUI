@@ -286,6 +286,9 @@
     <EmbeddedResource Include="tabs\LuiTab.resx">
       <DependentUpon>LuiTab.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="tabs\TroaControl.resx">
+      <DependentUpon>TroaControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="tabs\TROSControl.resx">
       <DependentUpon>TROSControl.cs</DependentUpon>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

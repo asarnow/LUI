@@ -25,7 +25,9 @@ namespace lasercom.ddg
         {
             get
             {
-                return new LuiObjectParameters[] {GpibProvider};
+                if (GpibProvider != null)
+                    return new LuiObjectParameters[] {GpibProvider};
+                return new LuiObjectParameters[0];
             }
         }
 
@@ -36,6 +38,10 @@ namespace lasercom.ddg
                 object[] arr = null;
                 if (Type == typeof(DDG535)){
                     arr = new object[] { GpibProvider, GpibAddress };
+                } 
+                else if (Type == typeof(DummyDigitalDelayGenerator))
+                {
+                    arr = new object[0];
                 }
                 return arr;
             }

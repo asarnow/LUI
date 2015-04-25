@@ -16,6 +16,10 @@ namespace lasercom.ddg
 
         }
 
+        public static string[] Delays = { "A" };
+
+        public static string[] Triggers = { "T0", "A" };
+
         public double T0Delay { get; set; }
 
         public double ADelay { get; set; }

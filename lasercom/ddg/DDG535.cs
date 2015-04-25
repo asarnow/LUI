@@ -28,6 +28,31 @@ namespace lasercom.ddg
 
         public const byte DefaultGPIBAddress = 15;
 
+        public static Dictionary<string, string> DelayMap = new Dictionary<string,string>
+        { 
+            { "T0", T0Output },
+            { "A", AOutput },
+            { "B", BOutput },
+            { "C", COutput },
+            { "D", DOutput },
+        };
+
+        public string[] Delays
+        {
+            get
+            {
+                return DelayMap.Keys.Where(x => x != "T0").ToArray();
+            }
+        }
+
+        public string[] Triggers
+        {
+            get
+            {
+                return DelayMap.Keys.ToArray();
+            }
+        }
+
         private string _ADelay;
         public string ADelay
         {

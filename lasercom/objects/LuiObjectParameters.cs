@@ -21,6 +21,14 @@ namespace lasercom.objects
         [DataMember]
         public string Name { get; set; }
 
+        public LuiObjectParameters Self
+        {
+            get
+            {
+                return this;
+            }
+        }
+
         private Type _Type;
         public Type Type
         {
@@ -71,6 +79,14 @@ namespace lasercom.objects
     public abstract class LuiObjectParameters<P> : LuiObjectParameters, 
         IEquatable<P> where P : LuiObjectParameters<P>
     {
+
+        public new LuiObjectParameters<P> Self
+        {
+            get
+            {
+                return this;
+            }
+        }
 
         public LuiObjectParameters()
         {

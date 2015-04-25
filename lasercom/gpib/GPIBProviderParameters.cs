@@ -48,6 +48,10 @@ namespace lasercom.gpib
                 {
                     arr = new object[] { PortName, Timeout };
                 }
+                else if (Type == typeof(DummyGpibProvider))
+                {
+                    arr = new object[0];
+                }
                 return arr;
             }
         }
