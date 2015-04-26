@@ -153,7 +153,35 @@ namespace LUI.tabs
             }
         }
 
+        struct WorkArgs
+        {
+            public WorkArgs(int N, IList<double> Times)
+            {
+                this.N = N;
+                this.Times = new List<double>(Times);
+            }
+            public readonly int N;
+            public readonly IList<double> Times;
+        }
+
+        struct ProgressObject
+        {
+            public ProgressObject(object Data, Dialog Status)
+            {
+                this.Data = Data;
+                this.Status = Status;
+            }
+            public readonly object Data;  
+            public readonly Dialog Status;
+        }
+
+        public enum Dialog
+        {
+            PROGRESS, PROGRESS_FLASH, PROGRESS_TRANS
+        }
+
         private BindingList<RoleRow> RoleList = new BindingList<RoleRow>();
+        IList<double> Times { get; set; }
 
         public TroaControl(LuiConfig Config) : base(Config)
         {
@@ -197,27 +225,124 @@ namespace LUI.tabs
 
         protected override void Collect_Click(object sender, EventArgs e)
         {
-            base.Collect_Click(sender, e);
+            Collect.Enabled = NScan.Enabled = CameraGain.Enabled = false;
+            Abort.Enabled = true;
+            
+            Graph.ClearData();
+            Graph.Invalidate();
+
+            int N = (int)NScan.Value;
+            worker = new BackgroundWorker();
+            worker.DoWork += new System.ComponentModel.DoWorkEventHandler(DoWork);
+            worker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(WorkProgress);
+            worker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(WorkComplete);
+            worker.WorkerSupportsCancellation = true;
+            worker.WorkerReportsProgress = true;
+            worker.RunWorkerAsync(new WorkArgs(N, Times));
         }
 
         protected override void DoWork(object sender, DoWorkEventArgs e)
         {
+            var args = (WorkArgs)e.Argument;
             Commander.Camera.AcquisitionMode = AndorCamera.AcquisitionModeSingle;
             Commander.Camera.TriggerMode = AndorCamera.TriggerModeExternalExposure;
             Commander.Camera.DDGTriggerMode = AndorCamera.DDGTriggerModeExternal;
             Commander.Camera.ReadMode = AndorCamera.ReadModeFVB;
+
+            int N = args.N;
+            int half = N / 2; // Integer division rounds down.
+            IList<double> Times = args.Times;
+
+            int TotalScans = N + Times.Count * N;
+
+            var progress = new ProgressObject(null, Dialog.PROGRESS);
+            worker.ReportProgress(0, progress);
+
+            int[] DataBuffer = new int[Commander.Camera.AcqSize];
+
+            for (int i = 0; i < half; i++)
+            {
+                if (worker.CancellationPending)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+
+                uint ret = Commander.Flash(DataBuffer);
+
+                progress = new ProgressObject(DataBuffer, Dialog.PROGRESS_FLASH);
+                worker.ReportProgress((i+1) / TotalScans, progress);
+            }
+
+            for (int i = 0; i < Times.Count; i++)
+            {
+                for (int j = 0; j < N; j++)
+                {
+                    if (worker.CancellationPending)
+                    {
+                        e.Cancel = true;
+                        return;
+                    }
+
+                    uint ret = Commander.Trans(DataBuffer);
+
+                    progress = new ProgressObject(DataBuffer, Dialog.PROGRESS_TRANS);
+                    worker.ReportProgress( (half + (i+1) * (j+1)) / TotalScans , progress);
+                }
+            }
+
+            // If N is odd, need 1 more GS scan in the second half.
+            int half2 = N % 2 != 0 ? half : half + 1;
+
+            for (int i = 0; i < half2; i++)
+            {
+                if (worker.CancellationPending)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+
+                uint ret = Commander.Flash(DataBuffer);
+
+                progress = new ProgressObject(DataBuffer, Dialog.PROGRESS_FLASH);
+                worker.ReportProgress( (half + (N * Times.Count) + (i+1)) / TotalScans , progress);
+            }
 
 
         }
 
         protected override void WorkProgress(object sender, ProgressChangedEventArgs e)
         {
-            base.WorkProgress(sender, e);
+            var progress = (ProgressObject)e.UserState;
+            switch (progress.Status)
+            {
+                case Dialog.PROGRESS:
+                    break;
+                case Dialog.PROGRESS_FLASH:
+                    break;
+                case Dialog.PROGRESS_TRANS:
+                    break;
+            }
         }
 
         protected override void WorkComplete(object sender, RunWorkerCompletedEventArgs e)
         {
-            base.WorkComplete(sender, e);
+            if (e.Error != null)
+            {
+                // Handle the exception thrown in the worker thread.
+                MessageBox.Show(e.Error.ToString());
+            }
+            else if (e.Cancelled)
+            {
+                ProgressLabel.Text = "Aborted";
+            }
+            else
+            {
+                ProgressLabel.Text = "Complete";
+            }
+            StatusProgress.Value = 100;
+            Collect.Enabled = NScan.Enabled = CameraGain.Enabled = true;
+            Abort.Enabled = false;
         }
 
         private void DDGListView_DefaultValuesNeeded(object sender,
