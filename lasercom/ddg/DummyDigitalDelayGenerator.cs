@@ -16,31 +16,35 @@ namespace lasercom.ddg
 
         }
 
-        public static string[] Delays = { "A" };
+        public override string[] Delays
+        {
+            get
+            {
+                return new string[] { "A", "B" };
+            }
+        }
 
-        public static string[] Triggers = { "T0", "A" };
+        public override string[] Triggers
+        {
+            get
+            {
+                return new string[] { "T0", "A" };
+            }
+        }
+
+        public override string[] DelayPairs
+        {
+            get
+            {
+                return new string[] { "AB" };
+            }
+        }
 
         public double T0Delay { get; set; }
 
         public double ADelay { get; set; }
-        //public Delay ARelative { get; set; }
 
         public double BDelay { get; set; }
-        //public Delay BRelative { get; set; }
-
-        public double ABDelay { get; set; }
-
-        public double CDelay { get; set; }
-        //public Delay CRelative { get; set; }
-
-        public double DDelay { get; set; }
-        //public Delay DRelative { get; set; }
-
-        public double CDDelay { get; set; }
-
-        public void LoggedWrite(string command)
-        {
-        }
 
         public void SetADelay(double delay)
         {
@@ -50,16 +54,6 @@ namespace lasercom.ddg
         public void SetBDelay(double delay)
         {
             BDelay = delay;
-        }
-
-        public void SetCDelay(double delay)
-        {
-            CDDelay = delay;
-        }
-
-        public void SetDDelay(double delay)
-        {
-            DDelay = delay;
         }
 
         public double GetADelay()
@@ -72,19 +66,30 @@ namespace lasercom.ddg
             return BDelay;
         }
 
-        public double GetCDelay()
-        {
-            return CDDelay;
-        }
-
-        public double GetDDelay()
-        {
-            return DDelay;
-        }
-
         protected override void Dispose(bool disposing)
         {
             // Do nothing.
+        }
+
+        public override void SetDelay(char DelayName, char TriggerName, double Delay)
+        {
+            switch (DelayName)
+            {
+                case 'A':
+                    SetADelay(Delay);
+                    break;
+                case 'B':
+                    SetBDelay(Delay);
+                    break;
+                default:
+                    throw new ArgumentException("Illegal delay output given.");
+            }
+        }
+
+        public override void SetDelayPulse(Tuple<char, char> DelayPair, char TriggerName, double Delay, double Width)
+        {
+            SetDelay(DelayPair.Item1, TriggerName, Delay);
+            SetDelay(DelayPair.Item2, DelayPair.Item1, Width);
         }
     }
 }

@@ -39,7 +39,7 @@ namespace lasercom.camera
 
         public const int MCPGatingOff = 0;
         public const int MCPGatingOn = 1;
-        public const int DefaultMCPGain = 500;
+        public const int DefaultMCPGain = 10;
 
         public const int DefaultADChannel = 0;
 

@@ -28,28 +28,46 @@ namespace lasercom.ddg
 
         public const byte DefaultGPIBAddress = 15;
 
-        public static Dictionary<string, string> DelayMap = new Dictionary<string,string>
+        private static Dictionary<string, string> _DelayMap = new Dictionary<string,string>
         { 
             { "T0", T0Output },
             { "A", AOutput },
             { "B", BOutput },
+            {"AB", ABOutput},
             { "C", COutput },
             { "D", DOutput },
+            {"CD", CDOutput}
         };
 
-        public string[] Delays
+        public static Dictionary<string, string> DelayMap
         {
             get
             {
-                return DelayMap.Keys.Where(x => x != "T0").ToArray();
+                return _DelayMap;
             }
         }
 
-        public string[] Triggers
+        public override string[] Delays
         {
             get
             {
-                return DelayMap.Keys.ToArray();
+                return _DelayMap.Keys.Where(x => x.Length == 1 && x != "T0").ToArray();
+            }
+        }
+
+        public override string[] DelayPairs
+        {
+            get
+            {
+                return _DelayMap.Keys.Where(x => x.Length == 2).ToArray();
+            }
+        }
+
+        public override string[] Triggers
+        {
+            get
+            {
+                return _DelayMap.Keys.Where(x => x.Length == 1 && x != "D").ToArray();
             }
         }
 
@@ -119,12 +137,78 @@ namespace lasercom.ddg
             ReadAllDelays();
         }
 
+        /// <summary>
+        /// Sets any delay.
+        /// </summary>
+        /// <param name="DelayName"></param>
+        /// <param name="TriggerName"></param>
+        /// <param name="Delay"></param>
+        public override void SetDelay(char DelayName, char TriggerName, double Delay)
+        {
+            string DelayOutput = DelayMap[DelayName.ToString()];
+            string TriggerOutput = DelayMap[TriggerName.ToString()];
+            SetDelay(DelayOutput, TriggerOutput, Delay);
+        }
+
+        /// <summary>
+        /// Sets paired delays for pulse generation.
+        /// </summary>
+        /// <param name="DelayPair"></param>
+        /// <param name="TriggerName"></param>
+        /// <param name="Delay"></param>
+        /// <param name="Width"></param>
+        public override void SetDelayPulse(Tuple<char, char> DelayPair, char TriggerName, double Delay, double Width)
+        {
+            string DelayOutput1 = DelayMap[DelayPair.Item1.ToString()];
+            string DelayOutput2 = DelayMap[DelayPair.Item2.ToString()];
+            string TriggerOutput = DelayMap[TriggerName.ToString()];
+            SetDelay(DelayOutput1, TriggerOutput, Delay);
+            SetDelay(DelayOutput2, DelayOutput1, Width);
+        }
+
+        /// <summary>
+        /// Internal use only - calls function to update property and write to device.
+        /// </summary>
+        /// <param name="DelayOutput"></param>
+        /// <param name="TriggerOutput"></param>
+        /// <param name="Delay"></param>
+        private void SetDelay(string DelayOutput, string TriggerOutput, double Delay)
+        {
+            switch (DelayOutput)
+            {
+                case AOutput:
+                    SetADelay(Delay, TriggerOutput);
+                    break;
+                case BOutput:
+                    SetBDelay(Delay, TriggerOutput);
+                    break;
+                case COutput:
+                    SetCDelay(Delay, TriggerOutput);
+                    break;
+                case DOutput:
+                    SetDDelay(Delay, TriggerOutput);
+                    break;
+                default:
+                    throw new ArgumentException("Illegal delay output given.");
+            }
+        }
+
+        /// <summary>
+        /// Internal use only - writes delay to device.
+        /// </summary>
+        /// <param name="DelayOutput"></param>
+        /// <param name="setting"></param>
         private void SetDelay(string DelayOutput, string setting)
         {
             string command = SetDelayTimeCommand + DelayOutput + "," + setting;
             GPIBProvider.LoggedWrite(GPIBAddress, command);
         }
 
+        /// <summary>
+        /// Sets A delay, may be used externally.
+        /// </summary>
+        /// <param name="delay"></param>
+        /// <param name="relative"></param>
         public void SetADelay(double delay, string relative = T0Output)
         {
             ADelay = relative + "," + delay.ToString();
