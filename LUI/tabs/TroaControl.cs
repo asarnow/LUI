@@ -166,12 +166,14 @@ namespace LUI.tabs
 
         struct ProgressObject
         {
-            public ProgressObject(object Data, Dialog Status)
+            public ProgressObject(object Data, double Delay, Dialog Status)
             {
                 this.Data = Data;
+                this.Delay = Delay;
                 this.Status = Status;
             }
-            public readonly object Data;  
+            public readonly object Data;
+            public readonly double Delay;
             public readonly Dialog Status;
         }
 
@@ -255,7 +257,7 @@ namespace LUI.tabs
 
             int TotalScans = N + Times.Count * N;
 
-            var progress = new ProgressObject(null, Dialog.PROGRESS);
+            var progress = new ProgressObject(null, 0, Dialog.PROGRESS);
             worker.ReportProgress(0, progress);
 
             int[] DataBuffer = new int[Commander.Camera.AcqSize];
@@ -270,12 +272,13 @@ namespace LUI.tabs
 
                 uint ret = Commander.Flash(DataBuffer);
 
-                progress = new ProgressObject(DataBuffer, Dialog.PROGRESS_FLASH);
+                progress = new ProgressObject(DataBuffer, 0, Dialog.PROGRESS_FLASH);
                 worker.ReportProgress((i+1) / TotalScans, progress);
             }
 
             for (int i = 0; i < Times.Count; i++)
             {
+                double Delay = Times[i];
                 for (int j = 0; j < N; j++)
                 {
                     if (worker.CancellationPending)
@@ -286,13 +289,13 @@ namespace LUI.tabs
 
                     uint ret = Commander.Trans(DataBuffer);
 
-                    progress = new ProgressObject(DataBuffer, Dialog.PROGRESS_TRANS);
+                    progress = new ProgressObject(DataBuffer, Delay, Dialog.PROGRESS_TRANS);
                     worker.ReportProgress( (half + (i+1) * (j+1)) / TotalScans , progress);
                 }
             }
 
             // If N is odd, need 1 more GS scan in the second half.
-            int half2 = N % 2 != 0 ? half : half + 1;
+            int half2 = N % 2 == 0 ? half : half + 1;
 
             for (int i = 0; i < half2; i++)
             {
@@ -304,7 +307,7 @@ namespace LUI.tabs
 
                 uint ret = Commander.Flash(DataBuffer);
 
-                progress = new ProgressObject(DataBuffer, Dialog.PROGRESS_FLASH);
+                progress = new ProgressObject(DataBuffer, 0, Dialog.PROGRESS_FLASH);
                 worker.ReportProgress( (half + (N * Times.Count) + (i+1)) / TotalScans , progress);
             }
 
@@ -321,6 +324,7 @@ namespace LUI.tabs
                 case Dialog.PROGRESS_FLASH:
                     break;
                 case Dialog.PROGRESS_TRANS:
+                    //TODO Plot diff from current GS average
                     break;
             }
         }
@@ -338,6 +342,8 @@ namespace LUI.tabs
             }
             else
             {
+                //TODO Diff all TS from final GS average
+                //TODO Save data
                 ProgressLabel.Text = "Complete";
             }
             StatusProgress.Value = 100;
