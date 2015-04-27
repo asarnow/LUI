@@ -42,35 +42,7 @@ namespace LUI.tabs
                 set
                 {
                     _DDG = value;
-                    Delays = (string[])_DDG.Type.GetField("Delays", BindingFlags.Public | BindingFlags.Static).GetValue(null);
-                    Triggers = (string[])_DDG.Type.GetField("Triggers", BindingFlags.Public | BindingFlags.Static).GetValue(null);
                     NotifyPropertyChanged();
-                }
-            }
-
-            private string[] _Delays;
-            public string[] Delays
-            {
-                get
-                {
-                    return _Delays;
-                }
-                private set
-                {
-                    _Delays = value;
-                }
-            }
-
-            private string[] _Triggers;
-            public string[] Triggers
-            {
-                get
-                {
-                    return _Triggers;
-                }
-                private set
-                {
-                    _Triggers = value;
                 }
             }
 
@@ -155,13 +127,29 @@ namespace LUI.tabs
 
         struct WorkArgs
         {
-            public WorkArgs(int N, IList<double> Times)
+            public WorkArgs(int N, IList<double> Times, RoleRow PrimaryDelay, RoleRow Gate)
             {
                 this.N = N;
                 this.Times = new List<double>(Times);
+                this.PrimaryDelayName = PrimaryDelay.Delay[0];
+                this.TriggerName = PrimaryDelay.Trigger[0];
+                //this.GateName = new Tuple<char, char>(Gate.Delay[0], Gate.Delay[1]);
+                //this.GateTriggerName = Gate.Trigger[0];
+                //this.Gate = Gate.DelayValue;
+                //this.GateDelay = Gate.DelayValue;
+                this.GateName = null;
+                this.GateTriggerName = '\0';
+                this.Gate = double.NaN;
+                this.GateDelay = double.NaN;
             }
             public readonly int N;
             public readonly IList<double> Times;
+            public readonly char PrimaryDelayName;
+            public readonly char TriggerName;
+            public readonly Tuple<char,char> GateName;
+            public readonly char GateTriggerName;
+            public readonly double GateDelay;
+            public readonly double Gate;
         }
 
         struct ProgressObject
@@ -184,6 +172,8 @@ namespace LUI.tabs
 
         private BindingList<RoleRow> RoleList = new BindingList<RoleRow>();
         IList<double> Times { get; set; }
+        RoleRow PrimaryDelay;
+        RoleRow Gate;
 
         public TroaControl(LuiConfig Config) : base(Config)
         {
@@ -194,13 +184,13 @@ namespace LUI.tabs
             RoleListView.DefaultValuesNeeded += DDGListView_DefaultValuesNeeded;
             RoleListView.DataSource = new BindingSource(RoleList, null);
 
-            RoleRow PrimaryDelay = new RoleRow();
+            PrimaryDelay = new RoleRow();
             PrimaryDelay.Role = "Primary Delay";
             RoleList.Add(PrimaryDelay);
 
-            RoleRow Gate = new RoleRow();
+            Gate = new RoleRow();
             Gate.Role = "Gate";
-            RoleList.Add(Gate);
+            //RoleList.Add(Gate);
 
             PrimaryDelay.PropertyChanged += Role_PropertyChanged;
             Gate.PropertyChanged += Role_PropertyChanged;
@@ -240,25 +230,29 @@ namespace LUI.tabs
             worker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(WorkComplete);
             worker.WorkerSupportsCancellation = true;
             worker.WorkerReportsProgress = true;
-            worker.RunWorkerAsync(new WorkArgs(N, Times));
+            worker.RunWorkerAsync(new WorkArgs(N, Times, PrimaryDelay, Gate));
         }
 
         protected override void DoWork(object sender, DoWorkEventArgs e)
         {
             var args = (WorkArgs)e.Argument;
-            Commander.Camera.AcquisitionMode = AndorCamera.AcquisitionModeSingle;
-            Commander.Camera.TriggerMode = AndorCamera.TriggerModeExternalExposure;
-            Commander.Camera.DDGTriggerMode = AndorCamera.DDGTriggerModeExternal;
-            Commander.Camera.ReadMode = AndorCamera.ReadModeFVB;
+            // Set camera modes.
+            if (Commander.Camera is AndorCamera)
+            {
+                Commander.Camera.AcquisitionMode = AndorCamera.AcquisitionModeSingle;
+                Commander.Camera.TriggerMode = AndorCamera.TriggerModeExternalExposure;
+                Commander.Camera.DDGTriggerMode = AndorCamera.DDGTriggerModeExternal;
+                Commander.Camera.ReadMode = AndorCamera.ReadModeFVB;
+            }
 
-            int N = args.N;
+            int N = args.N; // Save typing for later.
             int half = N / 2; // Integer division rounds down.
             IList<double> Times = args.Times;
 
             int TotalScans = N + Times.Count * N;
 
             var progress = new ProgressObject(null, 0, Dialog.PROGRESS);
-            worker.ReportProgress(0, progress);
+            worker.ReportProgress(0, progress); // Show zero progress.
 
             int[] DataBuffer = new int[Commander.Camera.AcqSize];
 
@@ -273,12 +267,14 @@ namespace LUI.tabs
                 uint ret = Commander.Flash(DataBuffer);
 
                 progress = new ProgressObject(DataBuffer, 0, Dialog.PROGRESS_FLASH);
-                worker.ReportProgress((i+1) / TotalScans, progress);
+                worker.ReportProgress((i+1) / TotalScans, progress); // Handle new data.
             }
 
             for (int i = 0; i < Times.Count; i++)
             {
                 double Delay = Times[i];
+                progress = new ProgressObject(null, Delay, Dialog.PROGRESS);
+                worker.ReportProgress((half + i * N) / TotalScans, progress); // Display current delay.
                 for (int j = 0; j < N; j++)
                 {
                     if (worker.CancellationPending)
@@ -287,10 +283,12 @@ namespace LUI.tabs
                         return;
                     }
 
+                    Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, Delay); // Set delay time.
+                    
                     uint ret = Commander.Trans(DataBuffer);
 
                     progress = new ProgressObject(DataBuffer, Delay, Dialog.PROGRESS_TRANS);
-                    worker.ReportProgress( (half + (i+1) * (j+1)) / TotalScans , progress);
+                    worker.ReportProgress( (half + (i+1) * (j+1)) / TotalScans , progress); // Handle new data.
                 }
             }
 
@@ -320,10 +318,14 @@ namespace LUI.tabs
             switch (progress.Status)
             {
                 case Dialog.PROGRESS:
+                    PrimaryDelay.DelayValue = progress.Delay;
                     break;
                 case Dialog.PROGRESS_FLASH:
+                    //TODO Add data to store
+                    //TODO Add to current GS average
                     break;
                 case Dialog.PROGRESS_TRANS:
+                    //TODO Add data to store
                     //TODO Plot diff from current GS average
                     break;
             }
@@ -379,13 +381,22 @@ namespace LUI.tabs
             var dgvRow = RoleListView.Rows[FindRowByRoleName(row.Role)];
             if (e.PropertyName == "DDG") // Changed selected DDG
             {
+                IDigitalDelayGenerator DDG = (IDigitalDelayGenerator)Config.GetObject(row.DDG);
                 // Re-populate the available delay and trigger choices.
                 var cell = (DataGridViewComboBoxCell)dgvRow.Cells["Delay"];
                 cell.Items.Clear();
-                foreach (string d in row.Delays) cell.Items.Add(d);
+                if (row == PrimaryDelay)
+                {
+                    Commander.DDG = DDG;
+                    foreach (string d in DDG.Delays) cell.Items.Add(d);
+                }
+                else if (row == Gate)
+                {
+                    foreach (string d in DDG.DelayPairs) cell.Items.Add(d);
+                }
                 cell = (DataGridViewComboBoxCell)dgvRow.Cells["Trigger"];
                 cell.Items.Clear();
-                foreach (string d in row.Triggers) cell.Items.Add(d);
+                foreach (string d in DDG.Triggers) cell.Items.Add(d);
             }
             else if (e.PropertyName == "Delay" || e.PropertyName == "Trigger" || e.PropertyName == "DelayValue")
             {
