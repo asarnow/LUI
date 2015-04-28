@@ -33,6 +33,8 @@ namespace LUI.tabs
             Commander.Camera = new DummyCamera();
             Commander.BeamFlag = new DummyBeamFlags();
             InitializeComponent();
+            Init();
+            CameraGain.ValueChanged += CameraGain_ValueChanged;
             Collect.Click += Collect_Click;
             Abort.Click += Abort_Click;
             Clear.Click += Clear_Click;
@@ -45,11 +47,21 @@ namespace LUI.tabs
 
         public LuiTab() : this(null) { }
 
+        private void Init()
+        {
+            SuspendLayout();
+            //Panel DummyWidth = new Panel();
+            //DummyWidth.Height = 0;
+            //DummyWidth.Width = CommonObjectPanel.Width;
+            //CommonObjectPanel.Controls.Add(DummyWidth);
+            ResumeLayout();
+        }
+
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            ObjectSelector.CameraChanged += HandleCameraChanged;
-            ObjectSelector.BeamFlagsChanged += HandleBeamFlagsChanged;
+            CameraBox.ObjectChanged += HandleCameraChanged;
+            BeamFlagBox.ObjectChanged += HandleBeamFlagsChanged;
 
             if (!IsInDesignMode())
                 HandleParametersChanged(this, EventArgs.Empty);
@@ -60,34 +72,48 @@ namespace LUI.tabs
 
         public virtual void HandleParametersChanged(object sender, EventArgs e)
         {
-            var selectedCamera = ObjectSelector.SelectedCamera;
-            ObjectSelector.Cameras.Items.Clear();
-            foreach (var p in Config.GetParameters(typeof(CameraParameters))) 
-                ObjectSelector.Cameras.Items.Add(p);
+            var selectedCamera = CameraBox.SelectedObject;
+            CameraBox.Objects.Items.Clear();
+            foreach (var p in Config.GetParameters(typeof(CameraParameters)))
+                CameraBox.Objects.Items.Add(p);
             // One of next two lines will trigger CameraChanged event.
-            ObjectSelector.SelectedCamera = selectedCamera;
-            if (ObjectSelector.Cameras.SelectedItem == null) ObjectSelector.Cameras.SelectedIndex = 0;
+            CameraBox.SelectedObject = selectedCamera;
+            if (CameraBox.Objects.SelectedItem == null) CameraBox.Objects.SelectedIndex = 0;
 
-            var selectedBeamFlags = ObjectSelector.BeamFlags.SelectedItem;
-            ObjectSelector.BeamFlags.Items.Clear();
+            var selectedBeamFlags = BeamFlagBox.SelectedObject;
+            BeamFlagBox.Objects.Items.Clear();
             foreach (var p in Config.GetParameters(typeof(BeamFlagsParameters)))
-                ObjectSelector.BeamFlags.Items.Add(p);
-            ObjectSelector.BeamFlags.SelectedItem = selectedBeamFlags;
-            if (ObjectSelector.BeamFlags.SelectedItem == null) ObjectSelector.BeamFlags.SelectedIndex = 0;
+                BeamFlagBox.Objects.Items.Add(p);
+            BeamFlagBox.SelectedObject = selectedBeamFlags;
+            if (BeamFlagBox.Objects.SelectedItem == null) BeamFlagBox.Objects.SelectedIndex = 0;
         }
 
         public virtual void HandleCameraChanged(object sender, EventArgs e)
         {
-            Commander.Camera = (ICamera)Config.GetObject((CameraParameters)ObjectSelector.SelectedCamera);
-
+            // Replace the Camera property in the Commander.
+            Commander.Camera = (ICamera)Config.GetObject((CameraParameters)CameraBox.SelectedObject);
+            if (Commander.Camera.HasIntensifier)
+            {
+                CameraGain.Enabled = true;
+                CameraGain.Minimum = Commander.Camera.MinIntensifierGain;
+                CameraGain.Maximum = Commander.Camera.MaxIntensifierGain;
+                CameraGain.Value = Commander.Camera.IntensifierGain;
+            }
+            else
+            {
+                CameraGain.Enabled = false;
+                CameraGain.Minimum = 0;
+                CameraGain.Maximum = 0;
+                CameraGain.Value = 0;
+            }
             // Update the graph with new camera's calibrated X-axis.
-            HandleCalibrationChanged(sender, new LuiObjectParametersEventArgs(ObjectSelector.SelectedCamera));
+            HandleCalibrationChanged(sender, new LuiObjectParametersEventArgs(CameraBox.SelectedObject));
         }
 
         public virtual void HandleCalibrationChanged(object sender, LuiObjectParametersEventArgs e)
         {
             // If a different camera is selected, do nothing (until that camera is selected by the user).
-            if (!ObjectSelector.SelectedCamera.Equals(e.Argument)) return;
+            if (!CameraBox.SelectedObject.Equals(e.Argument)) return;
 
             Graph.XLeft = (float)Commander.Camera.Calibration[0];
             Graph.XRight = (float)Commander.Camera.Calibration[Commander.Camera.Calibration.Length - 1];
@@ -98,7 +124,7 @@ namespace LUI.tabs
         public virtual void HandleBeamFlagsChanged(object sender, EventArgs e)
         {
             if (Commander.BeamFlag != null) Commander.BeamFlag.CloseLaserAndFlash();
-            Commander.BeamFlag = (AbstractBeamFlags)Config.GetObject(ObjectSelector.SelectedBeamFlags);
+            Commander.BeamFlag = (AbstractBeamFlags)Config.GetObject(BeamFlagBox.SelectedObject);
         }
 
         protected virtual void Collect_Click(object sender, EventArgs e)
@@ -144,6 +170,12 @@ namespace LUI.tabs
         private void CloseLamp_Click(object sender, EventArgs e)
         {
             Commander.BeamFlag.CloseFlash();
+        }
+
+        private void CameraGain_ValueChanged(object sender, EventArgs e)
+        {
+            //TODO Safety check
+            Commander.Camera.IntensifierGain = (int)CameraGain.Value;
         }
 
         protected virtual void Graph_Click(object sender, MouseEventArgs e)

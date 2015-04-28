@@ -35,15 +35,15 @@
             this.CommandsBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NScan)).BeginInit();
             this.BeamFlagBox.SuspendLayout();
-            this.panel1.SuspendLayout();
+            this.ChildArea.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.CountsLabel);
-            this.panel1.Controls.Add(this.CountsDisplay);
-            this.panel1.Controls.SetChildIndex(this.CountsDisplay, 0);
-            this.panel1.Controls.SetChildIndex(this.CountsLabel, 0);
+            this.ChildArea.Controls.Add(this.CountsLabel);
+            this.ChildArea.Controls.Add(this.CountsDisplay);
+            this.ChildArea.Controls.SetChildIndex(this.CountsDisplay, 0);
+            this.ChildArea.Controls.SetChildIndex(this.CountsLabel, 0);
             // 
             // Graph
             // 
@@ -80,8 +80,8 @@
             this.CommandsBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NScan)).EndInit();
             this.BeamFlagBox.ResumeLayout(false);
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
+            this.ChildArea.ResumeLayout(false);
+            this.ChildArea.PerformLayout();
             this.ResumeLayout(false);
 
         }

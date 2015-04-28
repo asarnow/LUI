@@ -156,7 +156,7 @@ namespace LUI.tabs
         public override void HandleCalibrationChanged(object sender, LuiObjectParametersEventArgs args)
         {
             // If a different camera is selected, do nothing (until that camera is selected by the user).
-            if (!ObjectSelector.SelectedCamera.Equals(args.Argument)) return;
+            if (!CameraBox.SelectedObject.Equals(args.Argument)) return;
 
             Graph.XLeft = (float)Commander.Camera.Calibration[0];
             Graph.XRight = (float)Commander.Camera.Calibration[Commander.Camera.Calibration.Length - 1];
@@ -453,7 +453,7 @@ namespace LUI.tabs
             Tuple<double, double, double> fitdata = Data.LinearLeastSquares(CalibrationList.Select(it => (double)it.Channel).ToArray(),
                 CalibrationList.Select(it => (double)it.Wavelength).ToArray());
             Commander.Camera.Calibration = Data.Calibrate((int)Commander.Camera.Width, fitdata.Item1, fitdata.Item2);
-            CalibrationChanged.Raise(this, new LuiObjectParametersEventArgs(ObjectSelector.SelectedCamera));            
+            CalibrationChanged.Raise(this, new LuiObjectParametersEventArgs(CameraBox.SelectedObject));            
             Slope.Text = fitdata.Item1.ToString("n4");
             Intercept.Text = fitdata.Item2.ToString("n4");
             RSquared.Text = fitdata.Item3.ToString("n6");

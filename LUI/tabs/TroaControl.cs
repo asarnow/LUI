@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using lasercom.camera;
 using lasercom.ddg;
 using LUI.config;
+using lasercom;
 
 namespace LUI.tabs
 {
@@ -420,7 +421,14 @@ namespace LUI.tabs
 
         private void LoadTimes_Click(object sender, EventArgs e)
         {
-            // Load time series file.
+            OpenFileDialog openFile = new OpenFileDialog();
+            openFile.Filter = "Text File|*.txt|All Files|*.*";
+            openFile.Title = "Load Time Series File";
+            openFile.ShowDialog();
+
+            if (openFile.FileName == "") return;
+
+            Times = Util.ReadTimesFile(openFile.FileName);   
         }
     }
 }

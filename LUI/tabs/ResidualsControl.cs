@@ -98,24 +98,9 @@ namespace LUI.tabs
 
         public override void HandleCameraChanged(object sender, EventArgs e)
         {
-            Commander.Camera = (ICamera)Config.GetObject((CameraParameters)ObjectSelector.SelectedCamera);
-
-            // Update the graph with new camera's calibrated X-axis.
-            HandleCalibrationChanged(sender, new LuiObjectParametersEventArgs(ObjectSelector.SelectedCamera));
-
+            base.HandleCameraChanged(sender, e);
             LowerBound = (int)Commander.Camera.Width / 6;
             UpperBound = (int)Commander.Camera.Width * 5 / 6;
-
-            if (Commander.Camera.HasIntensifier)
-            {
-                CameraGain.Minimum = Commander.Camera.MinIntensifierGain;
-                CameraGain.Maximum = Commander.Camera.MaxIntensifierGain;
-                CameraGain.Value = Commander.Camera.IntensifierGain;
-            }
-            else
-            {
-                CameraGain.Enabled = false;
-            }
         }
 
         /// <summary>
@@ -445,12 +430,6 @@ namespace LUI.tabs
         private void NAverage_ValueChanged(object sender, EventArgs e)
         {
             PeakNLabel.Text = NAverage.Value.ToString("n") + " Point Average";
-        }
-
-        private void CameraGain_ValueChanged(object sender, EventArgs e)
-        {
-            //TODO Safety check
-            Commander.Camera.IntensifierGain = (int)CameraGain.Value;
         }
 
         private void SaveProfile_Click(object sender, EventArgs e)

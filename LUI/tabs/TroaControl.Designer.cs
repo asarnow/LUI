@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.Label GainLabel;
             this.RoleListView = new System.Windows.Forms.DataGridView();
             this.Role = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DDG = new System.Windows.Forms.DataGridViewComboBoxColumn();
@@ -36,39 +35,22 @@
             this.Trigger = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.DelayValue = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.LoadTimes = new System.Windows.Forms.Button();
-            this.CameraGain = new System.Windows.Forms.NumericUpDown();
-            GainLabel = new System.Windows.Forms.Label();
             this.ParentPanel.SuspendLayout();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NScan)).BeginInit();
-            this.BeamFlagBox.SuspendLayout();
-            this.panel1.SuspendLayout();
+            this.ChildArea.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.RoleListView)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.CameraGain)).BeginInit();
             this.SuspendLayout();
-            // 
-            // CommandsBox
-            // 
-            this.CommandsBox.Controls.Add(GainLabel);
-            this.CommandsBox.Controls.Add(this.CameraGain);
-            this.CommandsBox.Controls.SetChildIndex(this.Abort, 0);
-            this.CommandsBox.Controls.SetChildIndex(this.Collect, 0);
-            this.CommandsBox.Controls.SetChildIndex(this.NScan, 0);
-            this.CommandsBox.Controls.SetChildIndex(this.Clear, 0);
-            this.CommandsBox.Controls.SetChildIndex(this.CameraGain, 0);
-            this.CommandsBox.Controls.SetChildIndex(GainLabel, 0);
             // 
             // NScan
             // 
             this.NScan.Margin = new System.Windows.Forms.Padding(9, 7, 9, 7);
             // 
-            // panel1
+            // ChildArea
             // 
-            this.panel1.Controls.Add(this.LoadTimes);
-            this.panel1.Controls.Add(this.RoleListView);
-            this.panel1.Controls.SetChildIndex(this.RoleListView, 0);
-            this.panel1.Controls.SetChildIndex(this.LoadTimes, 0);
+            this.ChildArea.Controls.Add(this.LoadTimes);
+            this.ChildArea.Controls.Add(this.RoleListView);
             // 
             // Graph
             // 
@@ -91,7 +73,7 @@
             this.Trigger,
             this.DelayValue});
             this.RoleListView.Location = new System.Drawing.Point(4, 7);
-            this.RoleListView.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.RoleListView.Margin = new System.Windows.Forms.Padding(4);
             this.RoleListView.MultiSelect = false;
             this.RoleListView.Name = "RoleListView";
             this.RoleListView.RowHeadersVisible = false;
@@ -149,50 +131,20 @@
             this.LoadTimes.UseVisualStyleBackColor = true;
             this.LoadTimes.Click += new System.EventHandler(this.LoadTimes_Click);
             // 
-            // GainLabel
-            // 
-            GainLabel.AutoSize = true;
-            GainLabel.Location = new System.Drawing.Point(253, 222);
-            GainLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            GainLabel.Name = "GainLabel";
-            GainLabel.Size = new System.Drawing.Size(91, 17);
-            GainLabel.TabIndex = 8;
-            GainLabel.Text = "Camera Gain";
-            // 
-            // CameraGain
-            // 
-            this.CameraGain.Location = new System.Drawing.Point(166, 220);
-            this.CameraGain.Margin = new System.Windows.Forms.Padding(4);
-            this.CameraGain.Maximum = new decimal(new int[] {
-            500,
-            0,
-            0,
-            0});
-            this.CameraGain.Name = "CameraGain";
-            this.CameraGain.Size = new System.Drawing.Size(79, 22);
-            this.CameraGain.TabIndex = 7;
-            this.CameraGain.Value = new decimal(new int[] {
-            500,
-            0,
-            0,
-            0});
-            // 
             // TroaControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.Name = "TroaControl";
             this.ParentPanel.ResumeLayout(false);
+            this.ParentPanel.PerformLayout();
             this.StatusBox.ResumeLayout(false);
             this.StatusBox.PerformLayout();
             this.CommandsBox.ResumeLayout(false);
             this.CommandsBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NScan)).EndInit();
-            this.BeamFlagBox.ResumeLayout(false);
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
+            this.ChildArea.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.RoleListView)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.CameraGain)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -206,7 +158,6 @@
         private System.Windows.Forms.DataGridViewComboBoxColumn Trigger;
         private System.Windows.Forms.DataGridViewTextBoxColumn DelayValue;
         private System.Windows.Forms.Button LoadTimes;
-        private System.Windows.Forms.NumericUpDown CameraGain;
 
     }
 }

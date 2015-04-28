@@ -69,6 +69,21 @@ namespace lasercom.objects
         {
             return typeof(LuiObjectParameters).GetSubclasses(true).ToArray();
         }
+
+        public override bool Equals(object other)
+        {
+            if (other == null) return false;
+            return Equals(other as LuiObjectParameters);
+        }
+
+        public virtual bool Equals(LuiObjectParameters other)
+        {
+            if (other == null || GetType() != other.GetType())
+                return false;
+            bool iseq = Type == other.Type &&
+                        Name == other.Name;
+            return iseq;
+        }
     }
 
     /// <summary>
@@ -112,10 +127,7 @@ namespace lasercom.objects
 
         public virtual bool Equals(P other)
         {
-            if (other == null || GetType() != other.GetType())
-                return false;
-            bool iseq = Type == other.Type &&
-                        Name == other.Name;
+            bool iseq = base.Equals(other);
             return iseq;
         }
 

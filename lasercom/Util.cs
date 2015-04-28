@@ -19,20 +19,17 @@ namespace lasercom
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        // Might throw IOException
-        public static List<string> ReadTimesFile(String filename)
+        public static IList<double> ReadTimesFile(String filename)
         {
-            List<string> times = new List<string>();
+            IList<double> times = new List<double>();
             foreach (string line in ReadLines(filename))
             {
                 line.Trim();
+                times.Add(double.Parse(line));
             }
             return times;
         }
 
-        // <summary>
-        // Throws IOException.
-        // </summary>
         public static IEnumerable<string> ReadLines(string filename)
         {
             using (TextReader tr = new StreamReader(filename))

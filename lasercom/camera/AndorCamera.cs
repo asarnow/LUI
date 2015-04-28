@@ -133,7 +133,7 @@ namespace lasercom.camera
         }
 
         private int _MCPGating;
-        public int MCPGating
+        public virtual int MCPGating
         {
             get { return _MCPGating; }
             set
@@ -172,7 +172,7 @@ namespace lasercom.camera
         }
 
         private int _NumberAccumulations;
-        public int NumberAccumulations
+        public virtual int NumberAccumulations
         {
             get { return _NumberAccumulations; }
             set
@@ -183,7 +183,7 @@ namespace lasercom.camera
         }
 
         private ImageArea _Image;
-        public ImageArea Image
+        public virtual ImageArea Image
         {
             get { return _Image; }
             set 

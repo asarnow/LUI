@@ -135,6 +135,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows.Forms" />
@@ -145,6 +146,10 @@
   <ItemGroup>
     <Compile Include="config\TextBoxAppender.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="controls\designer\ObjectCommandPanelDesigner.cs" />
+    <Compile Include="controls\ObjectCommandPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="controls\panel\config\BeamFlagsConfigPanel.cs">
       <SubType>Component</SubType>
     </Compile>

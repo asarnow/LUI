@@ -14,7 +14,7 @@ namespace lasercom.camera
         new AndorSDK AndorSdk = null;
 
         private int _ReadMode;
-        new public int ReadMode
+        override public int ReadMode
         {
             get { return _ReadMode; }
             set
@@ -24,7 +24,7 @@ namespace lasercom.camera
         }
 
         private int _AcquisitionMode;
-        new public int AcquisitionMode
+        override public int AcquisitionMode
         {
             get { return _AcquisitionMode; }
             set
@@ -34,7 +34,7 @@ namespace lasercom.camera
         }
 
         private int _TriggerMode;
-        new public int TriggerMode
+        override public int TriggerMode
         {
             get { return _TriggerMode; }
             set
@@ -44,7 +44,7 @@ namespace lasercom.camera
         }
 
         private int _TriggerInvert;
-        new public int TriggerInvert
+        override public int TriggerInvert
         {
             get { return _TriggerInvert; }
             set
@@ -54,7 +54,7 @@ namespace lasercom.camera
         }
 
         private float _TriggerLevel;
-        new public float TriggerLevel
+        override public float TriggerLevel
         {
             get { return _TriggerLevel; }
             set
@@ -64,7 +64,7 @@ namespace lasercom.camera
         }
 
         private int _DDGTriggerMode;
-        new public int DDGTriggerMode
+        override public int DDGTriggerMode
         {
             get { return _DDGTriggerMode; }
             set
@@ -74,7 +74,7 @@ namespace lasercom.camera
         }
 
         private int _GateMode;
-        new public int GateMode
+        override public int GateMode
         {
             get { return _GateMode; }
             set
@@ -83,7 +83,7 @@ namespace lasercom.camera
             }
         }
 
-        new public bool HasIntensifier
+        override public bool HasIntensifier
         {
             get
             {
@@ -92,7 +92,7 @@ namespace lasercom.camera
         }
 
         private int _MCPGating;
-        new public int MCPGating
+        override public int MCPGating
         {
             get { return _MCPGating; }
             set
@@ -102,7 +102,7 @@ namespace lasercom.camera
         }
 
         private int _MCPGain;
-        new public int IntensifierGain
+        override public int IntensifierGain
         {
             get { return _MCPGain; }
             set
@@ -112,7 +112,7 @@ namespace lasercom.camera
         }
 
         private int _NumberAccumulations;
-        new public int NumberAccumulations
+        override public int NumberAccumulations
         {
             get { return _NumberAccumulations; }
             set
@@ -122,7 +122,7 @@ namespace lasercom.camera
         }
 
         private ImageArea _Image;
-        new public ImageArea Image
+        override public ImageArea Image
         {
             get { return _Image; }
             set
