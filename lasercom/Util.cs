@@ -19,29 +19,6 @@ namespace lasercom
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public static IList<double> ReadTimesFile(String filename)
-        {
-            IList<double> times = new List<double>();
-            foreach (string line in ReadLines(filename))
-            {
-                line.Trim();
-                times.Add(double.Parse(line));
-            }
-            return times;
-        }
-
-        public static IEnumerable<string> ReadLines(string filename)
-        {
-            using (TextReader tr = new StreamReader(filename))
-            {
-                string line;
-                while ((line = tr.ReadLine()) != null)
-                {
-                    yield return line;
-                }
-            }
-        }
-
         /// <summary>
         /// Returns the name of a property as a string.
         /// Usage: GetPropertyName(() => Property)

@@ -12,6 +12,7 @@ using lasercom.camera;
 using lasercom.ddg;
 using LUI.config;
 using lasercom;
+using lasercom.io;
 
 namespace LUI.tabs
 {
@@ -428,7 +429,7 @@ namespace LUI.tabs
 
             if (openFile.FileName == "") return;
 
-            Times = Util.ReadTimesFile(openFile.FileName);   
+            Times = FileIO.ReadTimesFile(openFile.FileName);   
         }
     }
 }
