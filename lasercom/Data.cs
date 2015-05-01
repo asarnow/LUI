@@ -108,7 +108,7 @@ namespace lasercom
         {
             double[] OD = new double[Ground.Length];
             for (int i = 0; i < OD.Length; i++)
-                OD[i] = Math.Log10((double)(Ground[i] - Dark[i]) / (double)(Trans[i] - Dark[i]));
+                OD[i] = Math.Log10((double)(Trans[i] - Dark[i]) / (double)(Ground[i] - Dark[i]));
             return OD;
         }
 
@@ -122,7 +122,7 @@ namespace lasercom
         {
             double[] OD = new double[Ground.Length];
             for (int i = 0; i < OD.Length; i++)
-                OD[i] = Math.Log10((double)(Ground[i]) / (double)(Trans[i]));
+                OD[i] = Math.Log10((double)(Trans[i]) / (double)(Ground[i]));
             return OD;
         }
 
