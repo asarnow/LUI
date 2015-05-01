@@ -93,7 +93,7 @@ namespace lasercom.io
             File.Copy(tempfile, filename, true);
         }
 
-        public void WriteColumn(int[] data)
+        public void WriteNextColumn(int[] data)
         {
             long[] start = { 0, ColCursor };
             long[] count = { M, 1 };
@@ -106,7 +106,7 @@ namespace lasercom.io
             RowCursor = 0;
         }
 
-        public void WriteColumn(double[] data)
+        public void WriteNextColumn(double[] data)
         {
             long[] start = { 0, ColCursor };
             long[] count = { M, 1 };
@@ -119,7 +119,7 @@ namespace lasercom.io
             RowCursor = 0;
         }
 
-        public void WriteRow(int[] data)
+        public void WriteNextRow(int[] data)
         {
             long[] start = { RowCursor, 0 };
             long[] count = { 1, N };
@@ -141,7 +141,7 @@ namespace lasercom.io
             ColCursor = 0;
         }
 
-        public void WriteRow(double[] data)
+        public void WriteNextRow(double[] data)
         {
             long[] start = { RowCursor, 0 };
             long[] count = { 1, N };
@@ -173,9 +173,18 @@ namespace lasercom.io
             PrependMatlabHeader(_FileName);
         }
 
+        private void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                Close();
+            }
+        }
+
         public void Dispose()
         {
-            Close();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }

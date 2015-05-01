@@ -311,7 +311,7 @@ namespace DetectorTester
 
         private void WriteDataAsync(object data, DoWorkEventArgs e)
         {
-            OutFile.WriteRow((int[])data);
+            OutFile.WriteNextRow((int[])data);
         }
 
     }

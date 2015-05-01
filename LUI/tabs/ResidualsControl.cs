@@ -462,7 +462,7 @@ namespace LUI.tabs
                     {
                         MatFile mat = new MatFile(saveFile.FileName, "aln",
                             Light.Length, 1, "double");
-                        mat.WriteColumn(Light);
+                        mat.WriteNextColumn(Light);
                         mat.Dispose();
                     }
                     catch (IOException ex)
