@@ -13,6 +13,7 @@ using lasercom.ddg;
 using LUI.config;
 using lasercom;
 using lasercom.io;
+using System.IO;
 
 namespace LUI.tabs
 {
@@ -156,26 +157,27 @@ namespace LUI.tabs
 
         struct ProgressObject
         {
-            public ProgressObject(object Data, double Delay, Dialog Status)
+            public ProgressObject(int[] Data, double Delay, Dialog Status)
             {
                 this.Data = Data;
                 this.Delay = Delay;
                 this.Status = Status;
             }
-            public readonly object Data;
+            public readonly int[] Data;
             public readonly double Delay;
             public readonly Dialog Status;
         }
 
         public enum Dialog
         {
-            PROGRESS, PROGRESS_FLASH, PROGRESS_TRANS
+            PROGRESS, PROGRESS_TIME, PROGRESS_TIME_COMPLETE, PROGRESS_FLASH, PROGRESS_TRANS
         }
 
         private BindingList<RoleRow> RoleList = new BindingList<RoleRow>();
         IList<double> Times { get; set; }
         RoleRow PrimaryDelay;
         RoleRow Gate;
+        MatFile DataFile;
 
         public TroaControl(LuiConfig Config) : base(Config)
         {
@@ -237,6 +239,9 @@ namespace LUI.tabs
 
         protected override void DoWork(object sender, DoWorkEventArgs e)
         {
+            var progress = new ProgressObject(null, 0, Dialog.PROGRESS);
+            worker.ReportProgress(0, progress); // Show zero progress.
+
             var args = (WorkArgs)e.Argument;
             // Set camera modes.
             if (Commander.Camera is AndorCamera)
@@ -253,8 +258,22 @@ namespace LUI.tabs
 
             int TotalScans = N + Times.Count * N;
 
-            var progress = new ProgressObject(null, 0, Dialog.PROGRESS);
-            worker.ReportProgress(0, progress); // Show zero progress.
+            InitDataFile((int)Commander.Camera.AcqSize, TotalScans);
+
+            //TODO Dark progress
+            int[] DarkBuffer = Commander.Dark();
+            for (int i = 0; i < N - 1; i++)
+            {
+                if (worker.CancellationPending)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+
+                Data.Accumulate(DarkBuffer, Commander.Dark());
+                //TODO Dark scans progress
+            }
+
 
             int[] DataBuffer = new int[Commander.Camera.AcqSize];
 
@@ -275,7 +294,7 @@ namespace LUI.tabs
             for (int i = 0; i < Times.Count; i++)
             {
                 double Delay = Times[i];
-                progress = new ProgressObject(null, Delay, Dialog.PROGRESS);
+                progress = new ProgressObject(null, Delay, Dialog.PROGRESS_TIME);
                 worker.ReportProgress((half + i * N) / TotalScans, progress); // Display current delay.
                 for (int j = 0; j < N; j++)
                 {
@@ -292,6 +311,7 @@ namespace LUI.tabs
                     progress = new ProgressObject(DataBuffer, Delay, Dialog.PROGRESS_TRANS);
                     worker.ReportProgress( (half + (i+1) * (j+1)) / TotalScans , progress); // Handle new data.
                 }
+                progress = new ProgressObject(DataBuffer, Delay, Dialog.PROGRESS_TIME_COMPLETE);
             }
 
             // If N is odd, need 1 more GS scan in the second half.
@@ -317,18 +337,23 @@ namespace LUI.tabs
         protected override void WorkProgress(object sender, ProgressChangedEventArgs e)
         {
             var progress = (ProgressObject)e.UserState;
+            StatusProgress.Value = e.ProgressPercentage;
             switch (progress.Status)
             {
                 case Dialog.PROGRESS:
+                    break;
+                case Dialog.PROGRESS_TIME:
                     PrimaryDelay.DelayValue = progress.Delay;
                     break;
+                case Dialog.PROGRESS_TIME_COMPLETE:
+                    //Display(Data.DeltaOD(progress.Data,Accumulator));
+                    break;
                 case Dialog.PROGRESS_FLASH:
-                    //TODO Add data to store
-                    //TODO Add to current GS average
+                    DataFile.WriteNextColumn(progress.Data);
+                    //Data.Accummulate(Accumulator,progress.Data);
                     break;
                 case Dialog.PROGRESS_TRANS:
-                    //TODO Add data to store
-                    //TODO Plot diff from current GS average
+                    DataFile.WriteNextColumn(progress.Data);
                     break;
             }
         }
@@ -429,7 +454,22 @@ namespace LUI.tabs
 
             if (openFile.FileName == "") return;
 
-            Times = FileIO.ReadTimesFile(openFile.FileName);   
+            try
+            {
+                Times = FileIO.ReadTimesFile(openFile.FileName);
+            }
+            catch (IOException ex)
+            {
+                Log.Error(ex);
+                MessageBox.Show("Couldn't load times file at " + openFile.FileName);
+            }
+                
+        }
+
+        private void InitDataFile(int NumChannels, int NumScans)
+        {
+            string TempFileName = Path.GetTempFileName();
+            DataFile = new MatFile(TempFileName, "luidata", NumChannels, NumScans, "int32");
         }
     }
 }
