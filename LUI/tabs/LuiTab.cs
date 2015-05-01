@@ -13,11 +13,14 @@ using lasercom.objects;
 using LUI.config;
 using LUI.controls;
 using System.Reflection;
+using log4net;
 
 namespace LUI.tabs
 {
     public partial class LuiTab : UserControl
     {
+        protected static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         public Commander Commander { get; set; }
         public LuiConfig Config { get; set; }
         protected BackgroundWorker worker;
