@@ -9,7 +9,6 @@ namespace lasercom.io
 {
     public class MatFile:IDisposable
     {
-
         private readonly string _FileName;
         public string FileName
         {

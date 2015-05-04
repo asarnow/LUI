@@ -351,10 +351,12 @@ namespace LUI.tabs
             switch (progress.Status)
             {
                 case Dialog.INITIALIZE:
+                    ProgressLabel.Text = "Initializing...";
                     break;
                 case Dialog.PROGRESS:
                     break;
                 case Dialog.PROGRESS_DARK:
+                    ProgressLabel.Text = "Dark counts...";
                     break;
                 case Dialog.PROGRESS_TIME:
                     PrimaryDelay.DelayValue = progress.Delay;
@@ -363,10 +365,12 @@ namespace LUI.tabs
                     //Display(Data.DeltaOD(progress.Data,Accumulator));
                     break;
                 case Dialog.PROGRESS_FLASH:
+                    ProgressLabel.Text = "Ground state...";
                     DataFile.WriteNextColumn(progress.Data);
                     //Data.Accummulate(Accumulator,progress.Data);
                     break;
                 case Dialog.PROGRESS_TRANS:
+                    ProgressLabel.Text = "Kinetic series...";
                     DataFile.WriteNextColumn(progress.Data);
                     break;
             }
