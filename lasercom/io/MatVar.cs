@@ -57,14 +57,18 @@ namespace lasercom.io
         /// <param name="dim"></param>
         public void WriteNext(T[] data, long dim)
         {
-            if (data.Length != Dims[dim])
-                throw new ArgumentException("Data must be same length as specified dimension");
+            long[] count = Enumerable.Repeat(1L, Dims.Length).ToArray(); // Ones.
+            for (int i = 0; i < Dims.Length; i++)
+                if (i != dim) count[i] = Dims[i];
+
+            long RequiredLength = 1;
+            foreach (long l in count) RequiredLength *= l;
+
+            if (data.Length != RequiredLength)
+                throw new ArgumentException("Data size must match array dimension");
 
             long[] start = new long[Dims.Length];
             start[dim] = Cursor[dim];
-
-            long[] count = Enumerable.Repeat(1L, Dims.Length).ToArray();
-            count[dim] = data.Length;
 
             H5S.selectHyperslab(SpaceId, H5S.SelectOperator.SET, start, count);
             H5DataSpaceId memSpaceId = H5S.create_simple(count.Length, count);
