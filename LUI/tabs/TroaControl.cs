@@ -170,7 +170,7 @@ namespace LUI.tabs
 
         public enum Dialog
         {
-            PROGRESS, PROGRESS_TIME, PROGRESS_TIME_COMPLETE, PROGRESS_FLASH, PROGRESS_TRANS
+            INITIALIZE, PROGRESS, PROGRESS_DARK, PROGRESS_TIME, PROGRESS_TIME_COMPLETE, PROGRESS_FLASH, PROGRESS_TRANS
         }
 
         private BindingList<RoleRow> RoleList = new BindingList<RoleRow>();
@@ -239,11 +239,10 @@ namespace LUI.tabs
 
         protected override void DoWork(object sender, DoWorkEventArgs e)
         {
-            var progress = new ProgressObject(null, 0, Dialog.PROGRESS);
+            var progress = new ProgressObject(null, 0, Dialog.INITIALIZE);
             worker.ReportProgress(0, progress); // Show zero progress.
 
-            var args = (WorkArgs)e.Argument;
-            // Set camera modes.
+            // Set camera for external gate and full vertical binning.
             if (Commander.Camera is AndorCamera)
             {
                 Commander.Camera.AcquisitionMode = AndorCamera.AcquisitionModeSingle;
@@ -252,15 +251,21 @@ namespace LUI.tabs
                 Commander.Camera.ReadMode = AndorCamera.ReadModeFVB;
             }
 
+            var args = (WorkArgs)e.Argument;
             int N = args.N; // Save typing for later.
             int half = N / 2; // Integer division rounds down.
             IList<double> Times = args.Times;
 
-            int TotalScans = N + Times.Count * N;
+            // Total scans = dark scans + ground state scans + plus time series scans.
+            int TotalScans = 2*N + Times.Count * N;
 
+            // Create the data store.
             InitDataFile((int)Commander.Camera.AcqSize, TotalScans);
 
-            //TODO Dark progress
+            // Measure dark current.
+            progress = new ProgressObject(null, 0, Dialog.PROGRESS_DARK);
+            worker.ReportProgress(0, progress);
+
             int[] DarkBuffer = Commander.Dark();
             for (int i = 0; i < N - 1; i++)
             {
@@ -271,12 +276,16 @@ namespace LUI.tabs
                 }
 
                 Data.Accumulate(DarkBuffer, Commander.Dark());
-                //TODO Dark scans progress
+
+                progress = new ProgressObject(null, 0, Dialog.PROGRESS_DARK);
+                worker.ReportProgress((i + 1) / TotalScans, progress);
             }
+            Data.DivideArray(DarkBuffer, N);
 
-
+            // Buffer for acuisition data.
             int[] DataBuffer = new int[Commander.Camera.AcqSize];
 
+            // Ground state scans - first half.
             for (int i = 0; i < half; i++)
             {
                 if (worker.CancellationPending)
@@ -288,9 +297,10 @@ namespace LUI.tabs
                 uint ret = Commander.Flash(DataBuffer);
 
                 progress = new ProgressObject(DataBuffer, 0, Dialog.PROGRESS_FLASH);
-                worker.ReportProgress((i+1) / TotalScans, progress); // Handle new data.
+                worker.ReportProgress((N + (i+1)) / TotalScans, progress); // Handle new data.
             }
 
+            // Excited state scans.
             for (int i = 0; i < Times.Count; i++)
             {
                 double Delay = Times[i];
@@ -309,13 +319,13 @@ namespace LUI.tabs
                     uint ret = Commander.Trans(DataBuffer);
 
                     progress = new ProgressObject(DataBuffer, Delay, Dialog.PROGRESS_TRANS);
-                    worker.ReportProgress( (half + (i+1) * (j+1)) / TotalScans , progress); // Handle new data.
+                    worker.ReportProgress( (N + half + (i+1) * (j+1)) / TotalScans , progress); // Handle new data.
                 }
                 progress = new ProgressObject(DataBuffer, Delay, Dialog.PROGRESS_TIME_COMPLETE);
             }
 
-            // If N is odd, need 1 more GS scan in the second half.
-            int half2 = N % 2 == 0 ? half : half + 1;
+            // Ground state scans - second half.
+            int half2 = N % 2 == 0 ? half : half + 1; // If N is odd, need 1 more GS scan in the second half.
 
             for (int i = 0; i < half2; i++)
             {
@@ -328,7 +338,7 @@ namespace LUI.tabs
                 uint ret = Commander.Flash(DataBuffer);
 
                 progress = new ProgressObject(DataBuffer, 0, Dialog.PROGRESS_FLASH);
-                worker.ReportProgress( (half + (N * Times.Count) + (i+1)) / TotalScans , progress);
+                worker.ReportProgress( (N + half + (N * Times.Count) + (i+1)) / TotalScans , progress);
             }
 
 
@@ -340,7 +350,11 @@ namespace LUI.tabs
             StatusProgress.Value = e.ProgressPercentage;
             switch (progress.Status)
             {
+                case Dialog.INITIALIZE:
+                    break;
                 case Dialog.PROGRESS:
+                    break;
+                case Dialog.PROGRESS_DARK:
                     break;
                 case Dialog.PROGRESS_TIME:
                     PrimaryDelay.DelayValue = progress.Delay;
