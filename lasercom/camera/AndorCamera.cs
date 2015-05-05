@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Linq;
+
 #if x64
 using ATMCD64CS;
 #else
 using ATMCD32CS;
-using System.Linq;
+
 #endif
 
 

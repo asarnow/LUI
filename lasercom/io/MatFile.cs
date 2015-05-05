@@ -17,51 +17,25 @@ namespace lasercom.io
                 return _FileName;
             }
         }
-        private readonly H5FileId FileId;
-        private readonly H5GroupId GroupId;
-        private readonly H5DataTypeId TypeId;
-        private H5DataSpaceId SpaceId;
-        private H5DataSetId DataSetId;
-        private int M, N;
+        public readonly H5FileId FileId;
+        public readonly H5GroupId GroupId;
 
-        public int RowCursor { get; set; }
-        public int ColCursor { get; set; }
+        Dictionary<string, MatVar> Variables;
 
-        public MatFile(string fileName, string varname, int m, int n, string matlabClass)
+        public MatFile(string fileName)
         {
             _FileName = fileName;
             FileId = H5F.create(FileName, H5F.CreateMode.ACC_TRUNC);
             GroupId = H5G.open(FileId, "/");
 
-            switch (matlabClass)
-            {
-                case "int32":
-                    TypeId = H5T.copy(H5T.H5Type.STD_I32LE);
-                    break;
-                case  "double":
-                    TypeId = H5T.copy(H5T.H5Type.IEEE_F64LE);
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
+            Variables = new Dictionary<string, MatVar>();
+        }
 
-            M = m;
-            N = n;
-            long[] dims = { M, N };
-            SpaceId = H5S.create_simple(2, dims);
-            DataSetId = H5D.create(FileId, "/" + varname,
-                                               TypeId, SpaceId);
-
-            H5DataTypeId attributeTypeId = H5T.create(H5T.CreateClass.STRING, matlabClass.Length);
-            H5DataSpaceId attributeSpaceId = H5S.create(H5S.H5SClass.SCALAR);
-            H5AttributeId attributeId = H5A.createByName(GroupId, varname, "MATLAB_class", attributeTypeId, attributeSpaceId);
-            byte[] asciiBytes = Encoding.ASCII.GetBytes(matlabClass);
-            H5A.write(attributeId, attributeTypeId, new H5Array<byte>(asciiBytes));
-            H5A.close(attributeId);
-            H5S.close(attributeSpaceId);
-            H5T.close(attributeTypeId);
-            RowCursor = 0;
-            ColCursor = 0;
+        public MatVar<T> CreateVariable<T>(string Name, params long[] Dims)
+        {
+            MatVar<T> V = new MatVar<T>(Name, GroupId, Dims);
+            Variables.Add(Name, V);
+            return V;
         }
 
         private void PrependMatlabHeader(string filename)
@@ -92,81 +66,9 @@ namespace lasercom.io
             File.Copy(tempfile, filename, true);
         }
 
-        public void WriteNextColumn(int[] data)
-        {
-            long[] start = { 0, ColCursor };
-            long[] count = { M, 1 };
-            H5S.selectHyperslab(SpaceId, H5S.SelectOperator.SET, start, count);
-            long[] memDims = { M, 1 };
-            H5DataSpaceId memSpaceId = H5S.create_simple(2, memDims);
-            H5PropertyListId propListId = H5P.create(H5P.PropertyListClass.DATASET_XFER);
-            H5D.write(DataSetId, TypeId, memSpaceId, SpaceId, propListId, new H5Array<int>(data));
-            ColCursor++;
-            RowCursor = 0;
-        }
-
-        public void WriteNextColumn(double[] data)
-        {
-            long[] start = { 0, ColCursor };
-            long[] count = { M, 1 };
-            H5S.selectHyperslab(SpaceId, H5S.SelectOperator.SET, start, count);
-            long[] memDims = { M, 1 };
-            H5DataSpaceId memSpaceId = H5S.create_simple(2, memDims);
-            H5PropertyListId propListId = H5P.create(H5P.PropertyListClass.DATASET_XFER);
-            H5D.write(DataSetId, TypeId, memSpaceId, SpaceId, propListId, new H5Array<double>(data));
-            ColCursor++;
-            RowCursor = 0;
-        }
-
-        public void WriteNextRow(int[] data)
-        {
-            long[] start = { RowCursor, 0 };
-            long[] count = { 1, N };
-
-            H5S.selectHyperslab(SpaceId, H5S.SelectOperator.SET, start, count);
-
-            //RegionReference selection = H5R.createRegionReference(groupId, "R1", spaceId);
-            //H5DataSpaceId selectionSpaceId = H5R.getRegion(groupId, selection);
-
-            long[] memDims = { 1, N };
-            H5DataSpaceId memSpaceId = H5S.create_simple(2, memDims);
-
-            H5PropertyListId propListId = H5P.create(H5P.PropertyListClass.DATASET_XFER);
-
-            // Writes along the rows of the selection
-            H5D.write(DataSetId, TypeId, memSpaceId, SpaceId, propListId, new H5Array<int>(data));
-            H5S.close(memSpaceId);
-            RowCursor++;
-            ColCursor = 0;
-        }
-
-        public void WriteNextRow(double[] data)
-        {
-            long[] start = { RowCursor, 0 };
-            long[] count = { 1, N };
-
-            H5S.selectHyperslab(SpaceId, H5S.SelectOperator.SET, start, count);
-
-            //RegionReference selection = H5R.createRegionReference(groupId, "R1", spaceId);
-            //H5DataSpaceId selectionSpaceId = H5R.getRegion(groupId, selection);
-
-            long[] memDims = { 1, N };
-            H5DataSpaceId memSpaceId = H5S.create_simple(2, memDims);
-
-            H5PropertyListId propListId = H5P.create(H5P.PropertyListClass.DATASET_XFER);
-
-            // Writes along the rows of the selection
-            H5D.write(DataSetId, TypeId, memSpaceId, SpaceId, propListId, new H5Array<double>(data));
-            H5S.close(memSpaceId);
-            RowCursor++;
-            ColCursor = 0;
-        }
-
         public void Close()
         {
-            H5D.close(DataSetId);
-            H5S.close(SpaceId);
-            H5T.close(TypeId);
+            foreach (var V in Variables.Values) V.Dispose();
             H5G.close(GroupId);
             H5F.close(FileId);
             PrependMatlabHeader(_FileName);

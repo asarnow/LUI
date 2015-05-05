@@ -178,6 +178,7 @@ namespace LUI.tabs
         RoleRow PrimaryDelay;
         RoleRow Gate;
         MatFile DataFile;
+        MatVar<int> LuiData;
 
         public TroaControl(LuiConfig Config) : base(Config)
         {
@@ -366,12 +367,12 @@ namespace LUI.tabs
                     break;
                 case Dialog.PROGRESS_FLASH:
                     ProgressLabel.Text = "Ground state...";
-                    DataFile.WriteNextColumn(progress.Data);
+                    LuiData.WriteNext(progress.Data, 1);
                     //Data.Accummulate(Accumulator,progress.Data);
                     break;
                 case Dialog.PROGRESS_TRANS:
                     ProgressLabel.Text = "Kinetic series...";
-                    DataFile.WriteNextColumn(progress.Data);
+                    LuiData.WriteNext(progress.Data, 1);
                     break;
             }
         }
@@ -487,7 +488,8 @@ namespace LUI.tabs
         private void InitDataFile(int NumChannels, int NumScans)
         {
             string TempFileName = Path.GetTempFileName();
-            DataFile = new MatFile(TempFileName, "luidata", NumChannels, NumScans, "int32");
+            DataFile = new MatFile(TempFileName);
+            LuiData = DataFile.CreateVariable<int>("luidata", NumChannels, NumScans);
         }
     }
 }

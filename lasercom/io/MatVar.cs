@@ -6,16 +6,36 @@ using System.Text;
 
 namespace lasercom.io
 {
-    class MatVar<T> : IDisposable
+    public abstract class MatVar : IDisposable
     {
         public string Name;
+
+        protected abstract void Close();
+
+        private void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                Close();
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+    }
+
+    public class MatVar<T> : MatVar
+    {
         private readonly H5DataTypeId TypeId;
         private H5DataSpaceId SpaceId;
         private H5DataSetId DataSetId;
         public long[] Dims;
         public long[] Cursor { get; set; }
 
-        public MatVar(string _Name, H5FileOrGroupId FileOrGroupId, params long[] _Dims)
+        protected internal MatVar(string _Name, H5FileOrGroupId FileOrGroupId, params long[] _Dims)
         {
             string MatlabClass;
 
@@ -42,7 +62,7 @@ namespace lasercom.io
             DataSetId = H5D.create(FileOrGroupId, "/" + Name, TypeId, SpaceId);
             H5DataTypeId AttributeTypeId = H5T.create(H5T.CreateClass.STRING, MatlabClass.Length);
             H5DataSpaceId AttributeSpaceId = H5S.create(H5S.H5SClass.SCALAR);
-            H5AttributeId AttributeId = H5A.createByName(DataSetId, Name, "MATLAB_class", AttributeTypeId, AttributeSpaceId);
+            H5AttributeId AttributeId = H5A.create(DataSetId, "MATLAB_class", AttributeTypeId, AttributeSpaceId);
             byte[] asciiBytes = Encoding.ASCII.GetBytes(MatlabClass);
             H5A.write(AttributeId, AttributeTypeId, new H5Array<byte>(asciiBytes));
             H5A.close(AttributeId);
@@ -57,19 +77,24 @@ namespace lasercom.io
         /// <param name="dim"></param>
         public void WriteNext(T[] data, long dim)
         {
-            if (data.Length != Dims[dim])
-                throw new ArgumentException("Data must be same length as specified dimension");
+            long[] count = Enumerable.Repeat(1L, Dims.Length).ToArray(); // Ones.
+            for (int i = 0; i < Dims.Length; i++)
+                if (i != dim) count[i] = Dims[i];
+
+            long RequiredLength = 1;
+            foreach (long l in count) RequiredLength *= l;
+
+            if (data.Length != RequiredLength)
+                throw new ArgumentException("Data size must match array dimension");
 
             long[] start = new long[Dims.Length];
             start[dim] = Cursor[dim];
-
-            long[] count = Enumerable.Repeat(1L, Dims.Length).ToArray();
-            count[dim] = data.Length;
 
             H5S.selectHyperslab(SpaceId, H5S.SelectOperator.SET, start, count);
             H5DataSpaceId memSpaceId = H5S.create_simple(count.Length, count);
             H5PropertyListId propListId = H5P.create(H5P.PropertyListClass.DATASET_XFER);
             H5D.write(DataSetId, TypeId, memSpaceId, SpaceId, propListId, new H5Array<T>(data));
+            H5S.close(memSpaceId);
             Cursor[dim]++;
             for (int i = 0; i < Cursor.Length; i++)
                 if (i != dim) Cursor[i] = 0;
@@ -87,27 +112,14 @@ namespace lasercom.io
             H5DataSpaceId memSpaceId = H5S.create_simple(count.Length, count);
             H5PropertyListId propListId = H5P.create(H5P.PropertyListClass.DATASET_XFER);
             H5D.write(DataSetId, TypeId, memSpaceId, SpaceId, propListId, new H5Array<T>(data));
+            H5S.close(memSpaceId);
         }
 
-        void Close()
+        protected override void Close()
         {
             H5D.close(DataSetId);
             H5S.close(SpaceId);
             H5T.close(TypeId);
-        }
-
-        private void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                Close();
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
     }
 }
