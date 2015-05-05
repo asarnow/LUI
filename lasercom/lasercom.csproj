@@ -149,6 +149,7 @@
     <Compile Include="Constants.cs" />
     <Compile Include="ddg\StanfordDigitalDelayGenerator.cs" />
     <Compile Include="camera\ICamera.cs" />
+    <Compile Include="io\MatVar.cs" />
     <Compile Include="objects\ILuiObject.cs" />
     <Compile Include="objects\LuiObject.cs" />
     <Compile Include="objects\LuiObjectParameters.cs" />
