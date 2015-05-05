@@ -27,6 +27,12 @@ namespace lasercom.io
         }
     }
 
+    /// <summary>
+    /// Represents a MATLAB array of specified type.
+    /// Note the array will be transposed from HDF5 row-major format
+    /// to MATLAB column major format automatically when loaded in MATLAB.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class MatVar<T> : MatVar
     {
         private readonly H5DataTypeId TypeId;
@@ -68,6 +74,12 @@ namespace lasercom.io
             H5A.close(AttributeId);
             H5S.close(AttributeSpaceId);
             H5T.close(AttributeTypeId);
+        }
+
+        protected internal MatVar(string _Name, H5FileOrGroupId FileOrGroupId, long[] _Dims, T[] data) :
+            this(_Name, FileOrGroupId, _Dims)
+        {
+            this.Write(data, new long[Dims.Length], Dims);
         }
 
         /// <summary>

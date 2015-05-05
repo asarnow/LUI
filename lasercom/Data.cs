@@ -207,12 +207,33 @@ namespace lasercom
             return Tuple.Create<double,double,double>(slope, yint, rsq);
         }
 
-        public static T[] Uniform<T>(int n, T scale) where T:struct
+        public static int[] Uniform(int n, int scale)
         {
             Random R = new Random();
-            T[] A = new T[n];
-            for (int i = 0; i < n; i++) A[i] = (T)Math.Round(R.NextDouble() * (dynamic)scale);
+            int[] A = new int[n];
+            //for (int i = 0; i < n; i++) A[i] = (int)Math.Round(R.NextDouble() * (double)scale);
+            for (int i = 0; i < n; i++) A[i] = R.Next(scale);
             return A;
+        }
+
+        public static double[] Uniform(int n, double scale)
+        {
+            Random R = new Random();
+            double[] A = new double[n];
+            for (int i = 0; i < n; i++) A[i] = Math.Round(R.NextDouble() * scale);
+            return A;
+        }
+
+        public static void CumulativeMovingAverage(double[] CMA, double[] X, int n)
+        {
+            for (int i = 0; i < CMA.Length; i++)
+                CMA[i] = (X[i] + n * CMA[i]) / (n + 1);
+        }
+        
+        public static void CumulativeMovingAverage(double[] CMA, int[] X, int n)
+        {
+            for (int i = 0; i < CMA.Length; i++)
+                CMA[i] = (X[i] + n * CMA[i]) / (n + 1);
         }
     }
 }
