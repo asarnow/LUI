@@ -84,6 +84,9 @@
     <Reference Include="CsvHelper">
       <HintPath>..\packages\CsvHelper.2.10.0\lib\net40-client\CsvHelper.dll</HintPath>
     </Reference>
+    <Reference Include="HDF5DotNet">
+      <HintPath>..\lib\HDF5DotNet.dll</HintPath>
+    </Reference>
     <Reference Include="HDF5DotNet-x64, Version=1.8.9.0, Culture=neutral, PublicKeyToken=a4952c8df86d6e8c, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib64\HDF5DotNet-x64.dll</HintPath>

@@ -18,6 +18,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomGraph", "CustomGraph\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LUI Unit Tests", "LUI Unit Tests\LUI Unit Tests.csproj", "{4A63B6A8-1A4C-41FC-9E8F-5D0A384804A4}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0824EA30-5A92-44D6-B7CC-964217EC5D66}"
+	ProjectSection(SolutionItems) = preProject
+		Lui.testsettings = Lui.testsettings
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

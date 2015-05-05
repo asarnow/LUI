@@ -207,11 +207,11 @@ namespace lasercom
             return Tuple.Create<double,double,double>(slope, yint, rsq);
         }
 
-        internal static int[] Uniform(int n, double scale)
+        public static T[] Uniform<T>(int n, T scale) where T:struct
         {
             Random R = new Random();
-            int[] A = new int[n];
-            for (int i = 0; i < n; i++) A[i] = (int)Math.Round(R.NextDouble() * scale);
+            T[] A = new T[n];
+            for (int i = 0; i < n; i++) A[i] = (T)Math.Round(R.NextDouble() * (dynamic)scale);
             return A;
         }
     }
