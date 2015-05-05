@@ -17,8 +17,8 @@ namespace lasercom.io
                 return _FileName;
             }
         }
-        private readonly H5FileId FileId;
-        private readonly H5GroupId GroupId;
+        public readonly H5FileId FileId;
+        public readonly H5GroupId GroupId;
 
         Dictionary<string, MatVar> Variables;
 

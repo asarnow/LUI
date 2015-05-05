@@ -12,7 +12,7 @@ namespace LUI_Unit_Tests
         [TestMethod]
         public void TestMatFile()
         {
-            MatFile File = new MatFile("test.mat");
+            MatFile File = new MatFile("C:\\Users\\da\\Documents\\Visual Studio 2012\\Projects\\LUI\\Lui Unit Tests\\test.mat");
 
             MatVar<double> dblmat = File.CreateVariable<double>("dblmat", 10, 10);
             double[] data = { 1, 3, 5, 7, 9, 11, 13, 15, 17, 19 };

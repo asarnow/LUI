@@ -62,7 +62,7 @@ namespace lasercom.io
             DataSetId = H5D.create(FileOrGroupId, "/" + Name, TypeId, SpaceId);
             H5DataTypeId AttributeTypeId = H5T.create(H5T.CreateClass.STRING, MatlabClass.Length);
             H5DataSpaceId AttributeSpaceId = H5S.create(H5S.H5SClass.SCALAR);
-            H5AttributeId AttributeId = H5A.createByName(DataSetId, Name, "MATLAB_class", AttributeTypeId, AttributeSpaceId);
+            H5AttributeId AttributeId = H5A.create(DataSetId, "MATLAB_class", AttributeTypeId, AttributeSpaceId);
             byte[] asciiBytes = Encoding.ASCII.GetBytes(MatlabClass);
             H5A.write(AttributeId, AttributeTypeId, new H5Array<byte>(asciiBytes));
             H5A.close(AttributeId);
@@ -94,6 +94,7 @@ namespace lasercom.io
             H5DataSpaceId memSpaceId = H5S.create_simple(count.Length, count);
             H5PropertyListId propListId = H5P.create(H5P.PropertyListClass.DATASET_XFER);
             H5D.write(DataSetId, TypeId, memSpaceId, SpaceId, propListId, new H5Array<T>(data));
+            H5S.close(memSpaceId);
             Cursor[dim]++;
             for (int i = 0; i < Cursor.Length; i++)
                 if (i != dim) Cursor[i] = 0;
@@ -111,6 +112,7 @@ namespace lasercom.io
             H5DataSpaceId memSpaceId = H5S.create_simple(count.Length, count);
             H5PropertyListId propListId = H5P.create(H5P.PropertyListClass.DATASET_XFER);
             H5D.write(DataSetId, TypeId, memSpaceId, SpaceId, propListId, new H5Array<T>(data));
+            H5S.close(memSpaceId);
         }
 
         protected override void Close()
