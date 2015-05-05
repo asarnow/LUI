@@ -485,9 +485,9 @@ namespace LUI.tabs
                     // MAT
                     try
                     {
-                        MatFile mat = new MatFile(saveFile.FileName, "cal", 
-                            Commander.Camera.Calibration.Length, 1, "double");
-                        mat.WriteNextColumn(Commander.Camera.Calibration);
+                        MatFile mat = new MatFile(saveFile.FileName);
+                        MatVar<double> V = mat.CreateVariable<double>("cal", Commander.Camera.Calibration.Length, 1);
+                        V.WriteNext(Commander.Camera.Calibration,1);
                         mat.Dispose();
                     }
                     catch (IOException ex)

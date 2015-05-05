@@ -6,16 +6,36 @@ using System.Text;
 
 namespace lasercom.io
 {
-    class MatVar<T> : IDisposable
+    public abstract class MatVar : IDisposable
     {
         public string Name;
+
+        protected abstract void Close();
+
+        private void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                Close();
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+    }
+
+    public class MatVar<T> : MatVar
+    {
         private readonly H5DataTypeId TypeId;
         private H5DataSpaceId SpaceId;
         private H5DataSetId DataSetId;
         public long[] Dims;
         public long[] Cursor { get; set; }
 
-        public MatVar(string _Name, H5FileOrGroupId FileOrGroupId, params long[] _Dims)
+        protected internal MatVar(string _Name, H5FileOrGroupId FileOrGroupId, params long[] _Dims)
         {
             string MatlabClass;
 
@@ -93,25 +113,11 @@ namespace lasercom.io
             H5D.write(DataSetId, TypeId, memSpaceId, SpaceId, propListId, new H5Array<T>(data));
         }
 
-        void Close()
+        protected override void Close()
         {
             H5D.close(DataSetId);
             H5S.close(SpaceId);
             H5T.close(TypeId);
-        }
-
-        private void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                Close();
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
     }
 }
