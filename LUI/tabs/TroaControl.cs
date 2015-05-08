@@ -14,6 +14,7 @@ using LUI.config;
 using lasercom;
 using lasercom.io;
 using System.IO;
+using LUI.controls;
 
 namespace LUI.tabs
 {
@@ -302,7 +303,13 @@ namespace LUI.tabs
 
         protected override void Graph_Click(object sender, MouseEventArgs e)
         {
-            //TODO Show cross
+            var NormalizedCoords = Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y)));
+            int SelectedChannel = (int)Math.Round(NormalizedCoords.X * (Commander.Camera.Width - 1));
+            float Y = NormalizedCoords.Y;
+            Graph.ClearAnnotation();
+            Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.MarkerColor, SelectedChannel);
+            Graph.Annotate(GraphControl.Annotation.HORZLINE, Graph.MarkerColor, Y);
+            Graph.Invalidate();
         }
 
         protected override void Collect_Click(object sender, EventArgs e)

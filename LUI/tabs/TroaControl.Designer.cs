@@ -74,8 +74,14 @@
             // 
             // Graph
             // 
+            this.Graph.InitialScaleHeight = 2F;
+            this.Graph.InitialYMax = 1F;
+            this.Graph.InitialYMin = -1F;
+            this.Graph.ScaleHeight = 2F;
             this.Graph.XLeft = 1F;
             this.Graph.XRight = 1024F;
+            this.Graph.YMax = 1F;
+            this.Graph.YMin = -1F;
             // 
             // CameraStatusLabel
             // 
@@ -145,7 +151,7 @@
             // DelayValue
             // 
             this.DelayValue.DataPropertyName = "DelayValue";
-            this.DelayValue.HeaderText = "Value (μs)";
+            this.DelayValue.HeaderText = "Value (s)";
             this.DelayValue.Name = "DelayValue";
             this.DelayValue.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.DelayValue.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
@@ -195,7 +201,7 @@
             this.Value.DataPropertyName = "Value";
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.Value.DefaultCellStyle = dataGridViewCellStyle1;
-            this.Value.HeaderText = "Delay";
+            this.Value.HeaderText = "Delay (s)";
             this.Value.Name = "Value";
             this.Value.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
@@ -232,16 +238,16 @@
         #endregion
 
         private System.Windows.Forms.DataGridView RoleListView;
+        private System.Windows.Forms.Button LoadTimes;
+        private System.Windows.Forms.TextBox CameraStatus;
+        private System.Windows.Forms.DataGridView TimesView;
+        private System.Windows.Forms.Button SaveData;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Value;
         private System.Windows.Forms.DataGridViewTextBoxColumn Role;
         private System.Windows.Forms.DataGridViewComboBoxColumn DDG;
         private System.Windows.Forms.DataGridViewComboBoxColumn Delay;
         private System.Windows.Forms.DataGridViewComboBoxColumn Trigger;
         private System.Windows.Forms.DataGridViewTextBoxColumn DelayValue;
-        private System.Windows.Forms.Button LoadTimes;
-        private System.Windows.Forms.TextBox CameraStatus;
-        private System.Windows.Forms.DataGridView TimesView;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Value;
-        private System.Windows.Forms.Button SaveData;
 
     }
 }

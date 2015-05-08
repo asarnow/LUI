@@ -66,11 +66,11 @@ namespace LUI.controls
 
         public float YMin { get; set; }
         public float InitialYMin { get; set; }
-        const float YMINDEFAULT = 0.0f;
+        const float YMINDEFAULT = float.NegativeInfinity;
 
         public float YMax { get; set; }
         public float InitialYMax { get; set; }
-        const float YMAXDEFAULT = 1.0f;
+        const float YMAXDEFAULT = float.PositiveInfinity;
 
         public float ScaleHeight { get; set; }
         public float InitialScaleHeight { get; set; }
@@ -165,7 +165,7 @@ namespace LUI.controls
 
         public enum Annotation
         {
-            VERTLINE
+            VERTLINE, HORZLINE
         }
 
         public GraphControl()
@@ -187,10 +187,10 @@ namespace LUI.controls
             XAxisHeight = XAXISHEIGHTDEFAULT;
             YAxisWidth = YAXISWIDTHDEFAULT;
             XRight = InitialXRight = XRIGHTDEFAULT;
-            YMax = InitialYMax = float.NegativeInfinity;
+            YMax = InitialYMax = YMAXDEFAULT;
 
             XLeft = InitialXLeft = XLEFTDEFAULT;
-            YMin = InitialYMin = float.PositiveInfinity;
+            YMin = InitialYMin = YMINDEFAULT;
 
             ScaleHeight = InitialScaleHeight = SCALEHEIGHTDEFAULT;
 
@@ -400,6 +400,9 @@ namespace LUI.controls
                 case Annotation.VERTLINE:
                     DrawVerticalLine(AnnotationBitmap, (Color)args[0], Convert.ToSingle(args[1]));
                     break;
+                case Annotation.HORZLINE:
+                    DrawHorizontalLine(AnnotationBitmap, (Color)args[0], Convert.ToSingle(args[1]));
+                    break;
             }
         }
 
@@ -423,6 +426,30 @@ namespace LUI.controls
                 using (Pen Pen = new Pen(C))
                 {
                     G.DrawLine(Pen, X, Axes.Bottom, X, Axes.Top);
+                }
+            }
+        }
+
+        void DrawHorizontalLine(Image Image, Color C, double y)
+        {
+            DrawHorizontalLine(Image, C, (float)y);
+        }
+
+        /// <summary>
+        /// Draw horizontal line at specified normalized data coordinate.
+        /// </summary>
+        /// <param name="Image"></param>
+        /// <param name="C"></param>
+        /// <param name="y"></param>
+        void DrawHorizontalLine(Image Image, Color C, float y)
+        {
+            using (Graphics G = Graphics.FromImage(Image))
+            {
+                float Y = Axes.Top + Axes.Height * y;
+                //G.CompositingMode = CompositingMode.SourceOver;
+                using (Pen Pen = new Pen(C))
+                {
+                    G.DrawLine(Pen, Axes.Left, Y, Axes.Right, Y);
                 }
             }
         }
