@@ -294,7 +294,7 @@ namespace LUI.tabs
         private void InitDataFile(int NumChannels, int NumScans, int NumTimes)
         {
             string TempFileName = Path.GetTempFileName();
-            TempFileName.Replace(".tmp", ".mat");
+            TempFileName = TempFileName.Replace(".tmp", ".mat");
             DataFile = new MatFile(TempFileName);
             RawData = DataFile.CreateVariable<int>("rawdata", NumScans, NumChannels);
             LuiData = DataFile.CreateVariable<double>("luidata", NumTimes + 1, NumChannels + 1);
