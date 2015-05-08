@@ -673,6 +673,11 @@ namespace LUI.tabs
                     TimesView.Rows[e.RowIndex].ErrorText = "Time must be a number";
                     e.Cancel = true;
                 }
+                if (value <= 0)
+                {
+                    TimesView.Rows[e.RowIndex].ErrorText = "Time must be positive";
+                    e.Cancel = true;
+                }
             }
         }
 
