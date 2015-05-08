@@ -379,6 +379,29 @@ namespace lasercom.camera
             return ret;
         }
 
+        public override string DecodeStatus(uint status)
+        {
+            switch (status)
+            {
+                case AndorSDK.DRV_SUCCESS:
+                    return "DRV_SUCCESS";
+                case AndorSDK.DRV_NOT_INITIALIZED:
+                    return "DRV_NOT_INITIALIZED";
+                case AndorSDK.DRV_ACQUIRING:
+                    return "DRV_ACQUIRING";
+                case AndorSDK.DRV_ERROR_ACK:
+                    return "DRV_ERROR_ACK";
+                case AndorSDK.DRV_P11INVALID:
+                    return "DRV_P1INVALID";
+                case AndorSDK.DRV_P2INVALID:
+                    return "DRV_P2INVALID";
+                case AndorSDK.DRV_NO_NEW_DATA:
+                    return "DRV_NO_NEW_DATA";
+                default:
+                    return "BAD CODE";
+            }
+        }
+
         public void ResetCameraParameters()
         {
             ResetAcquisitionMode();

@@ -115,6 +115,7 @@ namespace LUI.tabs
                 p.DelayValue = (double)dr.ItemArray[4];
                 return p;
             }
+
             public static explicit operator RoleRow(DataGridViewRow row)
             {
                 return new RoleRow()
@@ -124,6 +125,48 @@ namespace LUI.tabs
                     Delay = (string)row.Cells["Delay"].Value,
                     Trigger = (string)row.Cells["Trigger"].Value,
                     DelayValue = (double)row.Cells["DelayValue"].Value
+                };
+            }
+        }
+
+        public class TimesRow : INotifyPropertyChanged
+        {
+            private double _Value;
+            public double Value
+            {
+                get
+                {
+                    return _Value;
+                }
+                set
+                {
+                    _Value = value;
+                    NotifyPropertyChanged();
+                }
+            }
+
+            public event PropertyChangedEventHandler PropertyChanged;
+
+            private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
+            {
+                var handler = PropertyChanged;
+                if (handler != null)
+                {
+                    handler(this, new PropertyChangedEventArgs(propertyName));
+                }
+            }
+
+            public static explicit operator TimesRow(DataRow dr)
+            {
+                TimesRow p = new TimesRow();
+                p.Value = (double)dr.ItemArray[0];
+                return p;
+            }
+            public static explicit operator TimesRow(DataGridViewRow row)
+            {
+                return new TimesRow()
+                {
+                    Value = (double)row.Cells["Value"].Value,
                 };
             }
         }
@@ -157,34 +200,59 @@ namespace LUI.tabs
 
         struct ProgressObject
         {
-            public ProgressObject(int[] Data, double Delay, Dialog Status)
+            public ProgressObject(double[] Data, string CameraStatus, double Delay, Dialog Status)
             {
                 this.Data = Data;
+                this.CameraStatus = CameraStatus;
                 this.Delay = Delay;
                 this.Status = Status;
             }
-            public readonly int[] Data;
+            public readonly double[] Data;
+            public readonly string CameraStatus;
             public readonly double Delay;
             public readonly Dialog Status;
         }
 
+        IList<double> Times
+        {
+            get
+            {
+                return TimesList.Select(x => x.Value).ToList();
+            }
+            set
+            {
+                TimesList.Clear();
+                foreach (double d in value)
+                    TimesList.Add(new TimesRow() { Value = d });
+            }
+        }
+
         public enum Dialog
         {
-            INITIALIZE, PROGRESS, PROGRESS_DARK, PROGRESS_TIME, PROGRESS_TIME_COMPLETE, PROGRESS_FLASH, PROGRESS_TRANS
+            INITIALIZE, PROGRESS, PROGRESS_DARK, PROGRESS_TIME, 
+            PROGRESS_TIME_COMPLETE, PROGRESS_FLASH, PROGRESS_TRANS,
+            CALCULATE
         }
 
         private BindingList<RoleRow> RoleList = new BindingList<RoleRow>();
-        IList<double> Times { get; set; }
+        private BindingList<TimesRow> TimesList = new BindingList<TimesRow>();
         RoleRow PrimaryDelay;
         RoleRow Gate;
         MatFile DataFile;
-        MatVar<int> LuiData;
+        MatVar<int> RawData;
+        MatVar<double> LuiData;
 
         public TroaControl(LuiConfig Config) : base(Config)
         {
             InitializeComponent();
             Init();
 
+            TimesList.AllowEdit = true;
+            TimesView.DefaultValuesNeeded += (sender, e) => { e.Row.Cells["Value"].Value = 0; };
+            TimesView.DataSource = new BindingSource(TimesList, null);
+            TimesView.CellValidating += TimesView_CellValidating;
+            TimesView.CellEndEdit += TimesView_CellEndEdit;
+            
             RoleList.AllowEdit = true;
             RoleListView.DefaultValuesNeeded += DDGListView_DefaultValuesNeeded;
             RoleListView.DataSource = new BindingSource(RoleList, null);
@@ -199,12 +267,14 @@ namespace LUI.tabs
 
             PrimaryDelay.PropertyChanged += Role_PropertyChanged;
             Gate.PropertyChanged += Role_PropertyChanged;
+
+            SaveData.Click += (sender, e) => SaveOutput();
         }
 
         private void Init()
         {
             SuspendLayout();
-
+            SaveData.Enabled = false;
             //DataGridViewComboBoxColumn Role = (DataGridViewComboBoxColumn)RoleListView.Columns["Role"];
             //Role.Items.Add("Primary Delay");
             //Role.Items.Add("Gate");
@@ -213,6 +283,21 @@ namespace LUI.tabs
             DDG.ValueMember = "Self";
 
             ResumeLayout();
+        }
+
+        /// <summary>
+        /// Create temporary MAT file and initialize variables.
+        /// </summary>
+        /// <param name="NumChannels"></param>
+        /// <param name="NumScans"></param>
+        /// <param name="NumTimes"></param>
+        private void InitDataFile(int NumChannels, int NumScans, int NumTimes)
+        {
+            string TempFileName = Path.GetTempFileName();
+            TempFileName.Replace(".tmp", ".mat");
+            DataFile = new MatFile(TempFileName);
+            RawData = DataFile.CreateVariable<int>("rawdata", NumScans, NumChannels);
+            LuiData = DataFile.CreateVariable<double>("luidata", NumTimes + 1, NumChannels + 1);
         }
 
         protected override void Graph_Click(object sender, MouseEventArgs e)
@@ -224,7 +309,9 @@ namespace LUI.tabs
         {
             Collect.Enabled = NScan.Enabled = CameraGain.Enabled = false;
             Abort.Enabled = true;
-            
+
+            CameraStatus.Text = "";
+
             Graph.ClearData();
             Graph.Invalidate();
 
@@ -240,7 +327,7 @@ namespace LUI.tabs
 
         protected override void DoWork(object sender, DoWorkEventArgs e)
         {
-            var progress = new ProgressObject(null, 0, Dialog.INITIALIZE);
+            var progress = new ProgressObject(null, null, 0, Dialog.INITIALIZE);
             worker.ReportProgress(0, progress); // Show zero progress.
 
             // Set camera for external gate and full vertical binning.
@@ -261,14 +348,15 @@ namespace LUI.tabs
             int TotalScans = 2*N + Times.Count * N;
 
             // Create the data store.
-            InitDataFile((int)Commander.Camera.AcqSize, TotalScans);
+            InitDataFile((int)Commander.Camera.AcqSize, TotalScans, Times.Count);
 
             // Measure dark current.
-            progress = new ProgressObject(null, 0, Dialog.PROGRESS_DARK);
+            progress = new ProgressObject(null, null, 0, Dialog.PROGRESS_DARK);
             worker.ReportProgress(0, progress);
 
-            int[] DarkBuffer = Commander.Dark();
-            for (int i = 0; i < N - 1; i++)
+            int[] DarkBuffer = new int[Commander.Camera.AcqSize];
+            int[] Dark = new int[Commander.Camera.AcqSize];
+            for (int i = 0; i < N; i++)
             {
                 if (worker.CancellationPending)
                 {
@@ -276,15 +364,18 @@ namespace LUI.tabs
                     return;
                 }
 
-                Data.Accumulate(DarkBuffer, Commander.Dark());
+                uint ret = Commander.Dark(DarkBuffer);
+                RawData.WriteNext(DarkBuffer, 0);
+                Data.Accumulate(Dark, DarkBuffer);
 
-                progress = new ProgressObject(null, 0, Dialog.PROGRESS_DARK);
-                worker.ReportProgress((i + 1) / TotalScans, progress);
+                progress = new ProgressObject(null, Commander.Camera.DecodeStatus(ret), 0, Dialog.PROGRESS_DARK);
+                worker.ReportProgress((i + 1) * 99 / TotalScans, progress);
             }
-            Data.DivideArray(DarkBuffer, N);
+            Data.DivideArray(Dark, N); // Average dark current.
 
             // Buffer for acuisition data.
             int[] DataBuffer = new int[Commander.Camera.AcqSize];
+            double[] Ground = new double[Commander.Camera.AcqSize];
 
             // Ground state scans - first half.
             for (int i = 0; i < half; i++)
@@ -296,17 +387,24 @@ namespace LUI.tabs
                 }
 
                 uint ret = Commander.Flash(DataBuffer);
+                RawData.WriteNext(DataBuffer, 0);
+                Data.Accumulate(Ground, DataBuffer);
 
-                progress = new ProgressObject(DataBuffer, 0, Dialog.PROGRESS_FLASH);
-                worker.ReportProgress((N + (i+1)) / TotalScans, progress); // Handle new data.
+                progress = new ProgressObject(null, Commander.Camera.DecodeStatus(ret), 0, Dialog.PROGRESS_FLASH);
+                worker.ReportProgress((N + (i+1)) * 99 / TotalScans, progress); // Handle new data.
             }
+            Data.DivideArray(Ground, half); // Average GS for first half.
+            Data.Dissipate(Ground, Dark); // Subtract average dark from average GS.
+
+            // Excited state buffer.
+            double[] Excited = new double[Commander.Camera.AcqSize];
 
             // Excited state scans.
             for (int i = 0; i < Times.Count; i++)
             {
                 double Delay = Times[i];
-                progress = new ProgressObject(null, Delay, Dialog.PROGRESS_TIME);
-                worker.ReportProgress((half + i * N) / TotalScans, progress); // Display current delay.
+                progress = new ProgressObject(null, null, Delay, Dialog.PROGRESS_TIME);
+                worker.ReportProgress((half + i * N) * 99 / TotalScans, progress); // Display current delay.
                 for (int j = 0; j < N; j++)
                 {
                     if (worker.CancellationPending)
@@ -318,11 +416,17 @@ namespace LUI.tabs
                     Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, Delay); // Set delay time.
                     
                     uint ret = Commander.Trans(DataBuffer);
+                    RawData.WriteNext(DataBuffer, 0);
+                    Data.Accumulate(Excited, DataBuffer);
 
-                    progress = new ProgressObject(DataBuffer, Delay, Dialog.PROGRESS_TRANS);
-                    worker.ReportProgress( (N + half + (i+1) * (j+1)) / TotalScans , progress); // Handle new data.
+                    progress = new ProgressObject(null, Commander.Camera.DecodeStatus(ret), Delay, Dialog.PROGRESS_TRANS);
+                    worker.ReportProgress( (N + half + (i+1) * (j+1)) * 99 / TotalScans , progress); // Handle new data.
                 }
-                progress = new ProgressObject(DataBuffer, Delay, Dialog.PROGRESS_TIME_COMPLETE);
+                Data.DivideArray(Excited, N); // Average ES for time point.
+                Data.Dissipate(Excited, Dark); // Subtract average dark from time point average.
+                double[] Difference = Data.DeltaOD(Ground, Excited); // Time point diff. spec. w/ current GS average.
+                progress = new ProgressObject(Difference, null, Delay, Dialog.PROGRESS_TIME_COMPLETE);
+                worker.ReportProgress((N + half + N * Times.Count) * 99 / TotalScans, progress);
             }
 
             // Ground state scans - second half.
@@ -337,12 +441,60 @@ namespace LUI.tabs
                 }
 
                 uint ret = Commander.Flash(DataBuffer);
+                RawData.WriteNext(DataBuffer, 0);
 
-                progress = new ProgressObject(DataBuffer, 0, Dialog.PROGRESS_FLASH);
-                worker.ReportProgress( (N + half + (N * Times.Count) + (i+1)) / TotalScans , progress);
+                progress = new ProgressObject(null, Commander.Camera.DecodeStatus(ret), 0, Dialog.PROGRESS_FLASH);
+                worker.ReportProgress( (N + half + (N * Times.Count) + (i+1)) * 99 / TotalScans, progress);
             }
 
+            // Calculate LuiData matrix
+            progress = new ProgressObject(null, null, 0, Dialog.CALCULATE);
+            worker.ReportProgress(99, progress);
+            // Write dummy value.
+            LuiData.Write(-8D, new long[] { 0, 0 });
+            // Write wavelengths.
+            long[] RowSize = { 1, Commander.Camera.AcqSize };
+            LuiData.Write(Commander.Camera.Calibration, new long[] { 0, 1 }, RowSize);
+            // Write times.
+            long[] ColSize = { Times.Count, 1 };
+            LuiData.Write(Times.ToArray(), new long[] { 1, 0 }, ColSize);
+            
+            // Read ground state values and average.
+            Ground.Initialize(); // Zero ground state buffer.
+            // Read 1st half
+            for (int i = 0; i < half; i++)
+            {
+                RawData.Read(DataBuffer, new long[] { i, 0 }, RowSize);
+                Data.Accumulate(Ground, DataBuffer);
+            }
+            // Read 2nd half
+            for (int i = (N + half + N * Times.Count); i < TotalScans; i++)
+            {   
+                RawData.Read(DataBuffer, new long[] { i, 0 }, RowSize);
+                Data.Accumulate(Ground, DataBuffer);
+            }
+            Data.DivideArray(Ground, N); // Average ground state.
+            Data.Dissipate(Ground, Dark); // Subtract average dark.
 
+            // Read excited state values, average and compute delta OD.
+            Excited.Initialize(); // Zero excited state buffer.
+            for (int i = 0; i < Times.Count; i++ )
+            {
+                for (int j = 0; j < N; j++)
+                {
+                    // Read time point j
+                    int idx = N + half + (i * N) + j;
+                    RawData.Read(DataBuffer, new long[] { idx, 0 }, RowSize);
+                    Data.Accumulate(Excited, DataBuffer);
+                }
+                Data.DivideArray(Excited, N); // Average excited state for time point.
+                Data.Dissipate(Excited, Dark); // Subtract average dark.
+                // Write the final difference spectrum for time point.
+                LuiData.Write(Data.DeltaOD(Ground, Excited),
+                    new long[] { i + 1, 1 }, RowSize);
+            }
+
+            // Done with everything.
         }
 
         protected override void WorkProgress(object sender, ProgressChangedEventArgs e)
@@ -352,27 +504,30 @@ namespace LUI.tabs
             switch (progress.Status)
             {
                 case Dialog.INITIALIZE:
-                    ProgressLabel.Text = "Initializing...";
+                    ProgressLabel.Text = "Initializing";
                     break;
                 case Dialog.PROGRESS:
                     break;
                 case Dialog.PROGRESS_DARK:
-                    ProgressLabel.Text = "Dark counts...";
+                    ProgressLabel.Text = "Collecting dark";
+                    CameraStatus.Text = progress.CameraStatus;
                     break;
                 case Dialog.PROGRESS_TIME:
                     PrimaryDelay.DelayValue = progress.Delay;
                     break;
                 case Dialog.PROGRESS_TIME_COMPLETE:
-                    //Display(Data.DeltaOD(progress.Data,Accumulator));
+                    //Display(progress.Data);
                     break;
                 case Dialog.PROGRESS_FLASH:
-                    ProgressLabel.Text = "Ground state...";
-                    LuiData.WriteNext(progress.Data, 1);
-                    //Data.Accummulate(Accumulator,progress.Data);
+                    ProgressLabel.Text = "Collecting ground";
+                    CameraStatus.Text = progress.CameraStatus;
                     break;
                 case Dialog.PROGRESS_TRANS:
-                    ProgressLabel.Text = "Kinetic series...";
-                    LuiData.WriteNext(progress.Data, 1);
+                    ProgressLabel.Text = "Collecting transient";
+                    CameraStatus.Text = progress.CameraStatus;
+                    break;
+                case Dialog.CALCULATE:
+                    ProgressLabel.Text = "Calculating...";
                     break;
             }
         }
@@ -390,10 +545,15 @@ namespace LUI.tabs
             }
             else
             {
-                //TODO Diff all TS from final GS average
-                //TODO Save data
+                SaveOutput();
                 ProgressLabel.Text = "Complete";
             }
+
+            // Ensure the temp file is always closed.
+            if (DataFile != null) DataFile.Close();
+
+            SaveData.Enabled = true;
+
             StatusProgress.Value = 100;
             Collect.Enabled = NScan.Enabled = CameraGain.Enabled = true;
             Abort.Enabled = false;
@@ -421,6 +581,11 @@ namespace LUI.tabs
             }
         }
 
+        /// <summary>
+        /// Called when any property of any role row is changed.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void Role_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             var row = (RoleRow)sender;
@@ -450,6 +615,11 @@ namespace LUI.tabs
             }
         }
 
+        /// <summary>
+        /// Retrieve row for a role by name (e.g. "PrimaryDelay").
+        /// </summary>
+        /// <param name="searchValue"></param>
+        /// <returns></returns>
         private int FindRowByRoleName(string searchValue)
         {
             int rowIndex = -1;
@@ -464,6 +634,39 @@ namespace LUI.tabs
             return rowIndex;
         }
 
+        /// <summary>
+        /// Clears row error if user presses ESC while editing.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void TimesView_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            TimesView.Rows[e.RowIndex].ErrorText = String.Empty;
+        }
+
+        /// <summary>
+        /// Validate that times entered by the user are legal.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void TimesView_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
+        {
+            if (TimesView.Columns[e.ColumnIndex].Name == "Value")
+            {
+                double value;
+                if (!double.TryParse(e.FormattedValue.ToString(), out value))
+                {
+                    TimesView.Rows[e.RowIndex].ErrorText = "Time must be a number";
+                    e.Cancel = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Load file containing time delays (one per line).
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void LoadTimes_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFile = new OpenFileDialog();
@@ -482,14 +685,54 @@ namespace LUI.tabs
                 Log.Error(ex);
                 MessageBox.Show("Couldn't load times file at " + openFile.FileName);
             }
+            catch (FormatException ex)
+            {
+                Log.Error(ex);
+                MessageBox.Show("Couldn't parse file: " + ex.Message);
+            }
                 
         }
 
-        private void InitDataFile(int NumChannels, int NumScans)
+        private void SaveOutput()
         {
-            string TempFileName = Path.GetTempFileName();
-            DataFile = new MatFile(TempFileName);
-            LuiData = DataFile.CreateVariable<int>("luidata", NumChannels, NumScans);
+            SaveFileDialog saveFile = new SaveFileDialog();
+            saveFile.Filter = "MAT File|*.mat|CSV File|*.csv";
+            saveFile.Title = "Data Data File";
+            saveFile.ShowDialog();
+
+            if (saveFile.FileName == "") return;
+
+            switch (saveFile.FilterIndex)
+            {
+                case 1: // MAT file; just move temporary MAT file.
+                    if (DataFile != null && !DataFile.Closed) DataFile.Close();
+                    try
+                    {
+                        File.Copy(DataFile.FileName, saveFile.FileName);
+                    }
+                    catch (IOException ex)
+                    {
+                        Log.Error(ex);
+                        MessageBox.Show(ex.Message);
+                    }
+                    break;
+                case 2: // CSV file; read LuiData to CSV file.
+                    if (DataFile != null)
+                    {
+                        if (DataFile.Closed) DataFile.Reopen();
+                        //MatVar<double> luiData = (MatVar<double>)DataFile["LuiData"];
+
+                        if (!LuiData.Closed)
+                        {
+                            double[,] Matrix = new double[LuiData.Dims[0], LuiData.Dims[1]];
+                            LuiData.Read(Matrix, new long[] { 0, 0 }, LuiData.Dims);
+                            FileIO.WriteMatrix(saveFile.FileName, Matrix);
+                        }
+
+                        DataFile.Close();
+                    }
+                    break;
+            }
         }
     }
 }

@@ -89,5 +89,6 @@ namespace lasercom.camera
 
         public abstract uint Acquire(int[] DataBuffer);
 
+        public abstract string DecodeStatus(uint status);
     }
 }

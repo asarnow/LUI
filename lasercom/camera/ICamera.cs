@@ -37,5 +37,7 @@ namespace lasercom.camera
 
         uint Acquire(int[] DataBuffer);
 
+        string DecodeStatus(uint status);
+
     }
 }

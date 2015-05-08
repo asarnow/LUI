@@ -17,10 +17,72 @@ namespace lasercom.io
                 return _FileName;
             }
         }
-        public readonly H5FileId FileId;
-        public readonly H5GroupId GroupId;
+
+        private H5FileId _FileId;
+        public H5FileId FileId
+        {
+            get
+            {
+                return _FileId;
+            }
+            private set
+            {
+                _FileId = value;
+            }
+        }
+
+        private H5GroupId _GroupId;
+        public H5GroupId GroupId
+        {
+            get
+            {
+                return _GroupId;
+            }
+            private set
+            {
+                _GroupId = value;
+            }
+        }
 
         Dictionary<string, MatVar> Variables;
+
+        public MatVar this[string Name]
+        {
+            get
+            {
+                MatVar V;
+                Variables.TryGetValue(Name, out V);
+                return V;
+            }
+        }
+
+        private bool _Disposed = false;
+        public bool Disposed
+        {
+            get
+            {
+                return _Disposed;
+            }
+            private set
+            {
+                _Disposed = value;
+            }
+        }
+
+        private bool _Closed = false;
+        public bool Closed
+        {
+            get
+            {
+                return _Closed;
+            }
+            private set
+            {
+                _Closed = value;
+            }
+        }
+
+        private bool PrependOnClose = true;
 
         public MatFile(string fileName)
         {
@@ -64,14 +126,39 @@ namespace lasercom.io
                 }
             }
             File.Copy(tempfile, filename, true);
+
+            PrependOnClose = false;
         }
 
         public void Close()
         {
-            foreach (var V in Variables.Values) V.Dispose();
-            H5G.close(GroupId);
-            H5F.close(FileId);
-            PrependMatlabHeader(_FileName);
+            if (!Closed)
+            {
+                foreach (var V in Variables.Values) V.Close();
+
+                H5G.close(GroupId);
+                H5F.close(FileId);
+
+                if (PrependOnClose)
+                    PrependMatlabHeader(_FileName);
+
+                Closed = true;
+            }
+        }
+
+        public void Reopen()
+        {
+            if (Disposed) throw new ObjectDisposedException(FileName + " disposed");
+            if (Closed)
+            {
+                FileId = H5F.open(FileName, H5F.OpenMode.ACC_RDWR);
+                GroupId = H5G.open(FileId, "/");
+                foreach (var V in Variables.Values)
+                {
+                    V.Open();
+                }
+                Closed = false;
+            }
         }
 
         private void Dispose(bool disposing)
@@ -80,6 +167,7 @@ namespace lasercom.io
             {
                 Close();
             }
+            Disposed = true;
         }
 
         public void Dispose()

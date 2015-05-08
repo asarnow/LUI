@@ -53,6 +53,8 @@ namespace LUI.tabs
         private void Init()
         {
             SuspendLayout();
+
+            Abort.Enabled = false;
             //Panel DummyWidth = new Panel();
             //DummyWidth.Height = 0;
             //DummyWidth.Width = CommonObjectPanel.Width;

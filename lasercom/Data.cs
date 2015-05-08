@@ -28,16 +28,28 @@ namespace lasercom
                 a[i] += b[i];
         }
 
-        public static void Dissipate(int[] a, int[] b)
+        public static void Accumulate(double[] a, int[] b)
         {
-            for (int i = 0; i < a.Length; i++) 
-                a[i] -= b[i];
+            for (int i = 0; i < a.Length; i++)
+                a[i] += b[i];
         }
 
         public static void Accumulate(double[] a, double[] b)
         {
             for (int i = 0; i < a.Length; i++)
                 a[i] += b[i];
+        }
+
+        public static void Dissipate(int[] a, int[] b)
+        {
+            for (int i = 0; i < a.Length; i++)
+                a[i] -= b[i];
+        }
+
+        public static void Dissipate(double[] a, int[] b)
+        {
+            for (int i = 0; i < a.Length; i++)
+                a[i] -= b[i];
         }
 
         public static void Dissipate(double[] a, double[] b)
@@ -65,6 +77,30 @@ namespace lasercom
             for (int i = 0; i < arr.Length; i++)
             {
                 arr[i] /= N;
+            }
+        }
+
+        public static void DivideArray(double[] arr, double N)
+        {
+            for (int i = 0; i < arr.Length; i++)
+            {
+                arr[i] /= N;
+            }
+        }
+
+        public static void MultiplyArray(int[] arr, int N)
+        {
+            for (int i = 0; i < arr.Length; i++)
+            {
+                arr[i] *= N;
+            }
+        }
+
+        public static void MultiplyArray(double[] arr, double N)
+        {
+            for (int i = 0; i < arr.Length; i++)
+            {
+                arr[i] *= N;
             }
         }
 
@@ -123,6 +159,14 @@ namespace lasercom
             double[] OD = new double[Ground.Length];
             for (int i = 0; i < OD.Length; i++)
                 OD[i] = Math.Log10((double)(Trans[i]) / (double)(Ground[i]));
+            return OD;
+        }
+
+        public static double[] DeltaOD(double[] Ground, double[] Trans)
+        {
+            double[] OD = new double[Ground.Length];
+            for (int i = 0; i < OD.Length; i++)
+                OD[i] = Math.Log10((Trans[i]) / (Ground[i]));
             return OD;
         }
 

@@ -28,6 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.Label CameraStatusLabel;
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.RoleListView = new System.Windows.Forms.DataGridView();
             this.Role = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DDG = new System.Windows.Forms.DataGridViewComboBoxColumn();
@@ -35,13 +37,29 @@
             this.Trigger = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.DelayValue = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.LoadTimes = new System.Windows.Forms.Button();
+            this.CameraStatus = new System.Windows.Forms.TextBox();
+            this.TimesView = new System.Windows.Forms.DataGridView();
+            this.Value = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.SaveData = new System.Windows.Forms.Button();
+            CameraStatusLabel = new System.Windows.Forms.Label();
             this.ParentPanel.SuspendLayout();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NScan)).BeginInit();
             this.ChildArea.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.CameraGain)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.RoleListView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.TimesView)).BeginInit();
             this.SuspendLayout();
+            // 
+            // StatusBox
+            // 
+            this.StatusBox.Controls.Add(CameraStatusLabel);
+            this.StatusBox.Controls.Add(this.CameraStatus);
+            this.StatusBox.Controls.SetChildIndex(this.StatusProgress, 0);
+            this.StatusBox.Controls.SetChildIndex(this.ProgressLabel, 0);
+            this.StatusBox.Controls.SetChildIndex(this.CameraStatus, 0);
+            this.StatusBox.Controls.SetChildIndex(CameraStatusLabel, 0);
             // 
             // NScan
             // 
@@ -49,6 +67,8 @@
             // 
             // ChildArea
             // 
+            this.ChildArea.Controls.Add(this.SaveData);
+            this.ChildArea.Controls.Add(this.TimesView);
             this.ChildArea.Controls.Add(this.LoadTimes);
             this.ChildArea.Controls.Add(this.RoleListView);
             // 
@@ -56,6 +76,16 @@
             // 
             this.Graph.XLeft = 1F;
             this.Graph.XRight = 1024F;
+            // 
+            // CameraStatusLabel
+            // 
+            CameraStatusLabel.AutoSize = true;
+            CameraStatusLabel.Location = new System.Drawing.Point(22, 208);
+            CameraStatusLabel.Name = "CameraStatusLabel";
+            CameraStatusLabel.Size = new System.Drawing.Size(101, 17);
+            CameraStatusLabel.TabIndex = 9;
+            CameraStatusLabel.Text = "Camera Status";
+            CameraStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // RoleListView
             // 
@@ -131,6 +161,54 @@
             this.LoadTimes.UseVisualStyleBackColor = true;
             this.LoadTimes.Click += new System.EventHandler(this.LoadTimes_Click);
             // 
+            // CameraStatus
+            // 
+            this.CameraStatus.Location = new System.Drawing.Point(7, 228);
+            this.CameraStatus.Name = "CameraStatus";
+            this.CameraStatus.ReadOnly = true;
+            this.CameraStatus.Size = new System.Drawing.Size(132, 22);
+            this.CameraStatus.TabIndex = 8;
+            this.CameraStatus.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // TimesView
+            // 
+            this.TimesView.AllowUserToOrderColumns = true;
+            this.TimesView.AllowUserToResizeColumns = false;
+            this.TimesView.AllowUserToResizeRows = false;
+            this.TimesView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.TimesView.BackgroundColor = System.Drawing.SystemColors.Control;
+            this.TimesView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.TimesView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Value});
+            this.TimesView.Location = new System.Drawing.Point(959, 46);
+            this.TimesView.MultiSelect = false;
+            this.TimesView.Name = "TimesView";
+            this.TimesView.RowHeadersVisible = false;
+            this.TimesView.RowTemplate.Height = 24;
+            this.TimesView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
+            this.TimesView.ShowEditingIcon = false;
+            this.TimesView.Size = new System.Drawing.Size(136, 150);
+            this.TimesView.TabIndex = 11;
+            // 
+            // Value
+            // 
+            this.Value.DataPropertyName = "Value";
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Value.DefaultCellStyle = dataGridViewCellStyle1;
+            this.Value.HeaderText = "Delay";
+            this.Value.Name = "Value";
+            this.Value.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // SaveData
+            // 
+            this.SaveData.Location = new System.Drawing.Point(959, 201);
+            this.SaveData.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.SaveData.Name = "SaveData";
+            this.SaveData.Size = new System.Drawing.Size(136, 34);
+            this.SaveData.TabIndex = 12;
+            this.SaveData.Text = "Save Data";
+            this.SaveData.UseVisualStyleBackColor = true;
+            // 
             // TroaControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -144,7 +222,9 @@
             this.CommandsBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NScan)).EndInit();
             this.ChildArea.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.CameraGain)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.RoleListView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.TimesView)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -158,6 +238,10 @@
         private System.Windows.Forms.DataGridViewComboBoxColumn Trigger;
         private System.Windows.Forms.DataGridViewTextBoxColumn DelayValue;
         private System.Windows.Forms.Button LoadTimes;
+        private System.Windows.Forms.TextBox CameraStatus;
+        private System.Windows.Forms.DataGridView TimesView;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Value;
+        private System.Windows.Forms.Button SaveData;
 
     }
 }

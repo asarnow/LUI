@@ -195,7 +195,7 @@ namespace LUI
             catch (Exception ex)
             {
                 Log.Error(ex);
-                MessageBox.Show("Configuration error: " + ex.Message);
+                MessageBox.Show("Bad configuration or no configuration.\r\nError message:\r\n" + ex.Message);
             }
             
         }

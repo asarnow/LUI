@@ -137,5 +137,10 @@ namespace lasercom.camera
         {
             throw new NotImplementedException();
         }
+
+        public override string DecodeStatus(uint status)
+        {
+            return "DUMMY";
+        }
     }
 }
