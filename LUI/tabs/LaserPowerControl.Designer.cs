@@ -34,16 +34,14 @@
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NScan)).BeginInit();
-            this.BeamFlagBox.SuspendLayout();
             this.ChildArea.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.CameraGain)).BeginInit();
             this.SuspendLayout();
             // 
-            // panel1
+            // ChildArea
             // 
             this.ChildArea.Controls.Add(this.CountsLabel);
             this.ChildArea.Controls.Add(this.CountsDisplay);
-            this.ChildArea.Controls.SetChildIndex(this.CountsDisplay, 0);
-            this.ChildArea.Controls.SetChildIndex(this.CountsLabel, 0);
             // 
             // Graph
             // 
@@ -52,10 +50,11 @@
             // 
             // CountsDisplay
             // 
-            this.CountsDisplay.Location = new System.Drawing.Point(35, 27);
+            this.CountsDisplay.Location = new System.Drawing.Point(47, 33);
+            this.CountsDisplay.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.CountsDisplay.Name = "CountsDisplay";
             this.CountsDisplay.ReadOnly = true;
-            this.CountsDisplay.Size = new System.Drawing.Size(100, 20);
+            this.CountsDisplay.Size = new System.Drawing.Size(132, 22);
             this.CountsDisplay.TabIndex = 9;
             this.CountsDisplay.Text = "0";
             this.CountsDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -63,25 +62,28 @@
             // CountsLabel
             // 
             this.CountsLabel.AutoSize = true;
-            this.CountsLabel.Location = new System.Drawing.Point(141, 30);
+            this.CountsLabel.Location = new System.Drawing.Point(187, 36);
+            this.CountsLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.CountsLabel.Name = "CountsLabel";
-            this.CountsLabel.Size = new System.Drawing.Size(40, 13);
+            this.CountsLabel.Size = new System.Drawing.Size(101, 17);
             this.CountsLabel.TabIndex = 10;
-            this.CountsLabel.Text = "Counts";
+            this.CountsLabel.Text = "Optical density";
             // 
-            // LaserPowerNew
+            // LaserPowerControl
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.Name = "LaserPowerNew";
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
+            this.Name = "LaserPowerControl";
             this.ParentPanel.ResumeLayout(false);
+            this.ParentPanel.PerformLayout();
             this.StatusBox.ResumeLayout(false);
             this.StatusBox.PerformLayout();
             this.CommandsBox.ResumeLayout(false);
             this.CommandsBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NScan)).EndInit();
-            this.BeamFlagBox.ResumeLayout(false);
             this.ChildArea.ResumeLayout(false);
             this.ChildArea.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.CameraGain)).EndInit();
             this.ResumeLayout(false);
 
         }

@@ -33,10 +33,9 @@ namespace LUI.tabs
 
         public enum Dialog
         {
-            BLANK, SAMPLE, PROGRESS, PROGRESS_BLANK, PROGRESS_DARK, PROGRESS_DATA,
-            PROGRESS_CALC
+            INITIALIZE, PROGRESS, PROGRESS_DARK,
+            PROGRESS_FLASH, PROGRESS_TRANS, CALCULATE
         }
-
         public LaserPowerControl(LuiConfig Config) : base(Config)
         {
             InitializeComponent();
@@ -44,113 +43,102 @@ namespace LUI.tabs
 
         protected override void DoWork(object sender, DoWorkEventArgs e)
         {
+            worker.ReportProgress(0, Dialog.INITIALIZE);
+
             Commander.Camera.AcquisitionMode = AndorCamera.AcquisitionModeSingle;
             Commander.Camera.TriggerMode = AndorCamera.TriggerModeExternalExposure;
             Commander.Camera.ReadMode = AndorCamera.ReadModeFVB;
             int N = (int)e.Argument;
 
-            worker.ReportProgress(0, Dialog.BLANK.ToString());
+            int TotalScans = 3 * N;
 
-            int[] BlankBuffer = Commander.Flash();
-            for (int i = 0; i < N - 1; i++)
+            worker.ReportProgress(0, Dialog.PROGRESS_DARK);
+
+            int[] DataBuffer = new int[Commander.Camera.AcqSize];
+            double[] Dark = new double[Commander.Camera.AcqSize];
+            for (int i = 0; i < N; i++)
             {
                 if (worker.CancellationPending)
                 {
                     e.Cancel = true;
                     return;
                 }
-                Data.Accumulate(BlankBuffer, Commander.Flash());
-                worker.ReportProgress((i / N) * 33, Dialog.PROGRESS_BLANK.ToString());
+
+                uint ret = Commander.Dark(DataBuffer);
+
+                Data.Accumulate(Dark, DataBuffer);
+
+                worker.ReportProgress(i * 99 / TotalScans, Dialog.PROGRESS_DARK);
             }
+            Data.DivideArray(Dark, N);
 
-            worker.ReportProgress(33, Dialog.SAMPLE.ToString());
+            worker.ReportProgress(33, Dialog.PROGRESS_FLASH);
 
-            wait = true;
-            bool[] waitparam = { wait };
-            Dispatcher.BeginInvoke(new Action(BlockingBlankDialog), waitparam);
-            while (wait) ;
-
-            worker.ReportProgress(33, Dialog.PROGRESS_DARK.ToString());
-
-            if (worker.CancellationPending)
-            {
-                e.Cancel = true;
-                return;
-            }
-
-            int[] DarkBuffer = Commander.Dark();
-            for (int i = 0; i < N - 1; i++)
+            double[] Ground = new double[Commander.Camera.AcqSize];
+            for (int i = 0; i < N; i++)
             {
                 if (worker.CancellationPending)
                 {
                     e.Cancel = true;
                     return;
                 }
-                Data.Accumulate(DarkBuffer, Commander.Dark());
-                worker.ReportProgress(33 + (i / N) * 33, Dialog.PROGRESS_DARK.ToString());
+
+                uint ret = Commander.Flash(DataBuffer);
+                
+                Data.Accumulate(Ground, DataBuffer);
+
+                worker.ReportProgress((N + i) * 99 / TotalScans, Dialog.PROGRESS_FLASH);
             }
+            Data.DivideArray(Ground, N);
+            Data.Dissipate(Ground, Dark);
 
-            worker.ReportProgress(66, Dialog.PROGRESS.ToString());
-            wait = true;
-            Dispatcher.BeginInvoke(new Action(BlockingSampleDialog), new bool[] { wait });
-            while (wait) ;
+            worker.ReportProgress(66, Dialog.PROGRESS_TRANS);
 
-            if (worker.CancellationPending)
-            {
-                e.Cancel = true;
-                return;
-            }
-
-            worker.ReportProgress(66, Dialog.PROGRESS_DATA.ToString());
-
-            int[] DataBuffer = Commander.Trans();
-            for (int i = 0; i < N - 1; i++)
+            double[] Excited = new double[Commander.Camera.AcqSize];
+            for (int i = 0; i < N; i++)
             {
                 if (worker.CancellationPending)
                 {
                     e.Cancel = true;
                     return;
                 }
-                Data.Accumulate(DataBuffer, Commander.Trans());
-                worker.ReportProgress(66 + (i / N) * 33, Dialog.PROGRESS_DATA.ToString());
+
+                uint ret = Commander.Trans(DataBuffer);
+
+                Data.Accumulate(Excited, DataBuffer);
+
+                worker.ReportProgress((2*N + i) * 99 / TotalScans, Dialog.PROGRESS_TRANS);
             }
-            worker.ReportProgress(99, Dialog.PROGRESS_CALC.ToString());
-            Data.Dissipate(DataBuffer, DarkBuffer);
-            worker.ReportProgress(100, Dialog.PROGRESS_CALC.ToString());
-            e.Result = DataBuffer;
+            Data.DivideArray(Excited, N);
+            Data.Dissipate(Excited, Dark);
+
+
+            worker.ReportProgress(99, Dialog.CALCULATE);
+            
+            e.Result = Data.DeltaOD(Ground, Excited);
         }
 
         protected override void WorkProgress(object sender, ProgressChangedEventArgs e)
         {
-            Dialog operation = (Dialog)Enum.Parse(typeof(Dialog), (string)e.UserState);
+            Dialog operation = (Dialog)Enum.Parse(typeof(Dialog), e.UserState.ToString());
+            StatusProgress.Value = e.ProgressPercentage;
             switch (operation)
             {
-                case Dialog.BLANK:
-                    StatusProgress.Value = e.ProgressPercentage;
-                    ProgressLabel.Text = "Waiting";
-                    break;
-                case Dialog.SAMPLE:
-                    StatusProgress.Value = e.ProgressPercentage;
-                    ProgressLabel.Text = "Waiting";
+                case Dialog.INITIALIZE:
+                    ProgressLabel.Text = "Initializing";
                     break;
                 case Dialog.PROGRESS:
-                    StatusProgress.Value = e.ProgressPercentage;
-                    ProgressLabel.Text = "Busy";
-                    break;
-                case Dialog.PROGRESS_BLANK:
-                    StatusProgress.Value = e.ProgressPercentage;
-                    ProgressLabel.Text = "Collecting blank";
                     break;
                 case Dialog.PROGRESS_DARK:
-                    StatusProgress.Value = e.ProgressPercentage;
                     ProgressLabel.Text = "Collecting dark";
                     break;
-                case Dialog.PROGRESS_DATA:
-                    StatusProgress.Value = e.ProgressPercentage;
-                    ProgressLabel.Text = "Collecting data";
+                case Dialog.PROGRESS_FLASH:
+                    ProgressLabel.Text = "Collecting ground";
                     break;
-                case Dialog.PROGRESS_CALC:
-                    StatusProgress.Value = e.ProgressPercentage;
+                case Dialog.PROGRESS_TRANS:
+                    ProgressLabel.Text = "Collecting excited";
+                    break;
+                case Dialog.CALCULATE:
                     ProgressLabel.Text = "Calculating";
                     break;
             }
@@ -160,7 +148,7 @@ namespace LUI.tabs
         {
             if (!e.Cancelled)
             {
-                Light = Array.ConvertAll((int[])e.Result, x => (double)x);
+                Light = (double[])e.Result;
                 Display();
                 SelectedChannel = SelectedChannel;
                 ProgressLabel.Text = "Complete";
