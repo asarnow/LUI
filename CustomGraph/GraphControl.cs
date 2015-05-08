@@ -153,6 +153,16 @@ namespace LUI.controls
             }
         }
 
+        private int ColorIndex = 0;
+        public Color NextColor
+        {
+            get
+            {
+                ColorIndex %= ColorOrder.Count;
+                return ColorOrder[ColorIndex++];
+            }
+        }
+
         public enum Annotation
         {
             VERTLINE

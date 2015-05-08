@@ -302,7 +302,7 @@ namespace LUI.tabs
 
         protected override void Graph_Click(object sender, MouseEventArgs e)
         {
-            base.Graph_Click(sender, e);
+            //TODO Show cross
         }
 
         protected override void Collect_Click(object sender, EventArgs e)
@@ -516,7 +516,7 @@ namespace LUI.tabs
                     PrimaryDelay.DelayValue = progress.Delay;
                     break;
                 case Dialog.PROGRESS_TIME_COMPLETE:
-                    //Display(progress.Data);
+                    Display(progress.Data);
                     break;
                 case Dialog.PROGRESS_FLASH:
                     ProgressLabel.Text = "Collecting ground";
@@ -557,6 +557,13 @@ namespace LUI.tabs
             StatusProgress.Value = 100;
             Collect.Enabled = NScan.Enabled = CameraGain.Enabled = true;
             Abort.Enabled = false;
+        }
+
+        private void Display(double[] Y)
+        {
+            Graph.DrawPoints(Commander.Camera.Calibration, Y);
+            Graph.Invalidate();
+            Graph.MarkerColor = Graph.NextColor;
         }
 
         private void DDGListView_DefaultValuesNeeded(object sender,
