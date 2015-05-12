@@ -23,15 +23,17 @@ namespace lasercom.gpib
         const string ModeCommand = "mode";
         const string EOICommand = "eoi";
         const string EOSCommand = "eos";
+        const string ReadCommand = "read";
+        const string ReadTimeoutCommand = "read_tmo_ms";
 
-        const int DeviceMode = 0;
-        const int ControllerMode = 1;
-        const int DisableEOI = 0;
-        const int EnableEOI = 1;
-        const int EOSCRLF = 0;
-        const int EOSCR = 1;
-        const int EOSLF = 2;
-        const int EOSNone = 3;
+        const string DeviceMode =       "0";
+        const string ControllerMode =   "1";
+        const string DisableEOI =       "0";
+        const string EnableEOI =        "1";
+        const string EOSCRLF =          "0";
+        const string EOSCR =            "1";
+        const string EOSLF =            "2";
+        const string EOSNone =          "3";
         #endregion
 
         SerialPort _port;
@@ -72,6 +74,7 @@ namespace lasercom.gpib
             _port.ParityReplace = 0;
 
             #endregion
+
             this.Timeout = Timeout;
             ControllerCommand(AssertControllerInChargeCommand); // Assert Controller-in-Charge.
             ControllerCommand(ModeCommand, ControllerMode); // Disable listen-only mode.
@@ -114,7 +117,7 @@ namespace lasercom.gpib
             }
         }
 
-        void ControllerCommand(string command, params int[] args)
+        void ControllerCommand(string command, params string[] args)
         {
             string arglist = String.Join(" ", args);
             string data = ControllerCommandInitiator + command + " " + arglist + USBTerminator;
@@ -136,7 +139,7 @@ namespace lasercom.gpib
             try
             {
                 if (!_port.IsOpen) _port.Open();
-                ControllerCommand(AddressCommand, address);
+                ControllerCommand(AddressCommand, address.ToString());
                 _port.Write(EscapeAndTerminate(command));
             }
             catch (IOException ex)
@@ -152,7 +155,7 @@ namespace lasercom.gpib
             try
             {
                 if (!_port.IsOpen) _port.Open();
-                ControllerCommand(AddressCommand, address);
+                ControllerCommand(AddressCommand, address.ToString());
                 _port.Write(EscapeAndTerminate(command));
                 buffer = ReadWithTimeout();
             }
@@ -168,9 +171,20 @@ namespace lasercom.gpib
             return ReadWithTimeout(Timeout);
         }
 
+        /// <summary>
+        /// Read from addressed device until timeout reached between read characters.
+        /// Note GPIB data is stored in 1 character buffer, then sent to 4K USB buffer.
+        /// Thus there are two effective timeout required, one for reading GPIB and one
+        /// for reading from the serial port (USB buffer).
+        /// </summary>
+        /// <param name="Timeout"></param>
+        /// <returns></returns>
         string ReadWithTimeout(int Timeout)
         {
             if (!_port.IsOpen) throw new InvalidOperationException("The specified port is not open");
+
+            ControllerCommand(ReadTimeoutCommand, (Timeout + 1).ToString()); // Allow 1 ms for GPIB -> USB.
+            ControllerCommand(ReadCommand, "eoi"); // Read from GPIB until eoi or timeout.
 
             StringBuilder builder = new StringBuilder();
             DateTime lastRead = DateTime.Now;
