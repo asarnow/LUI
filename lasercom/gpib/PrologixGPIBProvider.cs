@@ -163,6 +163,7 @@ namespace lasercom.gpib
             {
                 Log.Error(ex);
             }
+            Log.Info("GPIB Reply: " + buffer);
             return buffer;
         }
 
