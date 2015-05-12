@@ -36,10 +36,11 @@ namespace LUI_Unit_Tests
             intarr3d.WriteNext(intdata, 2); // First 2D slice.
 
             double[] readbuf = new double[data10.Length];
+            int i = 0;
             try
             {
                 dblmat.Read(readbuf, new long[] { 2, 0 }, new long[] { 1, readbuf.Length });
-                for (int i = 0; i < readbuf.Length; i++)
+                for (i = 0; i < readbuf.Length; i++)
                     Assert.AreEqual(data10[i], readbuf[i]);
             }
             catch (AssertFailedException ex)
