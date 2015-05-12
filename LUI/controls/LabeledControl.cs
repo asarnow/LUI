@@ -22,6 +22,7 @@ namespace LUI.controls
             AutoSize = true;
             this.Control = Control;
             Label = new DisabledRichTextBox();
+            Label.ScrollBars = RichTextBoxScrollBars.None;
             Label.Size = TextRenderer.MeasureText(Text, Label.Font);
             Label.Text = Text;
             Label.BorderStyle = BorderStyle.None;

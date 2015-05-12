@@ -103,7 +103,7 @@ namespace lasercom.camera
 
         public override bool HasIntensifier
         {
-            get { throw new NotImplementedException(); }
+            get { return false; }
         }
 
         public override int IntensifierGain
@@ -121,11 +121,13 @@ namespace lasercom.camera
         public override int MinIntensifierGain
         {
             get { throw new NotImplementedException(); }
+            protected set { throw new NotImplementedException(); }
         }
 
         public override int MaxIntensifierGain
         {
             get { throw new NotImplementedException(); }
+            protected set { throw new NotImplementedException(); }
         }
 
         public override uint Acquire(int[] DataBuffer)

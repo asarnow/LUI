@@ -11,8 +11,12 @@ namespace lasercom.ddg
     /// </summary>
     public interface IDigitalDelayGenerator
     {
-        void SetDelay(char DelayName, char TriggerName, double Delay);
-        void SetDelayPulse(Tuple<char, char> DelayPair, char TriggerName, double Delay, double Width);
+        void SetDelay(string DelayName, string TriggerName, double Delay);
+        void SetDelayPulse(Tuple<string, string> DelayPair, string TriggerName, double Delay, double Width);
+
+        string GetDelay(string DelayName);
+        string GetDelayTrigger(string DelayName);
+        double GetDelayValue(string DelayName);
 
         string[] Delays
         {

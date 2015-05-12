@@ -61,11 +61,13 @@ namespace lasercom.camera
         public abstract int MinIntensifierGain
         {
             get;
+            protected set;
         }
 
         public abstract int MaxIntensifierGain
         {
             get;
+            protected set;
         }
         
         double[] _Calibration;

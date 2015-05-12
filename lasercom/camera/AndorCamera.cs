@@ -152,6 +152,10 @@ namespace lasercom.camera
             {
                 return _MinMCPGain;
             }
+            protected set
+            {
+                _MinMCPGain = value;
+            }
         }
         private int _MaxMCPGain;
         public override int MaxIntensifierGain
@@ -159,6 +163,10 @@ namespace lasercom.camera
             get
             {
                 return _MaxMCPGain;
+            }
+            protected set
+            {
+                _MaxMCPGain = value;
             }
         }
 

@@ -18,25 +18,42 @@ namespace lasercom.ddg
 
         public const string SetDelayTimeCommand = "DT ";
         public const string TriggerInput = "0";
-        public const string T0Output = "1";
+        public const string TOutput = "1";
         public const string AOutput = "2";
         public const string BOutput = "3";
         public const string ABOutput = "4";
         public const string COutput = "5";
         public const string DOutput = "6";
         public const string CDOutput = "7";
+        public const string TName = "T";
+        public const string AName = "A";
+        public const string BName = "B";
+        public const string ABName = "AB";
+        public const string CName = "C";
+        public const string DName = "D";
+        public const string CDName = "CD";
+
 
         public const byte DefaultGPIBAddress = 15;
 
         private static Dictionary<string, string> _DelayMap = new Dictionary<string,string>
         { 
-            { "T0", T0Output },
-            { "A", AOutput },
-            { "B", BOutput },
-            {"AB", ABOutput},
-            { "C", COutput },
-            { "D", DOutput },
-            {"CD", CDOutput}
+            // Forward lookup
+            { TName,  TOutput  },
+            { AName,  AOutput  },
+            { BName,  BOutput  },
+            { ABName, ABOutput },
+            { CName,  COutput  },
+            { DName,  DOutput  },
+            { CDName, CDOutput },
+            // Reverse lookup
+            { TOutput,  TName  },
+            { AOutput,  AName  },
+            { BOutput,  BName  },
+            { ABOutput, ABName },
+            { COutput,  CName  },
+            { DOutput,  DName  },
+            { CDOutput, CDName }
         };
 
         public static Dictionary<string, string> DelayMap
@@ -51,7 +68,7 @@ namespace lasercom.ddg
         {
             get
             {
-                return _DelayMap.Keys.Where(x => x.Length == 1 && x != "T0").ToArray();
+                return new string[] { AName, BName, CName, DName };
             }
         }
 
@@ -59,7 +76,7 @@ namespace lasercom.ddg
         {
             get
             {
-                return _DelayMap.Keys.Where(x => x.Length == 2).ToArray();
+                return new string[] { ABName, CDName };
             }
         }
 
@@ -67,7 +84,7 @@ namespace lasercom.ddg
         {
             get
             {
-                return _DelayMap.Keys.Where(x => x.Length == 1 && x != "D").ToArray();
+                return new string[] { TName, AName, BName, CName };
             }
         }
 
@@ -143,11 +160,11 @@ namespace lasercom.ddg
         /// <param name="DelayName"></param>
         /// <param name="TriggerName"></param>
         /// <param name="Delay"></param>
-        public override void SetDelay(char DelayName, char TriggerName, double Delay)
+        public override void SetDelay(string DelayName, string TriggerName, double Delay)
         {
-            string DelayOutput = DelayMap[DelayName.ToString()];
-            string TriggerOutput = DelayMap[TriggerName.ToString()];
-            SetDelay(DelayOutput, TriggerOutput, Delay);
+            string DelayOutput = DelayMap[DelayName];
+            string TriggerOutput = DelayMap[TriggerName];
+            SetNamedDelay(DelayOutput, TriggerOutput, Delay);
         }
 
         /// <summary>
@@ -157,13 +174,13 @@ namespace lasercom.ddg
         /// <param name="TriggerName"></param>
         /// <param name="Delay"></param>
         /// <param name="Width"></param>
-        public override void SetDelayPulse(Tuple<char, char> DelayPair, char TriggerName, double Delay, double Width)
+        public override void SetDelayPulse(Tuple<string, string> DelayPair, string TriggerName, double Delay, double Width)
         {
-            string DelayOutput1 = DelayMap[DelayPair.Item1.ToString()];
-            string DelayOutput2 = DelayMap[DelayPair.Item2.ToString()];
-            string TriggerOutput = DelayMap[TriggerName.ToString()];
-            SetDelay(DelayOutput1, TriggerOutput, Delay);
-            SetDelay(DelayOutput2, DelayOutput1, Width);
+            string DelayOutput1 = DelayMap[DelayPair.Item1];
+            string DelayOutput2 = DelayMap[DelayPair.Item2];
+            string TriggerOutput = DelayMap[TriggerName];
+            SetNamedDelay(DelayOutput1, TriggerOutput, Delay);
+            SetNamedDelay(DelayOutput2, DelayOutput1, Width);
         }
 
         /// <summary>
@@ -172,7 +189,7 @@ namespace lasercom.ddg
         /// <param name="DelayOutput"></param>
         /// <param name="TriggerOutput"></param>
         /// <param name="Delay"></param>
-        private void SetDelay(string DelayOutput, string TriggerOutput, double Delay)
+        private void SetNamedDelay(string DelayOutput, string TriggerOutput, double Delay)
         {
             switch (DelayOutput)
             {
@@ -209,25 +226,65 @@ namespace lasercom.ddg
         /// </summary>
         /// <param name="delay"></param>
         /// <param name="relative"></param>
-        public void SetADelay(double delay, string relative = T0Output)
+        public void SetADelay(double delay, string relative = TOutput)
         {
             ADelay = relative + "," + delay.ToString();
         }
 
-        public void SetBDelay(double delay, string relative = T0Output)
+        public void SetBDelay(double delay, string relative = TOutput)
         {
             BDelay = relative + "," + delay.ToString();
         }
 
-        public void SetCDelay(double delay, string relative = T0Output)
+        public void SetCDelay(double delay, string relative = TOutput)
         {
             CDelay = relative + "," + delay.ToString();
         }
 
-        public void SetDDelay(double delay, string relative = T0Output)
+        public void SetDDelay(double delay, string relative = TOutput)
         {
             DDelay = relative + "," + delay.ToString();
         }
+
+        public override string GetDelay(string DelayName)
+        {
+            string DelayOutput = DelayMap[DelayName];
+            return GetNamedDelay(DelayOutput);
+        }
+
+        public override string GetDelayTrigger(string DelayName)
+        {
+            return _DelayMap[GetDelay(DelayName).Split(',')[0]];
+        }
+
+        public override double GetDelayValue(string DelayName)
+        {
+            return Double.Parse(GetDelay(DelayName).Split(',')[1]);
+        }
+
+        /// <summary>
+        /// Internal use only - calls function to read from device.
+        /// </summary>
+        /// <param name="DelayOutput"></param>
+        /// <param name="TriggerOutput"></param>
+        /// <param name="Delay"></param>
+        private string GetNamedDelay(string DelayOutput)
+        {
+            switch (DelayOutput)
+            {
+                case AOutput:
+                    return ADelay;
+                case BOutput:
+                    return BDelay;
+                case COutput:
+                    return CDelay;
+                case DOutput:
+                    return DDelay;
+                default:
+                    throw new ArgumentException("Illegal delay output given.");
+            }
+        }
+
 
         private void ReadAllDelays()
         {
@@ -280,5 +337,6 @@ namespace lasercom.ddg
                 _DDelay = response;
             }
         }
+
     }
 }

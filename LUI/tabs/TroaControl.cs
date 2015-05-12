@@ -20,115 +20,6 @@ namespace LUI.tabs
 {
     public partial class TroaControl : LUI.tabs.LuiTab
     {
-        public class RoleRow : INotifyPropertyChanged
-        {
-            private string _Role;
-            public string Role
-            {
-                get
-                {
-                    return _Role;
-                }
-                set
-                {
-                    _Role = value;
-                    NotifyPropertyChanged();
-                }
-            }
-
-            private DelayGeneratorParameters _DDG;
-            public DelayGeneratorParameters DDG
-            {
-                get
-                {
-                    return _DDG;
-                }
-                set
-                {
-                    _DDG = value;
-                    NotifyPropertyChanged();
-                }
-            }
-
-            private string _Delay;
-            public string Delay
-            {
-                get
-                {
-                    return _Delay;
-                }
-                set
-                {
-                    if (value != _Delay)
-                    {
-                        _Delay = value;
-                        NotifyPropertyChanged();
-                    }
-                }
-            }
-
-            private string _Trigger;
-            public string Trigger
-            {
-                get
-                {
-                    return _Trigger;
-                }
-                set
-                {
-                    _Trigger = value;
-                    NotifyPropertyChanged();
-                }
-            }
-
-            private double _DelayValue;
-            public double DelayValue
-            {
-                get
-                {
-                    return _DelayValue;
-                }
-                set
-                {
-                    _DelayValue = value;
-                    NotifyPropertyChanged();
-                }
-            }
-
-            public event PropertyChangedEventHandler PropertyChanged;
-            
-            private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
-            {
-                var handler = PropertyChanged;
-                if (handler != null)
-                {
-                    handler(this, new PropertyChangedEventArgs(propertyName));
-                }
-            }
-
-            public static explicit operator RoleRow(DataRow dr)
-            {
-                RoleRow p = new RoleRow();
-                p.Role = (string)dr.ItemArray[0];
-                p.DDG = (DelayGeneratorParameters)dr.ItemArray[1];
-                p.Delay = (string)dr.ItemArray[2];
-                p.Trigger = (string)dr.ItemArray[3];
-                p.DelayValue = (double)dr.ItemArray[4];
-                return p;
-            }
-
-            public static explicit operator RoleRow(DataGridViewRow row)
-            {
-                return new RoleRow()
-                {
-                    Role = (string)row.Cells["Role"].Value,
-                    DDG = (DelayGeneratorParameters)row.Cells["DDG"].Value,
-                    Delay = (string)row.Cells["Delay"].Value,
-                    Trigger = (string)row.Cells["Trigger"].Value,
-                    DelayValue = (double)row.Cells["DelayValue"].Value
-                };
-            }
-        }
 
         public class TimesRow : INotifyPropertyChanged
         {
@@ -174,12 +65,12 @@ namespace LUI.tabs
 
         struct WorkArgs
         {
-            public WorkArgs(int N, IList<double> Times, RoleRow PrimaryDelay, RoleRow Gate)
+            public WorkArgs(int N, IList<double> Times, string PrimaryDelayName, string PrimaryDelayTrigger)
             {
                 this.N = N;
                 this.Times = new List<double>(Times);
-                this.PrimaryDelayName = PrimaryDelay.Delay[0];
-                this.TriggerName = PrimaryDelay.Trigger[0];
+                this.PrimaryDelayName = PrimaryDelayName;
+                this.TriggerName = PrimaryDelayTrigger;
                 //this.GateName = new Tuple<char, char>(Gate.Delay[0], Gate.Delay[1]);
                 //this.GateTriggerName = Gate.Trigger[0];
                 //this.Gate = Gate.DelayValue;
@@ -191,8 +82,8 @@ namespace LUI.tabs
             }
             public readonly int N;
             public readonly IList<double> Times;
-            public readonly char PrimaryDelayName;
-            public readonly char TriggerName;
+            public readonly string PrimaryDelayName;
+            public readonly string TriggerName;
             public readonly Tuple<char,char> GateName;
             public readonly char GateTriggerName;
             public readonly double GateDelay;
@@ -235,10 +126,7 @@ namespace LUI.tabs
             CALCULATE
         }
 
-        private BindingList<RoleRow> RoleList = new BindingList<RoleRow>();
         private BindingList<TimesRow> TimesList = new BindingList<TimesRow>();
-        RoleRow PrimaryDelay;
-        RoleRow Gate;
         MatFile DataFile;
         MatVar<int> RawData;
         MatVar<double> LuiData;
@@ -253,35 +141,23 @@ namespace LUI.tabs
             TimesView.DataSource = new BindingSource(TimesList, null);
             TimesView.CellValidating += TimesView_CellValidating;
             TimesView.CellEndEdit += TimesView_CellEndEdit;
+
+            PrimaryDelayDdgs.SelectedIndexChanged += PrimaryDelayDdgs_ItemChanged;
+            PrimaryDelayDelays.SelectedIndexChanged += PrimaryDelayDelays_ItemChanged;
+
+            PrimaryDelayValue.CausesValidation = true;
+            PrimaryDelayValue.Validating += PrimaryDelayValue_Validating;
             
-            RoleList.AllowEdit = true;
-            RoleListView.DefaultValuesNeeded += DDGListView_DefaultValuesNeeded;
-            RoleListView.DataSource = new BindingSource(RoleList, null);
-
-            PrimaryDelay = new RoleRow();
-            PrimaryDelay.Role = "Primary Delay";
-            RoleList.Add(PrimaryDelay);
-
-            Gate = new RoleRow();
-            Gate.Role = "Gate";
-            //RoleList.Add(Gate);
-
-            PrimaryDelay.PropertyChanged += Role_PropertyChanged;
-            Gate.PropertyChanged += Role_PropertyChanged;
-
             SaveData.Click += (sender, e) => SaveOutput();
         }
 
         private void Init()
         {
             SuspendLayout();
+            
             SaveData.Enabled = false;
-            //DataGridViewComboBoxColumn Role = (DataGridViewComboBoxColumn)RoleListView.Columns["Role"];
-            //Role.Items.Add("Primary Delay");
-            //Role.Items.Add("Gate");
-            DataGridViewComboBoxColumn DDG = (DataGridViewComboBoxColumn)RoleListView.Columns["DDG"];
-            DDG.DisplayMember = "Name";
-            DDG.ValueMember = "Self";
+            PrimaryDelayDdgs.DisplayMember = "Name";
+            PrimaryDelayDdgs.ValueMember = "Self";
 
             ResumeLayout();
         }
@@ -329,7 +205,7 @@ namespace LUI.tabs
             worker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(WorkComplete);
             worker.WorkerSupportsCancellation = true;
             worker.WorkerReportsProgress = true;
-            worker.RunWorkerAsync(new WorkArgs(N, Times, PrimaryDelay, Gate));
+            worker.RunWorkerAsync(new WorkArgs(N, Times, (string)PrimaryDelayDelays.SelectedItem, (string)PrimaryDelayTriggers.SelectedItem));
         }
 
         protected override void DoWork(object sender, DoWorkEventArgs e)
@@ -520,7 +396,7 @@ namespace LUI.tabs
                     CameraStatus.Text = progress.CameraStatus;
                     break;
                 case Dialog.PROGRESS_TIME:
-                    PrimaryDelay.DelayValue = progress.Delay;
+                    PrimaryDelayValue.Text = progress.Delay.ToString();
                     break;
                 case Dialog.PROGRESS_TIME_COMPLETE:
                     Display(progress.Data);
@@ -573,60 +449,60 @@ namespace LUI.tabs
             Graph.MarkerColor = Graph.NextColor;
         }
 
-        private void DDGListView_DefaultValuesNeeded(object sender,
-            System.Windows.Forms.DataGridViewRowEventArgs e)
-        {
-            e.Row.Cells["Role"] = null;
-            e.Row.Cells["Delay"].Value = null;
-            e.Row.Cells["Trigger"] = null;
-            e.Row.Cells["DelayValue"].Value = 0.0;
-        }
-
         public override void HandleParametersChanged(object sender, EventArgs e)
         {
             base.HandleParametersChanged(sender, e); // Takes care of ObjectSelectPanel.
 
-            DataGridViewComboBoxColumn col = (DataGridViewComboBoxColumn)RoleListView.Columns["DDG"];
-            col.Items.Clear();
+            
+            PrimaryDelayDdgs.Items.Clear();
             var parameters = Config.GetParameters(typeof(DelayGeneratorParameters));
             foreach (var p in parameters)
             {
-                col.Items.Add(p);
+                PrimaryDelayDdgs.Items.Add(p);
             }
         }
 
-        /// <summary>
-        /// Called when any property of any role row is changed.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        void Role_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void PrimaryDelayDdgs_ItemChanged(object sender, EventArgs e)
         {
-            var row = (RoleRow)sender;
-            var dgvRow = RoleListView.Rows[FindRowByRoleName(row.Role)];
-            if (e.PropertyName == "DDG") // Changed selected DDG
+            var DDG = (IDigitalDelayGenerator)Config.GetObject((DelayGeneratorParameters)PrimaryDelayDdgs.SelectedItem);
+            Commander.DDG = DDG;
+            // Re-populate the available delay and trigger choices.
+            PrimaryDelayDelays.Items.Clear();
+            foreach (string d in DDG.Delays) PrimaryDelayDelays.Items.Add(d);            
+            PrimaryDelayTriggers.Items.Clear();
+            foreach (string d in DDG.Triggers) PrimaryDelayTriggers.Items.Add(d);
+        }
+
+        private void PrimaryDelayDelays_ItemChanged(object sender, EventArgs e)
+        {
+            PrimaryDelayTriggers.SelectedItem = Commander.DDG.GetDelayTrigger((string)PrimaryDelayDelays.SelectedItem);
+            PrimaryDelayValue.Text = Commander.DDG.GetDelayValue((string)PrimaryDelayDelays.SelectedItem).ToString();
+        }
+
+        void PrimaryDelayValue_Validating(object sender, CancelEventArgs e)
+        {
+            var obj = (TextBox)sender;
+            double value;
+            if (!double.TryParse(obj.Text, out value))
             {
-                IDigitalDelayGenerator DDG = (IDigitalDelayGenerator)Config.GetObject(row.DDG);
-                // Re-populate the available delay and trigger choices.
-                var cell = (DataGridViewComboBoxCell)dgvRow.Cells["Delay"];
-                cell.Items.Clear();
-                if (row == PrimaryDelay)
-                {
-                    Commander.DDG = DDG;
-                    foreach (string d in DDG.Delays) cell.Items.Add(d);
-                }
-                else if (row == Gate)
-                {
-                    foreach (string d in DDG.DelayPairs) cell.Items.Add(d);
-                }
-                cell = (DataGridViewComboBoxCell)dgvRow.Cells["Trigger"];
-                cell.Items.Clear();
-                foreach (string d in DDG.Triggers) cell.Items.Add(d);
+                MessageBox.Show("Time must be a number");
+                e.Cancel = true;
             }
-            else if (e.PropertyName == "Delay" || e.PropertyName == "Trigger" || e.PropertyName == "DelayValue")
+            else if (value <= 0)
             {
-                // Get row.DDG object, set object's row.Delay = row.Trigger + row.DelayValue
+                MessageBox.Show("Time must be positive");
+                e.Cancel = true;
             }
+            else
+            {
+                e.Cancel = false;
+            }
+        }
+
+        private void PrimaryDelayValue_TextChanged(object sender, EventArgs e)
+        {
+            double value = Double.Parse(PrimaryDelayValue.Text);
+            Commander.DDG.SetDelay((string)PrimaryDelayDelays.SelectedItem, (string)PrimaryDelayTriggers.SelectedItem, value);
         }
 
         /// <summary>
@@ -634,19 +510,19 @@ namespace LUI.tabs
         /// </summary>
         /// <param name="searchValue"></param>
         /// <returns></returns>
-        private int FindRowByRoleName(string searchValue)
-        {
-            int rowIndex = -1;
+        //private int FindRowByRoleName(string searchValue)
+        //{
+        //    int rowIndex = -1;
 
-            DataGridViewRow row = RoleListView.Rows
-                .Cast<DataGridViewRow>()
-                .Where(r => r.Cells["Role"].Value.ToString().Equals(searchValue))
-                .First();
+        //    DataGridViewRow row = RoleListView.Rows
+        //        .Cast<DataGridViewRow>()
+        //        .Where(r => r.Cells["Role"].Value.ToString().Equals(searchValue))
+        //        .First();
 
-            rowIndex = row.Index;
+        //    rowIndex = row.Index;
 
-            return rowIndex;
-        }
+        //    return rowIndex;
+        //}
 
         /// <summary>
         /// Clears row error if user presses ESC while editing.

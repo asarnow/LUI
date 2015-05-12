@@ -12,9 +12,15 @@ namespace lasercom.ddg
     public abstract class AbstractDigitalDelayGenerator : LuiObject, IDigitalDelayGenerator
     {
 
-        public abstract void SetDelay(char DelayName, char TriggerName, double Delay);
+        public abstract void SetDelay(string DelayName, string TriggerName, double Delay);
 
-        public abstract void SetDelayPulse(Tuple<char, char> DelayPair, char TriggerName, double Delay, double Width);
+        public abstract void SetDelayPulse(Tuple<string, string> DelayPair, string TriggerName, double Delay, double Width);
+
+        public abstract string GetDelay(string DelayName);
+
+        public abstract string GetDelayTrigger(string DelayName);
+
+        public abstract double GetDelayValue(string DelayName);
 
         public abstract string[] Delays
         {
@@ -30,5 +36,6 @@ namespace lasercom.ddg
         {
             get;
         }
+
     }
 }
