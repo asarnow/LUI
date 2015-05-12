@@ -37,7 +37,7 @@ namespace lasercom.ddg
             { 
                 object[] arr = null;
                 if (Type == typeof(DDG535)){
-                    arr = new object[] { GpibProvider, GpibAddress };
+                    arr = new object[] { GpibAddress };
                 } 
                 else if (Type == typeof(DummyDigitalDelayGenerator))
                 {

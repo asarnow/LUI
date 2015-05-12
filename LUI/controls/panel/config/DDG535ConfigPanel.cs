@@ -25,6 +25,7 @@ namespace LUI.controls
             : base()
         {
             GpibAddress = new LabeledControl<ComboBox>(new ComboBox(), "GPIB Address:");
+            GpibAddress.Control.DropDownStyle = ComboBoxStyle.DropDownList;
             for (byte b = 0; b < 32; b++) GpibAddress.Control.Items.Add(b);
             GpibAddress.Control.SelectedIndexChanged += (s,e) => OnOptionsChanged(s,e);
             this.Controls.Add(GpibAddress);
@@ -35,6 +36,7 @@ namespace LUI.controls
         {
             GpibProvider = new LabeledControl<ComboBox>(new ComboBox(), "GPIB Provider:");
             GpibProvider.Control.DisplayMember = "Name";
+            GpibProvider.Control.DropDownStyle = ComboBoxStyle.DropDownList;
             GpibOptionsList.OptionsChanged += (s, e) => UpdateProviders(GpibOptionsList);
             GpibOptionsList.ConfigMatched += (s, e) => UpdateProviders(GpibOptionsList);
             GpibProvider.Control.SelectedIndexChanged += OnOptionsChanged;
