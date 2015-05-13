@@ -142,11 +142,13 @@ namespace LUI.tabs
             TimesView.CellValidating += TimesView_CellValidating;
             TimesView.CellEndEdit += TimesView_CellEndEdit;
 
-            PrimaryDelayDdgs.SelectedIndexChanged += PrimaryDelayDdgs_ItemChanged;
-            PrimaryDelayDelays.SelectedIndexChanged += PrimaryDelayDelays_ItemChanged;
+            PrimaryDelayDdgs.SelectedIndexChanged += PrimaryDelayDdgs_SelectedIndexChanged;
+            PrimaryDelayDelays.SelectedIndexChanged += PrimaryDelayDelays_SelectedIndexChanged;
 
-            PrimaryDelayValue.CausesValidation = true;
-            PrimaryDelayValue.Validating += PrimaryDelayValue_Validating;
+            PrimaryDelayTriggers.SelectedIndexChanged += PrimaryDelayTriggers_SelectedIndexChanged;
+
+            PrimaryDelayValue.TextChanged += PrimaryDelayValue_TextChanged;
+            PrimaryDelayValue.KeyPress += PrimaryDelayValue_KeyPress;
             
             SaveData.Click += (sender, e) => SaveOutput();
         }
@@ -462,7 +464,7 @@ namespace LUI.tabs
             }
         }
 
-        private void PrimaryDelayDdgs_ItemChanged(object sender, EventArgs e)
+        private void PrimaryDelayDdgs_SelectedIndexChanged(object sender, EventArgs e)
         {
             var DDG = (IDigitalDelayGenerator)Config.GetObject((DelayGeneratorParameters)PrimaryDelayDdgs.SelectedItem);
             Commander.DDG = DDG;
@@ -473,36 +475,102 @@ namespace LUI.tabs
             foreach (string d in DDG.Triggers) PrimaryDelayTriggers.Items.Add(d);
         }
 
-        private void PrimaryDelayDelays_ItemChanged(object sender, EventArgs e)
+        private void PrimaryDelayDelays_SelectedIndexChanged(object sender, EventArgs e)
         {
             PrimaryDelayTriggers.SelectedItem = Commander.DDG.GetDelayTrigger((string)PrimaryDelayDelays.SelectedItem);
             PrimaryDelayValue.Text = Commander.DDG.GetDelayValue((string)PrimaryDelayDelays.SelectedItem).ToString();
         }
 
-        void PrimaryDelayValue_Validating(object sender, CancelEventArgs e)
+        void PrimaryDelayTriggers_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var obj = (TextBox)sender;
-            double value;
-            if (!double.TryParse(obj.Text, out value))
+            if (IsPrimaryDelayValueValid())
             {
-                MessageBox.Show("Time must be a number");
-                e.Cancel = true;
-            }
-            else if (value <= 0)
-            {
-                MessageBox.Show("Time must be positive");
-                e.Cancel = true;
-            }
-            else
-            {
-                e.Cancel = false;
+                ApplyPrimaryDelayValue();
             }
         }
 
-        private void PrimaryDelayValue_TextChanged(object sender, EventArgs e)
+        void PrimaryDelayValue_TextChanged(object sender, EventArgs e)
         {
-            double value = Double.Parse(PrimaryDelayValue.Text);
-            Commander.DDG.SetDelay((string)PrimaryDelayDelays.SelectedItem, (string)PrimaryDelayTriggers.SelectedItem, value);
+            if (!IsPrimaryDelayValueValid())
+            {
+                PrimaryDelayValue.ForeColor = Color.Red;
+            }
+            else
+            {
+                PrimaryDelayValue.ForeColor = SystemColors.WindowText;
+            }
+        }
+
+        /// <summary>
+        /// Handles Enter and Escape keys for PrimaryDelayValue.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void PrimaryDelayValue_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            var tb = sender as TextBox;
+            Keys key = (Keys)e.KeyChar;
+            if (key == Keys.Enter)
+            {
+                if (IsPrimaryDelayValueValid())
+                {
+                    ApplyPrimaryDelayValue();
+                }
+                else
+                {
+                    UpdatePrimaryDelayValue();
+                }
+                e.Handled = true;
+            }
+            if (key == Keys.Escape)
+            {
+                UpdatePrimaryDelayValue();
+                e.Handled = true;
+            }
+        }
+
+        bool IsPrimaryDelayValueValid()
+        {
+            double value;
+            if (PrimaryDelayDdgs.SelectedItem == null ||
+                PrimaryDelayDelays.SelectedItem == null ||
+                PrimaryDelayTriggers.SelectedItem == null ||
+                PrimaryDelayValue.Text == "")
+            {
+                return false;
+            }
+            else if (!double.TryParse(PrimaryDelayValue.Text, out value))
+            {
+                return false;
+            }
+            else if (value < 0)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        void UpdatePrimaryDelayValue()
+        {
+            if (Commander.DDG != null && PrimaryDelayDelays.SelectedItem != null)
+            {
+                PrimaryDelayValue.Text = Commander.DDG.GetDelayValue((string)PrimaryDelayDelays.SelectedItem).ToString();
+            }
+            else
+            {
+                PrimaryDelayValue.Text = "";
+            }
+        }
+
+        void ApplyPrimaryDelayValue()
+        {
+            double value = double.Parse(PrimaryDelayValue.Text);
+            Commander.DDG.SetDelay((string)PrimaryDelayDelays.SelectedItem,
+                                   (string)PrimaryDelayTriggers.SelectedItem,
+                                   value);
         }
 
         /// <summary>

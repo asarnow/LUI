@@ -34,7 +34,7 @@
             LUI.controls.DisabledRichTextBox textBox3;
             LUI.controls.DisabledRichTextBox textBox4;
             LUI.controls.DisabledRichTextBox textBox5;
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
             this.LoadTimes = new System.Windows.Forms.Button();
             this.CameraStatus = new System.Windows.Forms.TextBox();
             this.TimesView = new System.Windows.Forms.DataGridView();
@@ -203,8 +203,8 @@
             // Value
             // 
             this.Value.DataPropertyName = "Value";
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Value.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Value.DefaultCellStyle = dataGridViewCellStyle5;
             this.Value.HeaderText = "Delay (s)";
             this.Value.Name = "Value";
             this.Value.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
@@ -239,7 +239,8 @@
             this.DDGTable.Controls.Add(this.PrimaryDelayDelays, 2, 1);
             this.DDGTable.Controls.Add(this.PrimaryDelayDdgs, 1, 1);
             this.DDGTable.Controls.Add(textBox1, 4, 0);
-            this.DDGTable.Location = new System.Drawing.Point(6, 21);
+            this.DDGTable.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.DDGTable.Location = new System.Drawing.Point(3, 18);
             this.DDGTable.Name = "DDGTable";
             this.DDGTable.RowCount = 2;
             this.DDGTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -300,7 +301,7 @@
             this.DdgConfigBox.Controls.Add(this.DDGTable);
             this.DdgConfigBox.Location = new System.Drawing.Point(4, 3);
             this.DdgConfigBox.Name = "DdgConfigBox";
-            this.DdgConfigBox.Size = new System.Drawing.Size(605, 93);
+            this.DdgConfigBox.Size = new System.Drawing.Size(599, 72);
             this.DdgConfigBox.TabIndex = 14;
             this.DdgConfigBox.TabStop = false;
             this.DdgConfigBox.Text = "DDG Configuration";
