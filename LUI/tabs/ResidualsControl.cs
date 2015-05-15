@@ -12,6 +12,7 @@ using lasercom.io;
 using lasercom.objects;
 using LUI.config;
 using LUI.controls;
+using lasercom.ddg;
 
 namespace LUI.tabs
 {
@@ -57,13 +58,15 @@ namespace LUI.tabs
 
         struct WorkArgs
         {
-            public WorkArgs(int NScans, int NAverage)
+            public WorkArgs(int NScans, int NAverage, bool CollectLaser)
             {
                 this.NScans = NScans;
                 this.NAvg = NAverage;
+                this.CollectLaser = CollectLaser;
             }
             public readonly int NScans;
             public readonly int NAvg;
+            public readonly bool CollectLaser;
         }
 
         struct ProgressObject
@@ -81,7 +84,7 @@ namespace LUI.tabs
             public readonly int Counts;      
             public readonly int Peak;     
             public readonly int CountsN;     
-            public readonly int PeakN;    
+            public readonly int PeakN;
             public readonly Dialog Status;
         }
 
@@ -89,11 +92,26 @@ namespace LUI.tabs
         {
             InitializeComponent();
             Graph.YLabelFormat = "g";
+
+            CollectLaser.CheckedChanged += CollectLaser_CheckedChanged;
+
+            DdgConfigBox.Config = Config;
+            DdgConfigBox.Commander = Commander;
+            DdgConfigBox.AllowZero = true;
+            DdgConfigBox.Enabled = false;
+            DdgConfigBox.HandleParametersChanged(this, EventArgs.Empty);
         }
+
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
             RedrawLines();
+        }
+
+        public override void HandleParametersChanged(object sender, EventArgs e)
+        {
+            base.HandleParametersChanged(sender, e);
+            DdgConfigBox.HandleParametersChanged(sender, e);
         }
 
         public override void HandleCameraChanged(object sender, EventArgs e)
@@ -101,6 +119,47 @@ namespace LUI.tabs
             base.HandleCameraChanged(sender, e);
             LowerBound = (int)Commander.Camera.Width / 6;
             UpperBound = (int)Commander.Camera.Width * 5 / 6;
+        }
+
+        protected override void LoadSettings()
+        {
+            base.LoadSettings();
+            var Settings = Config.TabSettings[this.GetType().Name];
+            string value;
+            if (Settings.TryGetValue("PrimaryDelayDdg", out value))
+                DdgConfigBox.PrimaryDelayDdg = (DelayGeneratorParameters)Config.GetFirstParameters(
+                    typeof(DelayGeneratorParameters), value);
+            if (Settings.TryGetValue("PrimaryDelayDelay", out value))
+                DdgConfigBox.PrimaryDelayDelay = value;
+        }
+
+        protected override void SaveSettings()
+        {
+            base.SaveSettings();
+            var Settings = Config.TabSettings[this.GetType().Name];
+            Settings["PrimaryDelayDdg"] = DdgConfigBox.PrimaryDelayDdg != null ? DdgConfigBox.PrimaryDelayDdg.Name : null;
+            Settings["PrimaryDelayDelay"] = DdgConfigBox.PrimaryDelayDelay != null ? DdgConfigBox.PrimaryDelayDelay : null;
+        }
+
+        protected override void Collect_Click(object sender, EventArgs e)
+        {
+            Collect.Enabled = NScan.Enabled = CameraGain.Enabled = CollectLaser.Enabled = false;
+            Abort.Enabled = true;
+
+            DdgConfigBox.Enabled = false;
+
+            Graph.ClearData();
+            CumulativeLight = null;
+
+            DdgConfigBox.ApplyPrimaryDelayValue();
+
+            worker = new BackgroundWorker();
+            worker.DoWork += new System.ComponentModel.DoWorkEventHandler(DoWork);
+            worker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(WorkProgress);
+            worker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(WorkComplete);
+            worker.WorkerSupportsCancellation = true;
+            worker.WorkerReportsProgress = true;
+            worker.RunWorkerAsync(new WorkArgs((int)NScan.Value, (int)NAverage.Value, CollectLaser.Checked));
         }
 
         /// <summary>
@@ -119,7 +178,6 @@ namespace LUI.tabs
             Commander.Camera.TriggerMode = AndorCamera.TriggerModeExternalExposure;
             Commander.Camera.DDGTriggerMode = AndorCamera.DDGTriggerModeExternal;
             Commander.Camera.ReadMode = AndorCamera.ReadModeFVB;
-            //TODO Need local sample size and no. scans
             WorkArgs args = (WorkArgs)e.Argument;
 
             int cmasum = 0; // Cumulative moving average over scans
@@ -135,7 +193,9 @@ namespace LUI.tabs
                     e.Cancel = true;
                     return;
                 }
-                uint ret = Commander.Flash(DataBuffer); //TODO If flag, dump it in a MAT to be renamed later
+                uint ret = args.CollectLaser ? 
+                            Commander.Trans(DataBuffer) : 
+                            Commander.Flash(DataBuffer);
                 Data.Accumulate(CumulativeDataBuffer, DataBuffer);
 
                 int sum = 0;
@@ -159,21 +219,6 @@ namespace LUI.tabs
             }
             Data.DivideArray(CumulativeDataBuffer, args.NScans);
             e.Result = Array.ConvertAll((int[])CumulativeDataBuffer, x=> (double)x);
-        }
-
-        protected override void Collect_Click(object sender, EventArgs e)
-        {
-            Collect.Enabled = NScan.Enabled = CameraGain.Enabled = false;
-            Abort.Enabled = true;
-            worker = new BackgroundWorker();
-            worker.DoWork += new System.ComponentModel.DoWorkEventHandler(DoWork);
-            worker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(WorkProgress);
-            worker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(WorkComplete);
-            worker.WorkerSupportsCancellation = true;
-            worker.WorkerReportsProgress = true;
-            worker.RunWorkerAsync(new WorkArgs((int)NScan.Value, (int)NAverage.Value));
-            Graph.ClearData();
-            CumulativeLight = null;
         }
 
         /// <summary>
@@ -231,8 +276,10 @@ namespace LUI.tabs
                 DisplayComplete();
             }
             StatusProgress.Value = 100;
-            Collect.Enabled = NScan.Enabled = CameraGain.Enabled = true;
+            Collect.Enabled = NScan.Enabled = CameraGain.Enabled = CollectLaser.Enabled = true;
             Abort.Enabled = false;
+
+            DdgConfigBox.Enabled = CollectLaser.Checked;
         }
 
         protected override void Graph_Click(object sender, MouseEventArgs e)
@@ -427,10 +474,10 @@ namespace LUI.tabs
             Display();
         }
 
-        private void NAverage_ValueChanged(object sender, EventArgs e)
-        {
-            PeakNLabel.Text = NAverage.Value.ToString("n") + " Point Average";
-        }
+        //private void NAverage_ValueChanged(object sender, EventArgs e)
+        //{
+        //    PeakNLabel.Text = NAverage.Value.ToString("n") + " Point Average";
+        //}
 
         private void SaveProfile_Click(object sender, EventArgs e)
         {
@@ -471,6 +518,20 @@ namespace LUI.tabs
                     }
                     break;
             }
+        }
+
+        void CollectLaser_CheckedChanged(object sender, EventArgs e)
+        {
+            if (CollectLaser.Checked)
+            {
+                if (Commander.Camera.HasIntensifier) CameraGain.Value = Commander.Camera.MinIntensifierGain;
+                string Msg = "Warning: camera will be exposed to scattered laser light!\r\n" +
+                (Commander.Camera.HasIntensifier ? "Gain has been set to minimum as a precaution.\r\n" : "") +
+                         "Remember to configure DDG and set delay manually before proceeding.";
+                MessageBox.Show(Msg, "Warning!", MessageBoxButtons.OK);
+            }
+            PersistentGraphing.Checked = !CollectLaser.Checked;
+            DdgConfigBox.Enabled = CollectLaser.Checked;
         }
 
     }

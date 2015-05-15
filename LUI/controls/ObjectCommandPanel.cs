@@ -16,8 +16,6 @@ namespace LUI.controls
     {
         public event EventHandler ObjectChanged;
 
-        public LuiObjectParameters Object { get; set; }
-
         private GroupBox Group;
 
         private FlowLayoutPanel _Flow;

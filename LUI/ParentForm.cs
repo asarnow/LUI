@@ -24,7 +24,7 @@ namespace LUI
 
         private LuiConfig Config;
 
-        public enum State { IDLE, TROS, CALIBRATE, ALIGN, POWER, RESIDUALS }
+        public enum TaskState { IDLE, TROS, CALIBRATE, ALIGN, POWER, RESIDUALS }
 
         private TabControl Tabs;
         private TabPage TROSPage;
@@ -41,15 +41,15 @@ namespace LUI
         private ResidualsControl ResidualsControl;
         private OptionsControl OptionsControl;
 
-        public State TaskBusy
+        public TaskState CurrentTask
         {
             get
             {
-                if (ResidualsControl.IsBusy) return State.RESIDUALS;
-                if (CalibrateControl.IsBusy) return State.CALIBRATE;
-                //if (TROSControl.IsBusy) return State.TROS;
-                if (LaserPowerControl.IsBusy) return State.POWER;
-                else return State.IDLE;
+                if (ResidualsControl.IsBusy) return TaskState.RESIDUALS;
+                if (CalibrateControl.IsBusy) return TaskState.CALIBRATE;
+                if (TROSControl.IsBusy) return TaskState.TROS;
+                if (LaserPowerControl.IsBusy) return TaskState.POWER;
+                else return TaskState.IDLE;
             }
         }
 
@@ -153,21 +153,25 @@ namespace LUI
             CalibrationPage.Controls.Add(CalibrateControl);
             Config.ParametersChanged += CalibrateControl.HandleParametersChanged;
             CalibrateControl.CalibrationChanged += CalibrateControl.HandleCalibrationChanged;
+            FormClosing += CalibrateControl.HandleExit;
 
             TROSControl = new TroaControl(Config);
             TROSPage.Controls.Add(TROSControl);
             Config.ParametersChanged += TROSControl.HandleParametersChanged;
             CalibrateControl.CalibrationChanged += TROSControl.HandleCalibrationChanged;
+            FormClosing += TROSControl.HandleExit;
 
             LaserPowerControl = new LaserPowerControl(Config);
             PowerPage.Controls.Add(LaserPowerControl);
             Config.ParametersChanged += LaserPowerControl.HandleParametersChanged;
             CalibrateControl.CalibrationChanged += LaserPowerControl.HandleCalibrationChanged;
+            FormClosing += LaserPowerControl.HandleExit;
 
             ResidualsControl = new ResidualsControl(Config);
             ResidualsPage.Controls.Add(ResidualsControl);
             Config.ParametersChanged += ResidualsControl.HandleParametersChanged;
             CalibrateControl.CalibrationChanged += ResidualsControl.HandleCalibrationChanged;
+            FormClosing += ResidualsControl.HandleExit;
 
             Tabs.SelectedTab = HomePage;
 
@@ -202,7 +206,53 @@ namespace LUI
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
+            if (CurrentTask != TaskState.IDLE)
+            {
+                string BusyMsg = " is still running. Please abort if you wish to exit.";
+                string Task = null;
+                switch (CurrentTask)
+                {
+                    case TaskState.ALIGN:
+                        Task = "Alignment";
+                        break;
+                    case TaskState.CALIBRATE:
+                        Task = "Calibration";
+                        break;
+                    case TaskState.POWER:
+                        Task = "Laser power";
+                        break;
+                    case TaskState.RESIDUALS:
+                        Task = "Residuals measurement";
+                        break;
+                    case TaskState.TROS:
+                        Task = "TROS program";
+                        break;
+                }
+                DialogResult result = MessageBox.Show(Task + BusyMsg,
+                "Task Running",
+                MessageBoxButtons.OK);
+                e.Cancel = true;
+                return; // Don't call raise FormClosing event.
+            }
+            if (!Config.Saved)
+            {
+                DialogResult result = MessageBox.Show("Configuration has not been saved. Quit anyway?",
+                "Save Configuration",
+                MessageBoxButtons.OKCancel);
+                if (result == DialogResult.Cancel)
+                {
+                    e.Cancel = true;
+                    return; // Don't call raise FormClosing event.
+                }
+            }
+            // Proceed with closing (save tab state, etc.).
             base.OnFormClosing(e);
+        }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            if (Config.Saved) Config.Save(); // Saves TabSettings.
+            base.OnFormClosed(e);
         }
 
     }

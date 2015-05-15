@@ -40,11 +40,13 @@ namespace lasercom
 
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public Commander(ICamera camera = null, AbstractBeamFlags beamFlags = null, IDigitalDelayGenerator ddg = null)
+        public Commander(ICamera camera = null, AbstractBeamFlags beamFlags = null, IDigitalDelayGenerator ddg = null, AbstractPump pump = null)
         {
-            Camera = camera;
-            BeamFlag = beamFlags;
-            DDG = ddg;
+            // Set dummies instead of null values to save a *ton* of null checks elsewhere.
+            Camera = camera != null ? camera : new DummyCamera();
+            BeamFlag = beamFlags != null ? beamFlags : new DummyBeamFlags();
+            DDG = ddg != null ? ddg : new DummyDigitalDelayGenerator();
+            Pump = pump; //TODO Change to dummy pump.
         }
 
         public void SetDelays(string file)

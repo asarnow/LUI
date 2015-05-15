@@ -33,8 +33,6 @@ namespace LUI.tabs
         {
             Config = config;
             Commander = new Commander();
-            Commander.Camera = new DummyCamera();
-            Commander.BeamFlag = new DummyBeamFlags();
             InitializeComponent();
             Init();
             CameraGain.ValueChanged += CameraGain_ValueChanged;
@@ -69,8 +67,11 @@ namespace LUI.tabs
             BeamFlagBox.ObjectChanged += HandleBeamFlagsChanged;
 
             if (!IsInDesignMode())
+            {
                 HandleParametersChanged(this, EventArgs.Empty);
-
+                LoadSettings();
+            }
+            
             Graph.XLeft = (float)Commander.Camera.Calibration[0];
             Graph.XRight = (float)Commander.Camera.Calibration[Commander.Camera.Calibration.Length - 1];
         }
@@ -132,6 +133,31 @@ namespace LUI.tabs
             Commander.BeamFlag = (AbstractBeamFlags)Config.GetObject(BeamFlagBox.SelectedObject);
         }
 
+        public void HandleExit(object sender, EventArgs e)
+        {
+            if (Config.Saved)
+            {
+                SaveSettings();
+            }
+        }
+
+        protected virtual void LoadSettings()
+        {
+            var Settings = Config.TabSettings[this.GetType().Name];
+            string value;
+            if (Settings.TryGetValue("Camera", out value))
+                CameraBox.SelectedObject = Config.GetFirstParameters(typeof(CameraParameters), value);
+            if (Settings.TryGetValue("BeamFlag", out value))
+                BeamFlagBox.SelectedObject = Config.GetFirstParameters(typeof(BeamFlagsParameters), value);
+        }
+
+        protected virtual void SaveSettings()
+        {
+            var Settings = Config.TabSettings[this.GetType().Name];
+            Settings["Camera"] = CameraBox.SelectedObject != null ? CameraBox.SelectedObject.Name : null;
+            Settings["BeamFlag"] = BeamFlagBox.SelectedObject != null ? BeamFlagBox.SelectedObject.Name : null;
+        }
+
         protected virtual void Collect_Click(object sender, EventArgs e)
         {
             Collect.Enabled = NScan.Enabled = false;
@@ -179,7 +205,6 @@ namespace LUI.tabs
 
         private void CameraGain_ValueChanged(object sender, EventArgs e)
         {
-            //TODO Safety check
             Commander.Camera.IntensifierGain = (int)CameraGain.Value;
         }
 
@@ -207,13 +232,13 @@ namespace LUI.tabs
         {
             get
             {
-                return worker.IsBusy;
+                return worker != null ? worker.IsBusy : false;
             }
         }
 
-        public ParentForm.State TaskBusy()
+        public ParentForm.TaskState TaskBusy()
         {
-            return ((ParentForm)FindForm()).TaskBusy;
+            return ((ParentForm)FindForm()).CurrentTask;
         }
 
         public static bool IsInDesignMode()

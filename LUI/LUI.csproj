@@ -146,6 +146,12 @@
   <ItemGroup>
     <Compile Include="config\TextBoxAppender.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="controls\DdgCommandPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="controls\DdgCommandPanel.Designer.cs">
+      <DependentUpon>DdgCommandPanel.cs</DependentUpon>
+    </Compile>
     <Compile Include="controls\designer\ObjectCommandPanelDesigner.cs" />
     <Compile Include="controls\ObjectCommandPanel.cs">
       <SubType>UserControl</SubType>
@@ -268,6 +274,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="controls\DdgCommandPanel.resx">
+      <DependentUpon>DdgCommandPanel.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="controls\panel\LoggingOptionsDialog.resx">
       <DependentUpon>LoggingOptionsDialog.cs</DependentUpon>
     </EmbeddedResource>

@@ -141,16 +141,13 @@ namespace LUI.tabs
             TimesView.DataSource = new BindingSource(TimesList, null);
             TimesView.CellValidating += TimesView_CellValidating;
             TimesView.CellEndEdit += TimesView_CellEndEdit;
-
-            PrimaryDelayDdgs.SelectedIndexChanged += PrimaryDelayDdgs_SelectedIndexChanged;
-            PrimaryDelayDelays.SelectedIndexChanged += PrimaryDelayDelays_SelectedIndexChanged;
-
-            PrimaryDelayTriggers.SelectedIndexChanged += PrimaryDelayTriggers_SelectedIndexChanged;
-
-            PrimaryDelayValue.TextChanged += PrimaryDelayValue_TextChanged;
-            PrimaryDelayValue.KeyPress += PrimaryDelayValue_KeyPress;
             
             SaveData.Click += (sender, e) => SaveOutput();
+
+            DdgConfigBox.Config = Config;
+            DdgConfigBox.Commander = Commander;
+            DdgConfigBox.AllowZero = false;
+            DdgConfigBox.HandleParametersChanged(this, EventArgs.Empty);
         }
 
         private void Init()
@@ -158,10 +155,34 @@ namespace LUI.tabs
             SuspendLayout();
             
             SaveData.Enabled = false;
-            PrimaryDelayDdgs.DisplayMember = "Name";
-            PrimaryDelayDdgs.ValueMember = "Self";
 
             ResumeLayout();
+        }
+
+        public override void HandleParametersChanged(object sender, EventArgs e)
+        {
+            base.HandleParametersChanged(sender, e); // Takes care of ObjectSelectPanel.
+            DdgConfigBox.HandleParametersChanged(sender, e);
+        }
+
+        protected override void LoadSettings()
+        {
+            base.LoadSettings();
+            var Settings = Config.TabSettings[this.GetType().Name];
+            string value;
+            if (Settings.TryGetValue("PrimaryDelayDdg", out value))
+                DdgConfigBox.PrimaryDelayDdg = (DelayGeneratorParameters)Config.GetFirstParameters(
+                    typeof(DelayGeneratorParameters), value);
+            if (Settings.TryGetValue("PrimaryDelayDelay", out value))
+                DdgConfigBox.PrimaryDelayDelay = value;
+        }
+
+        protected override void SaveSettings()
+        {
+            base.SaveSettings();
+            var Settings = Config.TabSettings[this.GetType().Name];
+            Settings["PrimaryDelayDdg"] = DdgConfigBox.PrimaryDelayDdg != null ? DdgConfigBox.PrimaryDelayDdg.Name : null;
+            Settings["PrimaryDelayDelay"] = DdgConfigBox.PrimaryDelayDelay != null ? DdgConfigBox.PrimaryDelayDelay : null;
         }
 
         /// <summary>
@@ -195,6 +216,8 @@ namespace LUI.tabs
             Collect.Enabled = NScan.Enabled = CameraGain.Enabled = false;
             Abort.Enabled = true;
 
+            DdgConfigBox.Enabled = false;
+
             CameraStatus.Text = "";
 
             Graph.ClearData();
@@ -207,7 +230,7 @@ namespace LUI.tabs
             worker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(WorkComplete);
             worker.WorkerSupportsCancellation = true;
             worker.WorkerReportsProgress = true;
-            worker.RunWorkerAsync(new WorkArgs(N, Times, (string)PrimaryDelayDelays.SelectedItem, (string)PrimaryDelayTriggers.SelectedItem));
+            worker.RunWorkerAsync(new WorkArgs(N, Times, DdgConfigBox.PrimaryDelayDelay, DdgConfigBox.PrimaryDelayTrigger));
         }
 
         protected override void DoWork(object sender, DoWorkEventArgs e)
@@ -398,7 +421,7 @@ namespace LUI.tabs
                     CameraStatus.Text = progress.CameraStatus;
                     break;
                 case Dialog.PROGRESS_TIME:
-                    PrimaryDelayValue.Text = progress.Delay.ToString();
+                    DdgConfigBox.PrimaryDelayValue = progress.Delay;
                     break;
                 case Dialog.PROGRESS_TIME_COMPLETE:
                     Display(progress.Data);
@@ -442,6 +465,8 @@ namespace LUI.tabs
             StatusProgress.Value = 100;
             Collect.Enabled = NScan.Enabled = CameraGain.Enabled = true;
             Abort.Enabled = false;
+
+            DdgConfigBox.Enabled = true;
         }
 
         private void Display(double[] Y)
@@ -450,147 +475,6 @@ namespace LUI.tabs
             Graph.Invalidate();
             Graph.MarkerColor = Graph.NextColor;
         }
-
-        public override void HandleParametersChanged(object sender, EventArgs e)
-        {
-            base.HandleParametersChanged(sender, e); // Takes care of ObjectSelectPanel.
-
-            
-            PrimaryDelayDdgs.Items.Clear();
-            var parameters = Config.GetParameters(typeof(DelayGeneratorParameters));
-            foreach (var p in parameters)
-            {
-                PrimaryDelayDdgs.Items.Add(p);
-            }
-        }
-
-        private void PrimaryDelayDdgs_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            var DDG = (IDigitalDelayGenerator)Config.GetObject((DelayGeneratorParameters)PrimaryDelayDdgs.SelectedItem);
-            Commander.DDG = DDG;
-            // Re-populate the available delay and trigger choices.
-            PrimaryDelayDelays.Items.Clear();
-            foreach (string d in DDG.Delays) PrimaryDelayDelays.Items.Add(d);            
-            PrimaryDelayTriggers.Items.Clear();
-            foreach (string d in DDG.Triggers) PrimaryDelayTriggers.Items.Add(d);
-        }
-
-        private void PrimaryDelayDelays_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            PrimaryDelayTriggers.SelectedItem = Commander.DDG.GetDelayTrigger((string)PrimaryDelayDelays.SelectedItem);
-            PrimaryDelayValue.Text = Commander.DDG.GetDelayValue((string)PrimaryDelayDelays.SelectedItem).ToString();
-        }
-
-        void PrimaryDelayTriggers_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (IsPrimaryDelayValueValid())
-            {
-                ApplyPrimaryDelayValue();
-            }
-        }
-
-        void PrimaryDelayValue_TextChanged(object sender, EventArgs e)
-        {
-            if (!IsPrimaryDelayValueValid())
-            {
-                PrimaryDelayValue.ForeColor = Color.Red;
-            }
-            else
-            {
-                PrimaryDelayValue.ForeColor = SystemColors.WindowText;
-            }
-        }
-
-        /// <summary>
-        /// Handles Enter and Escape keys for PrimaryDelayValue.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        void PrimaryDelayValue_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            var tb = sender as TextBox;
-            Keys key = (Keys)e.KeyChar;
-            if (key == Keys.Enter)
-            {
-                if (IsPrimaryDelayValueValid())
-                {
-                    ApplyPrimaryDelayValue();
-                }
-                else
-                {
-                    UpdatePrimaryDelayValue();
-                }
-                e.Handled = true;
-            }
-            if (key == Keys.Escape)
-            {
-                UpdatePrimaryDelayValue();
-                e.Handled = true;
-            }
-        }
-
-        bool IsPrimaryDelayValueValid()
-        {
-            double value;
-            if (PrimaryDelayDdgs.SelectedItem == null ||
-                PrimaryDelayDelays.SelectedItem == null ||
-                PrimaryDelayTriggers.SelectedItem == null ||
-                PrimaryDelayValue.Text == "")
-            {
-                return false;
-            }
-            else if (!double.TryParse(PrimaryDelayValue.Text, out value))
-            {
-                return false;
-            }
-            else if (value < 0)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
-
-        void UpdatePrimaryDelayValue()
-        {
-            if (Commander.DDG != null && PrimaryDelayDelays.SelectedItem != null)
-            {
-                PrimaryDelayValue.Text = Commander.DDG.GetDelayValue((string)PrimaryDelayDelays.SelectedItem).ToString();
-            }
-            else
-            {
-                PrimaryDelayValue.Text = "";
-            }
-        }
-
-        void ApplyPrimaryDelayValue()
-        {
-            double value = double.Parse(PrimaryDelayValue.Text);
-            Commander.DDG.SetDelay((string)PrimaryDelayDelays.SelectedItem,
-                                   (string)PrimaryDelayTriggers.SelectedItem,
-                                   value);
-        }
-
-        /// <summary>
-        /// Retrieve row for a role by name (e.g. "PrimaryDelay").
-        /// </summary>
-        /// <param name="searchValue"></param>
-        /// <returns></returns>
-        //private int FindRowByRoleName(string searchValue)
-        //{
-        //    int rowIndex = -1;
-
-        //    DataGridViewRow row = RoleListView.Rows
-        //        .Cast<DataGridViewRow>()
-        //        .Where(r => r.Cells["Role"].Value.ToString().Equals(searchValue))
-        //        .First();
-
-        //    rowIndex = row.Index;
-
-        //    return rowIndex;
-        //}
 
         /// <summary>
         /// Clears row error if user presses ESC while editing.

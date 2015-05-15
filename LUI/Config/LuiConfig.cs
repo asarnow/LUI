@@ -17,6 +17,7 @@ using log4net.Core;
 using System.Linq.Expressions;
 using System.Linq;
 using System.Runtime.Serialization;
+using LUI.tabs;
 
 //  <summary>
 //      Class for managing LUI XML config files.
@@ -136,6 +137,21 @@ namespace LUI.config
         #endregion
         #endregion
 
+        public Dictionary<string, Dictionary<string, string>> TabSettings { get; set; }
+
+        private bool _Saved;
+        public bool Saved
+        {
+            get
+            {
+                return _Saved;
+            }
+            private set
+            {
+                _Saved = value;
+            }
+        }
+
         public bool Ready
         {
             get
@@ -174,6 +190,16 @@ namespace LUI.config
             LogFile = LUI.Constants.DefaultLogFileLocation;
             LogLevel = LUI.Constants.DefaultLogLevel;
 
+            Saved = false;
+
+            TabSettings = new Dictionary<string, Dictionary<string, string>>();
+
+            // Prepopulate tab settings using all LuiTab subclasses.
+            foreach (Type type in typeof(LuiTab).GetSubclasses(true))
+            {
+                TabSettings.Add(type.Name, new Dictionary<string, string>());
+            }
+            
             LuiObjectTableIndex = new Dictionary<Type, Dictionary<LuiObjectParameters, ILuiObject>>();
 
             // Prepopulate parameter lists using all concrete LuiObjectParameters subclasses.
@@ -243,6 +269,24 @@ namespace LUI.config
         public IEnumerable<LuiObjectParameters> GetParameters(Type t)
         {
             return LuiObjectTableIndex[t].Keys.AsEnumerable();
+        }
+
+        public LuiObjectParameters GetFirstParameters(string Name)
+        {
+            foreach (var p in LuiObjectParameters)
+            {
+                if (p.Name == Name) return p;
+            }
+            return null;
+        }
+
+        public LuiObjectParameters GetFirstParameters(Type t, string Name)
+        {
+            foreach (var p in GetParameters(t))
+            {
+                if (p.Name == Name) return p;
+            }
+            return null;
         }
 
         public void AddParameters(LuiObjectParameters p)
@@ -342,9 +386,38 @@ namespace LUI.config
                         
                     }
                 }
-                
+
+                // Tab settings.
+                reader.ReadToFollowing("TabSettings");
+                using (var subtree = reader.ReadSubtree())
+                {
+                    subtree.MoveToContent();
+                    ISet<string> TabNames = new HashSet<string>(typeof(LuiTab).GetSubclasses(true).Select(x => x.Name));
+                    string Tab = null;
+                    while (subtree.Read())
+                    {
+                        subtree.MoveToContent();
+                        if (subtree.IsStartElement())
+                        {
+                            if (TabNames.Contains(subtree.Name))
+                            {
+                                Tab = subtree.Name;
+                            }
+                            else
+                            {
+                                string Name = subtree.Name;
+                                subtree.Read();
+                                TabSettings[Tab].Add(Name, subtree.Value);
+                            }
+                            
+                        }
+                    }
+                }
+
                 //reader.ReadEndElement(); // End root.
             }
+
+            Saved = true;
         }
 
         public void WriteXml(System.Xml.XmlWriter writer)
@@ -375,6 +448,22 @@ namespace LUI.config
                 writer.WriteEndElement();
             }
             writer.WriteEndElement();
+
+            // Write TabSettings.
+            writer.WriteStartElement("TabSettings");
+            foreach (var TabKvp in TabSettings)
+            {
+                // Write settings for specific LuiTab subtype.
+                writer.WriteStartElement(TabKvp.Key);
+                foreach (var SettingKvp in TabKvp.Value)
+                {
+                    writer.WriteElementString(SettingKvp.Key, SettingKvp.Value);
+                }
+                writer.WriteEndElement();
+            }
+            writer.WriteEndElement();
+
+            Saved = true;
         }
 
         /// <summary>
@@ -410,10 +499,19 @@ namespace LUI.config
         public void Save(string FileName)
         {
             var serializer = new XmlSerializer(typeof(LuiConfig));
-            using (var writer = new StreamWriter(FileName))
+            try
             {
-                serializer.Serialize(writer, this);
+                using (var writer = new StreamWriter(FileName))
+                {
+                    serializer.Serialize(writer, this);
+                }
+                Saved = true;
             }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+            }
+
         }
 
         public void Dispose()
@@ -484,6 +582,7 @@ namespace LUI.config
         public void OnParametersChanged(object sender, EventArgs e)
         {
             ParametersChanged.Raise(sender, e);
+            if (!(sender is ParentForm)) Saved = false;
         }
 
     }
