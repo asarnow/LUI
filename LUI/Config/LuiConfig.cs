@@ -388,31 +388,32 @@ namespace LUI.config
                 }
 
                 // Tab settings.
-                reader.ReadToFollowing("TabSettings");
-                using (var subtree = reader.ReadSubtree())
-                {
-                    subtree.MoveToContent();
-                    ISet<string> TabNames = new HashSet<string>(typeof(LuiTab).GetSubclasses(true).Select(x => x.Name));
-                    string Tab = null;
-                    while (subtree.Read())
+                
+                    reader.ReadToFollowing("TabSettings");
+                    using (var subtree = reader.ReadSubtree())
                     {
                         subtree.MoveToContent();
-                        if (subtree.IsStartElement())
+                        ISet<string> TabNames = new HashSet<string>(typeof(LuiTab).GetSubclasses(true).Select(x => x.Name));
+                        string Tab = null;
+                        while (subtree.Read())
                         {
-                            if (TabNames.Contains(subtree.Name))
+                            subtree.MoveToContent();
+                            if (subtree.IsStartElement())
                             {
-                                Tab = subtree.Name;
-                            }
-                            else
-                            {
-                                string Name = subtree.Name;
-                                subtree.Read();
-                                TabSettings[Tab].Add(Name, subtree.Value);
-                            }
+                                if (TabNames.Contains(subtree.Name))
+                                {
+                                    Tab = subtree.Name;
+                                }
+                                else
+                                {
+                                    string Name = subtree.Name;
+                                    subtree.Read();
+                                    TabSettings[Tab].Add(Name, subtree.Value);
+                                }
                             
+                            }
                         }
                     }
-                }
 
                 //reader.ReadEndElement(); // End root.
             }

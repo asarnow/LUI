@@ -50,17 +50,22 @@ namespace LUI
 
             #region Deserialize XML and setup LuiConfig
             LuiConfig Config;
-            
+
             try
             {
                 XmlSerializer serializer = new XmlSerializer(typeof(LuiConfig));
-                StreamReader reader = new StreamReader(configfile);
-                Config = (LuiConfig)serializer.Deserialize(reader);
-                reader.Close();
+                using (StreamReader reader = new StreamReader(configfile))
+                {
+                    Config = (LuiConfig)serializer.Deserialize(reader);
+                }
             }
             catch (Exception ex)
             {
                 if (ex is FileNotFoundException)
+                {
+                    Config = new LuiConfig();
+                }
+                if (ex is InvalidOperationException)
                 {
                     Config = new LuiConfig();
                 }
