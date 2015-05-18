@@ -40,6 +40,10 @@ namespace lasercom.camera
                 {
                     arr = new object[] { CalFile, InitialGain };
                 }
+                else if (Type == typeof(DummyCamera))
+                {
+                    arr = new object[0];
+                }
                 return arr;
             }
         }

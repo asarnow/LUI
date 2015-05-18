@@ -73,6 +73,7 @@ namespace LUI.controls
 
             this.AutoSize = true;
             this.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
 
             Group = new GroupBox();
             Group.AutoSize = true;

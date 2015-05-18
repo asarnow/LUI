@@ -53,7 +53,7 @@ namespace LUI.controls
 
         public LuiOptionsDialog()
         {
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
         }
 
         public LuiOptionsDialog(Size Size, bool Visibility) : this()

@@ -36,7 +36,7 @@ namespace LUI.tabs
             SuspendLayout();
 
             AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
             Name = "OptionsControl";
 
             #region Panels and list of options dialogs
