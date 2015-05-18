@@ -211,7 +211,7 @@ namespace LUI.controls
             }
         }
 
-        void UpdatePrimaryDelayValue()
+        public void UpdatePrimaryDelayValue()
         {
             if (Commander.DDG != null && PrimaryDelayDelay != null)
             {

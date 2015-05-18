@@ -88,7 +88,7 @@ namespace LUI.controls
             _Objects = new LabeledControl<ComboBox>(new ComboBox(), "Device:");
             Objects.DropDownStyle = ComboBoxStyle.DropDownList;
             Objects.DisplayMember = "Name";
-            Objects.SelectedIndexChanged += (s, e) => ObjectChanged.Raise(s, e);
+            Objects.SelectedIndexChanged += OnObjectChanged;
             Flow.Controls.Add(_Objects);
 
             Group.Controls.Add(Flow);
@@ -96,6 +96,11 @@ namespace LUI.controls
             Controls.Add(Group);
 
             ResumeLayout();
+        }
+
+        private void OnObjectChanged(object sender, EventArgs e)
+        {
+            ObjectChanged.Raise(sender, e);
         }
 
     }

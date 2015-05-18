@@ -7,7 +7,7 @@ using lasercom.camera;
 
 namespace LUI.controls
 {
-    class DummyAndorCameraConfigPanel : CameraConfigPanel
+    class DummyAndorCameraConfigPanel : AndorCameraConfigPanel
     {
 
         public override Type Target

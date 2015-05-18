@@ -121,6 +121,12 @@ namespace LUI.tabs
             UpperBound = (int)Commander.Camera.Width * 5 / 6;
         }
 
+        public override void HandleContainingTabSelected(object sender, EventArgs e)
+        {
+            base.HandleContainingTabSelected(sender, e);
+            DdgConfigBox.UpdatePrimaryDelayValue();
+        }
+
         protected override void LoadSettings()
         {
             base.LoadSettings();

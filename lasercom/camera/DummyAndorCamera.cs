@@ -149,7 +149,7 @@ namespace lasercom.camera
             }
         }
 
-        public DummyAndorCamera() : base()
+        public DummyAndorCamera(string CalFile = null, int InitialGain = AndorCamera.DefaultMCPGain) : base(CalFile)
         {
             _Width = 1024;
             _Height = 256;
@@ -158,7 +158,7 @@ namespace lasercom.camera
 
             MinIntensifierGain = 0;
             MaxIntensifierGain = 4095;
-            IntensifierGain = AndorCamera.DefaultMCPGain;
+            IntensifierGain = InitialGain;
         }
 
         public override int[] FullResolutionImage()

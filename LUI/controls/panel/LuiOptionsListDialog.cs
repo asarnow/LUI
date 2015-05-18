@@ -286,7 +286,7 @@ namespace LUI.controls
 
         public override void HandleApply(object sender, EventArgs e)
         {
-            // Persist all entries excet dummy
+            // Persist all entries except dummy
             for (int i = 0; i < ObjectView.Items.Count - 1; i++)
             {   
                 LuiObjectItem item = (LuiObjectItem)ObjectView.Items[i];

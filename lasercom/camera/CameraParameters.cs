@@ -20,6 +20,9 @@ namespace lasercom.camera
         [DataMember]
         public int Temperature { get; set; }
 
+        [DataMember]
+        public int InitialGain { get; set; }
+
         override public object[] ConstructorArray
         {
             get
@@ -27,15 +30,15 @@ namespace lasercom.camera
                 object[] arr = null;
                 if (Type == typeof(AndorCamera))
                 {
-                    arr = new object[] { CalFile, Dir };
+                    arr = new object[] { CalFile, Dir, InitialGain };
                 }
                 else if (Type == typeof(CameraTempControlled))
                 {
-                    arr = new object[] { CalFile, Dir, Temperature };
+                    arr = new object[] { CalFile, Dir, InitialGain, Temperature };
                 }
                 else if (Type == typeof(DummyAndorCamera))
                 {
-                    arr = new object[0];
+                    arr = new object[] { CalFile, InitialGain };
                 }
                 return arr;
             }
@@ -61,6 +64,7 @@ namespace lasercom.camera
             this.CalFile = other.CalFile;
             this.Dir = other.Dir;
             this.Temperature = other.Temperature;
+            this.InitialGain = other.InitialGain;
         }
 
         public override bool Equals(CameraParameters other)
@@ -73,10 +77,12 @@ namespace lasercom.camera
             if (Type == typeof(AndorCamera))
             {
                 iseq &= Dir == other.Dir;
+                iseq &= InitialGain == other.InitialGain;
             }
-            else  if (Type == typeof(CameraTempControlled))
+            else if (Type == typeof(CameraTempControlled))
             {
                 iseq &= Dir == other.Dir;
+                iseq &= InitialGain == other.InitialGain;
                 iseq &= Temperature == other.Temperature;
             }
             return iseq;

@@ -133,6 +133,12 @@ namespace LUI.tabs
             Commander.BeamFlag = (AbstractBeamFlags)Config.GetObject(BeamFlagBox.SelectedObject);
         }
 
+        public virtual void HandleContainingTabSelected(object sender, EventArgs e)
+        {
+            if (Commander.Camera != null && Commander.Camera.HasIntensifier)
+                CameraGain.Value = Commander.Camera.IntensifierGain;
+        }
+
         public void HandleExit(object sender, EventArgs e)
         {
             if (Config.Saved)

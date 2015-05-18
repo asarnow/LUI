@@ -143,6 +143,8 @@ namespace LUI
             Controls.Add(Tabs);
             #endregion
 
+            Tabs.Selected += HandleTabSelected;
+
             OptionsControl = new OptionsControl(Config);
             OptionsControl.Dock = DockStyle.Fill;
             OptionsPage.Controls.Add(OptionsControl);
@@ -202,6 +204,12 @@ namespace LUI
                 MessageBox.Show("Bad configuration or no configuration.\r\nError message:\r\n" + ex.Message);
             }
             
+        }
+
+        private void HandleTabSelected(object sender, TabControlEventArgs e)
+        {
+            var luiTab = e.TabPage.Controls[0] as LuiTab;
+            if (luiTab != null) luiTab.HandleContainingTabSelected(sender, e);
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)

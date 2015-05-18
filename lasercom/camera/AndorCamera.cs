@@ -288,10 +288,8 @@ namespace lasercom.camera
                 
             }
         }
-        
-        public AndorCamera() : this(null, ".") { }
 
-        public AndorCamera(string CalFile = null, string dir = ".")
+        public AndorCamera(string CalFile = null, string dir = ".", int InitialGain = AndorCamera.DefaultMCPGain)
         {
             if (dir != null)
             {
@@ -315,7 +313,7 @@ namespace lasercom.camera
                 //TriggerInvert = Constants.TriggerInvertRising;
                 //TriggerLevel = Constants.DefaultTriggerLevel; // TTL signal is 4.0V
                 AndorSdk.GetMCPGainRange(ref _MinMCPGain, ref _MaxMCPGain);
-                IntensifierGain = Constants.DefaultMCPGain;
+                IntensifierGain = InitialGain;
             }
 
             if (CalFile == null || CalFile == "")
