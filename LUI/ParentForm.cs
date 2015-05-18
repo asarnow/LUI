@@ -62,8 +62,8 @@ namespace LUI
             // Dispose resources when the form is closed;
             FormClosed += (s,e) => Config.Dispose();
 
-            AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            //AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             ClientSize = new System.Drawing.Size(1113, 691);
             Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             Name = "ParentForm";
@@ -133,7 +133,7 @@ namespace LUI
             OptionsPage.Text = "Options";
             
             Tabs.TabPages.Add(HomePage);
-            Tabs.TabPages.Add(SpecPage);
+            //Tabs.TabPages.Add(SpecPage);
             Tabs.TabPages.Add(TROSPage);
             Tabs.TabPages.Add(ResidualsPage);
             Tabs.TabPages.Add(CalibrationPage);
