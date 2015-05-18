@@ -430,6 +430,7 @@
             this.Name = "LuiTab";
             this.Size = new System.Drawing.Size(1476, 821);
             this.ParentPanel.ResumeLayout(false);
+            this.ParentPanel.PerformLayout();
             this.ParentGrid.ResumeLayout(false);
             this.ParentGrid.PerformLayout();
             this.flowLayoutPanel1.ResumeLayout(false);

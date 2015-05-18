@@ -41,6 +41,7 @@
             this.Wavelength = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.RemoveCalItem = new System.Windows.Forms.Button();
             this.ParentPanel.SuspendLayout();
+            this.ParentGrid.SuspendLayout();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NScan)).BeginInit();
@@ -203,6 +204,9 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
             this.Name = "CalibrateControl";
             this.ParentPanel.ResumeLayout(false);
+            this.ParentPanel.PerformLayout();
+            this.ParentGrid.ResumeLayout(false);
+            this.ParentGrid.PerformLayout();
             this.StatusBox.ResumeLayout(false);
             this.StatusBox.PerformLayout();
             this.CommandsBox.ResumeLayout(false);

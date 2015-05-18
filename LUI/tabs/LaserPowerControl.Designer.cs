@@ -31,6 +31,7 @@
             this.CountsDisplay = new System.Windows.Forms.TextBox();
             this.CountsLabel = new System.Windows.Forms.Label();
             this.ParentPanel.SuspendLayout();
+            this.ParentGrid.SuspendLayout();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NScan)).BeginInit();
@@ -76,6 +77,8 @@
             this.Name = "LaserPowerControl";
             this.ParentPanel.ResumeLayout(false);
             this.ParentPanel.PerformLayout();
+            this.ParentGrid.ResumeLayout(false);
+            this.ParentGrid.PerformLayout();
             this.StatusBox.ResumeLayout(false);
             this.StatusBox.PerformLayout();
             this.CommandsBox.ResumeLayout(false);
