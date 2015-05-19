@@ -299,10 +299,7 @@ namespace lasercom.ddg
             string command = SetDelayTimeCommand + AOutput;
             // e.g. "1,+0.001000000000"
             string response = GPIBProvider.LoggedQuery(GPIBAddress, command);
-            if (response != null && response.StartsWith(AOutput + ","))
-            {
-                _ADelay = response;
-            }
+            _ADelay = response;
         }
 
         private void ReadBDelay()
@@ -310,10 +307,7 @@ namespace lasercom.ddg
             string command = SetDelayTimeCommand + BOutput;
             // e.g. "1,+0.001000000000"
             string response = GPIBProvider.LoggedQuery(GPIBAddress, command);
-            if (response != null && response.StartsWith(BOutput + ","))
-            {
-                _BDelay = response;
-            }
+            _BDelay = response;
         }
 
         private void ReadCDelay()
@@ -321,10 +315,7 @@ namespace lasercom.ddg
             string command = SetDelayTimeCommand + COutput;
             // e.g. "1,+0.001000000000"
             string response = GPIBProvider.LoggedQuery(GPIBAddress, command);
-            if (response != null && response.StartsWith(COutput + ","))
-            {
-                _CDelay = response;
-            }
+            _CDelay = response;
         }
 
         private void ReadDDelay()
@@ -332,10 +323,7 @@ namespace lasercom.ddg
             string command = SetDelayTimeCommand + DOutput;
             // e.g. "1,+0.001000000000"
             string response = GPIBProvider.LoggedQuery(GPIBAddress, command);
-            if (response != null && response.StartsWith(DOutput + ","))
-            {
-                _DDelay = response;
-            }
+            _DDelay = response;
         }
 
     }

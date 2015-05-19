@@ -46,6 +46,8 @@ namespace lasercom.gpib
             }
         }
 
+        private Encoding AsciiEncoding = Encoding.ASCII;
+
         int Timeout { get; set; }
         const int DefaultTimeout = 500;
 
@@ -60,7 +62,7 @@ namespace lasercom.gpib
             #region Serial port configuration
             
             _port = new SerialPort(PortName);
-            _port.BaudRate = 115200;
+            _port.BaudRate = 1200;
             _port.DataBits = 8;
             _port.Parity = Parity.None;
             _port.StopBits = StopBits.One;
@@ -109,7 +111,7 @@ namespace lasercom.gpib
             try
             {
                 if (!_port.IsOpen) _port.Open();
-                _port.Write(data);
+                WriteAsciiBytes(data);
             }
             catch (IOException ex)
             {
@@ -125,7 +127,7 @@ namespace lasercom.gpib
             try
             {
                 if (!_port.IsOpen) _port.Open();
-                _port.Write(data);
+                WriteAsciiBytes(data);
             }
             catch (IOException ex)
             {
@@ -140,7 +142,7 @@ namespace lasercom.gpib
             {
                 if (!_port.IsOpen) _port.Open();
                 ControllerCommand(AddressCommand, address.ToString());
-                _port.Write(EscapeAndTerminate(command));
+                WriteAsciiBytes(EscapeAndTerminate(command));
             }
             catch (IOException ex)
             {
@@ -156,8 +158,9 @@ namespace lasercom.gpib
             {
                 if (!_port.IsOpen) _port.Open();
                 ControllerCommand(AddressCommand, address.ToString());
-                _port.Write(EscapeAndTerminate(command));
+                WriteAsciiBytes(EscapeAndTerminate(command));
                 buffer = ReadWithTimeout();
+                buffer = buffer.TrimEnd("\r\n".ToCharArray());
             }
             catch (IOException ex)
             {
@@ -226,6 +229,7 @@ namespace lasercom.gpib
                     builder.Append(ControllerEscape);   
                 }
                 builder.Append(s[i]);
+                builder.Append(' '); // Workaround for every-other-character problem.
             }
             return builder.ToString();
         }
@@ -233,6 +237,11 @@ namespace lasercom.gpib
         static string EscapeAndTerminate(string s)
         {
             return EscapeString(s) + USBTerminator;
+        }
+
+        private void WriteAsciiBytes(string data)
+        {
+            _port.Write(AsciiEncoding.GetBytes(data), 0, AsciiEncoding.GetByteCount(data));
         }
     }
 }
