@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.Label GainLabel;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LuiTab));
-            this.GainLabel = new System.Windows.Forms.Label();
             this.ParentPanel = new System.Windows.Forms.Panel();
             this.ParentGrid = new System.Windows.Forms.TableLayoutPanel();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
@@ -49,12 +49,13 @@
             this.CameraGain = new System.Windows.Forms.NumericUpDown();
             this.BeamFlagBox = new LUI.controls.ObjectCommandPanel();
             this.BeamFlagCommands = new System.Windows.Forms.Panel();
+            this.CloseLamp = new System.Windows.Forms.Button();
+            this.OpenLaser = new System.Windows.Forms.Button();
+            this.OpenLamp = new System.Windows.Forms.Button();
+            this.CloseLaser = new System.Windows.Forms.Button();
             this.Graph = new LUI.controls.GraphControl();
             this.ChildArea = new System.Windows.Forms.Panel();
-            this.CloseLaser = new System.Windows.Forms.Button();
-            this.OpenLamp = new System.Windows.Forms.Button();
-            this.OpenLaser = new System.Windows.Forms.Button();
-            this.CloseLamp = new System.Windows.Forms.Button();
+            GainLabel = new System.Windows.Forms.Label();
             this.ParentPanel.SuspendLayout();
             this.ParentGrid.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
@@ -71,12 +72,13 @@
             // 
             // GainLabel
             // 
-            this.GainLabel.AutoSize = true;
-            this.GainLabel.Location = new System.Drawing.Point(1, 6);
-            this.GainLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.GainLabel.Name = "GainLabel";
-            this.GainLabel.Size = new System.Drawing.Size(0, 17);
-            this.GainLabel.TabIndex = 10;
+            GainLabel.AutoSize = true;
+            GainLabel.Location = new System.Drawing.Point(4, 6);
+            GainLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            GainLabel.Name = "GainLabel";
+            GainLabel.Size = new System.Drawing.Size(68, 13);
+            GainLabel.TabIndex = 10;
+            GainLabel.Text = "Camera Gain";
             // 
             // ParentPanel
             // 
@@ -116,7 +118,7 @@
             this.flowLayoutPanel1.Location = new System.Drawing.Point(1110, 3);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.ParentGrid.SetRowSpan(this.flowLayoutPanel1, 2);
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(363, 712);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(363, 784);
             this.flowLayoutPanel1.TabIndex = 16;
             // 
             // StatusBox
@@ -139,7 +141,7 @@
             this.ProgressLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ProgressLabel.Location = new System.Drawing.Point(65, 100);
             this.ProgressLabel.Name = "ProgressLabel";
-            this.ProgressLabel.Size = new System.Drawing.Size(39, 20);
+            this.ProgressLabel.Size = new System.Drawing.Size(34, 17);
             this.ProgressLabel.TabIndex = 7;
             this.ProgressLabel.Text = "Idle";
             // 
@@ -184,7 +186,7 @@
             this.label1.Location = new System.Drawing.Point(207, 32);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(47, 17);
+            this.label1.Size = new System.Drawing.Size(37, 13);
             this.label1.TabIndex = 4;
             this.label1.Text = "Scans";
             // 
@@ -203,7 +205,7 @@
             0,
             0});
             this.NScan.Name = "NScan";
-            this.NScan.Size = new System.Drawing.Size(48, 22);
+            this.NScan.Size = new System.Drawing.Size(48, 20);
             this.NScan.TabIndex = 3;
             this.NScan.Value = new decimal(new int[] {
             1,
@@ -242,7 +244,7 @@
             this.CommonObjectPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.CommonObjectPanel.Location = new System.Drawing.Point(3, 533);
             this.CommonObjectPanel.Name = "CommonObjectPanel";
-            this.CommonObjectPanel.Size = new System.Drawing.Size(367, 176);
+            this.CommonObjectPanel.Size = new System.Drawing.Size(367, 248);
             this.CommonObjectPanel.TabIndex = 14;
             // 
             // DummyWidth
@@ -265,14 +267,14 @@
             this.CameraBox.Flow.Controls.Add(this.CameraCommands);
             this.CameraBox.Flow.Dock = System.Windows.Forms.DockStyle.Fill;
             this.CameraBox.Flow.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.CameraBox.Flow.Location = new System.Drawing.Point(3, 18);
+            this.CameraBox.Flow.Location = new System.Drawing.Point(3, 16);
             this.CameraBox.Flow.Name = "Flow";
-            this.CameraBox.Flow.Size = new System.Drawing.Size(355, 73);
+            this.CameraBox.Flow.Size = new System.Drawing.Size(355, 67);
             this.CameraBox.Flow.TabIndex = 0;
             this.CameraBox.Location = new System.Drawing.Point(3, 9);
             this.CameraBox.Name = "CameraBox";
             this.CameraBox.SelectedObject = null;
-            this.CameraBox.Size = new System.Drawing.Size(361, 94);
+            this.CameraBox.Size = new System.Drawing.Size(361, 86);
             this.CameraBox.TabIndex = 13;
             this.CameraBox.Text = "Camera";
             // 
@@ -280,16 +282,16 @@
             // 
             this.CameraCommands.AutoSize = true;
             this.CameraCommands.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.CameraCommands.Controls.Add(this.GainLabel);
+            this.CameraCommands.Controls.Add(GainLabel);
             this.CameraCommands.Controls.Add(this.CameraGain);
-            this.CameraCommands.Location = new System.Drawing.Point(3, 40);
+            this.CameraCommands.Location = new System.Drawing.Point(3, 36);
             this.CameraCommands.Name = "CameraCommands";
-            this.CameraCommands.Size = new System.Drawing.Size(87, 30);
+            this.CameraCommands.Size = new System.Drawing.Size(163, 28);
             this.CameraCommands.TabIndex = 1;
             // 
             // CameraGain
             // 
-            this.CameraGain.Location = new System.Drawing.Point(4, 4);
+            this.CameraGain.Location = new System.Drawing.Point(80, 4);
             this.CameraGain.Margin = new System.Windows.Forms.Padding(4);
             this.CameraGain.Maximum = new decimal(new int[] {
             500,
@@ -297,7 +299,7 @@
             0,
             0});
             this.CameraGain.Name = "CameraGain";
-            this.CameraGain.Size = new System.Drawing.Size(79, 22);
+            this.CameraGain.Size = new System.Drawing.Size(79, 20);
             this.CameraGain.TabIndex = 9;
             // 
             // BeamFlagBox
@@ -313,14 +315,14 @@
             this.BeamFlagBox.Flow.Controls.Add(this.BeamFlagCommands);
             this.BeamFlagBox.Flow.Dock = System.Windows.Forms.DockStyle.Fill;
             this.BeamFlagBox.Flow.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.BeamFlagBox.Flow.Location = new System.Drawing.Point(3, 18);
+            this.BeamFlagBox.Flow.Location = new System.Drawing.Point(3, 16);
             this.BeamFlagBox.Flow.Name = "Flow";
-            this.BeamFlagBox.Flow.Size = new System.Drawing.Size(355, 43);
+            this.BeamFlagBox.Flow.Size = new System.Drawing.Size(355, 125);
             this.BeamFlagBox.Flow.TabIndex = 0;
-            this.BeamFlagBox.Location = new System.Drawing.Point(3, 109);
+            this.BeamFlagBox.Location = new System.Drawing.Point(3, 101);
             this.BeamFlagBox.Name = "BeamFlagBox";
             this.BeamFlagBox.SelectedObject = null;
-            this.BeamFlagBox.Size = new System.Drawing.Size(361, 64);
+            this.BeamFlagBox.Size = new System.Drawing.Size(361, 144);
             this.BeamFlagBox.TabIndex = 0;
             this.BeamFlagBox.Text = "Beam Flags";
             // 
@@ -332,10 +334,50 @@
             this.BeamFlagCommands.Controls.Add(this.OpenLaser);
             this.BeamFlagCommands.Controls.Add(this.OpenLamp);
             this.BeamFlagCommands.Controls.Add(this.CloseLaser);
-            this.BeamFlagCommands.Location = new System.Drawing.Point(3, 40);
+            this.BeamFlagCommands.Location = new System.Drawing.Point(3, 36);
             this.BeamFlagCommands.Name = "BeamFlagCommands";
-            this.BeamFlagCommands.Size = new System.Drawing.Size(0, 0);
+            this.BeamFlagCommands.Size = new System.Drawing.Size(288, 86);
             this.BeamFlagCommands.TabIndex = 1;
+            // 
+            // CloseLamp
+            // 
+            this.CloseLamp.Location = new System.Drawing.Point(148, 48);
+            this.CloseLamp.Margin = new System.Windows.Forms.Padding(4);
+            this.CloseLamp.Name = "CloseLamp";
+            this.CloseLamp.Size = new System.Drawing.Size(136, 34);
+            this.CloseLamp.TabIndex = 7;
+            this.CloseLamp.Text = "Close Lamp";
+            this.CloseLamp.UseVisualStyleBackColor = true;
+            // 
+            // OpenLaser
+            // 
+            this.OpenLaser.Location = new System.Drawing.Point(4, 6);
+            this.OpenLaser.Margin = new System.Windows.Forms.Padding(4);
+            this.OpenLaser.Name = "OpenLaser";
+            this.OpenLaser.Size = new System.Drawing.Size(136, 34);
+            this.OpenLaser.TabIndex = 4;
+            this.OpenLaser.Text = "Open Laser";
+            this.OpenLaser.UseVisualStyleBackColor = true;
+            // 
+            // OpenLamp
+            // 
+            this.OpenLamp.Location = new System.Drawing.Point(148, 6);
+            this.OpenLamp.Margin = new System.Windows.Forms.Padding(4);
+            this.OpenLamp.Name = "OpenLamp";
+            this.OpenLamp.Size = new System.Drawing.Size(136, 34);
+            this.OpenLamp.TabIndex = 6;
+            this.OpenLamp.Text = "Open Lamp";
+            this.OpenLamp.UseVisualStyleBackColor = true;
+            // 
+            // CloseLaser
+            // 
+            this.CloseLaser.Location = new System.Drawing.Point(4, 48);
+            this.CloseLaser.Margin = new System.Windows.Forms.Padding(4);
+            this.CloseLaser.Name = "CloseLaser";
+            this.CloseLaser.Size = new System.Drawing.Size(136, 34);
+            this.CloseLaser.TabIndex = 5;
+            this.CloseLaser.Text = "Close Laser";
+            this.CloseLaser.UseVisualStyleBackColor = true;
             // 
             // Graph
             // 
@@ -382,46 +424,6 @@
             this.ChildArea.Size = new System.Drawing.Size(1101, 284);
             this.ChildArea.TabIndex = 12;
             // 
-            // CloseLaser
-            // 
-            this.CloseLaser.Location = new System.Drawing.Point(4, 48);
-            this.CloseLaser.Margin = new System.Windows.Forms.Padding(4);
-            this.CloseLaser.Name = "CloseLaser";
-            this.CloseLaser.Size = new System.Drawing.Size(136, 34);
-            this.CloseLaser.TabIndex = 5;
-            this.CloseLaser.Text = "Close Laser";
-            this.CloseLaser.UseVisualStyleBackColor = true;
-            // 
-            // OpenLamp
-            // 
-            this.OpenLamp.Location = new System.Drawing.Point(148, 6);
-            this.OpenLamp.Margin = new System.Windows.Forms.Padding(4);
-            this.OpenLamp.Name = "OpenLamp";
-            this.OpenLamp.Size = new System.Drawing.Size(136, 34);
-            this.OpenLamp.TabIndex = 6;
-            this.OpenLamp.Text = "Open Lamp";
-            this.OpenLamp.UseVisualStyleBackColor = true;
-            // 
-            // OpenLaser
-            // 
-            this.OpenLaser.Location = new System.Drawing.Point(4, 6);
-            this.OpenLaser.Margin = new System.Windows.Forms.Padding(4);
-            this.OpenLaser.Name = "OpenLaser";
-            this.OpenLaser.Size = new System.Drawing.Size(136, 34);
-            this.OpenLaser.TabIndex = 4;
-            this.OpenLaser.Text = "Open Laser";
-            this.OpenLaser.UseVisualStyleBackColor = true;
-            // 
-            // CloseLamp
-            // 
-            this.CloseLamp.Location = new System.Drawing.Point(148, 48);
-            this.CloseLamp.Margin = new System.Windows.Forms.Padding(4);
-            this.CloseLamp.Name = "CloseLamp";
-            this.CloseLamp.Size = new System.Drawing.Size(136, 34);
-            this.CloseLamp.TabIndex = 7;
-            this.CloseLamp.Text = "Close Lamp";
-            this.CloseLamp.UseVisualStyleBackColor = true;
-            // 
             // LuiTab
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
@@ -430,7 +432,6 @@
             this.Name = "LuiTab";
             this.Size = new System.Drawing.Size(1476, 821);
             this.ParentPanel.ResumeLayout(false);
-            this.ParentPanel.PerformLayout();
             this.ParentGrid.ResumeLayout(false);
             this.ParentGrid.PerformLayout();
             this.flowLayoutPanel1.ResumeLayout(false);
@@ -447,9 +448,9 @@
             this.CameraCommands.ResumeLayout(false);
             this.CameraCommands.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CameraGain)).EndInit();
-            this.BeamFlagCommands.ResumeLayout(false);
             this.BeamFlagBox.Flow.ResumeLayout(false);
             this.BeamFlagBox.Flow.PerformLayout();
+            this.BeamFlagCommands.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -481,7 +482,6 @@
         protected System.Windows.Forms.Button CloseLamp;
         protected System.Windows.Forms.NumericUpDown CameraGain;
         protected System.Windows.Forms.TableLayoutPanel ParentGrid;
-        private System.Windows.Forms.Label GainLabel;
 
 
 

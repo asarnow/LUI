@@ -200,7 +200,6 @@
             // 
             // CalibrateControl
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
             this.Name = "CalibrateControl";
             this.ParentPanel.ResumeLayout(false);

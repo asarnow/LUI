@@ -55,9 +55,12 @@
             this.DdgConfigBox.AutoSize = true;
             this.DdgConfigBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.DdgConfigBox.Controls.Add(this.DDGTable);
+            this.DdgConfigBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.DdgConfigBox.Location = new System.Drawing.Point(0, 0);
+            this.DdgConfigBox.Margin = new System.Windows.Forms.Padding(2);
             this.DdgConfigBox.Name = "DdgConfigBox";
-            this.DdgConfigBox.Size = new System.Drawing.Size(483, 74);
+            this.DdgConfigBox.Padding = new System.Windows.Forms.Padding(2);
+            this.DdgConfigBox.Size = new System.Drawing.Size(362, 59);
             this.DdgConfigBox.TabIndex = 16;
             this.DdgConfigBox.TabStop = false;
             this.DdgConfigBox.Text = "DDG Configuration";
@@ -83,130 +86,135 @@
             this.DDGTable.Controls.Add(this.PrimaryDelayDdgs, 1, 1);
             this.DDGTable.Controls.Add(textBox1, 4, 0);
             this.DDGTable.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.DDGTable.Location = new System.Drawing.Point(3, 18);
+            this.DDGTable.Location = new System.Drawing.Point(2, 15);
+            this.DDGTable.Margin = new System.Windows.Forms.Padding(2);
             this.DDGTable.Name = "DDGTable";
             this.DDGTable.RowCount = 2;
             this.DDGTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.DDGTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.DDGTable.Size = new System.Drawing.Size(477, 53);
+            this.DDGTable.Size = new System.Drawing.Size(358, 42);
             this.DDGTable.TabIndex = 13;
             this.DDGTable.Paint += new System.Windows.Forms.PaintEventHandler(this.DDGTable_Paint);
             // 
             // PrimaryDelayValueText
             // 
-            this.PrimaryDelayValueText.Location = new System.Drawing.Point(394, 26);
+            this.PrimaryDelayValueText.Location = new System.Drawing.Point(295, 19);
+            this.PrimaryDelayValueText.Margin = new System.Windows.Forms.Padding(2);
             this.PrimaryDelayValueText.Name = "PrimaryDelayValueText";
-            this.PrimaryDelayValueText.Size = new System.Drawing.Size(80, 22);
+            this.PrimaryDelayValueText.Size = new System.Drawing.Size(61, 20);
             this.PrimaryDelayValueText.TabIndex = 9;
             // 
             // PrimaryDelayTriggers
             // 
             this.PrimaryDelayTriggers.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.PrimaryDelayTriggers.FormattingEnabled = true;
-            this.PrimaryDelayTriggers.Location = new System.Drawing.Point(313, 26);
+            this.PrimaryDelayTriggers.Location = new System.Drawing.Point(234, 19);
+            this.PrimaryDelayTriggers.Margin = new System.Windows.Forms.Padding(2);
             this.PrimaryDelayTriggers.Name = "PrimaryDelayTriggers";
-            this.PrimaryDelayTriggers.Size = new System.Drawing.Size(75, 24);
+            this.PrimaryDelayTriggers.Size = new System.Drawing.Size(57, 21);
             this.PrimaryDelayTriggers.TabIndex = 0;
             // 
             // PrimaryDelayDelays
             // 
             this.PrimaryDelayDelays.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.PrimaryDelayDelays.FormattingEnabled = true;
-            this.PrimaryDelayDelays.Location = new System.Drawing.Point(232, 26);
+            this.PrimaryDelayDelays.Location = new System.Drawing.Point(173, 19);
+            this.PrimaryDelayDelays.Margin = new System.Windows.Forms.Padding(2);
             this.PrimaryDelayDelays.Name = "PrimaryDelayDelays";
-            this.PrimaryDelayDelays.Size = new System.Drawing.Size(75, 24);
+            this.PrimaryDelayDelays.Size = new System.Drawing.Size(57, 21);
             this.PrimaryDelayDelays.TabIndex = 1;
             // 
             // PrimaryDelayDdgs
             // 
             this.PrimaryDelayDdgs.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.PrimaryDelayDdgs.FormattingEnabled = true;
-            this.PrimaryDelayDdgs.Location = new System.Drawing.Point(105, 26);
+            this.PrimaryDelayDdgs.Location = new System.Drawing.Point(77, 19);
+            this.PrimaryDelayDdgs.Margin = new System.Windows.Forms.Padding(2);
             this.PrimaryDelayDdgs.Name = "PrimaryDelayDdgs";
-            this.PrimaryDelayDdgs.Size = new System.Drawing.Size(121, 24);
+            this.PrimaryDelayDdgs.Size = new System.Drawing.Size(92, 21);
             this.PrimaryDelayDdgs.TabIndex = 2;
             // 
             // textBox6
             // 
-            textBox6.AutoSize = true;
             textBox6.BackColor = System.Drawing.SystemColors.Control;
             textBox6.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            textBox6.Location = new System.Drawing.Point(3, 26);
+            textBox6.Location = new System.Drawing.Point(2, 19);
+            textBox6.Margin = new System.Windows.Forms.Padding(2);
             textBox6.Name = "textBox6";
             textBox6.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
-            textBox6.Size = new System.Drawing.Size(96, 17);
+            textBox6.Size = new System.Drawing.Size(71, 21);
             textBox6.TabIndex = 8;
             textBox6.Text = "Primary Delay";
             // 
             // textBox5
             // 
-            textBox5.AutoSize = true;
             textBox5.BackColor = System.Drawing.SystemColors.Control;
             textBox5.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            textBox5.Location = new System.Drawing.Point(313, 3);
+            textBox5.Location = new System.Drawing.Point(234, 2);
+            textBox5.Margin = new System.Windows.Forms.Padding(2);
             textBox5.Name = "textBox5";
             textBox5.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
-            textBox5.Size = new System.Drawing.Size(54, 17);
+            textBox5.Size = new System.Drawing.Size(40, 13);
             textBox5.TabIndex = 7;
             textBox5.Text = "Trigger";
             // 
             // textBox4
             // 
-            textBox4.AutoSize = true;
             textBox4.BackColor = System.Drawing.SystemColors.Control;
             textBox4.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            textBox4.Location = new System.Drawing.Point(232, 3);
+            textBox4.Location = new System.Drawing.Point(173, 2);
+            textBox4.Margin = new System.Windows.Forms.Padding(2);
             textBox4.Name = "textBox4";
             textBox4.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
-            textBox4.Size = new System.Drawing.Size(44, 17);
+            textBox4.Size = new System.Drawing.Size(34, 13);
             textBox4.TabIndex = 6;
             textBox4.Text = "Delay";
             // 
             // textBox3
             // 
-            textBox3.AutoSize = true;
             textBox3.BackColor = System.Drawing.SystemColors.Control;
             textBox3.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            textBox3.Location = new System.Drawing.Point(105, 3);
+            textBox3.Location = new System.Drawing.Point(77, 2);
+            textBox3.Margin = new System.Windows.Forms.Padding(2);
             textBox3.Name = "textBox3";
             textBox3.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
-            textBox3.Size = new System.Drawing.Size(39, 17);
+            textBox3.Size = new System.Drawing.Size(31, 13);
             textBox3.TabIndex = 5;
             textBox3.Text = "DDG";
             // 
             // textBox2
             // 
-            textBox2.AutoSize = true;
             textBox2.BackColor = System.Drawing.SystemColors.Control;
             textBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            textBox2.Location = new System.Drawing.Point(3, 3);
+            textBox2.Location = new System.Drawing.Point(2, 2);
+            textBox2.Margin = new System.Windows.Forms.Padding(2);
             textBox2.Name = "textBox2";
             textBox2.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
-            textBox2.Size = new System.Drawing.Size(62, 17);
+            textBox2.Size = new System.Drawing.Size(48, 13);
             textBox2.TabIndex = 4;
             textBox2.Text = "Function";
             // 
             // textBox1
             // 
-            textBox1.AutoSize = true;
             textBox1.BackColor = System.Drawing.SystemColors.Control;
             textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            textBox1.Location = new System.Drawing.Point(394, 3);
+            textBox1.Location = new System.Drawing.Point(295, 2);
+            textBox1.Margin = new System.Windows.Forms.Padding(2);
             textBox1.Name = "textBox1";
             textBox1.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
-            textBox1.Size = new System.Drawing.Size(65, 17);
+            textBox1.Size = new System.Drawing.Size(48, 13);
             textBox1.TabIndex = 3;
             textBox1.Text = "Value (s)";
             // 
             // DdgCommandPanel
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Controls.Add(this.DdgConfigBox);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "DdgCommandPanel";
-            this.Size = new System.Drawing.Size(486, 77);
+            this.Size = new System.Drawing.Size(362, 59);
             this.DdgConfigBox.ResumeLayout(false);
             this.DdgConfigBox.PerformLayout();
             this.DDGTable.ResumeLayout(false);

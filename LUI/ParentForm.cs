@@ -62,9 +62,8 @@ namespace LUI
             // Dispose resources when the form is closed;
             FormClosed += (s,e) => Config.Dispose();
 
-            //AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            ClientSize = new System.Drawing.Size(1113, 691);
+            StartPosition = FormStartPosition.WindowsDefaultLocation;
             Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             Name = "ParentForm";
             Text = "LUI";
@@ -151,7 +150,6 @@ namespace LUI
             OptionsControl.OptionsApplied += HandleOptionsApplied;
 
             CalibrateControl = new CalibrateControl(Config);
-            CalibrateControl.Dock = DockStyle.Fill;
             CalibrationPage.Controls.Add(CalibrateControl);
             Config.ParametersChanged += CalibrateControl.HandleParametersChanged;
             CalibrateControl.CalibrationChanged += CalibrateControl.HandleCalibrationChanged;
@@ -175,12 +173,21 @@ namespace LUI
             CalibrateControl.CalibrationChanged += ResidualsControl.HandleCalibrationChanged;
             FormClosing += ResidualsControl.HandleExit;
 
+            HomePage.Controls.Add(new Panel()); // Just a placeholder.
+
             Tabs.SelectedTab = HomePage;
 
             Tabs.ResumeLayout();
             ResumeLayout();
 
             HandleOptionsApplied(this, EventArgs.Empty);
+        }
+
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+            Size FormSize = new Size(ResidualsControl.Width, ResidualsControl.Height + Tabs.ItemSize.Height);
+            ClientSize = FormSize; // Hack (ResidualsControl is largest).
         }
 
         private static void MakeEmebeddable(Form Form)
