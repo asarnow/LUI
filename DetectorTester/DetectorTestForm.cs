@@ -14,7 +14,7 @@ using lasercom.objects;
 
 namespace DetectorTester
 {
-    public partial class Form1 : Form
+    public partial class DetectorTestForm : Form
     {
         private Commander Commander;
         
@@ -24,10 +24,10 @@ namespace DetectorTester
         private int[] image;
 
         private BackgroundWorker worker;
-        private BackgroundWorker ioWorker;
-        //private Queue<int[]> ioQueue;
 
-        private MatFile OutFile;
+        private MatFile DataFile;
+        MatVar<int> RawData;
+        MatVar<double> LuiData;
 
         struct WorkParameters
         {
@@ -38,20 +38,16 @@ namespace DetectorTester
             public bool Excite { get; set; }
         }
 
-        public Form1(Commander commander)
+        public DetectorTestForm()
         {
-            Commander = commander;
+            Commander = new Commander();
 
             worker = new BackgroundWorker();
             worker.WorkerSupportsCancellation = true;
             worker.WorkerReportsProgress = true;
             worker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.KineticSeriesAsync);
             worker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.ReportProgress);
-
-            ioWorker = new BackgroundWorker();
-            ioWorker.WorkerSupportsCancellation = true;
-            ioWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.WriteDataAsync);
-            
+            worker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.WorkComplete);
             InitializeComponent();
         }
 
@@ -195,13 +191,6 @@ namespace DetectorTester
             return true;
         }
 
-        private void ReportProgress(object sender, ProgressChangedEventArgs e)
-        {
-            int readMode = (int)e.UserState;
-            if (readMode == Constants.ReadModeFVB) AddSpec(counts);
-            else if (readMode == Constants.ReadModeImage) ShowImage(image);
-        }
-
         private void startButton_Click(object sender, EventArgs e)
         {
 
@@ -232,20 +221,31 @@ namespace DetectorTester
             worker.RunWorkerAsync(parameters);
         }
 
+        /// <summary>
+        /// Create temporary MAT file and initialize variables.
+        /// </summary>
+        /// <param name="NumChannels"></param>
+        /// <param name="NumScans"></param>
+        /// <param name="NumTimes"></param>
+        private void InitDataFile(int NumChannels, int NumScans, int NumTimes)
+        {
+            string TempFileName = Path.GetTempFileName();
+            TempFileName = TempFileName.Replace(".tmp", ".mat");
+            DataFile = new MatFile(TempFileName);
+            RawData = DataFile.CreateVariable<int>("rawdata", NumScans, NumChannels);
+            LuiData = DataFile.CreateVariable<double>("luidata", NumTimes + 1, NumChannels + 1);
+        }
+
         private void KineticSeriesAsync(object sender, DoWorkEventArgs e)
         {
             WorkParameters parameters = (WorkParameters)e.Argument;
 
-            //string tempFile = Path.GetTempFileName();
-            //OutFile = new MatFile(tempFile, "int32", parameters.NSteps, (int)Commander.Camera.Width);
-
             int nsteps = parameters.NSteps;
             int cnt = 0;
 
-            //ioWorker.RunWorkerAsync(blank);
+            InitDataFile((int)Commander.Camera.AcqSize, nsteps, nsteps);
 
             dark = Commander.Dark();
-            //ioWorker.RunWorkerAsync(dark);
 
             if (worker.CancellationPending)
             {
@@ -259,7 +259,6 @@ namespace DetectorTester
                 
                 if (parameters.ReadMode == Constants.ReadModeFVB)
                 {
-                    //ioWorker.RunWorkerAsync(data);
                     ApplyDark(data);
                     ApplyBlank(data);
                     counts = data;
@@ -286,7 +285,6 @@ namespace DetectorTester
                 
                 if (parameters.ReadMode == Constants.ReadModeFVB)
                 {
-                    //ioWorker.RunWorkerAsync(data);
                     ApplyDark(data);
                     ApplyBlank(data);
                     counts = data;
@@ -306,13 +304,22 @@ namespace DetectorTester
             dark = null;
             counts = null;
             image = null;
-            OutFile.Close();
+            DataFile.Close();
         }
 
-        private void WriteDataAsync(object data, DoWorkEventArgs e)
+        private void ReportProgress(object sender, ProgressChangedEventArgs e)
         {
-            OutFile.WriteNextRow((int[])data);
+            int readMode = (int)e.UserState;
+            if (readMode == Constants.ReadModeFVB) AddSpec(counts);
+            else if (readMode == Constants.ReadModeImage) ShowImage(image);
         }
+
+        private void WorkComplete(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (DataFile != null) DataFile.Close();
+        }
+
+
 
     }
 }

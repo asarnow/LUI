@@ -1,6 +1,6 @@
 ﻿namespace DetectorTester
 {
-    partial class Form1
+    partial class DetectorTestForm
     {
         /// <summary>
         /// Required designer variable.
