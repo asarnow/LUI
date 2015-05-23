@@ -115,16 +115,40 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Form1.cs">
+    <Compile Include="DelayGeneratorTestForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="DelayGeneratorTestForm.Designer.cs">
+      <DependentUpon>DelayGeneratorTestForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DetectorTestForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DetectorTestForm.Designer.cs">
+      <DependentUpon>DetectorTestForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
+    <Compile Include="Prompt.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Prompt.designer.cs">
+      <DependentUpon>Prompt.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="TestSelect.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TestSelect.Designer.cs">
+      <DependentUpon>TestSelect.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="DelayGeneratorTestForm.resx">
+      <DependentUpon>DelayGeneratorTestForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DetectorTestForm.resx">
+      <DependentUpon>DetectorTestForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Prompt.resx">
+      <DependentUpon>Prompt.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -136,6 +160,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="TestSelect.resx">
+      <DependentUpon>TestSelect.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
