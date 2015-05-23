@@ -36,7 +36,7 @@ namespace lasercom.ddg
             get
             { 
                 object[] arr = null;
-                if (Type == typeof(DDG535)){
+                if (Type == typeof(DG535)){
                     arr = new object[] { GpibAddress };
                 } 
                 else if (Type == typeof(DummyDigitalDelayGenerator))
@@ -71,7 +71,7 @@ namespace lasercom.ddg
             bool iseq = base.Equals(other);
             if (!iseq) return iseq;
 
-            if (Type == typeof(DDG535))
+            if (Type == typeof(DG535))
             {
                 iseq &= GpibAddress == other.GpibAddress &&
                         ( GpibProvider==other.GpibProvider || (GpibProvider !=null && GpibProvider.Equals(other.GpibProvider)) );
@@ -91,7 +91,7 @@ namespace lasercom.ddg
             unchecked
             {
                 int hash = Util.Hash(Type, Name);
-                if (Type == typeof(DDG535))
+                if (Type == typeof(DG535))
                 {
                     hash = Util.Hash(hash, GpibProvider);
                     hash = Util.Hash(hash, GpibAddress);

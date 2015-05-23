@@ -18,7 +18,7 @@ namespace LUI.controls
 
         public override Type Target
         {
-            get { return typeof(DDG535); }
+            get { return typeof(DG535); }
         }
 
         public DDG535ConfigPanel()

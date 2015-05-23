@@ -12,7 +12,7 @@ namespace lasercom.ddg
     /// <summary>
     /// Represents a Stanford Instruments DDG 535.
     /// </summary>
-    public class DDG535:StanfordDigitalDelayGenerator
+    public class DG535:StanfordDigitalDelayGenerator
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -149,7 +149,7 @@ namespace lasercom.ddg
         //    ReadAllDelays();
         //}
 
-        public DDG535(byte GPIBAddress, params ILuiObject[] dependencies) : base(GPIBAddress, dependencies)
+        public DG535(byte GPIBAddress, params ILuiObject[] dependencies) : base(GPIBAddress, dependencies)
         {
             ReadAllDelays();
         }

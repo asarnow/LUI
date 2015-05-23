@@ -229,7 +229,7 @@ namespace lasercom.gpib
                     builder.Append(ControllerEscape);   
                 }
                 builder.Append(s[i]);
-                builder.Append(' '); // Workaround for every-other-character problem.
+                builder.Append('\0'); // Workaround for every-other-character problem.
             }
             return builder.ToString();
         }
