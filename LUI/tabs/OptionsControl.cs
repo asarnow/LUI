@@ -114,7 +114,7 @@ namespace LUI.tabs
 
             LuiOptionsListDialog<IDigitalDelayGenerator, DelayGeneratorParameters> DDGOptionsDialog = 
                 new LuiOptionsListDialog<IDigitalDelayGenerator, DelayGeneratorParameters>(OptionsPanel.Size);
-            DDGOptionsDialog.AddConfigPanel(new DDG535ConfigPanel(GPIBOptionsDialog));
+            DDGOptionsDialog.AddConfigPanel(new DG535ConfigPanel(GPIBOptionsDialog));
             DDGOptionsDialog.AddConfigPanel(new DummyDigitalDelayGeneratorConfigPanel());
             DDGOptionsDialog.SetDefaultSelectedItems();
             DDGOptionsDialog.Dock = DockStyle.Fill;

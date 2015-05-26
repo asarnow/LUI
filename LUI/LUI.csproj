@@ -146,14 +146,14 @@
   <ItemGroup>
     <Compile Include="config\TextBoxAppender.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="controls\DdgCommandPanel.cs">
+    <Compile Include="controls\panel\DdgCommandPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="controls\DdgCommandPanel.Designer.cs">
+    <Compile Include="controls\panel\DdgCommandPanel.Designer.cs">
       <DependentUpon>DdgCommandPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="controls\designer\ObjectCommandPanelDesigner.cs" />
-    <Compile Include="controls\ObjectCommandPanel.cs">
+    <Compile Include="controls\panel\ObjectCommandPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="controls\panel\config\BeamFlagsConfigPanel.cs">
@@ -168,7 +168,7 @@
     <Compile Include="controls\panel\config\CameraTempControlledConfigPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="controls\panel\config\DDG535ConfigPanel.cs">
+    <Compile Include="controls\panel\config\DG535ConfigPanel.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="controls\panel\config\DummyAndorCameraConfigPanel.cs">
@@ -274,7 +274,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="controls\DdgCommandPanel.resx">
+    <EmbeddedResource Include="controls\panel\DdgCommandPanel.resx">
       <DependentUpon>DdgCommandPanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="controls\panel\LoggingOptionsDialog.resx">

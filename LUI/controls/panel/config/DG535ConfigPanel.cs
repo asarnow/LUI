@@ -10,7 +10,7 @@ using lasercom.gpib;
 
 namespace LUI.controls
 {
-    class DDG535ConfigPanel : LuiObjectConfigPanel<DelayGeneratorParameters>
+    class DG535ConfigPanel : LuiObjectConfigPanel<DelayGeneratorParameters>
     {
 
         LabeledControl<ComboBox> GpibAddress;
@@ -21,7 +21,7 @@ namespace LUI.controls
             get { return typeof(DG535); }
         }
 
-        public DDG535ConfigPanel()
+        public DG535ConfigPanel()
             : base()
         {
             GpibAddress = new LabeledControl<ComboBox>(new ComboBox(), "GPIB Address:");
@@ -31,7 +31,7 @@ namespace LUI.controls
             this.Controls.Add(GpibAddress);
         }
 
-        public DDG535ConfigPanel(LuiOptionsListDialog<IGpibProvider, GpibProviderParameters> GpibOptionsList)
+        public DG535ConfigPanel(LuiOptionsListDialog<IGpibProvider, GpibProviderParameters> GpibOptionsList)
             : this()
         {
             GpibProvider = new LabeledControl<ComboBox>(new ComboBox(), "GPIB Provider:");

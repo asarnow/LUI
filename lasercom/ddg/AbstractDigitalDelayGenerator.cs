@@ -37,5 +37,10 @@ namespace lasercom.ddg
             get;
         }
 
+        public virtual string[] GetAllowedTriggers(string DelayName)
+        {
+            return Triggers.Except(new string[] { DelayName }).ToArray();
+        }
+
     }
 }

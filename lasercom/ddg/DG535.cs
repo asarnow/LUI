@@ -285,7 +285,6 @@ namespace lasercom.ddg
             }
         }
 
-
         private void ReadAllDelays()
         {
             ReadADelay();

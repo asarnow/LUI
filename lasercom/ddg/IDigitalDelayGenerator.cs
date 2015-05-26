@@ -18,6 +18,8 @@ namespace lasercom.ddg
         string GetDelayTrigger(string DelayName);
         double GetDelayValue(string DelayName);
 
+        string[] GetAllowedTriggers(string DelayName);
+
         string[] Delays
         {
             get;
@@ -32,5 +34,6 @@ namespace lasercom.ddg
         {
             get;
         }
+
     }
 }

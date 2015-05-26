@@ -113,5 +113,6 @@ namespace lasercom.ddg
         {
             return Double.Parse(GetDelay(DelayName).Split(',')[1]);
         }
+
     }
 }
