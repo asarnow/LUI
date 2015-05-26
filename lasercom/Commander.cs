@@ -33,20 +33,20 @@ namespace lasercom
                 _Camera = value;
             }
         }
-        public AbstractBeamFlags BeamFlag { get; set; }
+        public IBeamFlags BeamFlag { get; set; }
         public IDigitalDelayGenerator DDG { get; set; }
-        public AbstractPump Pump { get; set; }
+        public IPump Pump { get; set; }
         public List<Double> Delays { get; set; }
 
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public Commander(ICamera camera = null, AbstractBeamFlags beamFlags = null, IDigitalDelayGenerator ddg = null, AbstractPump pump = null)
+        public Commander(ICamera camera = null, IBeamFlags beamFlags = null, IDigitalDelayGenerator ddg = null, IPump pump = null)
         {
             // Set dummies instead of null values to save a *ton* of null checks elsewhere.
             Camera = camera != null ? camera : new DummyCamera();
             BeamFlag = beamFlags != null ? beamFlags : new DummyBeamFlags();
             DDG = ddg != null ? ddg : new DummyDigitalDelayGenerator();
-            Pump = pump; //TODO Change to dummy pump.
+            Pump = pump != null ? pump : new DummyPump();
         }
 
         public void SetDelays(string file)

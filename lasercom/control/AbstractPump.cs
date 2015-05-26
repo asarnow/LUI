@@ -11,17 +11,27 @@ namespace lasercom.control
     /// </summary>
     public abstract class AbstractPump : LuiObject, IPump
     {
-        public enum State { Open, Closed }
-        public State CurrentState;
+        private PumpState _CurrentState;
+        public PumpState CurrentState
+        {
+            get
+            {
+                return _CurrentState;
+            }
+            protected set
+            {
+                _CurrentState = value;
+            }
+        }
 
-        public virtual State Toggle()
+        public virtual PumpState Toggle()
         {
             switch (CurrentState)
             {
-                case State.Open:
+                case PumpState.Open:
                     SetClosed();
                     break;
-                case State.Closed:
+                case PumpState.Closed:
                     SetOpen();
                     break;
             }
@@ -30,16 +40,16 @@ namespace lasercom.control
 
         public virtual void SetOpen()
         {
-            CurrentState = State.Open;
+            CurrentState = PumpState.Open;
             //TODO Which is which?
         }
 
         public virtual void SetClosed()
         {
-            CurrentState = State.Closed;
+            CurrentState = PumpState.Closed;
         }
 
-        public virtual State GetState()
+        public virtual PumpState GetState()
         {
             return CurrentState;
         }

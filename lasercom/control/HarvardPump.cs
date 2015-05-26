@@ -23,14 +23,14 @@ namespace lasercom.control
             return _port.PortName;
         }
 
-        public override State Toggle()
+        public override PumpState Toggle()
         {
             switch (CurrentState)
             {
-                case State.Open:
+                case PumpState.Open:
                     SetClosed();
                     break;
-                case State.Closed:
+                case PumpState.Closed:
                     SetOpen();
                     break;
             }
@@ -39,17 +39,17 @@ namespace lasercom.control
 
         public override void SetOpen()
         {
-            CurrentState = State.Open;
+            CurrentState = PumpState.Open;
             _port.Open(); //TODO Which is which?
         }
 
         public override void SetClosed()
         {
-            CurrentState = State.Closed;
+            CurrentState = PumpState.Closed;
             _port.Close();
         }
 
-        public override State GetState()
+        public override PumpState GetState()
         {
             return CurrentState;
         }

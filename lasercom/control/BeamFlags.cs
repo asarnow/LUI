@@ -50,7 +50,7 @@ namespace lasercom.control
             _port.Write(OpenLaserCommand);
             _port.Close();
             if (wait) System.Threading.Thread.Sleep(Delay);
-            LaserState = State.Open;
+            LaserState = BeamFlagState.Open;
         }
 
         public override void OpenFlash()
@@ -64,7 +64,7 @@ namespace lasercom.control
             _port.Write(OpenFlashCommand);
             _port.Close();
             if (wait) System.Threading.Thread.Sleep(Delay);
-            FlashState = State.Open;
+            FlashState = BeamFlagState.Open;
         }
 
         public override void OpenLaserAndFlash()
@@ -78,8 +78,8 @@ namespace lasercom.control
             _port.Write(OpenLaserAndFlashCommand);
             _port.Close();
             if (wait) System.Threading.Thread.Sleep(Delay);
-            LaserState = State.Open;
-            FlashState = State.Open;
+            LaserState = BeamFlagState.Open;
+            FlashState = BeamFlagState.Open;
         }
 
         public override void CloseLaser()
@@ -87,8 +87,8 @@ namespace lasercom.control
             _port.Open();
             _port.Write(CloseLaserAndFlashCommand);
             _port.Close();
-            LaserState = State.Closed;
-            if (FlashState == State.Open) OpenFlash(false);
+            LaserState = BeamFlagState.Closed;
+            if (FlashState == BeamFlagState.Open) OpenFlash(false);
             //throw new NotImplementedException("Can't close flags independently");
         }
 
@@ -97,8 +97,8 @@ namespace lasercom.control
             _port.Open();
             _port.Write(CloseLaserAndFlashCommand);
             _port.Close();
-            FlashState = State.Closed;
-            if (LaserState == State.Open) OpenLaser(false);
+            FlashState = BeamFlagState.Closed;
+            if (LaserState == BeamFlagState.Open) OpenLaser(false);
             //throw new NotImplementedException("Can't close flags independently");
         }
 
@@ -107,8 +107,8 @@ namespace lasercom.control
             _port.Open();
             _port.Write(CloseLaserAndFlashCommand);
             _port.Close();
-            LaserState = State.Closed;
-            FlashState = State.Closed;
+            LaserState = BeamFlagState.Closed;
+            FlashState = BeamFlagState.Closed;
         }
 
         private void EnsurePortDisposed()

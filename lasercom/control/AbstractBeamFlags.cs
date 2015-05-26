@@ -11,34 +11,33 @@ namespace lasercom.control
     /// Base class for all beam flag classes.
     /// </summary>
     public abstract class AbstractBeamFlags: LuiObject, IBeamFlags
-    {        
-        public enum State { Open, Closed }
-        public State FlashState { get; set; }
-        public State LaserState { get; set; }
+    {
+        public BeamFlagState FlashState { get; set; }
+        public BeamFlagState LaserState { get; set; }
         public int Delay { get; set; } // Time in miliseconds to sleep between commands.
 
-        virtual public State ToggleLaser()
+        virtual public BeamFlagState ToggleLaser()
         {
             switch (LaserState)
             {
-                case State.Closed:
+                case BeamFlagState.Closed:
                     OpenLaser();
                     break;
-                case State.Open:
+                case BeamFlagState.Open:
                     CloseLaser();
                     break;
             }
             return LaserState;
         }
 
-        virtual public State ToggleFlash()
+        virtual public BeamFlagState ToggleFlash()
         {
             switch (FlashState)
             {
-                case State.Closed:
+                case BeamFlagState.Closed:
                     OpenFlash();
                     break;
-                case State.Open:
+                case BeamFlagState.Open:
                     CloseFlash();
                     break;
             }
@@ -47,22 +46,22 @@ namespace lasercom.control
 
         virtual public void OpenLaser()
         {
-            LaserState = State.Open;
+            LaserState = BeamFlagState.Open;
         }
 
         virtual public void CloseLaser()
         {
-            LaserState = State.Closed;
+            LaserState = BeamFlagState.Closed;
         }
 
         virtual public void OpenFlash()
         {
-            FlashState = State.Open;
+            FlashState = BeamFlagState.Open;
         }
 
         virtual public void CloseFlash()
         {
-            FlashState = State.Closed;
+            FlashState = BeamFlagState.Closed;
         }
 
         virtual public void ToggleLaserAndFlash()
@@ -73,14 +72,14 @@ namespace lasercom.control
 
         virtual public void OpenLaserAndFlash()
         {
-            LaserState = State.Open;
-            FlashState = State.Open;
+            LaserState = BeamFlagState.Open;
+            FlashState = BeamFlagState.Open;
         }
 
         virtual public void CloseLaserAndFlash()
         {
-            LaserState = State.Closed;
-            FlashState = State.Closed;
+            LaserState = BeamFlagState.Closed;
+            FlashState = BeamFlagState.Closed;
         }
 
     }

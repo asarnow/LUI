@@ -84,6 +84,11 @@ namespace lasercom.objects
                         Name == other.Name;
             return iseq;
         }
+
+        public override int GetHashCode()
+        {
+            return Util.Hash(Type, Name);
+        }
     }
 
     /// <summary>
