@@ -131,6 +131,7 @@
     <Compile Include="control\DummyPump.cs" />
     <Compile Include="control\IBeamFlags.cs" />
     <Compile Include="control\IPump.cs" />
+    <Compile Include="control\PumpParameters.cs" />
     <Compile Include="Data.cs" />
     <Compile Include="ddg\AbstractDigitalDelayGenerator.cs" />
     <Compile Include="ddg\DelayGeneratorFactory.cs" />

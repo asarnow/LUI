@@ -146,6 +146,12 @@
   <ItemGroup>
     <Compile Include="config\TextBoxAppender.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="controls\panel\config\DummyPumpConfigPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="controls\panel\config\HarvardPumpConfigPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="controls\panel\DdgCommandPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>

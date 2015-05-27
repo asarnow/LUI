@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using lasercom.gpib;
+﻿using lasercom.gpib;
+using System;
 
 namespace LUI.controls
 {
@@ -12,6 +8,12 @@ namespace LUI.controls
         public override Type Target
         {
             get { return typeof(DummyGpibProvider); }
+        }
+
+        public DummyGpibProviderConfigPanel()
+            : base()
+        {
+
         }
 
         public override void CopyTo(GpibProviderParameters other)

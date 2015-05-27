@@ -1,20 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
-using lasercom;
-using lasercom.camera;
+﻿using lasercom.camera;
 using lasercom.control;
 using lasercom.ddg;
 using lasercom.extensions;
 using lasercom.gpib;
-using LUI.controls;
-using LUI.config;
 using log4net;
+using LUI.config;
+using LUI.controls;
+using System;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace LUI.tabs
 {
@@ -122,6 +116,18 @@ namespace LUI.tabs
             DDGOptionsItem.Tag = DDGOptionsDialog;
             OptionsListView.Items.Add(DDGOptionsItem);
             OptionsPanel.Controls.Add(DDGOptionsDialog);
+
+            LuiOptionsListDialog<IPump, PumpParameters> PumpOptionsDialog =
+                new LuiOptionsListDialog<IPump, PumpParameters>(OptionsPanel.Size);
+            PumpOptionsDialog.AddConfigPanel(new HarvardPumpConfigPanel());
+            PumpOptionsDialog.AddConfigPanel(new DummyPumpConfigPanel());
+            PumpOptionsDialog.SetDefaultSelectedItems();
+            PumpOptionsDialog.Dock = DockStyle.Fill;
+            ListViewItem PumpOptionsItem = new ListViewItem("Syringe Pumps", Instruments);
+            PumpOptionsItem.Tag = PumpOptionsDialog;
+            OptionsListView.Items.Add(PumpOptionsItem);
+            OptionsPanel.Controls.Add(PumpOptionsDialog);
+
             #endregion
 
             OptionsListView.Columns[0].Width = -1; // Sets width to that of widest item.
