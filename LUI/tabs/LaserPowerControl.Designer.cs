@@ -31,18 +31,17 @@
             this.CountsDisplay = new System.Windows.Forms.TextBox();
             this.CountsLabel = new System.Windows.Forms.Label();
             this.ParentPanel.SuspendLayout();
-            this.ParentGrid.SuspendLayout();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NScan)).BeginInit();
-            this.ChildArea.SuspendLayout();
+            this.LeftChildArea.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CameraGain)).BeginInit();
             this.SuspendLayout();
             // 
             // ChildArea
             // 
-            this.ChildArea.Controls.Add(this.CountsLabel);
-            this.ChildArea.Controls.Add(this.CountsDisplay);
+            this.LeftChildArea.Controls.Add(this.CountsLabel);
+            this.LeftChildArea.Controls.Add(this.CountsDisplay);
             // 
             // Graph
             // 
@@ -77,15 +76,13 @@
             this.Name = "LaserPowerControl";
             this.ParentPanel.ResumeLayout(false);
             this.ParentPanel.PerformLayout();
-            this.ParentGrid.ResumeLayout(false);
-            this.ParentGrid.PerformLayout();
             this.StatusBox.ResumeLayout(false);
             this.StatusBox.PerformLayout();
             this.CommandsBox.ResumeLayout(false);
             this.CommandsBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NScan)).EndInit();
-            this.ChildArea.ResumeLayout(false);
-            this.ChildArea.PerformLayout();
+            this.LeftChildArea.ResumeLayout(false);
+            this.LeftChildArea.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CameraGain)).EndInit();
             this.ResumeLayout(false);
 

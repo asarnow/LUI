@@ -41,39 +41,38 @@
             this.Wavelength = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.RemoveCalItem = new System.Windows.Forms.Button();
             this.ParentPanel.SuspendLayout();
-            this.ParentGrid.SuspendLayout();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NScan)).BeginInit();
             this.BeamFlagBox.SuspendLayout();
-            this.ChildArea.SuspendLayout();
+            this.LeftChildArea.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CalibrationListView)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
             // 
-            this.ChildArea.Controls.Add(this.RSquaredLabel);
-            this.ChildArea.Controls.Add(this.InterceptLabel);
-            this.ChildArea.Controls.Add(this.SlopeLabel);
-            this.ChildArea.Controls.Add(this.SaveCal);
-            this.ChildArea.Controls.Add(this.Slope);
-            this.ChildArea.Controls.Add(this.Intercept);
-            this.ChildArea.Controls.Add(this.RSquared);
-            this.ChildArea.Controls.Add(this.RunCal);
-            this.ChildArea.Controls.Add(this.CalibrationListView);
-            this.ChildArea.Controls.Add(this.RemoveCalItem);
-            this.ChildArea.Location = new System.Drawing.Point(3, 532);
-            this.ChildArea.TabIndex = 7;
-            this.ChildArea.Controls.SetChildIndex(this.RemoveCalItem, 0);
-            this.ChildArea.Controls.SetChildIndex(this.CalibrationListView, 0);
-            this.ChildArea.Controls.SetChildIndex(this.RunCal, 0);
-            this.ChildArea.Controls.SetChildIndex(this.RSquared, 0);
-            this.ChildArea.Controls.SetChildIndex(this.Intercept, 0);
-            this.ChildArea.Controls.SetChildIndex(this.Slope, 0);
-            this.ChildArea.Controls.SetChildIndex(this.SaveCal, 0);
-            this.ChildArea.Controls.SetChildIndex(this.SlopeLabel, 0);
-            this.ChildArea.Controls.SetChildIndex(this.InterceptLabel, 0);
-            this.ChildArea.Controls.SetChildIndex(this.RSquaredLabel, 0);
+            this.LeftChildArea.Controls.Add(this.RSquaredLabel);
+            this.LeftChildArea.Controls.Add(this.InterceptLabel);
+            this.LeftChildArea.Controls.Add(this.SlopeLabel);
+            this.LeftChildArea.Controls.Add(this.SaveCal);
+            this.LeftChildArea.Controls.Add(this.Slope);
+            this.LeftChildArea.Controls.Add(this.Intercept);
+            this.LeftChildArea.Controls.Add(this.RSquared);
+            this.LeftChildArea.Controls.Add(this.RunCal);
+            this.LeftChildArea.Controls.Add(this.CalibrationListView);
+            this.LeftChildArea.Controls.Add(this.RemoveCalItem);
+            this.LeftChildArea.Location = new System.Drawing.Point(3, 532);
+            this.LeftChildArea.TabIndex = 7;
+            this.LeftChildArea.Controls.SetChildIndex(this.RemoveCalItem, 0);
+            this.LeftChildArea.Controls.SetChildIndex(this.CalibrationListView, 0);
+            this.LeftChildArea.Controls.SetChildIndex(this.RunCal, 0);
+            this.LeftChildArea.Controls.SetChildIndex(this.RSquared, 0);
+            this.LeftChildArea.Controls.SetChildIndex(this.Intercept, 0);
+            this.LeftChildArea.Controls.SetChildIndex(this.Slope, 0);
+            this.LeftChildArea.Controls.SetChildIndex(this.SaveCal, 0);
+            this.LeftChildArea.Controls.SetChildIndex(this.SlopeLabel, 0);
+            this.LeftChildArea.Controls.SetChildIndex(this.InterceptLabel, 0);
+            this.LeftChildArea.Controls.SetChildIndex(this.RSquaredLabel, 0);
             // 
             // Graph
             // 
@@ -204,16 +203,14 @@
             this.Name = "CalibrateControl";
             this.ParentPanel.ResumeLayout(false);
             this.ParentPanel.PerformLayout();
-            this.ParentGrid.ResumeLayout(false);
-            this.ParentGrid.PerformLayout();
             this.StatusBox.ResumeLayout(false);
             this.StatusBox.PerformLayout();
             this.CommandsBox.ResumeLayout(false);
             this.CommandsBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NScan)).EndInit();
             this.BeamFlagBox.ResumeLayout(false);
-            this.ChildArea.ResumeLayout(false);
-            this.ChildArea.PerformLayout();
+            this.LeftChildArea.ResumeLayout(false);
+            this.LeftChildArea.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CalibrationListView)).EndInit();
             this.ResumeLayout(false);
 

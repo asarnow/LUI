@@ -28,11 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.Label GainLabel;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LuiTab));
+            System.Windows.Forms.Label GainLabel;
             this.ParentPanel = new System.Windows.Forms.Panel();
-            this.ParentGrid = new System.Windows.Forms.TableLayoutPanel();
-            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.LeftPanel = new System.Windows.Forms.Panel();
+            this.Graph = new LUI.controls.GraphControl();
+            this.LeftChildArea = new System.Windows.Forms.Panel();
+            this.RightPanel = new System.Windows.Forms.Panel();
             this.StatusBox = new System.Windows.Forms.GroupBox();
             this.ProgressLabel = new System.Windows.Forms.Label();
             this.StatusProgress = new System.Windows.Forms.ProgressBar();
@@ -43,7 +45,7 @@
             this.Collect = new System.Windows.Forms.Button();
             this.Abort = new System.Windows.Forms.Button();
             this.CommonObjectPanel = new System.Windows.Forms.FlowLayoutPanel();
-            this.DummyWidth = new System.Windows.Forms.Panel();
+            this.RightChildArea = new System.Windows.Forms.Panel();
             this.CameraBox = new LUI.controls.ObjectCommandPanel();
             this.CameraCommands = new System.Windows.Forms.Panel();
             this.CameraGain = new System.Windows.Forms.NumericUpDown();
@@ -53,12 +55,10 @@
             this.OpenLaser = new System.Windows.Forms.Button();
             this.OpenLamp = new System.Windows.Forms.Button();
             this.CloseLaser = new System.Windows.Forms.Button();
-            this.Graph = new LUI.controls.GraphControl();
-            this.ChildArea = new System.Windows.Forms.Panel();
             GainLabel = new System.Windows.Forms.Label();
             this.ParentPanel.SuspendLayout();
-            this.ParentGrid.SuspendLayout();
-            this.flowLayoutPanel1.SuspendLayout();
+            this.LeftPanel.SuspendLayout();
+            this.RightPanel.SuspendLayout();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NScan)).BeginInit();
@@ -70,19 +70,10 @@
             this.BeamFlagCommands.SuspendLayout();
             this.SuspendLayout();
             // 
-            // GainLabel
-            // 
-            GainLabel.AutoSize = true;
-            GainLabel.Location = new System.Drawing.Point(4, 6);
-            GainLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            GainLabel.Name = "GainLabel";
-            GainLabel.Size = new System.Drawing.Size(68, 13);
-            GainLabel.TabIndex = 10;
-            GainLabel.Text = "Camera Gain";
-            // 
             // ParentPanel
             // 
-            this.ParentPanel.Controls.Add(this.ParentGrid);
+            this.ParentPanel.Controls.Add(this.LeftPanel);
+            this.ParentPanel.Controls.Add(this.RightPanel);
             this.ParentPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ParentPanel.Location = new System.Drawing.Point(0, 0);
             this.ParentPanel.Margin = new System.Windows.Forms.Padding(4);
@@ -90,47 +81,92 @@
             this.ParentPanel.Size = new System.Drawing.Size(1476, 821);
             this.ParentPanel.TabIndex = 0;
             // 
-            // ParentGrid
+            // LeftPanel
             // 
-            this.ParentGrid.ColumnCount = 2;
-            this.ParentGrid.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 75F));
-            this.ParentGrid.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.ParentGrid.Controls.Add(this.flowLayoutPanel1, 1, 0);
-            this.ParentGrid.Controls.Add(this.Graph, 0, 0);
-            this.ParentGrid.Controls.Add(this.ChildArea, 0, 1);
-            this.ParentGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ParentGrid.Location = new System.Drawing.Point(0, 0);
-            this.ParentGrid.Name = "ParentGrid";
-            this.ParentGrid.RowCount = 2;
-            this.ParentGrid.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 65F));
-            this.ParentGrid.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 35F));
-            this.ParentGrid.Size = new System.Drawing.Size(1476, 821);
-            this.ParentGrid.TabIndex = 15;
+            this.LeftPanel.AutoSize = true;
+            this.LeftPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.LeftPanel.Controls.Add(this.Graph);
+            this.LeftPanel.Controls.Add(this.LeftChildArea);
+            this.LeftPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.LeftPanel.Location = new System.Drawing.Point(0, 0);
+            this.LeftPanel.Name = "LeftPanel";
+            this.LeftPanel.Size = new System.Drawing.Size(1170, 821);
+            this.LeftPanel.TabIndex = 0;
             // 
-            // flowLayoutPanel1
+            // Graph
             // 
-            this.flowLayoutPanel1.AutoSize = true;
-            this.flowLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.flowLayoutPanel1.Controls.Add(this.StatusBox);
-            this.flowLayoutPanel1.Controls.Add(this.CommandsBox);
-            this.flowLayoutPanel1.Controls.Add(this.CommonObjectPanel);
-            this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(1110, 3);
-            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.ParentGrid.SetRowSpan(this.flowLayoutPanel1, 2);
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(363, 784);
-            this.flowLayoutPanel1.TabIndex = 16;
+            this.Graph.AxesColor = System.Drawing.Color.Blue;
+            this.Graph.AxesFont = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Graph.AxesFontColor = System.Drawing.Color.Black;
+            this.Graph.ColorOrder = ((System.Collections.Generic.List<System.Drawing.Color>)(resources.GetObject("Graph.ColorOrder")));
+            this.Graph.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Graph.InitialScaleHeight = 0F;
+            this.Graph.InitialXLeft = 0F;
+            this.Graph.InitialXRight = 1023F;
+            this.Graph.InitialYMax = float.NegativeInfinity;
+            this.Graph.InitialYMin = float.PositiveInfinity;
+            this.Graph.Location = new System.Drawing.Point(0, 0);
+            this.Graph.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.Graph.Marker = "*";
+            this.Graph.MarkerColor = System.Drawing.Color.Blue;
+            this.Graph.MarkerFont = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Graph.Name = "Graph";
+            this.Graph.NXTicks = 10;
+            this.Graph.NYTicks = 10;
+            this.Graph.PadBottom = 0.01F;
+            this.Graph.PadLeft = 0.01F;
+            this.Graph.PadRight = 0.01F;
+            this.Graph.PadTop = 0.01F;
+            this.Graph.ScaleHeight = 0F;
+            this.Graph.Size = new System.Drawing.Size(1170, 721);
+            this.Graph.TabIndex = 13;
+            this.Graph.XAxisHeight = 0.1F;
+            this.Graph.XLabelFormat = "f0";
+            this.Graph.XLeft = 0F;
+            this.Graph.XRight = 1023F;
+            this.Graph.YAxisWidth = 0.05F;
+            this.Graph.YLabelFormat = "n3";
+            this.Graph.YMax = float.NegativeInfinity;
+            this.Graph.YMin = float.PositiveInfinity;
+            // 
+            // LeftChildArea
+            // 
+            this.LeftChildArea.AutoSize = true;
+            this.LeftChildArea.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.LeftChildArea.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.LeftChildArea.Location = new System.Drawing.Point(0, 721);
+            this.LeftChildArea.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.LeftChildArea.MinimumSize = new System.Drawing.Size(0, 100);
+            this.LeftChildArea.Name = "LeftChildArea";
+            this.LeftChildArea.Size = new System.Drawing.Size(1170, 100);
+            this.LeftChildArea.TabIndex = 12;
+            // 
+            // RightPanel
+            // 
+            this.RightPanel.AutoSize = true;
+            this.RightPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.RightPanel.Controls.Add(this.CommonObjectPanel);
+            this.RightPanel.Controls.Add(this.CommandsBox);
+            this.RightPanel.Controls.Add(this.StatusBox);
+            this.RightPanel.Controls.Add(this.RightChildArea);
+            this.RightPanel.Dock = System.Windows.Forms.DockStyle.Right;
+            this.RightPanel.Location = new System.Drawing.Point(1170, 0);
+            this.RightPanel.Name = "RightPanel";
+            this.RightPanel.Size = new System.Drawing.Size(306, 821);
+            this.RightPanel.TabIndex = 16;
             // 
             // StatusBox
             // 
+            this.StatusBox.AutoSize = true;
+            this.StatusBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.StatusBox.Controls.Add(this.ProgressLabel);
             this.StatusBox.Controls.Add(this.StatusProgress);
-            this.StatusBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.StatusBox.Location = new System.Drawing.Point(4, 4);
+            this.StatusBox.Dock = System.Windows.Forms.DockStyle.Top;
+            this.StatusBox.Location = new System.Drawing.Point(0, 0);
             this.StatusBox.Margin = new System.Windows.Forms.Padding(4);
             this.StatusBox.Name = "StatusBox";
             this.StatusBox.Padding = new System.Windows.Forms.Padding(4);
-            this.StatusBox.Size = new System.Drawing.Size(365, 257);
+            this.StatusBox.Size = new System.Drawing.Size(306, 176);
             this.StatusBox.TabIndex = 9;
             this.StatusBox.TabStop = false;
             this.StatusBox.Text = "Status";
@@ -155,17 +191,19 @@
             // 
             // CommandsBox
             // 
+            this.CommandsBox.AutoSize = true;
+            this.CommandsBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.CommandsBox.Controls.Add(this.Clear);
             this.CommandsBox.Controls.Add(this.label1);
             this.CommandsBox.Controls.Add(this.NScan);
             this.CommandsBox.Controls.Add(this.Collect);
             this.CommandsBox.Controls.Add(this.Abort);
-            this.CommandsBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.CommandsBox.Location = new System.Drawing.Point(4, 269);
+            this.CommandsBox.Dock = System.Windows.Forms.DockStyle.Top;
+            this.CommandsBox.Location = new System.Drawing.Point(0, 176);
             this.CommandsBox.Margin = new System.Windows.Forms.Padding(4);
             this.CommandsBox.Name = "CommandsBox";
             this.CommandsBox.Padding = new System.Windows.Forms.Padding(4);
-            this.CommandsBox.Size = new System.Drawing.Size(365, 257);
+            this.CommandsBox.Size = new System.Drawing.Size(306, 202);
             this.CommandsBox.TabIndex = 10;
             this.CommandsBox.TabStop = false;
             this.CommandsBox.Text = "Commands";
@@ -237,22 +275,25 @@
             // 
             this.CommonObjectPanel.AutoSize = true;
             this.CommonObjectPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.CommonObjectPanel.Controls.Add(this.DummyWidth);
             this.CommonObjectPanel.Controls.Add(this.CameraBox);
             this.CommonObjectPanel.Controls.Add(this.BeamFlagBox);
             this.CommonObjectPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.CommonObjectPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.CommonObjectPanel.Location = new System.Drawing.Point(3, 533);
+            this.CommonObjectPanel.Location = new System.Drawing.Point(0, 378);
             this.CommonObjectPanel.Name = "CommonObjectPanel";
-            this.CommonObjectPanel.Size = new System.Drawing.Size(367, 248);
+            this.CommonObjectPanel.Size = new System.Drawing.Size(306, 343);
             this.CommonObjectPanel.TabIndex = 14;
             // 
-            // DummyWidth
+            // RightChildArea
             // 
-            this.DummyWidth.Location = new System.Drawing.Point(3, 3);
-            this.DummyWidth.Name = "DummyWidth";
-            this.DummyWidth.Size = new System.Drawing.Size(361, 0);
-            this.DummyWidth.TabIndex = 14;
+            this.RightChildArea.AutoSize = true;
+            this.RightChildArea.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.RightChildArea.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.RightChildArea.Location = new System.Drawing.Point(0, 721);
+            this.RightChildArea.MinimumSize = new System.Drawing.Size(0, 100);
+            this.RightChildArea.Name = "RightChildArea";
+            this.RightChildArea.Size = new System.Drawing.Size(306, 100);
+            this.RightChildArea.TabIndex = 14;
             // 
             // CameraBox
             // 
@@ -269,12 +310,12 @@
             this.CameraBox.Flow.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.CameraBox.Flow.Location = new System.Drawing.Point(3, 16);
             this.CameraBox.Flow.Name = "Flow";
-            this.CameraBox.Flow.Size = new System.Drawing.Size(355, 67);
+            this.CameraBox.Flow.Size = new System.Drawing.Size(294, 67);
             this.CameraBox.Flow.TabIndex = 0;
-            this.CameraBox.Location = new System.Drawing.Point(3, 9);
+            this.CameraBox.Location = new System.Drawing.Point(3, 3);
             this.CameraBox.Name = "CameraBox";
             this.CameraBox.SelectedObject = null;
-            this.CameraBox.Size = new System.Drawing.Size(361, 86);
+            this.CameraBox.Size = new System.Drawing.Size(300, 86);
             this.CameraBox.TabIndex = 13;
             this.CameraBox.Text = "Camera";
             // 
@@ -288,6 +329,16 @@
             this.CameraCommands.Name = "CameraCommands";
             this.CameraCommands.Size = new System.Drawing.Size(163, 28);
             this.CameraCommands.TabIndex = 1;
+            // 
+            // GainLabel
+            // 
+            GainLabel.AutoSize = true;
+            GainLabel.Location = new System.Drawing.Point(4, 6);
+            GainLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            GainLabel.Name = "GainLabel";
+            GainLabel.Size = new System.Drawing.Size(68, 13);
+            GainLabel.TabIndex = 10;
+            GainLabel.Text = "Camera Gain";
             // 
             // CameraGain
             // 
@@ -317,12 +368,12 @@
             this.BeamFlagBox.Flow.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.BeamFlagBox.Flow.Location = new System.Drawing.Point(3, 16);
             this.BeamFlagBox.Flow.Name = "Flow";
-            this.BeamFlagBox.Flow.Size = new System.Drawing.Size(355, 125);
+            this.BeamFlagBox.Flow.Size = new System.Drawing.Size(294, 125);
             this.BeamFlagBox.Flow.TabIndex = 0;
-            this.BeamFlagBox.Location = new System.Drawing.Point(3, 101);
+            this.BeamFlagBox.Location = new System.Drawing.Point(3, 95);
             this.BeamFlagBox.Name = "BeamFlagBox";
             this.BeamFlagBox.SelectedObject = null;
-            this.BeamFlagBox.Size = new System.Drawing.Size(361, 144);
+            this.BeamFlagBox.Size = new System.Drawing.Size(300, 144);
             this.BeamFlagBox.TabIndex = 0;
             this.BeamFlagBox.Text = "Beam Flags";
             // 
@@ -379,51 +430,6 @@
             this.CloseLaser.Text = "Close Laser";
             this.CloseLaser.UseVisualStyleBackColor = true;
             // 
-            // Graph
-            // 
-            this.Graph.AxesColor = System.Drawing.Color.Blue;
-            this.Graph.AxesFont = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Graph.AxesFontColor = System.Drawing.Color.Black;
-            this.Graph.ColorOrder = ((System.Collections.Generic.List<System.Drawing.Color>)(resources.GetObject("Graph.ColorOrder")));
-            this.Graph.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.Graph.InitialScaleHeight = 0F;
-            this.Graph.InitialXLeft = 0F;
-            this.Graph.InitialXRight = 1023F;
-            this.Graph.InitialYMax = float.NegativeInfinity;
-            this.Graph.InitialYMin = float.PositiveInfinity;
-            this.Graph.Location = new System.Drawing.Point(3, 2);
-            this.Graph.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.Graph.Marker = "*";
-            this.Graph.MarkerColor = System.Drawing.Color.Blue;
-            this.Graph.MarkerFont = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Graph.Name = "Graph";
-            this.Graph.NXTicks = 10;
-            this.Graph.NYTicks = 10;
-            this.Graph.PadBottom = 0.01F;
-            this.Graph.PadLeft = 0.01F;
-            this.Graph.PadRight = 0.01F;
-            this.Graph.PadTop = 0.01F;
-            this.Graph.ScaleHeight = 0F;
-            this.Graph.Size = new System.Drawing.Size(1101, 529);
-            this.Graph.TabIndex = 13;
-            this.Graph.XAxisHeight = 0.1F;
-            this.Graph.XLabelFormat = "f0";
-            this.Graph.XLeft = 0F;
-            this.Graph.XRight = 1023F;
-            this.Graph.YAxisWidth = 0.05F;
-            this.Graph.YLabelFormat = "n3";
-            this.Graph.YMax = float.NegativeInfinity;
-            this.Graph.YMin = float.PositiveInfinity;
-            // 
-            // ChildArea
-            // 
-            this.ChildArea.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ChildArea.Location = new System.Drawing.Point(3, 535);
-            this.ChildArea.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.ChildArea.Name = "ChildArea";
-            this.ChildArea.Size = new System.Drawing.Size(1101, 284);
-            this.ChildArea.TabIndex = 12;
-            // 
             // LuiTab
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
@@ -432,10 +438,11 @@
             this.Name = "LuiTab";
             this.Size = new System.Drawing.Size(1476, 821);
             this.ParentPanel.ResumeLayout(false);
-            this.ParentGrid.ResumeLayout(false);
-            this.ParentGrid.PerformLayout();
-            this.flowLayoutPanel1.ResumeLayout(false);
-            this.flowLayoutPanel1.PerformLayout();
+            this.ParentPanel.PerformLayout();
+            this.LeftPanel.ResumeLayout(false);
+            this.LeftPanel.PerformLayout();
+            this.RightPanel.ResumeLayout(false);
+            this.RightPanel.PerformLayout();
             this.StatusBox.ResumeLayout(false);
             this.StatusBox.PerformLayout();
             this.CommandsBox.ResumeLayout(false);
@@ -458,7 +465,6 @@
         #endregion
 
         protected System.Windows.Forms.Panel ParentPanel;
-        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         protected System.Windows.Forms.GroupBox StatusBox;
         protected System.Windows.Forms.Label ProgressLabel;
         protected System.Windows.Forms.ProgressBar StatusProgress;
@@ -469,19 +475,20 @@
         protected System.Windows.Forms.Button Collect;
         protected System.Windows.Forms.Button Abort;
         protected System.Windows.Forms.FlowLayoutPanel CommonObjectPanel;
-        private System.Windows.Forms.Panel DummyWidth;
         protected controls.ObjectCommandPanel CameraBox;
         private System.Windows.Forms.Panel CameraCommands;
         protected controls.ObjectCommandPanel BeamFlagBox;
         private System.Windows.Forms.Panel BeamFlagCommands;
         protected controls.GraphControl Graph;
-        protected System.Windows.Forms.Panel ChildArea;
+        protected System.Windows.Forms.Panel LeftChildArea;
         protected System.Windows.Forms.Button CloseLaser;
         protected System.Windows.Forms.Button OpenLamp;
         protected System.Windows.Forms.Button OpenLaser;
         protected System.Windows.Forms.Button CloseLamp;
         protected System.Windows.Forms.NumericUpDown CameraGain;
-        protected System.Windows.Forms.TableLayoutPanel ParentGrid;
+        private System.Windows.Forms.Panel LeftPanel;
+        private System.Windows.Forms.Panel RightPanel;
+        protected System.Windows.Forms.Panel RightChildArea;
 
 
 

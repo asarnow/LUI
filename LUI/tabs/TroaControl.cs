@@ -1,24 +1,22 @@
-﻿using System;
+﻿using lasercom;
+using lasercom.camera;
+using lasercom.ddg;
+using lasercom.io;
+using LUI.config;
+using LUI.controls;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Windows.Forms;
-using lasercom.camera;
-using lasercom.ddg;
-using LUI.config;
-using lasercom;
-using lasercom.io;
 using System.IO;
-using LUI.controls;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Windows.Forms;
 
 namespace LUI.tabs
 {
-    public partial class TroaControl : LUI.tabs.LuiTab
+    public partial class TroaControl : LuiTab
     {
 
         public class TimesRow : INotifyPropertyChanged

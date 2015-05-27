@@ -61,7 +61,7 @@
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NScan)).BeginInit();
-            this.ChildArea.SuspendLayout();
+            this.LeftChildArea.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CameraGain)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.NAverage)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -70,11 +70,11 @@
             // 
             // ChildArea
             // 
-            this.ChildArea.Controls.Add(this.OptionsBox);
-            this.ChildArea.Controls.Add(this.DdgConfigBox);
-            this.ChildArea.Controls.Add(this.groupBox1);
-            this.ChildArea.Controls.Add(this.SaveProfile);
-            this.ChildArea.Controls.Add(this.LoadProfile);
+            this.LeftChildArea.Controls.Add(this.OptionsBox);
+            this.LeftChildArea.Controls.Add(this.DdgConfigBox);
+            this.LeftChildArea.Controls.Add(this.groupBox1);
+            this.LeftChildArea.Controls.Add(this.SaveProfile);
+            this.LeftChildArea.Controls.Add(this.LoadProfile);
             // 
             // Graph
             // 
@@ -356,8 +356,8 @@
             this.CommandsBox.ResumeLayout(false);
             this.CommandsBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NScan)).EndInit();
-            this.ChildArea.ResumeLayout(false);
-            this.ChildArea.PerformLayout();
+            this.LeftChildArea.ResumeLayout(false);
+            this.LeftChildArea.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CameraGain)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.NAverage)).EndInit();
             this.groupBox1.ResumeLayout(false);
