@@ -65,7 +65,7 @@ namespace LUI
                 {
                     Config = new LuiConfig();
                 }
-                if (ex is InvalidOperationException)
+                else if (ex is InvalidOperationException)
                 {
                     Config = new LuiConfig();
                 }

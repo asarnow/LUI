@@ -186,8 +186,16 @@ namespace LUI
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            Size FormSize = new Size(ResidualsControl.Width, ResidualsControl.Height + Tabs.ItemSize.Height);
-            ClientSize = FormSize; // Hack (ResidualsControl is largest).
+            // Calculate largest dimensions.
+            int height = 0;
+            int width = 0;
+            foreach (TabPage c in Tabs.TabPages)
+            {
+                height = Math.Max(height, c.Controls[0].Height);
+                width = Math.Max(width, c.Controls[0].Width);
+            }
+            Size FormSize = new Size(width + 8, height + Tabs.ItemSize.Height + 8);
+            ClientSize = FormSize;
         }
 
         private static void MakeEmebeddable(Form Form)
@@ -209,6 +217,7 @@ namespace LUI
             {
                 Log.Error(ex);
                 MessageBox.Show("Bad configuration or no configuration.\r\nError message:\r\n" + ex.Message);
+                Tabs.SelectedTab = OptionsPage;
             }
             
         }

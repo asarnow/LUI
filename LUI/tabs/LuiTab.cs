@@ -27,8 +27,10 @@ namespace LUI.tabs
         {
             Config = config;
             Commander = new Commander();
+            
             InitializeComponent();
             Init();
+            
             CameraGain.ValueChanged += CameraGain_ValueChanged;
             Collect.Click += Collect_Click;
             Abort.Click += Abort_Click;
@@ -38,6 +40,8 @@ namespace LUI.tabs
             OpenLamp.Click += OpenLamp_Click;
             CloseLamp.Click += CloseLamp_Click;
             Graph.MouseClick += Graph_Click;
+
+            Abort.Enabled = false;
         }
 
         public LuiTab() : this(null) { }
@@ -46,11 +50,13 @@ namespace LUI.tabs
         {
             SuspendLayout();
 
-            Abort.Enabled = false;
-            //Panel DummyWidth = new Panel();
-            //DummyWidth.Height = 0;
-            //DummyWidth.Width = CommonObjectPanel.Width;
-            //CommonObjectPanel.Controls.Add(DummyWidth);
+            //StatusBox.Dock = DockStyle.None;
+            //var mw = Math.Max(Math.Max(StatusBox.Width, CommandsBox.Width), CommonObjectPanel.Width);
+            //var sz = RightPanel.MinimumSize;
+            //sz.Width = mw;
+            //RightPanel.MinimumSize = sz;
+            //StatusBox.Dock = DockStyle.Top;
+
             ResumeLayout();
         }
 
