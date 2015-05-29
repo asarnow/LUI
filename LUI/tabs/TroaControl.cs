@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
+using lasercom.control;
 
 namespace LUI.tabs
 {
@@ -157,16 +158,46 @@ namespace LUI.tabs
             ResumeLayout();
         }
 
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+            PumpBox.ObjectChanged += HandlePumpChanged;
+        }
+
         public override void HandleParametersChanged(object sender, EventArgs e)
         {
             base.HandleParametersChanged(sender, e); // Takes care of ObjectSelectPanel.
             DdgConfigBox.HandleParametersChanged(sender, e);
+
+            var PumpsAvailable = Config.GetParameters(typeof(PumpParameters));
+            if (PumpsAvailable.Count() > 0)
+            {
+                var selectedPump = PumpBox.SelectedObject;
+                PumpBox.Objects.Items.Clear();
+                foreach (var p in PumpsAvailable)
+                    PumpBox.Objects.Items.Add(p);
+                // One of next two lines will trigger CameraChanged event.
+                PumpBox.SelectedObject = selectedPump;
+                if (PumpBox.Objects.SelectedItem == null) PumpBox.Objects.SelectedIndex = 0;
+                PumpBox.Enabled = true;
+            }
+            else
+            {
+                PumpBox.Enabled = false;
+            }
+            
         }
 
         public override void HandleContainingTabSelected(object sender, EventArgs e)
         {
             base.HandleContainingTabSelected(sender, e);
             DdgConfigBox.UpdatePrimaryDelayValue();
+        }
+
+        public virtual void HandlePumpChanged(object sender, EventArgs e)
+        {
+            if (Commander.Pump != null) Commander.Pump.SetClosed();
+            Commander.Pump = (IPump)Config.GetObject(PumpBox.SelectedObject);
         }
 
         protected override void LoadSettings()

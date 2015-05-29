@@ -130,7 +130,7 @@ namespace LUI.tabs
         public virtual void HandleBeamFlagsChanged(object sender, EventArgs e)
         {
             if (Commander.BeamFlag != null) Commander.BeamFlag.CloseLaserAndFlash();
-            Commander.BeamFlag = (AbstractBeamFlags)Config.GetObject(BeamFlagBox.SelectedObject);
+            Commander.BeamFlag = (IBeamFlags)Config.GetObject(BeamFlagBox.SelectedObject);
         }
 
         public virtual void HandleContainingTabSelected(object sender, EventArgs e)
