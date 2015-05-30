@@ -204,7 +204,13 @@ namespace LUI.controls
             XLabelFormat = "f0";
             YLabelFormat = "n3";
 
-            Load += new EventHandler(HandleLoad);
+            //Load += new EventHandler(HandleLoad);
+        }
+
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+            HandleLoad(this, e);
         }
 
         void HandleLoad(object sender, EventArgs e)
