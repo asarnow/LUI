@@ -177,6 +177,8 @@ namespace LUI
 
             Tabs.SelectedTab = HomePage;
 
+            Resize += HandleResize;
+
             Tabs.ResumeLayout();
             ResumeLayout();
 
@@ -196,6 +198,14 @@ namespace LUI
             }
             Size FormSize = new Size(width + 8, height + Tabs.ItemSize.Height + 8);
             ClientSize = FormSize;
+        }
+
+        void HandleResize(object sender, EventArgs e)
+        {
+            foreach (TabPage c in Tabs.TabPages)
+            {
+                c.Controls[0].Width = this.ClientSize.Width;
+            }
         }
 
         private static void MakeEmebeddable(Form Form)

@@ -56,6 +56,10 @@ namespace LUI.tabs
             //sz.Width = mw;
             //RightPanel.MinimumSize = sz;
             //StatusBox.Dock = DockStyle.Top;
+            var screenSize = Screen.PrimaryScreen.WorkingArea.Size;
+            LeftPanel.MaximumSize = new System.Drawing.Size((int)(screenSize.Width * 0.85), 0);
+
+            this.Width = LeftPanel.Width + RightPanel.Width;
 
             ResumeLayout();
         }
