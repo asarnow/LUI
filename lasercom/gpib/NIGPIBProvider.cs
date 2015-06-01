@@ -12,19 +12,22 @@ namespace lasercom.gpib
     /// </summary>
     public class NIGpibProvider : AbstractGpibProvider
     {
+        const string GpibTerminator = "\r\n";
 
         public Board Board { get; set; }
-        //public Address Address { get; set; }
-        //public Device Device { get; set; }
 
         public NIGpibProvider(int _BoardNumber)
         {
             Board = new Board(_BoardNumber);
+            Board.SendInterfaceClear();
             Board.BecomeActiveController(true);
-            AddressCollection Addresses = Board.FindListeners();
-
-            //Address = new Address((byte)_Address);
-            //Device = new Device(_BoardNumber, Address);
+            Board.SetRemoteEnableLine();
+            Board.SetEndOnWrite = true; // Assert EOI on write.
+            Board.SetEndOnEndOfString = false;
+            Board.IOTimeout = TimeoutValue.T100ms;
+            Board.EndOfStringCharacter = 13; // CR
+            Board.TerminateReadOnEndOfString = true;
+            //AddressCollection Addresses = Board.FindListeners();
         }
 
         protected override void Dispose(bool disposing)
@@ -40,8 +43,7 @@ namespace lasercom.gpib
             Log.Debug("GPIB Command: " + command);
             try
             {
-                Board.Write(new Address(address), command);
-                //Device.Write(command);
+                Board.Write(new Address(address), command + GpibTerminator);
             }
             catch (GpibException e)
             {
@@ -57,23 +59,21 @@ namespace lasercom.gpib
         override public string LoggedQuery(byte address, string command)
         {
             Log.Debug("GPIB Command: " + command);
+            string response = null;
             try
             {
-                Board.Write(new Address(address), command);
-                //Device.Write(command);
+                Board.Write(new Address(address), command + GpibTerminator);
+                response = Board.ReadString(new Address(address));
+                response = response.TrimEnd(GpibTerminator.ToCharArray());
             }
-            catch (GpibException e)
+            catch (GpibException ex)
             {
-                Log.Error(e.Message);
-                return null;
+                Log.Error(ex);
             }
-            catch (InvalidOperationException e)
+            catch (InvalidOperationException ex)
             {
-                Log.Error(e.InnerException.Message);
-                return null;
+                Log.Error(ex);
             }
-            //string response = Device.ReadString();
-            string response = Board.ReadString(new Address(address));
             Log.Debug("GPIB Response: " + response);
             return response;
         }

@@ -137,7 +137,7 @@ namespace lasercom.gpib
 
         override public void LoggedWrite(byte address, string command)
         {
-            Log.Info("GPIB Command: " + command);
+            Log.Debug("GPIB Command: " + command);
             try
             {
                 if (!_port.IsOpen) _port.Open();
@@ -152,7 +152,7 @@ namespace lasercom.gpib
 
         override public string LoggedQuery(byte address, string command)
         {
-            Log.Info("GPIB Command: " + command);
+            Log.Debug("GPIB Command: " + command);
             string buffer = null;
             try
             {
@@ -166,7 +166,7 @@ namespace lasercom.gpib
             {
                 Log.Error(ex);
             }
-            Log.Info("GPIB Reply: " + buffer);
+            Log.Debug("GPIB Response: " + buffer);
             return buffer;
         }
 
