@@ -1,23 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Xml.Serialization;
-using System.IO;
-using lasercom.gpib;
-using lasercom.control;
-using lasercom.camera;
-using lasercom.ddg;
+﻿using lasercom;
 using lasercom.extensions;
-using lasercom;
 using lasercom.objects;
-using log4net.Appender;
 using log4net;
-using log4net.Repository.Hierarchy;
+using log4net.Appender;
 using log4net.Layout;
-using log4net.Core;
-using System.Linq.Expressions;
+using log4net.Repository.Hierarchy;
+using LUI.tabs;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
-using LUI.tabs;
+using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 //  <summary>
 //      Class for managing LUI XML config files.
@@ -551,6 +546,14 @@ namespace LUI.config
                     SetObject(p, LuiObject.Create(p, dependencies));
                 }
             }
+        }
+
+        public async Task InstantiateConfigurationAsync()
+        {
+            await Task.Run(() =>
+            {
+                InstantiateConfiguration();
+            });
         }
 
         public bool TryInstantiateConfiguration()

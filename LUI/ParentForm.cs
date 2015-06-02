@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
-using lasercom;
-using log4net;
+﻿using log4net;
 using LUI.config;
 using LUI.tabs;
+using System;
+using System.Drawing;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace LUI
 {
@@ -140,9 +135,12 @@ namespace LUI
             Tabs.TabPages.Add(OptionsPage);
 
             Controls.Add(Tabs);
-            #endregion
 
+            Tabs.DrawMode = TabDrawMode.OwnerDrawFixed;
+            Tabs.DrawItem += HandleTabDrawItem;
+            Tabs.Selecting += HandleTabSelecting;
             Tabs.Selected += HandleTabSelected;
+            #endregion
 
             OptionsControl = new OptionsControl(Config);
             OptionsControl.Dock = DockStyle.Fill;
@@ -151,29 +149,28 @@ namespace LUI
 
             CalibrateControl = new CalibrateControl(Config);
             CalibrationPage.Controls.Add(CalibrateControl);
-            Config.ParametersChanged += CalibrateControl.HandleParametersChanged;
-            CalibrateControl.CalibrationChanged += CalibrateControl.HandleCalibrationChanged;
-            FormClosing += CalibrateControl.HandleExit;
 
             TROSControl = new TroaControl(Config);
             TROSPage.Controls.Add(TROSControl);
-            Config.ParametersChanged += TROSControl.HandleParametersChanged;
-            CalibrateControl.CalibrationChanged += TROSControl.HandleCalibrationChanged;
-            FormClosing += TROSControl.HandleExit;
 
             LaserPowerControl = new LaserPowerControl(Config);
             PowerPage.Controls.Add(LaserPowerControl);
-            Config.ParametersChanged += LaserPowerControl.HandleParametersChanged;
-            CalibrateControl.CalibrationChanged += LaserPowerControl.HandleCalibrationChanged;
-            FormClosing += LaserPowerControl.HandleExit;
 
             ResidualsControl = new ResidualsControl(Config);
             ResidualsPage.Controls.Add(ResidualsControl);
-            Config.ParametersChanged += ResidualsControl.HandleParametersChanged;
-            CalibrateControl.CalibrationChanged += ResidualsControl.HandleCalibrationChanged;
-            FormClosing += ResidualsControl.HandleExit;
 
             HomePage.Controls.Add(new Panel()); // Just a placeholder.
+
+            foreach (TabPage page in Tabs.TabPages)
+            {
+                if (page != HomePage && page != OptionsPage) page.Enabled = false;
+                var luiTab = page.Controls[0] as LuiTab;
+                if (luiTab != null)
+                {
+                    CalibrateControl.CalibrationChanged += luiTab.HandleCalibrationChanged;
+                    FormClosing += luiTab.HandleExit;
+                }
+            }
 
             Tabs.SelectedTab = HomePage;
 
@@ -181,8 +178,7 @@ namespace LUI
 
             Tabs.ResumeLayout();
             ResumeLayout();
-
-            HandleOptionsApplied(this, EventArgs.Empty);
+   
         }
 
         protected override void OnLoad(EventArgs e)
@@ -198,6 +194,9 @@ namespace LUI
             }
             Size FormSize = new Size(width + 8, height + Tabs.ItemSize.Height + 8);
             ClientSize = FormSize;
+
+            HandleOptionsApplied(this, EventArgs.Empty);
+
         }
 
         void HandleResize(object sender, EventArgs e)
@@ -208,20 +207,19 @@ namespace LUI
             }
         }
 
-        private static void MakeEmebeddable(Form Form)
-        {
-            Form.TopLevel = false;
-            Form.Visible = true;
-            Form.FormBorderStyle = FormBorderStyle.None;
-            Form.Dock = DockStyle.Fill;
-        }
-
         private void HandleOptionsApplied(object sender, EventArgs e)
         {
             try
             {
-                Config.InstantiateConfiguration();
-                Config.OnParametersChanged(sender, e);
+                Task Instantiation = Config.InstantiateConfigurationAsync();
+                Instantiation.ContinueWith(task =>
+                {
+                    if (task.IsCompleted)
+                    {
+                        EnableTabs();
+                        Config.OnParametersChanged(sender, e);
+                    }
+                });
             }
             catch (Exception ex)
             {
@@ -232,10 +230,56 @@ namespace LUI
             
         }
 
+        private void EnableTabs()
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action(EnableTabs));
+            }
+            else
+            {
+                foreach (TabPage page in Tabs.TabPages) page.Enabled = true;
+                Tabs.Invalidate();
+            } 
+                
+        }
+
         private void HandleTabSelected(object sender, TabControlEventArgs e)
         {
             var luiTab = e.TabPage.Controls[0] as LuiTab;
             if (luiTab != null) luiTab.HandleContainingTabSelected(sender, e);
+        }
+
+        void HandleTabSelecting(object sender, TabControlCancelEventArgs e)
+        {
+            if (!e.TabPage.Enabled)
+            {
+                e.Cancel = true;
+            }
+        }
+
+        void HandleTabDrawItem(object sender, DrawItemEventArgs e)
+        {
+            TabControl tabControl = sender as TabControl;
+            TabPage tabPage = tabControl.TabPages[e.Index];
+
+            if (!tabPage.Enabled)
+            {
+                using (SolidBrush brush =
+                   new SolidBrush(SystemColors.GrayText))
+                {
+                    e.Graphics.DrawString(tabPage.Text, tabPage.Font, brush,
+                       e.Bounds.X + 3, e.Bounds.Y + 3);
+                }
+            }
+            else
+            {
+                using (SolidBrush brush = new SolidBrush(tabPage.ForeColor))
+                {
+                    e.Graphics.DrawString(tabPage.Text, tabPage.Font, brush,
+                       e.Bounds.X + 3, e.Bounds.Y + 3);
+                }
+            }
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)

@@ -67,6 +67,7 @@ namespace LUI.tabs
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
+            Config.ParametersChanged += HandleParametersChanged;
             CameraBox.ObjectChanged += HandleCameraChanged;
             BeamFlagBox.ObjectChanged += HandleBeamFlagsChanged;
 
@@ -101,7 +102,8 @@ namespace LUI.tabs
         public virtual void HandleCameraChanged(object sender, EventArgs e)
         {
             // Replace the Camera property in the Commander.
-            Commander.Camera = (ICamera)Config.GetObject((CameraParameters)CameraBox.SelectedObject);
+            var Selected = CameraBox.SelectedObject as CameraParameters;
+            if (Selected != null) Commander.Camera = (ICamera)Config.GetObject(Selected);
             if (Commander.Camera.HasIntensifier)
             {
                 CameraGain.Enabled = true;
