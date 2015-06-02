@@ -157,7 +157,8 @@ namespace LUI.tabs
             Graph.ClearData();
             CumulativeLight = null;
 
-            DdgConfigBox.ApplyPrimaryDelayValue();
+            if (CollectLaser.Checked)
+                DdgConfigBox.ApplyPrimaryDelayValue();
 
             worker = new BackgroundWorker();
             worker.DoWork += new System.ComponentModel.DoWorkEventHandler(DoWork);
