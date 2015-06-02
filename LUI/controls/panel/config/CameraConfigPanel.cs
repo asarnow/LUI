@@ -22,12 +22,12 @@ namespace LUI.controls
 
         public override void CopyFrom(CameraParameters other)
         {
-            other.CalFile = CalFile.Control.Text;
+            CalFile.Control.Text = other.CalFile;
         }
 
         public override void CopyTo(CameraParameters other)
         {
-            CalFile.Control.Text = other.CalFile;
+            other.CalFile = CalFile.Control.Text;
         }
     }
 }
