@@ -207,19 +207,15 @@ namespace LUI
             }
         }
 
-        private void HandleOptionsApplied(object sender, EventArgs e)
+        private async void HandleOptionsApplied(object sender, EventArgs e)
         {
             try
             {
+                DisableTabs();
                 Task Instantiation = Config.InstantiateConfigurationAsync();
-                Instantiation.ContinueWith(task =>
-                {
-                    if (task.IsCompleted)
-                    {
-                        EnableTabs();
-                        Config.OnParametersChanged(sender, e);
-                    }
-                });
+                await Instantiation;
+                EnableTabs();
+                Config.OnParametersChanged(sender, e);
             }
             catch (Exception ex)
             {
@@ -228,6 +224,20 @@ namespace LUI
                 Tabs.SelectedTab = OptionsPage;
             }
             
+        }
+
+        private void DisableTabs()
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action(DisableTabs));
+            }
+            else
+            {
+                foreach (TabPage page in Tabs.TabPages) 
+                    if (page != HomePage && page != OptionsPage) page.Enabled = false;
+                Tabs.Invalidate();
+            } 
         }
 
         private void EnableTabs()
@@ -241,7 +251,6 @@ namespace LUI
                 foreach (TabPage page in Tabs.TabPages) page.Enabled = true;
                 Tabs.Invalidate();
             } 
-                
         }
 
         private void HandleTabSelected(object sender, TabControlEventArgs e)

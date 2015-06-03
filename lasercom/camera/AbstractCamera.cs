@@ -1,8 +1,8 @@
-﻿using lasercom.objects;
+﻿using lasercom.io;
+using lasercom.objects;
 using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace lasercom.camera
 {
@@ -92,5 +92,26 @@ namespace lasercom.camera
         public abstract uint Acquire(int[] DataBuffer);
 
         public abstract string DecodeStatus(uint status);
+
+        protected void LoadCalibration(string CalFile)
+        {
+            if (CalFile == null || CalFile == "")
+            {
+                Calibration = Array.ConvertAll(Enumerable.Range(1, (int)Width).ToArray<int>(), x => (double)x);
+            }
+            else
+            {
+                try
+                {
+                    Calibration = FileIO.ReadVector<double>(CalFile);
+                }
+                catch (IOException ex)
+                {
+                    Log.Error(ex);
+                    Calibration = Array.ConvertAll(Enumerable.Range(1, (int)Width).ToArray<int>(), x => (double)x);
+                    throw;
+                }
+            }
+        }
     }
 }

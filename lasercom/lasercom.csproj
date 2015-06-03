@@ -137,7 +137,6 @@
     <Compile Include="ddg\DelayGeneratorFactory.cs" />
     <Compile Include="ddg\DelayGeneratorParameters.cs" />
     <Compile Include="ddg\DummyDigitalDelayGenerator.cs" />
-    <Compile Include="extensions\LasercomExtensions.cs" />
     <Compile Include="gpib\AbstractGpibProvider.cs" />
     <Compile Include="gpib\DummyGpibProvider.cs" />
     <Compile Include="gpib\GpibProviderFactory.cs" />
@@ -169,6 +168,12 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Extensions\Extensions.csproj">
+      <Project>{69dccbd0-f4da-45c0-8ad5-6f8ec251299b}</Project>
+      <Name>Extensions</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

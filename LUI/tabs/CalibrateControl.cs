@@ -1,22 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
-using System.Windows.Threading;
-using System.Runtime.CompilerServices;
+﻿using Extensions;
 using lasercom;
-using System.IO;
-using lasercom.io;
-using LUI.controls;
 using lasercom.camera;
-using LUI.config;
+using lasercom.io;
 using lasercom.objects;
-using lasercom.extensions;
-using lasercom.control;
+using LUI.config;
+using LUI.controls;
+using System;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Windows.Forms;
 
 namespace LUI.tabs
 {
@@ -462,7 +458,7 @@ namespace LUI.tabs
         private void SaveCal_Click(object sender, EventArgs e)
         {
             SaveFileDialog saveFile = new SaveFileDialog();
-            saveFile.Filter = "CAL File|*.cal|MAT File|*.mat|All Files|*.*";
+            saveFile.Filter = "CAL File|*.cal|All Files|*.*";
             saveFile.Title = "Save Calibration Data";
             saveFile.ShowDialog();
 

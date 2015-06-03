@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Linq;
+
 
 #if x64
 using ATMCD64CS;
 #else
 using ATMCD32CS;
+
 
 #endif
 
@@ -316,9 +317,7 @@ namespace lasercom.camera
                 IntensifierGain = InitialGain;
             }
 
-            if (CalFile == null || CalFile == "")
-                Calibration = Array.ConvertAll(Enumerable.Range(1, (int)Width).ToArray<int>(), x => (double)x);
-            // else load CalFile (or deal with CalFile only in factory)
+            LoadCalibration(CalFile);
         }
 
         public virtual void Close()

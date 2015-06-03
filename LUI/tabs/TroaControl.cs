@@ -1,5 +1,6 @@
 ﻿using lasercom;
 using lasercom.camera;
+using lasercom.control;
 using lasercom.ddg;
 using lasercom.io;
 using LUI.config;
@@ -13,7 +14,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
-using lasercom.control;
 
 namespace LUI.tabs
 {
@@ -239,9 +239,10 @@ namespace LUI.tabs
         {
             var NormalizedCoords = Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y)));
             int SelectedChannel = (int)Math.Round(NormalizedCoords.X * (Commander.Camera.Width - 1));
+            var X = Commander.Camera.Calibration[SelectedChannel];
             float Y = NormalizedCoords.Y;
             Graph.ClearAnnotation();
-            Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.MarkerColor, SelectedChannel);
+            Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.MarkerColor, X);
             Graph.Annotate(GraphControl.Annotation.HORZLINE, Graph.MarkerColor, Y);
             Graph.Invalidate();
         }

@@ -1,9 +1,9 @@
-﻿using System;
+﻿using log4net;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace lasercom.objects
 {
@@ -12,6 +12,8 @@ namespace lasercom.objects
     /// </summary>
     public abstract class LuiObject : ILuiObject
     {
+        protected static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         abstract protected void Dispose(bool disposing);
 
         public void Dispose()

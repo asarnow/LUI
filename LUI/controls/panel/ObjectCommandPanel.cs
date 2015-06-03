@@ -1,5 +1,5 @@
 ﻿using lasercom.objects;
-using lasercom.extensions;
+using Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;

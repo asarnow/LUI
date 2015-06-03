@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using lasercom.gpib;
+﻿using lasercom.gpib;
 using lasercom.objects;
+using System;
+using System.Runtime.Serialization;
 
 namespace lasercom.ddg
 {
@@ -55,6 +52,12 @@ namespace lasercom.ddg
 
         public DelayGeneratorParameters()
             : base()
+        {
+
+        }
+
+        public DelayGeneratorParameters(DelayGeneratorParameters other) 
+            : base(other)
         {
 
         }

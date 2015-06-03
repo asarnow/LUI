@@ -44,6 +44,12 @@ namespace lasercom.control
 
         }
 
+        public PumpParameters(PumpParameters other)
+            : base(other)
+        {
+
+        }
+
         public override void Copy(PumpParameters other)
         {
             base.Copy(other);

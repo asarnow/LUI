@@ -1,10 +1,10 @@
-﻿using System;
+﻿
 #if x64
 using ATMCD64CS;
 #else
 using ATMCD32CS;
 using System.Diagnostics;
-using System.Linq;
+
 #endif
 
 namespace lasercom.camera
@@ -153,8 +153,8 @@ namespace lasercom.camera
         {
             _Width = 1024;
             _Height = 256;
-            Calibration = Array.ConvertAll(Enumerable.Range(1, (int)Width).ToArray<int>(), x => (double)x);
-            // else load CalFile (or deal with CalFile only in factory)
+
+            LoadCalibration(CalFile);
 
             MinIntensifierGain = 0;
             MaxIntensifierGain = 4095;
@@ -182,10 +182,7 @@ namespace lasercom.camera
                     data = Data.Uniform((int)Width, 1000);
                     break;
                 case "Flash":
-                    if (line > 200)
-                        data = Data.Gaussian((int)Width, 32000, Width * 1 / 3, Width / 10);
-                    else
-                        data = Data.Uniform((int)Width, 2000);
+                    data = Data.Gaussian((int)Width, 32000, Width * 1 / 3, Width / 10);
                     break;
                 case "Trans":
                     data = Data.Gaussian((int)Width, 32000, Width * 2 / 3, Width / 10);
@@ -205,13 +202,12 @@ namespace lasercom.camera
                     data = Data.Uniform((int)Width, 1000);
                     break;
                 case "Flash":
-                    if (line > 200)
-                        data = Data.Gaussian((int)Width, 32000, Width * 1/3, Width / 10);
-                    else
-                        data = Data.Uniform((int)Width, 2000);
+                    data = Data.Gaussian((int)Width, 32000, Width * 1/3, Width / 10);
+                    Data.Accumulate(data, Data.Uniform((int)Width, 1000));
                     break;
                 case "Trans":
                     data = Data.Gaussian((int)Width, 32000, Width * 2/3, Width / 10);
+                    Data.Accumulate(data, Data.Uniform((int)Width, 1000));
                     break;
             }
             data.CopyTo(DataBuffer, 0);

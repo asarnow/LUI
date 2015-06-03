@@ -80,6 +80,10 @@
     <Compile Include="MatFileTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Extensions\Extensions.csproj">
+      <Project>{69dccbd0-f4da-45c0-8ad5-6f8ec251299b}</Project>
+      <Name>Extensions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\lasercom\lasercom.csproj">
       <Project>{f77054ef-38f5-4303-9e65-aa033a17e215}</Project>
       <Name>lasercom</Name>

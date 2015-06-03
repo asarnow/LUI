@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using LUI.config;
 using System.Runtime.CompilerServices;
-using lasercom.extensions;
+using Extensions;
 
 namespace LUI.controls
 {

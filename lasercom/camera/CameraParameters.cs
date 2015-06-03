@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using lasercom.objects;
+using System;
 using System.Runtime.Serialization;
-using System.Text;
-using lasercom;
-using lasercom.objects;
 
 namespace lasercom.camera
 {
@@ -60,6 +56,12 @@ namespace lasercom.camera
 
         }
 
+        public CameraParameters(CameraParameters other) 
+            : base(other)
+        {
+        
+        }
+
         public override void Copy(CameraParameters other)
         {
             base.Copy(other);
@@ -99,21 +101,22 @@ namespace lasercom.camera
 
         public override int GetHashCode()
         {
-            unchecked
-            {
-                int hash = Util.Hash(Type, Name);
-                hash = Util.Hash(hash, CalFile);
-                if (Type == typeof(AndorCamera))
-                {
-                    hash = Util.Hash(hash, Dir);
-                }
-                else if (Type == typeof(CameraTempControlled))
-                {
-                    hash = Util.Hash(hash, Dir);
-                    hash = Util.Hash(hash, Temperature);
-                }
-                return hash;
-            }
+            return base.GetHashCode();
+            //unchecked
+            //{
+            //    int hash = Util.Hash(Type, Name);
+            //    hash = Util.Hash(hash, CalFile);
+            //    if (Type == typeof(AndorCamera))
+            //    {
+            //        hash = Util.Hash(hash, Dir);
+            //    }
+            //    else if (Type == typeof(CameraTempControlled))
+            //    {
+            //        hash = Util.Hash(hash, Dir);
+            //        hash = Util.Hash(hash, Temperature);
+            //    }
+            //    return hash;
+            //}
         }
 
     }

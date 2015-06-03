@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using lasercom.objects;
+using System;
 using System.Runtime.Serialization;
-using System.Text;
-using lasercom.objects;
 
 namespace lasercom.control
 {
@@ -13,9 +10,16 @@ namespace lasercom.control
         [DataMember]
         public string PortName { get; set; }
 
-        public BeamFlagsParameters(Type Type, string PortName) : base(Type)
+        public BeamFlagsParameters(Type Type, string PortName)
+            : base(Type)
         {
             this.PortName = PortName;
+        }
+
+        public BeamFlagsParameters(BeamFlagsParameters other)
+            : base(other)
+        {
+
         }
 
         override public object[] ConstructorArray

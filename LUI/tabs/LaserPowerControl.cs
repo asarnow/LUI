@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
-using System.Windows.Threading;
-using lasercom;
+﻿using lasercom;
 using lasercom.camera;
 using LUI.config;
 using LUI.controls;
+using System;
+using System.ComponentModel;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace LUI.tabs
 {
@@ -158,7 +154,8 @@ namespace LUI.tabs
                 ProgressLabel.Text = "Aborted";
             }
             StatusProgress.Value = 100;
-            Collect.Enabled = true;
+            Collect.Enabled = NScan.Enabled = true;
+            Abort.Enabled = false;
         }
 
         protected override void Graph_Click(object sender, MouseEventArgs e)
@@ -171,7 +168,7 @@ namespace LUI.tabs
         private void RedrawLines()
         {
             Graph.ClearAnnotation();
-            Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[0], SelectedChannel);
+            Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[0], Commander.Camera.Calibration[SelectedChannel]);
             Graph.Invalidate();
         }
 

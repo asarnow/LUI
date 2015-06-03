@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using lasercom.objects;
-using System.Reflection;
+﻿using lasercom.objects;
+using System;
 using System.Runtime.Serialization;
 
 namespace lasercom.gpib
@@ -64,6 +60,12 @@ namespace lasercom.gpib
 
         public GpibProviderParameters()
             : base()
+        {
+
+        }
+
+        public GpibProviderParameters(GpibProviderParameters other)
+            : base(other)
         {
 
         }

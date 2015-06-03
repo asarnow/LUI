@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using lasercom.gpib;
-using lasercom.extensions;
+using Extensions;
 using lasercom.objects;
 
 namespace LUI.controls

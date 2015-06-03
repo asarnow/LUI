@@ -3,16 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading;
 
-namespace lasercom.extensions
+namespace Extensions
 {
-    /// <summary>
-    /// Defines extension methods useful in lasercom and LUI.
-    /// </summary>
-    public static class LasercomExtensions
+    public static class Extensions
     {
+
         /// <summary>
         /// Returns all subclasses of the type. Note interfaces are not classes, but may have subclasses.
         /// </summary>
@@ -75,17 +72,56 @@ namespace lasercom.extensions
                 yield return elem.Key;
             }
         }
-        
+
         public static void Raise(this EventHandler eventHandler, object sender, EventArgs e)
         {
             var handler = eventHandler;
             if (handler != null) handler(sender, e);
         }
 
-        public static void Raise<T>(this EventHandler<T> eventHandler, object sender, T e) where T:EventArgs
+        public static void Raise<T>(this EventHandler<T> eventHandler, object sender, T e) where T : EventArgs
         {
             var handler = eventHandler;
             if (handler != null) handler(sender, e);
         }
+
+        public static void Zip<T, TSecond>(this IEnumerable<T> First, IEnumerable<TSecond> Second, Action<T, TSecond> action)
+        {
+            using (var A = First.GetEnumerator())
+            using (var B = Second.GetEnumerator())
+            {
+                while (A.MoveNext() && B.MoveNext())
+                {
+                    action(A.Current, B.Current);
+                }
+            }
+        }
+
+        public static double FiniteMax(this IEnumerable<double> enumerable)
+        {
+            var val = double.MinValue;
+            foreach (var x in enumerable)
+            {
+                if (!(double.IsNaN(x) || double.IsInfinity(x)))
+                {
+                    val = Math.Max(val, x);
+                }
+            }
+            return val;
+        }
+
+        public static double FiniteMin(this IEnumerable<double> enumerable)
+        {
+            var val = double.MaxValue;
+            foreach (var x in enumerable)
+            {
+                if (!(double.IsNaN(x) || double.IsInfinity(x)))
+                {
+                    val = Math.Min(val, x);
+                }
+            }
+            return val;
+        }
+
     }
 }

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Extensions;
+using System;
 using System.Runtime.Serialization;
-using System.Text;
-using lasercom.extensions;
 
 
 namespace lasercom.objects
@@ -111,6 +108,11 @@ namespace lasercom.objects
         public LuiObjectParameters()
         {
 
+        }
+
+        public LuiObjectParameters(P other) : base()
+        {
+            Copy(other);
         }
 
         public LuiObjectParameters(Type t)

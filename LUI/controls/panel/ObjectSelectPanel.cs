@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using lasercom.camera;
 using lasercom.control;
-using lasercom.extensions;
+using Extensions;
 
 namespace LUI.controls
 {

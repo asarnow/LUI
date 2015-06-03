@@ -1,5 +1,5 @@
-﻿using lasercom;
-using lasercom.extensions;
+﻿using Extensions;
+using lasercom;
 using lasercom.objects;
 using log4net;
 using log4net.Appender;
@@ -238,7 +238,10 @@ namespace LUI.config
 
         public ILuiObject GetObject(LuiObjectParameters p)
         {
-            return LuiObjectTableIndex[p.GetType()][p];
+            ILuiObject val;
+            //LuiObjectTableIndex[p.GetType()].TryGetValue(p, out val);
+            val = LuiObjectTableIndex[p.GetType()][p];
+            return val;
         }
 
         public void SetObject(LuiObjectParameters p, ILuiObject o)

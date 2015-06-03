@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace lasercom
 {
@@ -166,7 +163,8 @@ namespace lasercom
         {
             double[] OD = new double[Ground.Length];
             for (int i = 0; i < OD.Length; i++)
-                OD[i] = Math.Log10((Trans[i]) / (Ground[i]));
+                //OD[i] = Math.Log10((Trans[i]) / (Ground[i]));
+                OD[i] = Math.Log10(Trans[i]) - Math.Log10(Ground[i]);
             return OD;
         }
 

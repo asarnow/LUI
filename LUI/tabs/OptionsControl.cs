@@ -1,7 +1,7 @@
 ﻿using lasercom.camera;
 using lasercom.control;
 using lasercom.ddg;
-using lasercom.extensions;
+using Extensions;
 using lasercom.gpib;
 using log4net;
 using LUI.config;

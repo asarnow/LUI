@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Windows.Forms;
-using lasercom.extensions;
+﻿using Extensions;
 using lasercom.objects;
 using LUI.config;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace LUI.controls
 {
-    public class LuiOptionsListDialog<T,P> : LuiOptionsDialog where P:LuiObjectParameters<P>,new()
+    public class LuiOptionsListDialog<T,P> : LuiOptionsDialog where P:LuiObjectParameters<P>
     {
         LabeledControl<ComboBox> ObjectTypes;
         LabeledControl<TextBox> ObjectName;
@@ -208,7 +207,7 @@ namespace LUI.controls
 
                 if (selectedItem.Transient == null)
                 {
-                    selectedItem.Transient = new P();
+                    selectedItem.Transient = (P)Activator.CreateInstance(typeof(P));
                     selectedItem.Transient.Type = (Type)ObjectTypes.Control.SelectedItem;
                 }
             }
@@ -274,8 +273,8 @@ namespace LUI.controls
         public void AddObject(P p)
         {
             LuiObjectItem newItem = new LuiObjectItem(p.Name);
-            newItem.Transient = p;
-            newItem.Persistent = null;
+            newItem.Transient = Activator.CreateInstance(typeof(P), p) as P;
+            newItem.Persistent = p;
             ObjectView.Items.Insert(ObjectView.Items.Count - 1, newItem);
         }
 
@@ -286,21 +285,7 @@ namespace LUI.controls
 
         public override void HandleApply(object sender, EventArgs e)
         {
-            // Persist all entries except dummy
-            for (int i = 0; i < ObjectView.Items.Count - 1; i++)
-            {   
-                LuiObjectItem item = (LuiObjectItem)ObjectView.Items[i];
-                if (item.Persistent == null)
-                {
-                    item.Persistent = new P();
-                    item.Persistent.Copy(item.Transient);
-                }
-                else if (!item.Persistent.Equals(item.Transient))
-                {
-                    item.Persistent.Copy(item.Transient);
-                }
-            }
-            Config.ReplaceParameters(PersistentItems);
+            Config.ReplaceParameters(TransientItems);
         }
 
         public override void Update(LuiConfig config)

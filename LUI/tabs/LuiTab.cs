@@ -76,7 +76,7 @@ namespace LUI.tabs
                 HandleParametersChanged(this, EventArgs.Empty);
                 LoadSettings();
             }
-            
+            Graph.LeftToRight = false;
             Graph.XLeft = (float)Commander.Camera.Calibration[0];
             Graph.XRight = (float)Commander.Camera.Calibration[Commander.Camera.Calibration.Length - 1];
         }
@@ -102,9 +102,10 @@ namespace LUI.tabs
         public virtual void HandleCameraChanged(object sender, EventArgs e)
         {
             // Replace the Camera property in the Commander.
-            var Selected = CameraBox.SelectedObject as CameraParameters;
-            if (Selected != null) Commander.Camera = (ICamera)Config.GetObject(Selected);
-            if (Commander.Camera.HasIntensifier)
+            if (CameraBox.SelectedObject != null) 
+                Commander.Camera = (ICamera)Config.GetObject(CameraBox.SelectedObject);
+            
+            if (Commander.Camera != null && Commander.Camera.HasIntensifier)
             {
                 CameraGain.Enabled = true;
                 CameraGain.Minimum = Commander.Camera.MinIntensifierGain;
@@ -125,7 +126,7 @@ namespace LUI.tabs
         public virtual void HandleCalibrationChanged(object sender, LuiObjectParametersEventArgs e)
         {
             // If a different camera is selected, do nothing (until that camera is selected by the user).
-            if (!CameraBox.SelectedObject.Equals(e.Argument)) return;
+            if (!e.Argument.Equals(CameraBox.SelectedObject)) return;
 
             Graph.XLeft = (float)Commander.Camera.Calibration[0];
             Graph.XRight = (float)Commander.Camera.Calibration[Commander.Camera.Calibration.Length - 1];
@@ -135,8 +136,10 @@ namespace LUI.tabs
 
         public virtual void HandleBeamFlagsChanged(object sender, EventArgs e)
         {
-            if (Commander.BeamFlag != null) Commander.BeamFlag.CloseLaserAndFlash();
-            Commander.BeamFlag = (IBeamFlags)Config.GetObject(BeamFlagBox.SelectedObject);
+            if (Commander.BeamFlag != null) 
+                Commander.BeamFlag.CloseLaserAndFlash();
+            if (BeamFlagBox.SelectedObject != null) 
+                Commander.BeamFlag = (IBeamFlags)Config.GetObject(BeamFlagBox.SelectedObject);
         }
 
         public virtual void HandleContainingTabSelected(object sender, EventArgs e)
