@@ -132,6 +132,11 @@ namespace lasercom.objects
             return Equals(other as P);
         }
 
+        public override bool Equals(LuiObjectParameters other)
+        {
+            return Equals(other as P);
+        }
+
         public virtual bool Equals(P other)
         {
             bool iseq = base.Equals(other);
