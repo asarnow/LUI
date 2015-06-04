@@ -216,7 +216,7 @@ namespace LUI
                 DisableTabs(TROSPage, CalibrationPage, ResidualsPage, PowerPage, OptionsPage);
                 Task Instantiation = Config.InstantiateConfigurationAsync();
                 await Instantiation;
-                EnableTabs(TROSPage, CalibrationPage, ResidualsPage, PowerPage, OptionsPage);
+                EnableTabs(Tabs.TabPages.Cast<TabPage>());
                 Config.OnParametersChanged(sender, e);
             }
             catch (Exception ex)
