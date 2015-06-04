@@ -2,7 +2,9 @@
 using LUI.config;
 using LUI.tabs;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -211,10 +213,10 @@ namespace LUI
         {
             try
             {
-                DisableTabs();
+                DisableTabs(TROSPage, CalibrationPage, ResidualsPage, PowerPage, OptionsPage);
                 Task Instantiation = Config.InstantiateConfigurationAsync();
                 await Instantiation;
-                EnableTabs();
+                EnableTabs(TROSPage, CalibrationPage, ResidualsPage, PowerPage, OptionsPage);
                 Config.OnParametersChanged(sender, e);
             }
             catch (Exception ex)
@@ -226,31 +228,40 @@ namespace LUI
             
         }
 
-        private void DisableTabs()
+        private void DisableTabs(params TabPage[] tabs)
+        {
+            DisableTabs(tabs.AsEnumerable());
+        }
+
+        private void DisableTabs(IEnumerable<TabPage> tabs)
         {
             if (InvokeRequired)
             {
-                Invoke(new Action(DisableTabs));
+                Invoke(new Action<IEnumerable<TabPage>>(DisableTabs), tabs);
             }
             else
             {
-                foreach (TabPage page in Tabs.TabPages) 
-                    if (page != HomePage && page != OptionsPage) page.Enabled = false;
+                foreach (var page in tabs) page.Enabled = false;
                 Tabs.Invalidate();
             } 
         }
 
-        private void EnableTabs()
+        private void EnableTabs(params TabPage[] tabs)
+        {
+            EnableTabs(tabs.AsEnumerable());
+        }
+
+        private void EnableTabs(IEnumerable<TabPage> tabs)
         {
             if (InvokeRequired)
             {
-                Invoke(new Action(EnableTabs));
+                Invoke(new Action<IEnumerable<TabPage>>(EnableTabs), tabs);
             }
             else
             {
-                foreach (TabPage page in Tabs.TabPages) page.Enabled = true;
+                foreach (var page in tabs) page.Enabled = true;
                 Tabs.Invalidate();
-            } 
+            }
         }
 
         private void HandleTabSelected(object sender, TabControlEventArgs e)
