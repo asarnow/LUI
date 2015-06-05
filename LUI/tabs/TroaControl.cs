@@ -260,6 +260,9 @@ namespace LUI.tabs
             Graph.Invalidate();
 
             int N = (int)NScan.Value;
+
+            Commander.BeamFlag.CloseLaserAndFlash();
+
             worker = new BackgroundWorker();
             worker.DoWork += new System.ComponentModel.DoWorkEventHandler(DoWork);
             worker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(WorkProgress);
@@ -299,6 +302,8 @@ namespace LUI.tabs
             progress = new ProgressObject(null, null, 0, Dialog.PROGRESS_DARK);
             worker.ReportProgress(0, progress);
 
+            Commander.BeamFlag.CloseLaserAndFlash();
+
             int[] DarkBuffer = new int[Commander.Camera.AcqSize];
             int[] Dark = new int[Commander.Camera.AcqSize];
             for (int i = 0; i < N; i++)
@@ -309,7 +314,7 @@ namespace LUI.tabs
                     return;
                 }
 
-                uint ret = Commander.Dark(DarkBuffer);
+                uint ret = Commander.Camera.Acquire(DarkBuffer);
                 RawData.WriteNext(DarkBuffer, 0);
                 Data.Accumulate(Dark, DarkBuffer);
 
@@ -317,6 +322,8 @@ namespace LUI.tabs
                 worker.ReportProgress((i + 1) * 99 / TotalScans, progress);
             }
             Data.DivideArray(Dark, N); // Average dark current.
+
+            Commander.BeamFlag.OpenFlash();
 
             // Buffer for acuisition data.
             int[] DataBuffer = new int[Commander.Camera.AcqSize];
@@ -331,15 +338,20 @@ namespace LUI.tabs
                     return;
                 }
 
-                uint ret = Commander.Flash(DataBuffer);
+                uint ret = Commander.Camera.Acquire(DataBuffer);
                 RawData.WriteNext(DataBuffer, 0);
                 Data.Accumulate(Ground, DataBuffer);
 
                 progress = new ProgressObject(null, Commander.Camera.DecodeStatus(ret), 0, Dialog.PROGRESS_FLASH);
                 worker.ReportProgress((N + (i+1)) * 99 / TotalScans, progress); // Handle new data.
             }
+
+            Commander.BeamFlag.CloseLaserAndFlash();
+
             Data.DivideArray(Ground, half); // Average GS for first half.
             Data.Dissipate(Ground, Dark); // Subtract average dark from average GS.
+
+            
 
             // Excited state buffer.
             double[] Excited = new double[Commander.Camera.AcqSize];
@@ -350,6 +362,7 @@ namespace LUI.tabs
                 double Delay = Times[i];
                 progress = new ProgressObject(null, null, Delay, Dialog.PROGRESS_TIME);
                 worker.ReportProgress((half + i * N) * 99 / TotalScans, progress); // Display current delay.
+                Commander.BeamFlag.OpenLaserAndFlash();
                 for (int j = 0; j < N; j++)
                 {
                     if (worker.CancellationPending)
@@ -360,13 +373,15 @@ namespace LUI.tabs
 
                     Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, Delay); // Set delay time.
                     
-                    uint ret = Commander.Trans(DataBuffer);
+                    uint ret = Commander.Camera.Acquire(DataBuffer);
                     RawData.WriteNext(DataBuffer, 0);
                     Data.Accumulate(Excited, DataBuffer);
 
                     progress = new ProgressObject(null, Commander.Camera.DecodeStatus(ret), Delay, Dialog.PROGRESS_TRANS);
                     worker.ReportProgress( (N + half + (i+1) * (j+1)) * 99 / TotalScans , progress); // Handle new data.
                 }
+                Commander.BeamFlag.CloseLaserAndFlash();
+
                 Data.DivideArray(Excited, N); // Average ES for time point.
                 Data.Dissipate(Excited, Dark); // Subtract average dark from time point average.
                 double[] Difference = Data.DeltaOD(Ground, Excited); // Time point diff. spec. w/ current GS average.
@@ -375,8 +390,8 @@ namespace LUI.tabs
             }
 
             // Ground state scans - second half.
+            Commander.BeamFlag.OpenFlash();
             int half2 = N % 2 == 0 ? half : half + 1; // If N is odd, need 1 more GS scan in the second half.
-
             for (int i = 0; i < half2; i++)
             {
                 if (worker.CancellationPending)
@@ -385,12 +400,13 @@ namespace LUI.tabs
                     return;
                 }
 
-                uint ret = Commander.Flash(DataBuffer);
+                uint ret = Commander.Camera.Acquire(DataBuffer);
                 RawData.WriteNext(DataBuffer, 0);
 
                 progress = new ProgressObject(null, Commander.Camera.DecodeStatus(ret), 0, Dialog.PROGRESS_FLASH);
                 worker.ReportProgress( (N + half + (N * Times.Count) + (i+1)) * 99 / TotalScans, progress);
             }
+            Commander.BeamFlag.CloseLaserAndFlash();
 
             // Calculate LuiData matrix
             progress = new ProgressObject(null, null, 0, Dialog.CALCULATE);
@@ -479,6 +495,7 @@ namespace LUI.tabs
 
         protected override void WorkComplete(object sender, RunWorkerCompletedEventArgs e)
         {
+            Commander.BeamFlag.CloseLaserAndFlash();
             if (e.Error != null)
             {
                 // Handle the exception thrown in the worker thread.

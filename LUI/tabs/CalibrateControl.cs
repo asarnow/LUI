@@ -178,7 +178,9 @@ namespace LUI.tabs
                 return;
             }
 
-            int[] DarkBuffer = Commander.Dark();
+            Commander.BeamFlag.CloseLaserAndFlash();
+
+            int[] DarkBuffer = Commander.Camera.Acquire();
             for (int i = 0; i < N - 1; i++)
             {
                 if (worker.CancellationPending)
@@ -186,7 +188,7 @@ namespace LUI.tabs
                     e.Cancel = true;
                     return;
                 }
-                Data.Accumulate(DarkBuffer, Commander.Dark());
+                Data.Accumulate(DarkBuffer, Commander.Camera.Acquire());
                 worker.ReportProgress(33 + (i / N) * 33, Dialog.PROGRESS_DARK.ToString());
             }
 
@@ -198,7 +200,9 @@ namespace LUI.tabs
             args.UI.Invoke(new Action(args.UI.BlockingBlankDialog));
             //while (wait) ;
 
-            int[] BlankBuffer = Commander.Flash();
+            Commander.BeamFlag.OpenFlash();
+
+            int[] BlankBuffer = Commander.Camera.Acquire();
             for (int i = 0; i < N - 1; i++)
             {
                 if (worker.CancellationPending)
@@ -206,9 +210,11 @@ namespace LUI.tabs
                     e.Cancel = true;
                     return;
                 }
-                Data.Accumulate(BlankBuffer, Commander.Flash());
+                Data.Accumulate(BlankBuffer, Commander.Camera.Acquire());
                 worker.ReportProgress((i / N) * 33, Dialog.PROGRESS_BLANK.ToString());
             }
+
+            Commander.BeamFlag.CloseLaserAndFlash();
 
             worker.ReportProgress(66, Dialog.SAMPLE.ToString());
 
@@ -224,7 +230,9 @@ namespace LUI.tabs
 
             worker.ReportProgress(66, Dialog.PROGRESS_DATA.ToString());
 
-            int[] DataBuffer = Commander.Flash();
+            Commander.BeamFlag.OpenFlash();
+
+            int[] DataBuffer = Commander.Camera.Acquire();
             for (int i = 0; i < N - 1; i++)
             {
                 if (worker.CancellationPending)
@@ -232,9 +240,10 @@ namespace LUI.tabs
                     e.Cancel = true;
                     return;
                 }
-                Data.Accumulate(DataBuffer, Commander.Flash());
+                Data.Accumulate(DataBuffer, Commander.Camera.Acquire());
                 worker.ReportProgress(66 + (i / N) * 33, Dialog.PROGRESS_DATA.ToString());
             }
+            Commander.BeamFlag.CloseLaserAndFlash();
             worker.ReportProgress(99, Dialog.PROGRESS_CALC.ToString());
             e.Result = Data.OpticalDensity(DataBuffer, BlankBuffer, DarkBuffer);
         }
@@ -247,6 +256,9 @@ namespace LUI.tabs
             Graph.ClearData();
             Graph.Invalidate();
             int N = (int)NScan.Value;
+
+            Commander.BeamFlag.CloseLaserAndFlash();
+
             worker = new BackgroundWorker();
             worker.DoWork += new System.ComponentModel.DoWorkEventHandler(DoWork);
             worker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(WorkProgress);
@@ -295,6 +307,7 @@ namespace LUI.tabs
 
         protected override void WorkComplete(object sender, RunWorkerCompletedEventArgs e)
         {
+            Commander.BeamFlag.CloseLaserAndFlash();
             if (!e.Cancelled)
             {
                 OD = (double[])e.Result;

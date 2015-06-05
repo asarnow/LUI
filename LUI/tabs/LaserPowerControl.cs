@@ -50,6 +50,8 @@ namespace LUI.tabs
 
             worker.ReportProgress(0, Dialog.PROGRESS_DARK);
 
+            Commander.BeamFlag.CloseLaserAndFlash();
+
             int[] DataBuffer = new int[Commander.Camera.AcqSize];
             double[] Dark = new double[Commander.Camera.AcqSize];
             for (int i = 0; i < N; i++)
@@ -60,7 +62,7 @@ namespace LUI.tabs
                     return;
                 }
 
-                uint ret = Commander.Dark(DataBuffer);
+                uint ret = Commander.Camera.Acquire(DataBuffer);
 
                 Data.Accumulate(Dark, DataBuffer);
 
@@ -69,6 +71,8 @@ namespace LUI.tabs
             Data.DivideArray(Dark, N);
 
             worker.ReportProgress(33, Dialog.PROGRESS_FLASH);
+
+            Commander.BeamFlag.OpenFlash();
 
             double[] Ground = new double[Commander.Camera.AcqSize];
             for (int i = 0; i < N; i++)
@@ -79,7 +83,7 @@ namespace LUI.tabs
                     return;
                 }
 
-                uint ret = Commander.Flash(DataBuffer);
+                uint ret = Commander.Camera.Acquire(DataBuffer);
                 
                 Data.Accumulate(Ground, DataBuffer);
 
@@ -90,6 +94,8 @@ namespace LUI.tabs
 
             worker.ReportProgress(66, Dialog.PROGRESS_TRANS);
 
+            Commander.BeamFlag.OpenLaserAndFlash();
+
             double[] Excited = new double[Commander.Camera.AcqSize];
             for (int i = 0; i < N; i++)
             {
@@ -99,15 +105,17 @@ namespace LUI.tabs
                     return;
                 }
 
-                uint ret = Commander.Trans(DataBuffer);
+                uint ret = Commander.Camera.Acquire(DataBuffer);
 
                 Data.Accumulate(Excited, DataBuffer);
 
                 worker.ReportProgress((2*N + i) * 99 / TotalScans, Dialog.PROGRESS_TRANS);
             }
+
+            Commander.BeamFlag.CloseLaserAndFlash();
+
             Data.DivideArray(Excited, N);
             Data.Dissipate(Excited, Dark);
-
 
             worker.ReportProgress(99, Dialog.CALCULATE);
             
@@ -142,6 +150,7 @@ namespace LUI.tabs
 
         protected override void WorkComplete(object sender, RunWorkerCompletedEventArgs e)
         {
+            Commander.BeamFlag.CloseLaserAndFlash();
             if (!e.Cancelled)
             {
                 Light = (double[])e.Result;

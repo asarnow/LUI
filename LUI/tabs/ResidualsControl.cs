@@ -157,6 +157,8 @@ namespace LUI.tabs
             Graph.ClearData();
             CumulativeLight = null;
 
+            Commander.BeamFlag.CloseLaserAndFlash();
+
             if (CollectLaser.Checked)
                 DdgConfigBox.ApplyPrimaryDelayValue();
 
@@ -194,6 +196,16 @@ namespace LUI.tabs
             int npeak = 0;
             int[] DataBuffer = new int[Commander.Camera.AcqSize];
             int[] CumulativeDataBuffer = new int[DataBuffer.Length];
+
+            if (args.CollectLaser)
+            {
+                Commander.BeamFlag.OpenLaserAndFlash();
+            }
+            else
+            {
+                Commander.BeamFlag.OpenFlash();
+            }
+
             for (int i = 0; i < args.NScans; i++)
             {
                 if (worker.CancellationPending)
@@ -201,9 +213,9 @@ namespace LUI.tabs
                     e.Cancel = true;
                     return;
                 }
-                uint ret = args.CollectLaser ? 
-                            Commander.Trans(DataBuffer) : 
-                            Commander.Flash(DataBuffer);
+
+                uint ret = Commander.Camera.Acquire(DataBuffer);
+
                 Data.Accumulate(CumulativeDataBuffer, DataBuffer);
 
                 int sum = 0;
@@ -225,6 +237,9 @@ namespace LUI.tabs
                 ProgressObject progress = new ProgressObject(Array.ConvertAll((int[])DataBuffer, x => (double)x), cmasum, cmapeak, nsum, npeak, Dialog.PROGRESS_DATA);
                 worker.ReportProgress(i * 100 / args.NScans, progress);
             }
+
+            Commander.BeamFlag.CloseLaserAndFlash();
+
             Data.DivideArray(CumulativeDataBuffer, args.NScans);
             e.Result = Array.ConvertAll((int[])CumulativeDataBuffer, x=> (double)x);
         }
@@ -268,6 +283,7 @@ namespace LUI.tabs
         /// <param name="e"></param>
         protected override void WorkComplete(object sender, RunWorkerCompletedEventArgs e)
         {
+            Commander.BeamFlag.CloseLaserAndFlash();
             if (e.Error != null)
             {
                 // Handle the exception thrown in the worker thread

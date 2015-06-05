@@ -182,6 +182,7 @@ namespace LUI.tabs
             Collect.Enabled = NScan.Enabled = false;
             Abort.Enabled = true;
             int N = (int)NScan.Value;
+            Commander.BeamFlag.CloseLaserAndFlash();
             worker = new BackgroundWorker();
             worker.DoWork += new System.ComponentModel.DoWorkEventHandler(DoWork);
             worker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(WorkProgress);
