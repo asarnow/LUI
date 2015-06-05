@@ -4,6 +4,7 @@ using ATMCD64CS;
 #else
 using ATMCD32CS;
 using System.Diagnostics;
+using System.Threading;
 
 #endif
 
@@ -173,26 +174,14 @@ namespace lasercom.camera
 
         public override int[] Acquire()
         {
-            string caller = (new StackFrame(1)).GetMethod().Name;
-            int line = (new StackFrame(2)).GetFileLineNumber();
-            int[] data = null;
-            switch (caller)
-            {
-                case "Dark":
-                    data = Data.Uniform((int)Width, 1000);
-                    break;
-                case "Flash":
-                    data = Data.Gaussian((int)Width, 32000, Width * 1 / 3, Width / 10);
-                    break;
-                case "Trans":
-                    data = Data.Gaussian((int)Width, 32000, Width * 2 / 3, Width / 10);
-                    break;
-            }
+            int[] data = new int[Width];
+            Acquire(data);
             return data;
         }
 
         public override uint Acquire(int[] DataBuffer)
         {
+            System.Threading.Thread.Sleep(500);
             string caller = (new StackFrame(1)).GetMethod().Name;
             int line = (new StackFrame(2)).GetFileLineNumber();
             int[] data = null;

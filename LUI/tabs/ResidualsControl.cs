@@ -132,10 +132,10 @@ namespace LUI.tabs
             base.LoadSettings();
             var Settings = Config.TabSettings[this.GetType().Name];
             string value;
-            if (Settings.TryGetValue("PrimaryDelayDdg", out value))
+            if (Settings.TryGetValue("PrimaryDelayDdg", out value) && value != null && value != "")
                 DdgConfigBox.PrimaryDelayDdg = (DelayGeneratorParameters)Config.GetFirstParameters(
                     typeof(DelayGeneratorParameters), value);
-            if (Settings.TryGetValue("PrimaryDelayDelay", out value))
+            if (Settings.TryGetValue("PrimaryDelayDelay", out value) && value != null && value != "")
                 DdgConfigBox.PrimaryDelayDelay = value;
         }
 
@@ -167,6 +167,7 @@ namespace LUI.tabs
             worker.WorkerSupportsCancellation = true;
             worker.WorkerReportsProgress = true;
             worker.RunWorkerAsync(new WorkArgs((int)NScan.Value, (int)NAverage.Value, CollectLaser.Checked));
+            OnTaskStarted(EventArgs.Empty);
         }
 
         /// <summary>
@@ -287,6 +288,7 @@ namespace LUI.tabs
             Abort.Enabled = false;
 
             DdgConfigBox.Enabled = CollectLaser.Checked;
+            OnTaskFinished(EventArgs.Empty);
         }
 
         protected override void Graph_Click(object sender, MouseEventArgs e)

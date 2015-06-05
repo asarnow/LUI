@@ -156,6 +156,7 @@ namespace LUI.tabs
             StatusProgress.Value = 100;
             Collect.Enabled = NScan.Enabled = true;
             Abort.Enabled = false;
+            OnTaskFinished(EventArgs.Empty);
         }
 
         protected override void Graph_Click(object sender, MouseEventArgs e)

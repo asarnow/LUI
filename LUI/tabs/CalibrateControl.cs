@@ -254,6 +254,7 @@ namespace LUI.tabs
             worker.WorkerSupportsCancellation = true;
             worker.WorkerReportsProgress = true;
             worker.RunWorkerAsync(new WorkArgs(N, this));
+            OnTaskStarted(EventArgs.Empty);
         }
 
         protected override void WorkProgress(object sender, ProgressChangedEventArgs e)
@@ -309,6 +310,7 @@ namespace LUI.tabs
             StatusProgress.Value = 100;
             Collect.Enabled = true;
             Abort.Enabled = false;
+            OnTaskFinished(EventArgs.Empty);
         }
 
         protected override void Graph_Click(object sender, MouseEventArgs e)

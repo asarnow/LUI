@@ -8,12 +8,16 @@ using System;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Windows.Threading;
+using Extensions;
 
 namespace LUI.tabs
 {
     public partial class LuiTab : UserControl
     {
         protected static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        public event EventHandler TaskStarted;
+        public event EventHandler TaskFinished;
 
         public Commander Commander { get; set; }
         public LuiConfig Config { get; set; }
@@ -126,7 +130,7 @@ namespace LUI.tabs
         public virtual void HandleCalibrationChanged(object sender, LuiObjectParametersEventArgs e)
         {
             // If a different camera is selected, do nothing (until that camera is selected by the user).
-            if (!e.Argument.Equals(CameraBox.SelectedObject)) return;
+            if (!CameraBox.SelectedObject.Equals(e.Argument)) return;
 
             Graph.XLeft = (float)Commander.Camera.Calibration[0];
             Graph.XRight = (float)Commander.Camera.Calibration[Commander.Camera.Calibration.Length - 1];
@@ -160,9 +164,9 @@ namespace LUI.tabs
         {
             var Settings = Config.TabSettings[this.GetType().Name];
             string value;
-            if (Settings.TryGetValue("Camera", out value))
+            if (Settings.TryGetValue("Camera", out value) && value != null && value != "")
                 CameraBox.SelectedObject = Config.GetFirstParameters(typeof(CameraParameters), value);
-            if (Settings.TryGetValue("BeamFlag", out value))
+            if (Settings.TryGetValue("BeamFlag", out value) && value != null && value != "")
                 BeamFlagBox.SelectedObject = Config.GetFirstParameters(typeof(BeamFlagsParameters), value);
         }
 
@@ -185,6 +189,7 @@ namespace LUI.tabs
             worker.WorkerSupportsCancellation = true;
             worker.WorkerReportsProgress = true;
             worker.RunWorkerAsync(N);
+            OnTaskStarted(EventArgs.Empty);
         }
 
         protected virtual void Abort_Click(object sender, EventArgs e)
@@ -249,6 +254,16 @@ namespace LUI.tabs
             {
                 return worker != null ? worker.IsBusy : false;
             }
+        }
+
+        public void OnTaskStarted(EventArgs e)
+        {
+            TaskStarted.Raise(this, e);
+        }
+
+        public void OnTaskFinished(EventArgs e)
+        {
+            TaskFinished.Raise(this, e);
         }
 
         public ParentForm.TaskState TaskBusy()

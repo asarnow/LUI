@@ -171,6 +171,8 @@ namespace LUI
                 {
                     CalibrateControl.CalibrationChanged += luiTab.HandleCalibrationChanged;
                     FormClosing += luiTab.HandleExit;
+                    luiTab.TaskStarted += HandleTaskStarted;
+                    luiTab.TaskFinished += HandleTaskFinished;
                 }
             }
 
@@ -262,6 +264,16 @@ namespace LUI
                 foreach (var page in tabs) page.Enabled = true;
                 Tabs.Invalidate();
             }
+        }
+
+        private void HandleTaskStarted(object sender, EventArgs e)
+        {
+            DisableTabs(Tabs.TabPages.Cast<TabPage>().Except(Enumerable.Repeat((TabPage)((Control)sender).Parent, 1)));
+        }
+
+        private void HandleTaskFinished(object sender, EventArgs e)
+        {
+            EnableTabs(Tabs.TabPages.Cast<TabPage>());
         }
 
         private void HandleTabSelected(object sender, TabControlEventArgs e)
