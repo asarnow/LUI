@@ -4,7 +4,7 @@ using ATMCD64CS;
 #else
 using ATMCD32CS;
 using System.Diagnostics;
-using System.Threading;
+
 
 #endif
 
@@ -185,19 +185,17 @@ namespace lasercom.camera
             string caller = (new StackFrame(1)).GetMethod().Name;
             int line = (new StackFrame(2)).GetFileLineNumber();
             int[] data = null;
-            switch (caller)
+            if (line < 320)
             {
-                case "Dark":
-                    data = Data.Uniform((int)Width, 1000);
-                    break;
-                case "Flash":
-                    data = Data.Gaussian((int)Width, 32000, Width * 1/3, Width / 10);
-                    Data.Accumulate(data, Data.Uniform((int)Width, 1000));
-                    break;
-                case "Trans":
-                    data = Data.Gaussian((int)Width, 32000, Width * 2/3, Width / 10);
-                    Data.Accumulate(data, Data.Uniform((int)Width, 1000));
-                    break;
+                data = Data.Uniform((int)Width, 1000);
+            } else if (line < 358 || line > 390)
+            {
+                data = Data.Gaussian((int)Width, 32000, Width * 1/3, Width / 10);
+                Data.Accumulate(data, Data.Uniform((int)Width, 1000));
+            } else if (line < 390)
+            {
+                data = Data.Gaussian((int)Width, 32000, Width * 2/3, Width / 10);
+                Data.Accumulate(data, Data.Uniform((int)Width, 1000));
             }
             data.CopyTo(DataBuffer, 0);
             return AndorSDK.DRV_SUCCESS;
