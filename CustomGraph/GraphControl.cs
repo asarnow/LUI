@@ -326,6 +326,7 @@ namespace LUI.controls
                 for (int i = 0; i < Y.Length; i++)
                 {
                     float x = (float)(i + 1) / Y.Length;
+                    if (!LeftToRight) x = 1 - x;
                     float y = Math.Abs(YMax - (float)Y[i]) / ScaleHeight;
                     DrawPoint(BitmapGraphics, B, MarkerFont, Axes, x, y);
                 }
@@ -342,6 +343,7 @@ namespace LUI.controls
                 for (int i = 0; i < Y.Length; i++)
                 {
                     float x = (float)(i + 1) / Y.Length;
+                    if (!LeftToRight) x = 1 - x;
                     float y = Math.Abs(YMax - (float)Y[i]) / ScaleHeight;
                     DrawPoint(BitmapGraphics, B, MarkerFont, Axes, x, y);
                 }
@@ -355,21 +357,22 @@ namespace LUI.controls
                 float _Min = (float)Y.FiniteMin() < YMin ? (float)Y.FiniteMin() : YMin;
                 float _Max = (float)Y.FiniteMax() > YMax ? (float)Y.FiniteMax() : YMax;
                 RescaleHandler(_Min, _Max);
-                var YDirect = LeftToRight ? Y : Y.Reverse();
-                var XDirect = LeftToRight ? X : X.Reverse();
-                XDirect.Zip(YDirect, (x, y) =>
-                {
-                    float xx = Math.Abs((float)x - XLeft) / XRange;
-                    float yy = (YMax - (float)y) / ScaleHeight;
-                    DrawPoint(BitmapGraphics, B, MarkerFont, Axes, xx, yy);
-                });
-                //for (int i = 0; i < Y.Length; i++)
+                //var YDirect = LeftToRight ? Y : Y.Reverse();
+                //var XDirect = LeftToRight ? X : X.Reverse();
+                //XDirect.Zip(YDirect, (x, y) =>
                 //{
-                //    float x = Math.Abs((float)X[i] - XLeft) / XRange;
-                //    float y = (YMax - (float)Y[i]) / ScaleHeight;
-                //    //float y = Math.Abs(YMax - (float)Y[i]) / ScaleHeight;
-                //    DrawPoint(BitmapGraphics, B, MarkerFont, Axes, x, y);
-                //}
+                //    float xx = Math.Abs((float)x - XLeft) / XRange;
+                //    float yy = (YMax - (float)y) / ScaleHeight;
+                //    DrawPoint(BitmapGraphics, B, MarkerFont, Axes, xx, yy);
+                //});
+                for (int i = 0; i < Y.Length; i++)
+                {
+                    float x = Math.Abs((float)X[i] - XLeft) / XRange;
+                    if (!LeftToRight) x = 1 - x;
+                    float y = (YMax - (float)Y[i]) / ScaleHeight;
+                    //float y = Math.Abs(YMax - (float)Y[i]) / ScaleHeight;
+                    DrawPoint(BitmapGraphics, B, MarkerFont, Axes, x, y);
+                }
             }
         }
 
@@ -380,19 +383,20 @@ namespace LUI.controls
                 G.CompositingMode = CompositingMode.SourceOver;
                 using (Brush B = new SolidBrush(MarkerColor))
                 {
-                    var YDirect = LeftToRight ? Y : Y.Reverse();
-                    X.Zip(YDirect, (x, y) =>
-                    {
-                        float xx = Math.Abs((float)x - XLeft) / XRange;
-                        float yy = (float)y / YMax;
-                        DrawPoint(G, B, MarkerFont, Axes, xx, yy);
-                    });
-                    //for (int i = 0; i < X.Length; i++)
+                    //var YDirect = LeftToRight ? Y : Y.Reverse();
+                    //X.Zip(YDirect, (x, y) =>
                     //{
-                    //    float x = Math.Abs((float)X[i] - XLeft) / XRange;
-                    //    float y = (float)Y[i] / YMax;
-                    //    DrawPoint(G, B, MarkerFont, Axes, x, y);
-                    //}
+                    //    float xx = Math.Abs((float)x - XLeft) / XRange;
+                    //    float yy = (float)y / YMax;
+                    //    DrawPoint(G, B, MarkerFont, Axes, xx, yy);
+                    //});
+                    for (int i = 0; i < X.Length; i++)
+                    {
+                        float x = Math.Abs((float)X[i] - XLeft) / XRange;
+                        if (!LeftToRight) x = 1 - x;
+                        float y = (float)Y[i] / YMax;
+                        DrawPoint(G, B, MarkerFont, Axes, x, y);
+                    }
                 }
             }
         }
