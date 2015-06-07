@@ -169,7 +169,7 @@ namespace LUI
                 var luiTab = page.Controls[0] as LuiTab;
                 if (luiTab != null)
                 {
-                    CalibrateControl.CalibrationChanged += luiTab.HandleCalibrationChanged;
+                    luiTab.Load += (se, ev) => CalibrateControl.CalibrationChanged += luiTab.HandleCalibrationChanged;
                     FormClosing += luiTab.HandleExit;
                     luiTab.TaskStarted += HandleTaskStarted;
                     luiTab.TaskFinished += HandleTaskFinished;
