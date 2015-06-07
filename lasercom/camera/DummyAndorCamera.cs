@@ -181,9 +181,9 @@ namespace lasercom.camera
 
         public override uint Acquire(int[] DataBuffer)
         {
-            System.Threading.Thread.Sleep(500);
-            string caller = (new StackFrame(1)).GetMethod().Name;
-            int line = (new StackFrame(2)).GetFileLineNumber();
+            System.Threading.Thread.Sleep(250);
+            //string caller = (new StackFrame(1)).GetMethod().Name;
+            int line = (new StackFrame(1,true)).GetFileLineNumber();
             int[] data = null;
             if (line < 320)
             {
