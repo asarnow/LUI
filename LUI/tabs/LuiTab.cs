@@ -1,4 +1,5 @@
-﻿using lasercom;
+﻿using Extensions;
+using lasercom;
 using lasercom.camera;
 using lasercom.control;
 using lasercom.objects;
@@ -8,7 +9,6 @@ using System;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Windows.Threading;
-using Extensions;
 
 namespace LUI.tabs
 {
