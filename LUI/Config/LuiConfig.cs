@@ -297,7 +297,7 @@ namespace LUI.config
 
         public void ReplaceParameters<P>(IEnumerable<P> NewParameters) where P:LuiObjectParameters<P>
         {
-            IEnumerable<LuiObjectParameters> OldParameters = LuiObjectTableIndex[typeof(P)].Keys.AsEnumerable();
+            IEnumerable<P> OldParameters = LuiObjectTableIndex[typeof(P)].Keys.AsEnumerable().Cast<P>();
 
             // New parameters where all old parameters have different name.
             // Same as "New parameters where not any old parameters have same name."
