@@ -3,7 +3,6 @@
 //      implement this interface.
 //  </summary>
 
-using lasercom.objects;
 namespace lasercom.camera
 {
     /// <summary>
@@ -21,12 +20,11 @@ namespace lasercom.camera
         int TriggerMode { get; set; }
         int DDGTriggerMode { get; set; }
         int ReadMode { get; set; }
-        
         bool HasIntensifier { get; }
         int IntensifierGain { get; set; }
         int MinIntensifierGain { get; }
         int MaxIntensifierGain { get; }
-
+        int[] Channels { get; }
         double[] Calibration { get; set; }
 
         int[] CountsFvb();

@@ -7,8 +7,19 @@ namespace lasercom.camera
     [DataContract]
     public class CameraParameters : LuiObjectParameters<CameraParameters>
     {
+        private string _CalFile;
         [DataMember]
-        public string CalFile { get; set; }
+        public string CalFile
+        {
+            get
+            {
+                return _CalFile;
+            }
+            set
+            {
+                _CalFile = value;
+            }
+        }
 
         [DataMember]
         public string Dir { get; set; }

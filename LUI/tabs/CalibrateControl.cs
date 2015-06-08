@@ -330,7 +330,8 @@ namespace LUI.tabs
         {
             //PointF p = Graph.ScreenToData(new Point(e.X, e.Y));
             //SelectedChannel = (int)Math.Round(p.X);
-            SelectedChannel = (int)Math.Round(Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y))).X * (Commander.Camera.Width - 1));
+            SelectedChannel = Commander.Camera.Channels[
+                (int)Math.Round(Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y))).X * (Commander.Camera.Width - 1))];
             DataGridViewSelectedRowCollection selection = CalibrationListView.SelectedRows;
             if (selection.Count == 0)
             {
@@ -360,14 +361,14 @@ namespace LUI.tabs
             {
                 CalibrationPoint p = CalibrationList[i];
                 //float X = Graph.XLeft + (float)p.Channel / (Commander.Camera.Width - 1) * Graph.XRange;
-                float X = (float)Commander.Camera.Calibration[p.Channel];
+                float X = (float)Commander.Camera.Calibration[Commander.Camera.Channels[p.Channel]];
                 Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[i % Graph.ColorOrder.Count], X);
             }
             int newRowChannel = (int)(CalibrationListView.Rows[CalibrationListView.NewRowIndex].Cells["Channel"].Value ?? 0);
             if (CalibrationListView.Rows.Count > CalibrationList.Count && newRowChannel != 0)
             {
                 //float X = Graph.XLeft + (float)newRowChannel / (Commander.Camera.Width - 1) * Graph.XRange;
-                float X = (float)Commander.Camera.Calibration[newRowChannel];
+                float X = (float)Commander.Camera.Calibration[Commander.Camera.Channels[newRowChannel]];
                 Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[i % Graph.ColorOrder.Count], X);
             }
             Graph.Invalidate();
@@ -463,7 +464,7 @@ namespace LUI.tabs
         {
             Tuple<double, double, double> fitdata = Data.LinearLeastSquares(CalibrationList.Select(it => (double)it.Channel).ToArray(),
                 CalibrationList.Select(it => (double)it.Wavelength).ToArray());
-            Commander.Camera.Calibration = Data.Calibrate((int)Commander.Camera.Width, fitdata.Item1, fitdata.Item2);
+            Commander.Camera.Calibration = Data.Calibrate(Array.ConvertAll(Commander.Camera.Channels, x=>(double)x), fitdata.Item1, fitdata.Item2);
             CalibrationChanged.Raise(this, new LuiObjectParametersEventArgs(CameraBox.SelectedObject));            
             Slope.Text = fitdata.Item1.ToString("n4");
             Intercept.Text = fitdata.Item2.ToString("n4");

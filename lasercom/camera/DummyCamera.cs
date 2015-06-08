@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
 
 namespace lasercom.camera
 {
@@ -30,7 +27,8 @@ namespace lasercom.camera
         {
             _Height = 255;
             _Width = 1024;
-            Calibration = Array.ConvertAll(Enumerable.Range(1, (int)Width).ToArray<int>(), x => (double)x);
+            Channels = Enumerable.Range(1, (int)Width).ToArray<int>();
+            Calibration = Array.ConvertAll(Channels, x => (double)x);
         }
 
         public override int[] FullResolutionImage()

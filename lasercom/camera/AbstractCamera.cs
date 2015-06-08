@@ -2,7 +2,6 @@
 using lasercom.objects;
 using System;
 using System.IO;
-using System.Linq;
 
 namespace lasercom.camera
 {
@@ -69,7 +68,20 @@ namespace lasercom.camera
             get;
             protected set;
         }
-        
+
+        int[] _Channels;
+        public int[] Channels
+        {
+            get
+            {
+                return _Channels;
+            }
+            protected set
+            {
+                _Channels = value;
+            }
+        }
+
         double[] _Calibration;
         public double[] Calibration
         {
@@ -97,7 +109,7 @@ namespace lasercom.camera
         {
             if (CalFile == null || CalFile == "")
             {
-                Calibration = Array.ConvertAll(Enumerable.Range(1, (int)Width).ToArray<int>(), x => (double)x);
+                Calibration = Array.ConvertAll(Channels, x => (double)x);
             }
             else
             {
@@ -108,7 +120,7 @@ namespace lasercom.camera
                 catch (IOException ex)
                 {
                     Log.Error(ex);
-                    Calibration = Array.ConvertAll(Enumerable.Range(1, (int)Width).ToArray<int>(), x => (double)x);
+                    Calibration = Array.ConvertAll(Channels, x => (double)x);
                     throw;
                 }
             }

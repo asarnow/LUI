@@ -4,6 +4,7 @@ using ATMCD64CS;
 #else
 using ATMCD32CS;
 using System.Diagnostics;
+using System.Linq;
 
 
 #endif
@@ -154,9 +155,8 @@ namespace lasercom.camera
         {
             _Width = 1024;
             _Height = 256;
-
+            Channels = Enumerable.Range(1, (int)Width).Reverse().ToArray<int>();
             LoadCalibration(CalFile);
-
             MinIntensifierGain = 0;
             MaxIntensifierGain = 4095;
             IntensifierGain = InitialGain;
