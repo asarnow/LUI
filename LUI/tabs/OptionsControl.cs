@@ -1,7 +1,7 @@
-﻿using lasercom.camera;
+﻿using Extensions;
+using lasercom.camera;
 using lasercom.control;
 using lasercom.ddg;
-using Extensions;
 using lasercom.gpib;
 using log4net;
 using LUI.config;
@@ -195,6 +195,8 @@ namespace LUI.tabs
 
         protected override void OnLoad(EventArgs e)
         {
+            Config.ParametersChanged += HandleParametersChanged;
+
             foreach (ListViewItem item in OptionsListView.Items)
             {
                 var luiOptionsDialog = (LuiOptionsDialog)item.Tag;
@@ -211,6 +213,11 @@ namespace LUI.tabs
 
             OptionsListView.Items[0].Selected = true; // Select default options dialog.
             base.OnLoad(e); // Forward to base class event handler.
+        }
+
+        private void HandleParametersChanged(object sender, EventArgs e)
+        {
+            ChildrenMatchConfig(Config);
         }
 
         private void HandleCanApply(object sender, EventArgs e)

@@ -182,7 +182,6 @@ namespace LUI
 
             Tabs.ResumeLayout();
             ResumeLayout();
-   
         }
 
         protected override void OnLoad(EventArgs e)
@@ -200,7 +199,6 @@ namespace LUI
             ClientSize = FormSize;
 
             HandleOptionsApplied(this, EventArgs.Empty);
-
         }
 
         void HandleResize(object sender, EventArgs e)
@@ -218,7 +216,6 @@ namespace LUI
                 DisableTabs(TROSPage, CalibrationPage, ResidualsPage, PowerPage, OptionsPage);
                 Task Instantiation = Config.InstantiateConfigurationAsync();
                 await Instantiation;
-                EnableTabs(Tabs.TabPages.Cast<TabPage>());
                 Config.OnParametersChanged(sender, e);
             }
             catch (Exception ex)
@@ -227,7 +224,10 @@ namespace LUI
                 MessageBox.Show("Bad configuration or no configuration.\r\nError message:\r\n" + ex.Message);
                 Tabs.SelectedTab = OptionsPage;
             }
-            
+            finally
+            {
+                EnableTabs(Tabs.TabPages.Cast<TabPage>());
+            }
         }
 
         private void DisableTabs(params TabPage[] tabs)
