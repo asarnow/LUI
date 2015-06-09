@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using lasercom.gpib;
-using Extensions;
+﻿using Extensions;
 using lasercom.objects;
+using System;
+using System.Windows.Forms;
 
 namespace LUI.controls
 {

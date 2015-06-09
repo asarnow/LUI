@@ -71,12 +71,12 @@ namespace LUI.tabs
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            Config.ParametersChanged += HandleParametersChanged;
             CameraBox.ObjectChanged += HandleCameraChanged;
             BeamFlagBox.ObjectChanged += HandleBeamFlagsChanged;
 
             if (!IsInDesignMode())
             {
+                Config.ParametersChanged += HandleParametersChanged;
                 HandleParametersChanged(this, EventArgs.Empty);
                 LoadSettings();
             }
