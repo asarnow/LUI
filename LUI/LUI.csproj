@@ -146,6 +146,7 @@
   <ItemGroup>
     <Compile Include="config\TextBoxAppender.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="controls\ControlExtensions.cs" />
     <Compile Include="controls\panel\config\DummyPumpConfigPanel.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -222,6 +223,7 @@
     <Compile Include="controls\OptionsListView.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="GuiUtil.cs" />
     <Compile Include="tabs\CalibrateControl.cs">
       <SubType>UserControl</SubType>
     </Compile>

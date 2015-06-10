@@ -1,10 +1,5 @@
 ﻿using lasercom.camera;
-using lasercom.objects;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace LUI.controls
@@ -23,8 +18,16 @@ namespace LUI.controls
             : base()
         {
             Dir = new LabeledControl<TextBox>(new TextBox(), "Andor INI Dir:");
+            Dir.Control.TextChanged += OnOptionsChanged;
+            Dir.Control.TextChanged += (s, e) => Dir.Control.AutoResize();
+            Dir.Control.MinimumSize = new System.Drawing.Size(40, 0);
             Dir.Control.Text = "./";
-            Dir.Control.TextChanged += (s, e) => OnOptionsChanged(s,e);
+            var Browse = new Button();
+            Browse.Text = "...";
+            Browse.AutoSize = true;
+            Browse.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            Browse.Click += BrowseDir_Click;
+            Dir.Controls.Add(Browse);
             this.Controls.Add(Dir);
 
             InitialGain = new LabeledControl<NumericUpDown>(new NumericUpDown(), "Initial Gain:");
@@ -34,6 +37,13 @@ namespace LUI.controls
             InitialGain.Control.Value = AndorCamera.DefaultMCPGain;
             InitialGain.Control.ValueChanged += (s, e) => OnOptionsChanged(s, e);
             this.Controls.Add(InitialGain);
+        }
+
+        private void BrowseDir_Click(object sender, EventArgs e)
+        {
+            var orig = Dir.Control.Text;
+            var user = GuiUtil.SimpleFolderNameDialog();
+            Dir.Control.Text = user != "" ? user : orig;
         }
 
         public override void CopyTo(CameraParameters other)
