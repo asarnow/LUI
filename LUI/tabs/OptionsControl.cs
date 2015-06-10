@@ -175,7 +175,28 @@ namespace LUI.tabs
             ResumeLayout(false);
         }
 
-        public void SetChildConfig(LuiConfig config)
+        protected override void OnLoad(EventArgs e)
+        {
+            Config.ParametersChanged += HandleParametersChanged;
+
+            foreach (ListViewItem item in OptionsListView.Items)
+            {
+                var luiOptionsDialog = (LuiOptionsDialog)item.Tag;
+                // Set in OnLoad so initialization doesn't trigger the events.
+                luiOptionsDialog.OptionsChanged += HandleCanApply;
+
+                // Control initialization doesn't happen unless control is visible,
+                // so we defer setting visibility until the control is loaded.
+                luiOptionsDialog.Visible = false;
+            }
+            // Selecting the ListView causes selected item to be highlighted with system color.
+            OptionsListView.Select();
+
+            OptionsListView.Items[0].Selected = true; // Select default options dialog.
+            base.OnLoad(e); // Forward to base class event handler.
+        }
+
+        private void SetChildConfig(LuiConfig config)
         {
             // Set all options dialogs to reference & match the given config.
             foreach (ListViewItem it in OptionsListView.Items)
@@ -193,31 +214,23 @@ namespace LUI.tabs
             }
         }
 
-        protected override void OnLoad(EventArgs e)
+        public void ChildrenMatchConfig()
         {
-            Config.ParametersChanged += HandleParametersChanged;
-
-            foreach (ListViewItem item in OptionsListView.Items)
-            {
-                var luiOptionsDialog = (LuiOptionsDialog)item.Tag;
-                // Set in OnLoad so initialization doesn't trigger the events.
-                luiOptionsDialog.OptionsChanged += HandleCanApply;
-                luiOptionsDialog.ConfigMatched += HandleCanApply;
-
-                // Control initialization doesn't happen unless control is visible,
-                // so we defer setting visibility until the control is loaded.
-                luiOptionsDialog.Visible = false;
-            }
-            // Selecting the ListView causes selected item to be highlighted with system color.
-            OptionsListView.Select();
-
-            OptionsListView.Items[0].Selected = true; // Select default options dialog.
-            base.OnLoad(e); // Forward to base class event handler.
+            ChildrenMatchConfig(this.Config);
         }
+
+        //public void ChildrenCopyConfigState()
+        //{
+        //    // Update all options dialogs to to the state of their configs.
+        //    foreach (ListViewItem it in OptionsListView.Items)
+        //    {
+        //        ((LuiOptionsDialog)it.Tag).CopyConfigState();
+        //    }
+        //}
 
         private void HandleParametersChanged(object sender, EventArgs e)
         {
-            ChildrenMatchConfig(Config);
+            ChildrenMatchConfig();
         }
 
         private void HandleCanApply(object sender, EventArgs e)
@@ -252,6 +265,7 @@ namespace LUI.tabs
                 // Update options dialogs to match the new config.
                 // The new config is not instantiated and the old config is not replaced.
                 ChildrenMatchConfig(LuiConfig.FromFile(ofd.FileName));
+                HandleCanApply(sender, e);
             }
         }
 

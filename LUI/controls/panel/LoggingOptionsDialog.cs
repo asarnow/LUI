@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using log4net;
 using log4net.Core;
-using log4net;
-using LUI.config;
 using log4net.Repository.Hierarchy;
-using LUI.tabs;
+using LUI.config;
+using System;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace LUI.controls
 {
@@ -54,9 +47,14 @@ namespace LUI.controls
             ResumeLayout(false);
         }
 
-        public override void Update(LuiConfig config)
+        public override void CopyConfigState(LuiConfig config)
         {
             LogLevel.Control.SelectedItem = config.LogLevel;
+        }
+
+        public override void CopyConfigState()
+        {
+            CopyConfigState(this.Config);
         }
 
         public override void HandleApply(object sender, EventArgs e)

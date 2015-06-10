@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using Extensions;
 using LUI.config;
-using System.Runtime.CompilerServices;
-using Extensions;
+using System;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace LUI.controls
 {
@@ -74,7 +67,7 @@ namespace LUI.controls
         /// <param name="config"></param>
         public void MatchConfig(LuiConfig config)
         {
-            Update(config);
+            CopyConfigState(config);
             EventHandler handler = ConfigMatched;
             if (handler != null) handler(this, EventArgs.Empty);
         }
@@ -93,7 +86,12 @@ namespace LUI.controls
         /// Copy dialog content from the passed LuiConfig.
         /// </summary>
         /// <param name="config"></param>
-        public abstract void Update(LuiConfig config);
+        public abstract void CopyConfigState(LuiConfig config);
+
+        /// <summary>
+        /// Copy dialog content from bound LuiConfig.
+        /// </summary>
+        public abstract void CopyConfigState();
 
         /// <summary>
         /// Defines action taken when LuiConfig used to read/write options is set.

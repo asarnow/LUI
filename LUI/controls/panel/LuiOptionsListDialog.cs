@@ -156,7 +156,7 @@ namespace LUI.controls
 
             ConfigPanels = new Dictionary<Type, LuiObjectConfigPanel<P>>();
 
-            ConfigChanged += (sender, e) => HandleConfigChanged(sender, e);
+            ConfigChanged += HandleConfigChanged;
 
             ResumeLayout(false);
         }
@@ -288,9 +288,14 @@ namespace LUI.controls
             Config.ReplaceParameters(TransientItems);
         }
 
-        public override void Update(LuiConfig config)
+        public override void CopyConfigState(LuiConfig config)
         {
             PersistentItems = config.GetParameters<P>();
+        }
+
+        public override void CopyConfigState()
+        {
+            CopyConfigState(this.Config);
         }
 
         public override void HandleConfigChanged(object sender, EventArgs e)

@@ -64,7 +64,7 @@ namespace LUI.tabs
 
         struct WorkArgs
         {
-            public WorkArgs(int N, IList<double> Times, string PrimaryDelayName, string PrimaryDelayTrigger)
+            public WorkArgs(int N, IList<double> Times, string PrimaryDelayName, string PrimaryDelayTrigger, PumpMode Pump, bool DiscardFirst)
             {
                 this.N = N;
                 this.Times = new List<double>(Times);
@@ -78,6 +78,8 @@ namespace LUI.tabs
                 this.GateTriggerName = '\0';
                 this.Gate = double.NaN;
                 this.GateDelay = double.NaN;
+                this.Pump = Pump;
+                this.DiscardFirst = DiscardFirst;
             }
             public readonly int N;
             public readonly IList<double> Times;
@@ -87,6 +89,8 @@ namespace LUI.tabs
             public readonly char GateTriggerName;
             public readonly double GateDelay;
             public readonly double Gate;
+            public readonly PumpMode Pump;
+            public readonly bool DiscardFirst;
         }
 
         struct ProgressObject
@@ -123,6 +127,11 @@ namespace LUI.tabs
             INITIALIZE, PROGRESS, PROGRESS_DARK, PROGRESS_TIME, 
             PROGRESS_TIME_COMPLETE, PROGRESS_FLASH, PROGRESS_TRANS,
             CALCULATE
+        }
+
+        public enum PumpMode
+        {
+            NEVER, TRANS, ALWAYS
         }
 
         private BindingList<TimesRow> TimesList = new BindingList<TimesRow>();
@@ -260,6 +269,10 @@ namespace LUI.tabs
             Graph.Invalidate();
 
             int N = (int)NScan.Value;
+            PumpMode Mode;
+            if (PumpNever.Checked) Mode = PumpMode.NEVER;
+            else if (PumpTs.Checked) Mode = PumpMode.TRANS;
+            else Mode = PumpMode.ALWAYS;
 
             Commander.BeamFlag.CloseLaserAndFlash();
 
@@ -269,7 +282,7 @@ namespace LUI.tabs
             worker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(WorkComplete);
             worker.WorkerSupportsCancellation = true;
             worker.WorkerReportsProgress = true;
-            worker.RunWorkerAsync(new WorkArgs(N, Times, DdgConfigBox.PrimaryDelayDelay, DdgConfigBox.PrimaryDelayTrigger));
+            worker.RunWorkerAsync(new WorkArgs(N, Times, DdgConfigBox.PrimaryDelayDelay, DdgConfigBox.PrimaryDelayTrigger, Mode, Discard.Checked));
             OnTaskStarted(EventArgs.Empty);
         }
 
@@ -302,10 +315,12 @@ namespace LUI.tabs
             progress = new ProgressObject(null, null, 0, Dialog.PROGRESS_DARK);
             worker.ReportProgress(0, progress);
 
-            Commander.BeamFlag.CloseLaserAndFlash();
-
+            // Dark buffers.
             int[] DarkBuffer = new int[Commander.Camera.AcqSize];
             int[] Dark = new int[Commander.Camera.AcqSize];
+
+            // Dark scans.
+            Commander.BeamFlag.CloseLaserAndFlash();
             for (int i = 0; i < N; i++)
             {
                 if (worker.CancellationPending)
@@ -323,13 +338,22 @@ namespace LUI.tabs
             }
             Data.DivideArray(Dark, N); // Average dark current.
 
-            Commander.BeamFlag.OpenFlash();
-
             // Buffer for acuisition data.
             int[] DataBuffer = new int[Commander.Camera.AcqSize];
             double[] Ground = new double[Commander.Camera.AcqSize];
 
+            // Flow-flash.
+            if (args.Pump == PumpMode.ALWAYS)
+            {
+                Commander.Pump.SetOpen();
+                if (args.DiscardFirst)
+                {
+                    var ret = Commander.Camera.Acquire(DataBuffer);
+                }
+            }
+
             // Ground state scans - first half.
+            Commander.BeamFlag.OpenFlash();
             for (int i = 0; i < half; i++)
             {
                 if (worker.CancellationPending)
@@ -351,10 +375,19 @@ namespace LUI.tabs
             Data.DivideArray(Ground, half); // Average GS for first half.
             Data.Dissipate(Ground, Dark); // Subtract average dark from average GS.
 
-            
 
             // Excited state buffer.
             double[] Excited = new double[Commander.Camera.AcqSize];
+
+            // Flow-flash.
+            if (args.Pump == PumpMode.TRANS)
+            {
+                Commander.Pump.SetOpen();
+                if (args.DiscardFirst)
+                {
+                    var ret = Commander.Camera.Acquire(DataBuffer);
+                }
+            }
 
             // Excited state scans.
             for (int i = 0; i < Times.Count; i++)
@@ -389,6 +422,12 @@ namespace LUI.tabs
                 worker.ReportProgress((N + half + N * Times.Count) * 99 / TotalScans, progress);
             }
 
+            // Flow-flash.
+            if (args.Pump == PumpMode.TRANS) // Could close pump before last collect.
+            {
+                Commander.Pump.SetClosed();
+            }
+
             // Ground state scans - second half.
             Commander.BeamFlag.OpenFlash();
             int half2 = N % 2 == 0 ? half : half + 1; // If N is odd, need 1 more GS scan in the second half.
@@ -407,6 +446,12 @@ namespace LUI.tabs
                 worker.ReportProgress( (N + half + (N * Times.Count) + (i+1)) * 99 / TotalScans, progress);
             }
             Commander.BeamFlag.CloseLaserAndFlash();
+
+            // Flow-flash.
+            if (args.Pump == PumpMode.ALWAYS)
+            {
+                Commander.Pump.SetClosed(); // Could close pump before last collect.
+            }
 
             // Calculate LuiData matrix
             progress = new ProgressObject(null, null, 0, Dialog.CALCULATE);

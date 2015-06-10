@@ -5,7 +5,7 @@ namespace lasercom.control
     {
         public DummyPump()
         {
-
+            SetClosed();
         }
 
         protected override void Dispose(bool disposing)

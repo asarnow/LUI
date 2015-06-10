@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             System.Windows.Forms.Label CameraStatusLabel;
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.LoadTimes = new System.Windows.Forms.Button();
             this.CameraStatus = new System.Windows.Forms.TextBox();
             this.TimesView = new System.Windows.Forms.DataGridView();
@@ -37,14 +37,22 @@
             this.SaveData = new System.Windows.Forms.Button();
             this.DdgConfigBox = new LUI.controls.DdgCommandPanel();
             this.PumpBox = new LUI.controls.ObjectCommandPanel();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.PumpNever = new System.Windows.Forms.RadioButton();
+            this.PumpTs = new System.Windows.Forms.RadioButton();
+            this.PumpAlways = new System.Windows.Forms.RadioButton();
+            this.Discard = new System.Windows.Forms.CheckBox();
             CameraStatusLabel = new System.Windows.Forms.Label();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NScan)).BeginInit();
+            this.CommonObjectPanel.SuspendLayout();
             this.LeftChildArea.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CameraGain)).BeginInit();
             this.RightChildArea.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.TimesView)).BeginInit();
+            this.PumpBox.Flow.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // NScan
@@ -56,8 +64,9 @@
             this.Graph.InitialScaleHeight = 2F;
             this.Graph.InitialYMax = 1F;
             this.Graph.InitialYMin = -1F;
+            this.Graph.LeftToRight = false;
             this.Graph.ScaleHeight = 2F;
-            this.Graph.Size = new System.Drawing.Size(1170, 584);
+            this.Graph.Size = new System.Drawing.Size(1176, 584);
             this.Graph.XLeft = 1F;
             this.Graph.XRight = 1024F;
             this.Graph.YMax = 1F;
@@ -70,7 +79,7 @@
             this.LeftChildArea.Controls.Add(this.TimesView);
             this.LeftChildArea.Controls.Add(this.LoadTimes);
             this.LeftChildArea.Location = new System.Drawing.Point(0, 584);
-            this.LeftChildArea.Size = new System.Drawing.Size(1170, 237);
+            this.LeftChildArea.Size = new System.Drawing.Size(1176, 237);
             // 
             // RightChildArea
             // 
@@ -129,8 +138,8 @@
             // Value
             // 
             this.Value.DataPropertyName = "Value";
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Value.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Value.DefaultCellStyle = dataGridViewCellStyle2;
             this.Value.HeaderText = "Delay (s)";
             this.Value.Name = "Value";
             this.Value.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
@@ -165,18 +174,75 @@
             // 
             this.PumpBox.Flow.AutoSize = true;
             this.PumpBox.Flow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.PumpBox.Flow.Controls.Add(this.panel1);
+            this.PumpBox.Flow.Controls.Add(this.Discard);
             this.PumpBox.Flow.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PumpBox.Flow.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.PumpBox.Flow.Location = new System.Drawing.Point(3, 16);
             this.PumpBox.Flow.Name = "Flow";
-            this.PumpBox.Flow.Size = new System.Drawing.Size(300, 33);
+            this.PumpBox.Flow.Size = new System.Drawing.Size(294, 92);
             this.PumpBox.Flow.TabIndex = 0;
             this.PumpBox.Location = new System.Drawing.Point(0, 0);
             this.PumpBox.Name = "PumpBox";
             this.PumpBox.SelectedObject = null;
-            this.PumpBox.Size = new System.Drawing.Size(306, 52);
+            this.PumpBox.Size = new System.Drawing.Size(300, 111);
             this.PumpBox.TabIndex = 0;
             this.PumpBox.Text = "Syringe Pump";
+            // 
+            // panel1
+            // 
+            this.panel1.AutoSize = true;
+            this.panel1.Controls.Add(this.PumpAlways);
+            this.panel1.Controls.Add(this.PumpTs);
+            this.panel1.Controls.Add(this.PumpNever);
+            this.panel1.Location = new System.Drawing.Point(3, 36);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(198, 30);
+            this.panel1.TabIndex = 1;
+            // 
+            // PumpNever
+            // 
+            this.PumpNever.AutoSize = true;
+            this.PumpNever.Checked = true;
+            this.PumpNever.Location = new System.Drawing.Point(8, 10);
+            this.PumpNever.Name = "PumpNever";
+            this.PumpNever.Size = new System.Drawing.Size(54, 17);
+            this.PumpNever.TabIndex = 0;
+            this.PumpNever.TabStop = true;
+            this.PumpNever.Text = "Never";
+            this.PumpNever.UseVisualStyleBackColor = true;
+            // 
+            // PumpTs
+            // 
+            this.PumpTs.AutoSize = true;
+            this.PumpTs.Location = new System.Drawing.Point(68, 10);
+            this.PumpTs.Name = "PumpTs";
+            this.PumpTs.Size = new System.Drawing.Size(63, 17);
+            this.PumpTs.TabIndex = 1;
+            this.PumpTs.TabStop = true;
+            this.PumpTs.Text = "TS Only";
+            this.PumpTs.UseVisualStyleBackColor = true;
+            // 
+            // PumpAlways
+            // 
+            this.PumpAlways.AutoSize = true;
+            this.PumpAlways.Location = new System.Drawing.Point(137, 10);
+            this.PumpAlways.Name = "PumpAlways";
+            this.PumpAlways.Size = new System.Drawing.Size(58, 17);
+            this.PumpAlways.TabIndex = 2;
+            this.PumpAlways.TabStop = true;
+            this.PumpAlways.Text = "Always";
+            this.PumpAlways.UseVisualStyleBackColor = true;
+            // 
+            // Discard
+            // 
+            this.Discard.AutoSize = true;
+            this.Discard.Location = new System.Drawing.Point(3, 72);
+            this.Discard.Name = "Discard";
+            this.Discard.Size = new System.Drawing.Size(84, 17);
+            this.Discard.TabIndex = 2;
+            this.Discard.Text = "Discard First";
+            this.Discard.UseVisualStyleBackColor = true;
             // 
             // TroaControl
             // 
@@ -187,12 +253,18 @@
             this.CommandsBox.ResumeLayout(false);
             this.CommandsBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NScan)).EndInit();
+            this.CommonObjectPanel.ResumeLayout(false);
+            this.CommonObjectPanel.PerformLayout();
             this.LeftChildArea.ResumeLayout(false);
             this.LeftChildArea.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CameraGain)).EndInit();
             this.RightChildArea.ResumeLayout(false);
             this.RightChildArea.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.TimesView)).EndInit();
+            this.PumpBox.Flow.ResumeLayout(false);
+            this.PumpBox.Flow.PerformLayout();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -206,6 +278,11 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Value;
         private controls.DdgCommandPanel DdgConfigBox;
         private controls.ObjectCommandPanel PumpBox;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.RadioButton PumpAlways;
+        private System.Windows.Forms.RadioButton PumpTs;
+        private System.Windows.Forms.RadioButton PumpNever;
+        private System.Windows.Forms.CheckBox Discard;
 
     }
 }
