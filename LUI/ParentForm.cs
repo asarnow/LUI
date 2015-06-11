@@ -36,6 +36,7 @@ namespace LUI
         private CalibrateControl CalibrateControl;
         private LaserPowerControl LaserPowerControl;
         private ResidualsControl ResidualsControl;
+        private SpecControl SpecControl;
         private OptionsControl OptionsControl;
 
         public TaskState CurrentTask
@@ -93,6 +94,7 @@ namespace LUI
             SpecPage.BackColor = System.Drawing.SystemColors.Control;
             SpecPage.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             SpecPage.Name = "SpecPage";
+            TROSPage.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
             SpecPage.TabIndex = 3;
             SpecPage.Text = "Spectrum";
             
@@ -129,7 +131,7 @@ namespace LUI
             OptionsPage.Text = "Options";
             
             Tabs.TabPages.Add(HomePage);
-            //Tabs.TabPages.Add(SpecPage);
+            Tabs.TabPages.Add(SpecPage);
             Tabs.TabPages.Add(TROSPage);
             Tabs.TabPages.Add(ResidualsPage);
             Tabs.TabPages.Add(CalibrationPage);
@@ -160,6 +162,9 @@ namespace LUI
 
             ResidualsControl = new ResidualsControl(Config);
             ResidualsPage.Controls.Add(ResidualsControl);
+
+            SpecControl = new SpecControl(Config);
+            SpecPage.Controls.Add(SpecControl);
 
             HomePage.Controls.Add(new Panel()); // Just a placeholder.
 

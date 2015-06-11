@@ -266,6 +266,12 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Settings.cs" />
+    <Compile Include="tabs\SpecControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="tabs\SpecControl.Designer.cs">
+      <DependentUpon>SpecControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="tabs\TroaControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -299,6 +305,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="tabs\LuiTab.resx">
       <DependentUpon>LuiTab.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="tabs\SpecControl.resx">
+      <DependentUpon>SpecControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="tabs\TroaControl.resx">
       <DependentUpon>TroaControl.cs</DependentUpon>

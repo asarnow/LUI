@@ -645,7 +645,7 @@ namespace LUI.tabs
         {
             SaveFileDialog saveFile = new SaveFileDialog();
             saveFile.Filter = "MAT File|*.mat|CSV File|*.csv";
-            saveFile.Title = "Data Data File";
+            saveFile.Title = "Save Data File";
             saveFile.ShowDialog();
 
             if (saveFile.FileName == "") return;
