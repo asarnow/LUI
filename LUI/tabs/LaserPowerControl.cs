@@ -1,16 +1,31 @@
 ﻿using lasercom;
 using lasercom.camera;
+using lasercom.control;
 using LUI.config;
 using LUI.controls;
 using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace LUI.tabs
 {
     public partial class LaserPowerControl : LuiTab
     {
+        struct WorkArgs
+        {
+            public WorkArgs(int N, PumpMode Pump, bool DiscardFirst)
+            {
+                this.N = N;
+                this.Pump = Pump;
+                this.DiscardFirst = DiscardFirst;
+            }
+            public readonly int N;
+            public readonly PumpMode Pump;
+            public readonly bool DiscardFirst;
+        }
+
         double[] Light = null;
 
         int _SelectedChannel = -1;
@@ -27,6 +42,11 @@ namespace LUI.tabs
             }
         }
 
+        public enum PumpMode
+        {
+            NEVER, TRANS, ALWAYS
+        }
+
         public enum Dialog
         {
             INITIALIZE, PROGRESS, PROGRESS_DARK,
@@ -37,6 +57,59 @@ namespace LUI.tabs
             InitializeComponent();
         }
 
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+            PumpBox.ObjectChanged += HandlePumpChanged;
+        }
+
+        public override void HandleParametersChanged(object sender, EventArgs e)
+        {
+            base.HandleParametersChanged(sender, e);
+            var PumpsAvailable = Config.GetParameters(typeof(PumpParameters));
+            if (PumpsAvailable.Count() > 0)
+            {
+                var selectedPump = PumpBox.SelectedObject;
+                PumpBox.Objects.Items.Clear();
+                foreach (var p in PumpsAvailable)
+                    PumpBox.Objects.Items.Add(p);
+                // One of next two lines will trigger CameraChanged event.
+                PumpBox.SelectedObject = selectedPump;
+                if (PumpBox.Objects.SelectedItem == null) PumpBox.Objects.SelectedIndex = 0;
+                PumpBox.Enabled = true;
+            }
+            else
+            {
+                PumpBox.Enabled = false;
+            }
+        }
+
+        public virtual void HandlePumpChanged(object sender, EventArgs e)
+        {
+            if (Commander.Pump != null) Commander.Pump.SetClosed();
+            Commander.Pump = (IPump)Config.GetObject(PumpBox.SelectedObject);
+        }
+
+        protected override void Collect_Click(object sender, EventArgs e)
+        {
+            Collect.Enabled = NScan.Enabled = false;
+            Abort.Enabled = true;
+            int N = (int)NScan.Value;
+            PumpMode Pump;
+            if (PumpNever.Checked) Pump = PumpMode.NEVER;
+            else if (PumpTs.Checked) Pump = PumpMode.TRANS;
+            else Pump = PumpMode.ALWAYS;
+            Commander.BeamFlag.CloseLaserAndFlash();
+            worker = new BackgroundWorker();
+            worker.DoWork += new System.ComponentModel.DoWorkEventHandler(DoWork);
+            worker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(WorkProgress);
+            worker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(WorkComplete);
+            worker.WorkerSupportsCancellation = true;
+            worker.WorkerReportsProgress = true;
+            worker.RunWorkerAsync(new WorkArgs(N, Pump, Discard.Checked));
+            OnTaskStarted(EventArgs.Empty);
+        }
+
         protected override void DoWork(object sender, DoWorkEventArgs e)
         {
             worker.ReportProgress(0, Dialog.INITIALIZE);
@@ -44,7 +117,8 @@ namespace LUI.tabs
             Commander.Camera.AcquisitionMode = AndorCamera.AcquisitionModeSingle;
             Commander.Camera.TriggerMode = AndorCamera.TriggerModeExternalExposure;
             Commander.Camera.ReadMode = AndorCamera.ReadModeFVB;
-            int N = (int)e.Argument;
+            var args = (WorkArgs)e.Argument;
+            int N = args.N;
 
             int TotalScans = 3 * N;
 
@@ -72,6 +146,16 @@ namespace LUI.tabs
 
             worker.ReportProgress(33, Dialog.PROGRESS_FLASH);
 
+            // Flow-flash.
+            if (args.Pump == PumpMode.ALWAYS)
+            {
+                Commander.Pump.SetOpen();
+                if (args.DiscardFirst)
+                {
+                    var ret = Commander.Camera.Acquire(DataBuffer);
+                }
+            }
+
             Commander.BeamFlag.OpenFlash();
 
             double[] Ground = new double[Commander.Camera.AcqSize];
@@ -94,6 +178,16 @@ namespace LUI.tabs
 
             worker.ReportProgress(66, Dialog.PROGRESS_TRANS);
 
+            // Flow-flash.
+            if (args.Pump == PumpMode.TRANS)
+            {
+                Commander.Pump.SetOpen();
+                if (args.DiscardFirst)
+                {
+                    var ret = Commander.Camera.Acquire(DataBuffer);
+                }
+            }
+
             Commander.BeamFlag.OpenLaserAndFlash();
 
             double[] Excited = new double[Commander.Camera.AcqSize];
@@ -113,6 +207,12 @@ namespace LUI.tabs
             }
 
             Commander.BeamFlag.CloseLaserAndFlash();
+
+            // Flow-flash.
+            if (args.Pump == PumpMode.TRANS || args.Pump == PumpMode.ALWAYS) // Could close pump before last collect.
+            {
+                Commander.Pump.SetClosed();
+            }
 
             Data.DivideArray(Excited, N);
             Data.Dissipate(Excited, Dark);
