@@ -338,6 +338,9 @@ namespace LUI.tabs
             }
             Data.DivideArray(Dark, N); // Average dark current.
 
+            // Set delays for GS.
+            Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, 3.2E-8); // Set delay time.
+
             // Buffer for acuisition data.
             int[] DataBuffer = new int[Commander.Camera.AcqSize];
             double[] Ground = new double[Commander.Camera.AcqSize];
@@ -421,6 +424,9 @@ namespace LUI.tabs
                 progress = new ProgressObject(Difference, null, Delay, Dialog.PROGRESS_TIME_COMPLETE);
                 worker.ReportProgress((N + half + N * Times.Count) * 99 / TotalScans, progress);
             }
+
+            // Set delays for GS.
+            Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, 3.2E-8); // Set delay time.
 
             // Flow-flash.
             if (args.Pump == PumpMode.TRANS) // Could close pump before last collect.
