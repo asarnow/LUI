@@ -49,7 +49,6 @@
             // 
             // Graph
             // 
-            this.Graph.LeftToRight = false;
             this.Graph.XLeft = 1F;
             this.Graph.XRight = 1024F;
             // 

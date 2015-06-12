@@ -155,7 +155,7 @@ namespace lasercom.camera
         {
             _Width = 1024;
             _Height = 256;
-            Channels = Enumerable.Range(1, (int)Width).Reverse().ToArray<int>();
+            Channels = Enumerable.Range(0, (int)Width).Reverse().ToArray<int>();
             LoadCalibration(CalFile);
             MinIntensifierGain = 0;
             MaxIntensifierGain = 4095;

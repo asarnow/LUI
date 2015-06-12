@@ -80,7 +80,6 @@ namespace LUI.tabs
                 HandleParametersChanged(this, EventArgs.Empty);
                 LoadSettings();
             }
-            Graph.LeftToRight = false;
             Graph.XLeft = (float)Commander.Camera.Calibration[0];
             Graph.XRight = (float)Commander.Camera.Calibration[Commander.Camera.Calibration.Length - 1];
         }

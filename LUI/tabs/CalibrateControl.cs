@@ -25,7 +25,7 @@ namespace LUI.tabs
         private int _SelectedChannel = -1;
         /// <summary>
         /// Currently selected detector channel regardless of calibration.
-        /// Min value zero, max value is camera width - 1.
+        /// Min value is zero, max value is camera width - 1.
         /// </summary>
         int SelectedChannel
         {
@@ -330,17 +330,17 @@ namespace LUI.tabs
         {
             //PointF p = Graph.ScreenToData(new Point(e.X, e.Y));
             //SelectedChannel = (int)Math.Round(p.X);
-            SelectedChannel = Commander.Camera.Channels[
-                (int)Math.Round(Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y))).X * (Commander.Camera.Width - 1))];
+            SelectedChannel = 
+                (int)Math.Round(Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y))).X * (Commander.Camera.Width - 1));
             DataGridViewSelectedRowCollection selection = CalibrationListView.SelectedRows;
             if (selection.Count == 0)
             {
                 DataGridViewRow row = CalibrationListView.Rows[CalibrationListView.Rows.Count - 1];
-                row.Cells["Channel"].Value = SelectedChannel;
+                row.Cells["Channel"].Value = Commander.Camera.Channels[SelectedChannel];
             }
             else if (selection.Count == 1)
             {
-                selection[0].Cells["Channel"].Value = SelectedChannel;
+                selection[0].Cells["Channel"].Value = Commander.Camera.Channels[SelectedChannel];
             }
             else
             {
@@ -359,6 +359,7 @@ namespace LUI.tabs
             int i;
             for (i=0; i<CalibrationList.Count; i++)
             {
+                if (i > CalibrationListView.Rows.Count) break;
                 CalibrationPoint p = CalibrationList[i];
                 //float X = Graph.XLeft + (float)p.Channel / (Commander.Camera.Width - 1) * Graph.XRange;
                 float X = (float)Commander.Camera.Calibration[Commander.Camera.Channels[p.Channel]];
@@ -382,7 +383,7 @@ namespace LUI.tabs
                     if (!CalibrationListView.IsCurrentCellInEditMode && CalibrationListView.SelectedRows.Count == 1)
                     {
                         SelectedChannel--;
-                        CalibrationListView.SelectedRows[0].Cells["Channel"].Value = SelectedChannel;
+                        CalibrationListView.SelectedRows[0].Cells["Channel"].Value = Commander.Camera.Channels[SelectedChannel];
                     }
                     RedrawLines();
                     break;
@@ -390,7 +391,7 @@ namespace LUI.tabs
                     if (!CalibrationListView.IsCurrentCellInEditMode && CalibrationListView.SelectedRows.Count == 1)
                     {
                         SelectedChannel++;
-                        CalibrationListView.SelectedRows[0].Cells["Channel"].Value = SelectedChannel;
+                        CalibrationListView.SelectedRows[0].Cells["Channel"].Value = Commander.Camera.Channels[SelectedChannel];
                     }
                     RedrawLines();
                     break;
@@ -442,21 +443,27 @@ namespace LUI.tabs
         {
             if (e.Row.Cells["Channel"].Value != null)
             {
-                e.Row.Cells["Channel"].Value = SelectedChannel;
+                e.Row.Cells["Channel"].Value = Commander.Camera.Channels[SelectedChannel];
             }
             else
             {
-                e.Row.Cells["Channel"].Value = 0;
+                e.Row.Cells["Channel"].Value = Commander.Camera.Channels[0];
             }
                 
         }
 
         private void RemoveCalItem_Click(object sender, EventArgs e)
         {
+            var minidx = int.MaxValue;
             foreach (DataGridViewRow row in CalibrationListView.SelectedRows)
             {
+                minidx = Math.Min(minidx, row.Index - 1); // Minimum preceeding index.
                 if (!row.IsNewRow) CalibrationListView.Rows.Remove(row);
             }
+            CalibrationListView.ClearSelection();
+            minidx = Math.Max(0, minidx);
+            if (minidx < CalibrationListView.Rows.Count)
+                CalibrationListView.Rows[minidx].Selected = true; // Select previous row if possible.
             RedrawLines();
         }
 

@@ -27,7 +27,7 @@ namespace lasercom.camera
         {
             _Height = 255;
             _Width = 1024;
-            Channels = Enumerable.Range(1, (int)Width).ToArray<int>();
+            Channels = Enumerable.Range(0, (int)Width).ToArray<int>();
             Calibration = Array.ConvertAll(Channels, x => (double)x);
         }
 

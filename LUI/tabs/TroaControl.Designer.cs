@@ -64,7 +64,6 @@
             this.Graph.InitialScaleHeight = 2F;
             this.Graph.InitialYMax = 1F;
             this.Graph.InitialYMin = -1F;
-            this.Graph.LeftToRight = false;
             this.Graph.ScaleHeight = 2F;
             this.Graph.Size = new System.Drawing.Size(1176, 584);
             this.Graph.XLeft = 1F;

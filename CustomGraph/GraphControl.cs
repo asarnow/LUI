@@ -159,8 +159,13 @@ namespace LUI.controls
             }
         }
 
-        const bool DEFAULTLEFTTORIGHT = true;
-        public bool LeftToRight { get; set; }
+        public bool LeftToRight
+        {
+            get
+            {
+                return XLeft < XRight;
+            }
+        }
 
         public enum Annotation
         {
@@ -190,8 +195,6 @@ namespace LUI.controls
 
             XLeft = InitialXLeft = XLEFTDEFAULT;
             YMin = InitialYMin = YMINDEFAULT;
-
-            LeftToRight = DEFAULTLEFTTORIGHT;
 
             ScaleHeight = InitialScaleHeight = SCALEHEIGHTDEFAULT;
 
@@ -326,7 +329,7 @@ namespace LUI.controls
                 for (int i = 0; i < Y.Length; i++)
                 {
                     float x = (float)(i + 1) / Y.Length;
-                    //if (!LeftToRight) x = 1 - x;
+                    if (!LeftToRight) x = 1 - x;
                     float y = Math.Abs(YMax - (float)Y[i]) / ScaleHeight;
                     DrawPoint(BitmapGraphics, B, MarkerFont, Axes, x, y);
                 }
@@ -343,7 +346,7 @@ namespace LUI.controls
                 for (int i = 0; i < Y.Length; i++)
                 {
                     float x = (float)(i + 1) / Y.Length;
-                    //if (!LeftToRight) x = 1 - x;
+                    if (!LeftToRight) x = 1 - x;
                     float y = Math.Abs(YMax - (float)Y[i]) / ScaleHeight;
                     DrawPoint(BitmapGraphics, B, MarkerFont, Axes, x, y);
                 }
@@ -367,7 +370,7 @@ namespace LUI.controls
                 //});
                 for (int i = 0; i < Y.Length; i++)
                 {
-                    float x = Math.Abs((float)X[i] - XLeft) / XRange;
+                    float x = Math.Abs(XLeft - (float)X[i]) / XRange;
                     //if (!LeftToRight) x = 1 - x;
                     float y = (YMax - (float)Y[i]) / ScaleHeight;
                     //float y = Math.Abs(YMax - (float)Y[i]) / ScaleHeight;
@@ -392,7 +395,7 @@ namespace LUI.controls
                     //});
                     for (int i = 0; i < X.Length; i++)
                     {
-                        float x = Math.Abs((float)X[i] - XLeft) / XRange;
+                        float x = Math.Abs(XLeft - (float)X[i]) / XRange;
                         //if (!LeftToRight) x = 1 - x;
                         float y = (float)Y[i] / YMax;
                         DrawPoint(G, B, MarkerFont, Axes, x, y);
@@ -412,6 +415,7 @@ namespace LUI.controls
         /// <param name="y">Normalized Y-coordinate</param>
         void DrawPoint(Graphics G, Brush B, Font F, RectangleF Axes, float x, float y)
         {
+            //if (!LeftToRight) x = 1 - x;
             float X = Axes.Left + Axes.Width * x - MarkerOffset.Width;
             float Y = Axes.Top + Axes.Height * y - MarkerOffset.Height;
             PointF Point = new PointF(X, Y);
@@ -447,7 +451,7 @@ namespace LUI.controls
         {
             using (Graphics G = Graphics.FromImage(Image))
             {
-                float X = Axes.Left + Axes.Width * Math.Abs(x - XLeft) / XRange;
+                float X = Axes.Left + Axes.Width * Math.Abs(XLeft - x) / XRange;
                 //G.CompositingMode = CompositingMode.SourceOver;
                 using (Pen Pen = new Pen(C))
                 {
