@@ -10,7 +10,7 @@
       <LuiObjectParameters xmlns:i="http://www.w3.org/2001/XMLSchema-instance" z:Id="1" xmlns:d1p1="http://schemas.datacontract.org/2004/07/lasercom.camera" i:type="d1p1:CameraParameters" xmlns:z="http://schemas.microsoft.com/2003/10/Serialization/" xmlns="http://schemas.datacontract.org/2004/07/lasercom.objects">
         <Name z:Id="2">Dummy</Name>
         <TypeName z:Id="3">lasercom.camera.DummyAndorCamera</TypeName>
-        <d1p1:CalFile z:Id="4">C:\Users\da\Documents\Visual Studio 2012\Projects\LUI\LUI\test.cal</d1p1:CalFile>
+        <d1p1:CalFile z:Id="4"></d1p1:CalFile>
         <d1p1:Dir z:Id="5" />
         <d1p1:InitialGain>0</d1p1:InitialGain>
         <d1p1:Temperature>0</d1p1:Temperature>
