@@ -21,7 +21,8 @@ namespace lasercom.io
             foreach (string line in ReadLines(filename))
             {
                 line.Trim();
-                times.Add(double.Parse(line));
+                if (line != String.Empty && !line.StartsWith("#"))
+                    times.Add(double.Parse(line));
             }
             return times;
         }
