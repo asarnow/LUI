@@ -182,22 +182,52 @@ namespace lasercom.camera
         public override uint Acquire(int[] DataBuffer)
         {
             System.Threading.Thread.Sleep(250);
-            //string caller = (new StackFrame(1)).GetMethod().Name;
-            int line = (new StackFrame(1,true)).GetFileLineNumber();
-            int[] data = null;
-            if (line < 320)
+            var frame = 1;
+            string caller = (new StackFrame(frame, true)).GetFileName();
+            if (caller.Contains("DummyAndorCamera"))
             {
-                data = Data.Uniform((int)Width, 1000);
-            } else if (line < 358 || line > 390)
-            {
-                data = Data.Gaussian((int)Width, 32000, Width * 1/3, Width / 10);
-                Data.Accumulate(data, Data.Uniform((int)Width, 1000));
-            } else if (line < 390)
-            {
-                data = Data.Gaussian((int)Width, 32000, Width * 2/3, Width / 10);
-                Data.Accumulate(data, Data.Uniform((int)Width, 1000));
+                frame++;
             }
-            data.CopyTo(DataBuffer, 0);
+            caller = (new StackFrame(frame,true)).GetFileName();
+            int line = (new StackFrame(frame,true)).GetFileLineNumber();
+            int[] data = null;
+            if (caller.Contains("TroaControl"))
+            {
+                if (line < 320) // Dark.
+                {
+                    data = Data.Uniform((int)Width, 1000);
+                }
+                else if (line < 358 || line > 390) // Ground.
+                {
+                    data = Data.Gaussian((int)Width, 32000, Width * 1 / 3, Width / 10);
+                    Data.Accumulate(data, Data.Uniform((int)Width, 1000));
+                }
+                else if (line < 390) // Excited.
+                {
+                    data = Data.Gaussian((int)Width, 32000, Width * 2 / 3, Width / 10);
+                    Data.Accumulate(data, Data.Uniform((int)Width, 1000));
+                }
+            }
+            else if (caller.Contains("CalibrateControl"))
+            {
+                if (line < 200) // Dark.
+                {
+                    data = Data.Uniform((int)Width, 1000);
+                }
+                else if (line > 200 && line < 220) // Blank.
+                {
+                    data = Enumerable.Repeat(55000, (int)Width).ToArray();
+                    Data.Dissipate(data, Data.Uniform((int)Width, 1000));
+                }
+                else // Sample.
+                {
+                    data = Enumerable.Repeat(55000, (int)Width).ToArray();
+                    Data.Dissipate(data, Data.Uniform((int)Width, 1000));
+                    Data.Dissipate(data, Data.Gaussian((int)Width, 40000, Width * 2 / 3, Width / 10));
+                }
+            }
+
+            if (data != null) data.CopyTo(DataBuffer, 0);
             return AndorSDK.DRV_SUCCESS;
         }
 

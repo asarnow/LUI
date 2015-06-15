@@ -80,8 +80,8 @@ namespace LUI.tabs
                 HandleParametersChanged(this, EventArgs.Empty);
                 LoadSettings();
             }
-            Graph.XLeft = (float)Commander.Camera.Calibration[0];
-            Graph.XRight = (float)Commander.Camera.Calibration[Commander.Camera.Calibration.Length - 1];
+            Graph.XLeft = (float)Math.Min(Commander.Camera.Calibration[0], Commander.Camera.Calibration[Commander.Camera.Calibration.Length - 1]);
+            Graph.XRight = (float)Math.Max(Commander.Camera.Calibration[0], Commander.Camera.Calibration[Commander.Camera.Calibration.Length - 1]);
         }
 
         public virtual void HandleParametersChanged(object sender, EventArgs e)

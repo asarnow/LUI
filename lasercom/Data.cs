@@ -126,7 +126,7 @@ namespace lasercom
         {
             double[] OD = new double[Sample.Length];
             for (int i = 0; i < OD.Length; i++)
-                OD[i] = Math.Log10((double)(Sample[i]) / (double)(Blank[i]));
+                OD[i] = -Math.Log10((double)(Sample[i]) / (double)(Blank[i]));
             return OD;
         }
 
