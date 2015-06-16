@@ -341,8 +341,6 @@ namespace LUI.tabs
 
         protected override void  Graph_Click(object sender, MouseEventArgs e)
         {
-            //PointF p = Graph.ScreenToData(new Point(e.X, e.Y));
-            //SelectedChannel = (int)Math.Round(p.X);
             SelectedChannel = Ascending ?
                 (int)Math.Round(Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y))).X * (Commander.Camera.Width - 1))
                 :

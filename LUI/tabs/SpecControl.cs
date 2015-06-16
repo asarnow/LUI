@@ -284,7 +284,7 @@ namespace LUI.tabs
                 ProgressLabel.Text = "Aborted";
             }
             StatusProgress.Value = 100;
-            Collect.Enabled = NScan.Enabled = true;
+            Collect.Enabled = NScan.Enabled = CameraGain.Enabled = true;
             Abort.Enabled = false;
             OnTaskFinished(EventArgs.Empty);
         }
