@@ -24,7 +24,7 @@ namespace lasercom.camera
         int IntensifierGain { get; set; }
         int MinIntensifierGain { get; }
         int MaxIntensifierGain { get; }
-        int[] Channels { get; }
+        bool CalibrationAscending { get; }
         double[] Calibration { get; set; }
 
         int[] CountsFvb();

@@ -70,19 +70,6 @@ namespace lasercom.camera
             protected set;
         }
 
-        int[] _Channels;
-        public int[] Channels
-        {
-            get
-            {
-                return _Channels;
-            }
-            protected set
-            {
-                _Channels = value;
-            }
-        }
-
         double[] _Calibration;
         public double[] Calibration
         {
@@ -93,6 +80,14 @@ namespace lasercom.camera
             set
             {
                 _Calibration = value;
+            }
+        }
+
+        public bool CalibrationAscending
+        {
+            get
+            {
+                return Calibration[Calibration.Length - 1] > Calibration[0];
             }
         }
 
@@ -110,7 +105,7 @@ namespace lasercom.camera
         {
             if (CalFile == null || CalFile == "")
             {
-                Calibration = Array.ConvertAll(Channels, x => (double)x);
+                Calibration = Enumerable.Range(0, (int)Width).Select(x=>(double)x).ToArray();
             }
             else
             {
@@ -121,7 +116,7 @@ namespace lasercom.camera
                 catch (IOException ex)
                 {
                     Log.Error(ex);
-                    Calibration = Array.ConvertAll(Channels, x => (double)x);
+                    Calibration = Enumerable.Range(0, (int)Width).Select(x => (double)x).ToArray();
                     throw;
                 }
             }

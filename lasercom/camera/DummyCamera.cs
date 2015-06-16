@@ -27,8 +27,7 @@ namespace lasercom.camera
         {
             _Height = 255;
             _Width = 1024;
-            Channels = Enumerable.Range(0, (int)Width).ToArray<int>();
-            Calibration = Array.ConvertAll(Channels, x => (double)x);
+            Calibration = Enumerable.Range(0, (int)Width).Select(x=>(double)x).ToArray();
         }
 
         public override int[] FullResolutionImage()

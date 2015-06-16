@@ -159,7 +159,7 @@ namespace LUI.controls
             }
         }
 
-        public bool LeftToRight
+        public bool XAscending
         {
             get
             {
@@ -329,7 +329,7 @@ namespace LUI.controls
                 for (int i = 0; i < Y.Length; i++)
                 {
                     float x = (float)(i + 1) / Y.Length;
-                    if (!LeftToRight) x = 1 - x;
+                    if (!XAscending) x = 1 - x;
                     float y = Math.Abs(YMax - (float)Y[i]) / ScaleHeight;
                     DrawPoint(BitmapGraphics, B, MarkerFont, Axes, x, y);
                 }
@@ -346,7 +346,7 @@ namespace LUI.controls
                 for (int i = 0; i < Y.Length; i++)
                 {
                     float x = (float)(i + 1) / Y.Length;
-                    if (!LeftToRight) x = 1 - x;
+                    if (!XAscending) x = 1 - x;
                     float y = Math.Abs(YMax - (float)Y[i]) / ScaleHeight;
                     DrawPoint(BitmapGraphics, B, MarkerFont, Axes, x, y);
                 }
@@ -516,7 +516,7 @@ namespace LUI.controls
                         int XRangeOrder = (int)(Math.Log10(XRange)); // Rounds down
                         double XRangeRound = Math.Round(XRange / Math.Pow(10, XRangeOrder)) * Math.Pow(10, XRangeOrder);
                         float XVal = i / NXTicks * (float)XRangeRound;
-                        string TickLabel = (XLeft < XRight ? XLeft + XVal : XLeft - XVal).ToString(XLabelFormat);
+                        string TickLabel = XAscending ? (XLeft + XVal).ToString(XLabelFormat) : (XLeft - XVal).ToString();
                         SizeF TickLabelOffset = G.MeasureString(TickLabel, AxesFont);
                         float X = Axes.Left + Axes.Width * XVal/XRange - TickLabelOffset.Width / 2;
                         float Y = AxesPadding.Bottom + TickLabelOffset.Height;

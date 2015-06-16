@@ -40,6 +40,8 @@ namespace LUI.tabs
             }
         }
 
+        bool Ascending { get; set; }
+
         /// <summary>
         /// Stores channel & wavelength point in a class suitable for data
         /// binding to a DataGridView.
@@ -147,6 +149,8 @@ namespace LUI.tabs
             RSquaredLabel.SelectionCharOffset = 5;
             RSquaredLabel.SelectionFont = new Font("Microsoft Sans Serif", 6, FontStyle.Regular);
             RSquaredLabel.SelectionLength = 0;
+
+            Ascending = true;
         }
 
         public override void HandleCalibrationChanged(object sender, LuiObjectParametersEventArgs args)
@@ -154,8 +158,17 @@ namespace LUI.tabs
             // If a different camera is selected, do nothing (until that camera is selected by the user).
             if (!CameraBox.SelectedObject.Equals(args.Argument)) return;
 
-            Graph.XLeft = (float)Math.Min(Commander.Camera.Calibration[0], Commander.Camera.Calibration[Commander.Camera.Calibration.Length - 1]);
-            Graph.XRight = (float)Math.Max(Commander.Camera.Calibration[0], Commander.Camera.Calibration[Commander.Camera.Calibration.Length - 1]);
+            if (Ascending)
+            {
+                Graph.XLeft = (float)Commander.Camera.Calibration[0];
+                Graph.XRight = (float)Commander.Camera.Calibration[Commander.Camera.Calibration.Length - 1];
+            }
+            else
+            {
+                Graph.XLeft = (float)Commander.Camera.Calibration[Commander.Camera.Calibration.Length - 1];
+                Graph.XRight = (float)Commander.Camera.Calibration[0];
+            }
+
             Graph.ClearAxes();
 
             RedrawLines();
@@ -326,21 +339,24 @@ namespace LUI.tabs
             OnTaskFinished(EventArgs.Empty);
         }
 
-        protected override void Graph_Click(object sender, MouseEventArgs e)
+        protected override void  Graph_Click(object sender, MouseEventArgs e)
         {
             //PointF p = Graph.ScreenToData(new Point(e.X, e.Y));
             //SelectedChannel = (int)Math.Round(p.X);
-            SelectedChannel = 
-                (int)Math.Round(Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y))).X * (Commander.Camera.Width - 1));
+            SelectedChannel = Ascending ?
+                (int)Math.Round(Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y))).X * (Commander.Camera.Width - 1))
+                :
+                (int)Math.Round((1 - Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y))).X) * (Commander.Camera.Width - 1));
+
             DataGridViewSelectedRowCollection selection = CalibrationListView.SelectedRows;
             if (selection.Count == 0)
             {
                 DataGridViewRow row = CalibrationListView.Rows[CalibrationListView.Rows.Count - 1];
-                row.Cells["Channel"].Value = Commander.Camera.Channels[SelectedChannel];
+                row.Cells["Channel"].Value = SelectedChannel;
             }
             else if (selection.Count == 1)
             {
-                selection[0].Cells["Channel"].Value = Commander.Camera.Channels[SelectedChannel];
+                selection[0].Cells["Channel"].Value = SelectedChannel;
             }
             else
             {
@@ -362,14 +378,14 @@ namespace LUI.tabs
                 if (i > CalibrationListView.Rows.Count) break;
                 CalibrationPoint p = CalibrationList[i];
                 //float X = Graph.XLeft + (float)p.Channel / (Commander.Camera.Width - 1) * Graph.XRange;
-                float X = (float)Commander.Camera.Calibration[Commander.Camera.Channels[p.Channel]];
+                float X = (float)Commander.Camera.Calibration[p.Channel];
                 Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[i % Graph.ColorOrder.Count], X);
             }
             int newRowChannel = (int)(CalibrationListView.Rows[CalibrationListView.NewRowIndex].Cells["Channel"].Value ?? 0);
             if (CalibrationListView.Rows.Count > CalibrationList.Count && newRowChannel != 0)
             {
                 //float X = Graph.XLeft + (float)newRowChannel / (Commander.Camera.Width - 1) * Graph.XRange;
-                float X = (float)Commander.Camera.Calibration[Commander.Camera.Channels[newRowChannel]];
+                float X = (float)Commander.Camera.Calibration[newRowChannel];
                 Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[i % Graph.ColorOrder.Count], X);
             }
             Graph.Invalidate();
@@ -382,16 +398,18 @@ namespace LUI.tabs
                 case Keys.Left:
                     if (!CalibrationListView.IsCurrentCellInEditMode && CalibrationListView.SelectedRows.Count == 1)
                     {
-                        SelectedChannel--;
-                        CalibrationListView.SelectedRows[0].Cells["Channel"].Value = Commander.Camera.Channels[SelectedChannel];
+                        if (Ascending) SelectedChannel--;
+                        else SelectedChannel++;
+                        CalibrationListView.SelectedRows[0].Cells["Channel"].Value = SelectedChannel;
                     }
                     RedrawLines();
                     break;
                 case Keys.Right:
                     if (!CalibrationListView.IsCurrentCellInEditMode && CalibrationListView.SelectedRows.Count == 1)
                     {
-                        SelectedChannel++;
-                        CalibrationListView.SelectedRows[0].Cells["Channel"].Value = Commander.Camera.Channels[SelectedChannel];
+                        if (Ascending) SelectedChannel++;
+                        else SelectedChannel--;
+                        CalibrationListView.SelectedRows[0].Cells["Channel"].Value = SelectedChannel;
                     }
                     RedrawLines();
                     break;
@@ -443,13 +461,12 @@ namespace LUI.tabs
         {
             if (e.Row.Cells["Channel"].Value != null)
             {
-                e.Row.Cells["Channel"].Value = Commander.Camera.Channels[SelectedChannel];
+                e.Row.Cells["Channel"].Value = SelectedChannel;
             }
             else
             {
-                e.Row.Cells["Channel"].Value = Commander.Camera.Channels[0];
+                e.Row.Cells["Channel"].Value = 0;
             }
-                
         }
 
         private void RemoveCalItem_Click(object sender, EventArgs e)
@@ -471,8 +488,8 @@ namespace LUI.tabs
         {
             Tuple<double, double, double> fitdata = Data.LinearLeastSquares(CalibrationList.Select(it => (double)it.Channel).ToArray(),
                 CalibrationList.Select(it => (double)it.Wavelength).ToArray());
-            Commander.Camera.Calibration = Data.Calibrate(Array.ConvertAll(Commander.Camera.Channels, x=>(double)x), fitdata.Item1, fitdata.Item2);
-            CalibrationChanged.Raise(this, new LuiObjectParametersEventArgs(CameraBox.SelectedObject));            
+            Commander.Camera.Calibration = Data.Calibrate((int)Commander.Camera.Width, fitdata.Item1, fitdata.Item2);
+            CalibrationChanged.Raise(this, new LuiObjectParametersEventArgs(CameraBox.SelectedObject));
             Slope.Text = fitdata.Item1.ToString("n4");
             Intercept.Text = fitdata.Item2.ToString("n4");
             RSquared.Text = fitdata.Item3.ToString("n6");
@@ -515,6 +532,27 @@ namespace LUI.tabs
                     }
                     break;
             }
+        }
+
+        private void FlipGraph_Click(object sender, EventArgs e)
+        {
+            Ascending = !Ascending; // Toggle direction.
+
+            if (Ascending)
+            {
+                Graph.XLeft = (float)Commander.Camera.Calibration[0];
+                Graph.XRight = (float)Commander.Camera.Calibration[Commander.Camera.Calibration.Length - 1];
+            }
+            else
+            {
+                Graph.XLeft = (float)Commander.Camera.Calibration[Commander.Camera.Calibration.Length - 1];
+                Graph.XRight = (float)Commander.Camera.Calibration[0];
+            }
+
+            Graph.ClearAxes();
+            Graph.ClearData();
+            if (OD != null) Graph.DrawPoints(Commander.Camera.Calibration, OD);
+            RedrawLines();
         }
 
     }

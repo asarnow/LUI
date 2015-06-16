@@ -317,7 +317,6 @@ namespace lasercom.camera
                 AndorSdk.GetMCPGainRange(ref _MinMCPGain, ref _MaxMCPGain);
                 IntensifierGain = InitialGain;
             }
-            Channels = Enumerable.Range(0, (int)Width).Reverse().ToArray<int>();
             LoadCalibration(CalFile);
         }
 

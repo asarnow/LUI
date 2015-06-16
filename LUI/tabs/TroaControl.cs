@@ -247,7 +247,10 @@ namespace LUI.tabs
         protected override void Graph_Click(object sender, MouseEventArgs e)
         {
             var NormalizedCoords = Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y)));
-            int SelectedChannel = (int)Math.Round(NormalizedCoords.X * (Commander.Camera.Width - 1));
+            int SelectedChannel = Commander.Camera.CalibrationAscending ?
+                (int)Math.Round(NormalizedCoords.X * (Commander.Camera.Width - 1))
+                :
+                (int)Math.Round((1 - NormalizedCoords.X) * (Commander.Camera.Width - 1));
             var X = Commander.Camera.Calibration[SelectedChannel];
             float Y = NormalizedCoords.Y;
             Graph.ClearAnnotation();

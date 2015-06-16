@@ -271,7 +271,10 @@ namespace LUI.tabs
         protected override void Graph_Click(object sender, MouseEventArgs e)
         {
             // Selects a *physical channel* on the camera.
-            SelectedChannel = (int)Math.Round(Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y))).X * (Commander.Camera.Width - 1));
+            SelectedChannel = Commander.Camera.CalibrationAscending ?
+                (int)Math.Round(Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y))).X * (Commander.Camera.Width - 1))
+                :
+                (int)Math.Round((1 - Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y))).X) * (Commander.Camera.Width - 1));
             RedrawLines();
         }
 
@@ -289,14 +292,16 @@ namespace LUI.tabs
                 case Keys.Left:
                     if (SelectedChannel > -1)
                     {
-                        SelectedChannel--;
+                        if (Commander.Camera.CalibrationAscending) SelectedChannel--;
+                        else SelectedChannel++;
                     }
                     RedrawLines();
                     break;
                 case Keys.Right:
                     if (SelectedChannel > -1)
                     {
-                        SelectedChannel++;
+                        if (Commander.Camera.CalibrationAscending) SelectedChannel--;
+                        else SelectedChannel++;
                     }
                     RedrawLines();
                     break;

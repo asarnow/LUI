@@ -131,8 +131,8 @@ namespace LUI.tabs
             // If a different camera is selected, do nothing (until that camera is selected by the user).
             if (!CameraBox.SelectedObject.Equals(e.Argument)) return;
 
-            Graph.XLeft = (float)Commander.Camera.Calibration[0];
-            Graph.XRight = (float)Commander.Camera.Calibration[Commander.Camera.Calibration.Length - 1];
+            Graph.XLeft = (float)Math.Min(Commander.Camera.Calibration[0], Commander.Camera.Calibration[Commander.Camera.Calibration.Length - 1]);
+            Graph.XRight = (float)Math.Max(Commander.Camera.Calibration[0], Commander.Camera.Calibration[Commander.Camera.Calibration.Length - 1]);
             Graph.ClearAxes();
             Graph.Invalidate();
         }
