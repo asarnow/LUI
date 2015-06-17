@@ -57,10 +57,10 @@
             PeakLabel = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
-            this.ParentPanel.SuspendLayout();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NScan)).BeginInit();
+            this.CommonObjectPanel.SuspendLayout();
             this.LeftChildArea.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CameraGain)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.NAverage)).BeginInit();
@@ -68,18 +68,21 @@
             this.OptionsBox.SuspendLayout();
             this.SuspendLayout();
             // 
-            // ChildArea
+            // Graph
+            // 
+            this.Graph.Size = new System.Drawing.Size(1176, 543);
+            this.Graph.XLeft = 1F;
+            this.Graph.XRight = 1024F;
+            // 
+            // LeftChildArea
             // 
             this.LeftChildArea.Controls.Add(this.OptionsBox);
             this.LeftChildArea.Controls.Add(this.DdgConfigBox);
             this.LeftChildArea.Controls.Add(this.groupBox1);
             this.LeftChildArea.Controls.Add(this.SaveProfile);
             this.LeftChildArea.Controls.Add(this.LoadProfile);
-            // 
-            // Graph
-            // 
-            this.Graph.XLeft = 1F;
-            this.Graph.XRight = 1024F;
+            this.LeftChildArea.Location = new System.Drawing.Point(0, 543);
+            this.LeftChildArea.Size = new System.Drawing.Size(1176, 278);
             // 
             // label1
             // 
@@ -91,10 +94,10 @@
             // DiffSumLabel
             // 
             DiffSumLabel.AutoSize = true;
-            DiffSumLabel.Location = new System.Drawing.Point(198, 114);
+            DiffSumLabel.Location = new System.Drawing.Point(6, 110);
             DiffSumLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             DiffSumLabel.Name = "DiffSumLabel";
-            DiffSumLabel.Size = new System.Drawing.Size(121, 17);
+            DiffSumLabel.Size = new System.Drawing.Size(92, 13);
             DiffSumLabel.TabIndex = 15;
             DiffSumLabel.Text = "Sum of Difference";
             // 
@@ -104,29 +107,47 @@
             NAverageLabel.Location = new System.Drawing.Point(63, 81);
             NAverageLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             NAverageLabel.Name = "NAverageLabel";
-            NAverageLabel.Size = new System.Drawing.Size(130, 17);
+            NAverageLabel.Size = new System.Drawing.Size(99, 13);
             NAverageLabel.TabIndex = 13;
             NAverageLabel.Text = "Local Average Size";
             // 
             // TotalCountsLabel
             // 
             TotalCountsLabel.AutoSize = true;
-            TotalCountsLabel.Location = new System.Drawing.Point(144, 82);
+            TotalCountsLabel.Location = new System.Drawing.Point(142, 16);
             TotalCountsLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             TotalCountsLabel.Name = "TotalCountsLabel";
-            TotalCountsLabel.Size = new System.Drawing.Size(88, 17);
+            TotalCountsLabel.Size = new System.Drawing.Size(67, 13);
             TotalCountsLabel.TabIndex = 8;
             TotalCountsLabel.Text = "Total Counts";
             // 
             // PeakLabel
             // 
             PeakLabel.AutoSize = true;
-            PeakLabel.Location = new System.Drawing.Point(144, 48);
+            PeakLabel.Location = new System.Drawing.Point(332, 16);
             PeakLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             PeakLabel.Name = "PeakLabel";
-            PeakLabel.Size = new System.Drawing.Size(71, 17);
+            PeakLabel.Size = new System.Drawing.Size(55, 13);
             PeakLabel.TabIndex = 7;
             PeakLabel.Text = "Peak Size";
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new System.Drawing.Point(6, 71);
+            label2.Name = "label2";
+            label2.Size = new System.Drawing.Size(80, 13);
+            label2.TabIndex = 16;
+            label2.Text = "Global Average";
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new System.Drawing.Point(6, 36);
+            label3.Name = "label3";
+            label3.Size = new System.Drawing.Size(76, 13);
+            label3.TabIndex = 17;
+            label3.Text = "Local Average";
             // 
             // ShowDifference
             // 
@@ -136,7 +157,7 @@
             this.ShowDifference.Location = new System.Drawing.Point(7, 22);
             this.ShowDifference.Margin = new System.Windows.Forms.Padding(4);
             this.ShowDifference.Name = "ShowDifference";
-            this.ShowDifference.Size = new System.Drawing.Size(133, 21);
+            this.ShowDifference.Size = new System.Drawing.Size(105, 17);
             this.ShowDifference.TabIndex = 4;
             this.ShowDifference.Text = "Show Difference";
             this.ShowDifference.UseVisualStyleBackColor = true;
@@ -150,7 +171,7 @@
             this.ShowLast.Location = new System.Drawing.Point(7, 50);
             this.ShowLast.Margin = new System.Windows.Forms.Padding(4);
             this.ShowLast.Name = "ShowLast";
-            this.ShowLast.Size = new System.Drawing.Size(160, 21);
+            this.ShowLast.Size = new System.Drawing.Size(124, 17);
             this.ShowLast.TabIndex = 3;
             this.ShowLast.Text = "Show Loaded Profile";
             this.ShowLast.UseVisualStyleBackColor = true;
@@ -164,7 +185,7 @@
             this.PersistentGraphing.Location = new System.Drawing.Point(174, 22);
             this.PersistentGraphing.Margin = new System.Windows.Forms.Padding(4);
             this.PersistentGraphing.Name = "PersistentGraphing";
-            this.PersistentGraphing.Size = new System.Drawing.Size(156, 21);
+            this.PersistentGraphing.Size = new System.Drawing.Size(118, 17);
             this.PersistentGraphing.TabIndex = 17;
             this.PersistentGraphing.Text = "Persistent Graphing";
             this.PersistentGraphing.UseVisualStyleBackColor = true;
@@ -182,11 +203,11 @@
             // 
             // DiffSum
             // 
-            this.DiffSum.Location = new System.Drawing.Point(56, 111);
+            this.DiffSum.Location = new System.Drawing.Point(106, 107);
             this.DiffSum.Margin = new System.Windows.Forms.Padding(4);
             this.DiffSum.Name = "DiffSum";
             this.DiffSum.ReadOnly = true;
-            this.DiffSum.Size = new System.Drawing.Size(132, 22);
+            this.DiffSum.Size = new System.Drawing.Size(132, 20);
             this.DiffSum.TabIndex = 14;
             this.DiffSum.Text = "0";
             this.DiffSum.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -206,7 +227,7 @@
             0,
             0});
             this.NAverage.Name = "NAverage";
-            this.NAverage.Size = new System.Drawing.Size(48, 22);
+            this.NAverage.Size = new System.Drawing.Size(48, 20);
             this.NAverage.TabIndex = 12;
             this.NAverage.Value = new decimal(new int[] {
             5,
@@ -216,33 +237,33 @@
             // 
             // CountsN
             // 
-            this.CountsN.Location = new System.Drawing.Point(242, 79);
+            this.CountsN.Location = new System.Drawing.Point(89, 33);
             this.CountsN.Margin = new System.Windows.Forms.Padding(4);
             this.CountsN.Name = "CountsN";
             this.CountsN.ReadOnly = true;
-            this.CountsN.Size = new System.Drawing.Size(132, 22);
+            this.CountsN.Size = new System.Drawing.Size(174, 20);
             this.CountsN.TabIndex = 11;
             this.CountsN.Text = "0";
             this.CountsN.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // PeakN
             // 
-            this.PeakN.Location = new System.Drawing.Point(242, 44);
+            this.PeakN.Location = new System.Drawing.Point(271, 33);
             this.PeakN.Margin = new System.Windows.Forms.Padding(4);
             this.PeakN.Name = "PeakN";
             this.PeakN.ReadOnly = true;
-            this.PeakN.Size = new System.Drawing.Size(132, 22);
+            this.PeakN.Size = new System.Drawing.Size(174, 20);
             this.PeakN.TabIndex = 9;
             this.PeakN.Text = "0";
             this.PeakN.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // Counts
             // 
-            this.Counts.Location = new System.Drawing.Point(3, 79);
+            this.Counts.Location = new System.Drawing.Point(89, 68);
             this.Counts.Margin = new System.Windows.Forms.Padding(4);
             this.Counts.Name = "Counts";
             this.Counts.ReadOnly = true;
-            this.Counts.Size = new System.Drawing.Size(132, 22);
+            this.Counts.Size = new System.Drawing.Size(174, 20);
             this.Counts.TabIndex = 6;
             this.Counts.Text = "0";
             this.Counts.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -260,11 +281,11 @@
             // 
             // Peak
             // 
-            this.Peak.Location = new System.Drawing.Point(3, 44);
+            this.Peak.Location = new System.Drawing.Point(271, 68);
             this.Peak.Margin = new System.Windows.Forms.Padding(4);
             this.Peak.Name = "Peak";
             this.Peak.ReadOnly = true;
-            this.Peak.Size = new System.Drawing.Size(132, 22);
+            this.Peak.Size = new System.Drawing.Size(174, 20);
             this.Peak.TabIndex = 0;
             this.Peak.Text = "0";
             this.Peak.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -274,7 +295,7 @@
             this.CollectLaser.AutoSize = true;
             this.CollectLaser.Location = new System.Drawing.Point(174, 50);
             this.CollectLaser.Name = "CollectLaser";
-            this.CollectLaser.Size = new System.Drawing.Size(161, 21);
+            this.CollectLaser.Size = new System.Drawing.Size(124, 17);
             this.CollectLaser.TabIndex = 19;
             this.CollectLaser.Text = "Collect Laser Scatter";
             this.CollectLaser.UseVisualStyleBackColor = true;
@@ -293,9 +314,9 @@
             this.groupBox1.Controls.Add(this.CountsN);
             this.groupBox1.Controls.Add(this.DiffSum);
             this.groupBox1.Controls.Add(DiffSumLabel);
-            this.groupBox1.Location = new System.Drawing.Point(495, 125);
+            this.groupBox1.Location = new System.Drawing.Point(370, 128);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(381, 155);
+            this.groupBox1.Size = new System.Drawing.Size(452, 147);
             this.groupBox1.TabIndex = 20;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Statistics";
@@ -305,8 +326,9 @@
             this.DdgConfigBox.AutoSize = true;
             this.DdgConfigBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.DdgConfigBox.Location = new System.Drawing.Point(3, 3);
+            this.DdgConfigBox.Margin = new System.Windows.Forms.Padding(2);
             this.DdgConfigBox.Name = "DdgConfigBox";
-            this.DdgConfigBox.Size = new System.Drawing.Size(486, 77);
+            this.DdgConfigBox.Size = new System.Drawing.Size(362, 59);
             this.DdgConfigBox.TabIndex = 21;
             // 
             // OptionsBox
@@ -319,43 +341,24 @@
             this.OptionsBox.Controls.Add(this.CollectLaser);
             this.OptionsBox.Controls.Add(this.NAverage);
             this.OptionsBox.Controls.Add(NAverageLabel);
-            this.OptionsBox.Location = new System.Drawing.Point(495, 3);
+            this.OptionsBox.Location = new System.Drawing.Point(370, 3);
             this.OptionsBox.Name = "OptionsBox";
-            this.OptionsBox.Size = new System.Drawing.Size(341, 123);
+            this.OptionsBox.Size = new System.Drawing.Size(304, 119);
             this.OptionsBox.TabIndex = 22;
             this.OptionsBox.TabStop = false;
             this.OptionsBox.Text = "Options";
             // 
-            // label2
-            // 
-            label2.AutoSize = true;
-            label2.Location = new System.Drawing.Point(15, 23);
-            label2.Name = "label2";
-            label2.Size = new System.Drawing.Size(106, 17);
-            label2.TabIndex = 16;
-            label2.Text = "Global Average";
-            // 
-            // label3
-            // 
-            label3.AutoSize = true;
-            label3.Location = new System.Drawing.Point(260, 23);
-            label3.Name = "label3";
-            label3.Size = new System.Drawing.Size(99, 17);
-            label3.TabIndex = 17;
-            label3.Text = "Local Average";
-            // 
             // ResidualsControl
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
             this.Name = "ResidualsControl";
-            this.ParentPanel.ResumeLayout(false);
-            this.ParentPanel.PerformLayout();
             this.StatusBox.ResumeLayout(false);
             this.StatusBox.PerformLayout();
             this.CommandsBox.ResumeLayout(false);
             this.CommandsBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NScan)).EndInit();
+            this.CommonObjectPanel.ResumeLayout(false);
+            this.CommonObjectPanel.PerformLayout();
             this.LeftChildArea.ResumeLayout(false);
             this.LeftChildArea.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CameraGain)).EndInit();
