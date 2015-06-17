@@ -92,8 +92,6 @@ namespace LUI.tabs
 
         protected override void Collect_Click(object sender, EventArgs e)
         {
-            Collect.Enabled = NScan.Enabled = false;
-            Abort.Enabled = true;
             int N = (int)NScan.Value;
             PumpMode Pump;
             if (PumpNever.Checked) Pump = PumpMode.NEVER;
@@ -112,7 +110,7 @@ namespace LUI.tabs
 
         protected override void DoWork(object sender, DoWorkEventArgs e)
         {
-            worker.ReportProgress(0, Dialog.INITIALIZE);
+            if (PauseCancelProgress(e, 0, Dialog.INITIALIZE)) return;
 
             Commander.Camera.AcquisitionMode = AndorCamera.AcquisitionModeSingle;
             Commander.Camera.TriggerMode = AndorCamera.TriggerModeExternalExposure;
@@ -122,7 +120,7 @@ namespace LUI.tabs
 
             int TotalScans = 3 * N;
 
-            worker.ReportProgress(0, Dialog.PROGRESS_DARK);
+            if (PauseCancelProgress(e, 0, Dialog.PROGRESS_DARK)) return;
 
             Commander.BeamFlag.CloseLaserAndFlash();
 
@@ -130,21 +128,15 @@ namespace LUI.tabs
             double[] Dark = new double[Commander.Camera.AcqSize];
             for (int i = 0; i < N; i++)
             {
-                if (worker.CancellationPending)
-                {
-                    e.Cancel = true;
-                    return;
-                }
-
                 uint ret = Commander.Camera.Acquire(DataBuffer);
 
                 Data.Accumulate(Dark, DataBuffer);
 
-                worker.ReportProgress(i * 99 / TotalScans, Dialog.PROGRESS_DARK);
+                if (PauseCancelProgress(e, i * 99 / TotalScans, Dialog.PROGRESS_DARK)) return;
             }
             Data.DivideArray(Dark, N);
 
-            worker.ReportProgress(33, Dialog.PROGRESS_FLASH);
+            if (PauseCancelProgress(e, 33, Dialog.PROGRESS_FLASH)) return;
 
             // Flow-flash.
             if (args.Pump == PumpMode.ALWAYS)
@@ -161,22 +153,16 @@ namespace LUI.tabs
             double[] Ground = new double[Commander.Camera.AcqSize];
             for (int i = 0; i < N; i++)
             {
-                if (worker.CancellationPending)
-                {
-                    e.Cancel = true;
-                    return;
-                }
-
                 uint ret = Commander.Camera.Acquire(DataBuffer);
                 
                 Data.Accumulate(Ground, DataBuffer);
 
-                worker.ReportProgress((N + i) * 99 / TotalScans, Dialog.PROGRESS_FLASH);
+                if (PauseCancelProgress(e, (N + i) * 99 / TotalScans, Dialog.PROGRESS_FLASH)) return;
             }
             Data.DivideArray(Ground, N);
             Data.Dissipate(Ground, Dark);
 
-            worker.ReportProgress(66, Dialog.PROGRESS_TRANS);
+            if (PauseCancelProgress(e, 66, Dialog.PROGRESS_TRANS)) return;
 
             // Flow-flash.
             if (args.Pump == PumpMode.TRANS)
@@ -193,17 +179,11 @@ namespace LUI.tabs
             double[] Excited = new double[Commander.Camera.AcqSize];
             for (int i = 0; i < N; i++)
             {
-                if (worker.CancellationPending)
-                {
-                    e.Cancel = true;
-                    return;
-                }
-
                 uint ret = Commander.Camera.Acquire(DataBuffer);
 
                 Data.Accumulate(Excited, DataBuffer);
 
-                worker.ReportProgress((2*N + i) * 99 / TotalScans, Dialog.PROGRESS_TRANS);
+                if (PauseCancelProgress(e, (2 * N + i) * 99 / TotalScans, Dialog.PROGRESS_TRANS)) return;
             }
 
             Commander.BeamFlag.CloseLaserAndFlash();
@@ -217,7 +197,7 @@ namespace LUI.tabs
             Data.DivideArray(Excited, N);
             Data.Dissipate(Excited, Dark);
 
-            worker.ReportProgress(99, Dialog.CALCULATE);
+            if (PauseCancelProgress(e, 99, Dialog.CALCULATE)) return;
             
             e.Result = Data.DeltaOD(Ground, Excited);
         }
@@ -251,6 +231,7 @@ namespace LUI.tabs
         protected override void WorkComplete(object sender, RunWorkerCompletedEventArgs e)
         {
             Commander.BeamFlag.CloseLaserAndFlash();
+            Commander.Pump.SetClosed();
             if (!e.Cancelled)
             {
                 Light = (double[])e.Result;
@@ -262,9 +243,6 @@ namespace LUI.tabs
             {
                 ProgressLabel.Text = "Aborted";
             }
-            StatusProgress.Value = 100;
-            Collect.Enabled = NScan.Enabled = true;
-            Abort.Enabled = false;
             OnTaskFinished(EventArgs.Empty);
         }
 

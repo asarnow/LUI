@@ -149,11 +149,6 @@ namespace LUI.tabs
 
         protected override void Collect_Click(object sender, EventArgs e)
         {
-            Collect.Enabled = NScan.Enabled = CameraGain.Enabled = CollectLaser.Enabled = false;
-            Abort.Enabled = true;
-
-            DdgConfigBox.Enabled = false;
-
             Graph.ClearData();
             CumulativeLight = null;
 
@@ -170,6 +165,18 @@ namespace LUI.tabs
             worker.WorkerReportsProgress = true;
             worker.RunWorkerAsync(new WorkArgs((int)NScan.Value, (int)NAverage.Value, CollectLaser.Checked));
             OnTaskStarted(EventArgs.Empty);
+        }
+
+        public override void OnTaskStarted(EventArgs e)
+        {
+            base.OnTaskStarted(e);
+            DdgConfigBox.Enabled = false;
+        }
+
+        public override void OnTaskFinished(EventArgs e)
+        {
+            base.OnTaskFinished(e);
+            DdgConfigBox.Enabled = CollectLaser.Checked;
         }
 
         /// <summary>
@@ -208,12 +215,6 @@ namespace LUI.tabs
 
             for (int i = 0; i < args.NScans; i++)
             {
-                if (worker.CancellationPending)
-                {
-                    e.Cancel = true;
-                    return;
-                }
-
                 uint ret = Commander.Camera.Acquire(DataBuffer);
 
                 Data.Accumulate(CumulativeDataBuffer, DataBuffer);
@@ -235,7 +236,7 @@ namespace LUI.tabs
                 npeak = (peak + n * npeak) / (n + 1);
 
                 ProgressObject progress = new ProgressObject(Array.ConvertAll((int[])DataBuffer, x => (double)x), cmasum, cmapeak, nsum, npeak, Dialog.PROGRESS_DATA);
-                worker.ReportProgress(i * 100 / args.NScans, progress);
+                if (PauseCancelProgress(e, i * 100 / args.NScans, progress)) return;
             }
 
             Commander.BeamFlag.CloseLaserAndFlash();
@@ -299,11 +300,6 @@ namespace LUI.tabs
                 CumulativeLight = (double[])e.Result;
                 DisplayComplete();
             }
-            StatusProgress.Value = 100;
-            Collect.Enabled = NScan.Enabled = CameraGain.Enabled = CollectLaser.Enabled = true;
-            Abort.Enabled = false;
-
-            DdgConfigBox.Enabled = CollectLaser.Checked;
             OnTaskFinished(EventArgs.Empty);
         }
 

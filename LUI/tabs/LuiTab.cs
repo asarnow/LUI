@@ -9,6 +9,7 @@ using System;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Windows.Threading;
+using System.Threading;
 
 namespace LUI.tabs
 {
@@ -18,6 +19,7 @@ namespace LUI.tabs
 
         public event EventHandler TaskStarted;
         public event EventHandler TaskFinished;
+        ManualResetEvent Paused;
 
         public Commander Commander { get; set; }
         public LuiConfig Config { get; set; }
@@ -34,10 +36,12 @@ namespace LUI.tabs
             
             InitializeComponent();
             Init();
-            
+
+            Paused = new ManualResetEvent(true);
             CameraGain.ValueChanged += CameraGain_ValueChanged;
             Collect.Click += Collect_Click;
             Abort.Click += Abort_Click;
+            Pause.Click += Pause_Click;
             Clear.Click += Clear_Click;
             OpenLaser.Click += OpenLaser_Click;
             CloseLaser.Click += CloseLaser_Click;
@@ -45,7 +49,7 @@ namespace LUI.tabs
             CloseLamp.Click += CloseLamp_Click;
             Graph.MouseClick += Graph_Click;
 
-            Abort.Enabled = false;
+            Abort.Enabled = Pause.Enabled = false;
         }
 
         public LuiTab() : this(null) { }
@@ -176,10 +180,47 @@ namespace LUI.tabs
             Settings["BeamFlag"] = BeamFlagBox.SelectedObject != null ? BeamFlagBox.SelectedObject.Name : null;
         }
 
+        protected bool PauseCancelProgress(DoWorkEventArgs e, int percentProgress, object progress)
+        {
+            if (CancelCheck(e)) return true; // If cancelling, set e.Cancel and return true.
+            worker.ReportProgress(percentProgress, progress);
+            var OldFlashState = Commander.BeamFlag.FlashState;
+            var OldLaserState = Commander.BeamFlag.LaserState;
+            Commander.BeamFlag.CloseLaserAndFlash();
+            var OldPumpState = Commander.Pump.CurrentState;
+            Commander.Pump.SetClosed();
+            if (WaitForResume()) // Wait if paused.
+            {
+                // Had to resume.
+                if (OldPumpState == PumpState.Open) Commander.Pump.SetOpen();
+                if (OldFlashState == BeamFlagState.Open) Commander.BeamFlag.OpenFlash();
+                if (OldLaserState == BeamFlagState.Open) Commander.BeamFlag.OpenLaser();
+                worker.ReportProgress(percentProgress, progress);
+            }
+            return false;
+        }
+
+        protected bool CancelCheck(DoWorkEventArgs e)
+        {
+            if (worker.CancellationPending)
+            {
+                e.Cancel = true;
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// If Paused is not set, Waits until Paused is set. Returns true if waiting occurred.
+        /// </summary>
+        /// <returns></returns>
+        protected bool WaitForResume()
+        {
+            return !Paused.WaitOne(Timeout.Infinite);
+        }
+
         protected virtual void Collect_Click(object sender, EventArgs e)
         {
-            Collect.Enabled = NScan.Enabled = false;
-            Abort.Enabled = true;
             int N = (int)NScan.Value;
             Commander.BeamFlag.CloseLaserAndFlash();
             worker = new BackgroundWorker();
@@ -190,6 +231,20 @@ namespace LUI.tabs
             worker.WorkerReportsProgress = true;
             worker.RunWorkerAsync(N);
             OnTaskStarted(EventArgs.Empty);
+        }
+        
+        protected virtual void Pause_Click(object sender, EventArgs e)
+        {
+            if (Paused.WaitOne(0)) // True if set (running/resumed).
+            {
+                Paused.Reset(); // Signal pause.
+                Pause.Text = "Resume";
+            }
+            else
+            {
+                Paused.Set(); // Signal resume.
+                Pause.Text = "Pause";
+            }
         }
 
         protected virtual void Abort_Click(object sender, EventArgs e)
@@ -256,13 +311,19 @@ namespace LUI.tabs
             }
         }
 
-        public void OnTaskStarted(EventArgs e)
+        public virtual void OnTaskStarted(EventArgs e)
         {
+            Collect.Enabled = NScan.Enabled = CameraGain.Enabled = false;
+            Abort.Enabled = Pause.Enabled = true;
+            Paused.Set(); // Set running/resumed.
             TaskStarted.Raise(this, e);
         }
 
-        public void OnTaskFinished(EventArgs e)
+        public virtual void OnTaskFinished(EventArgs e)
         {
+            Collect.Enabled = NScan.Enabled = CameraGain.Enabled = true;
+            Abort.Enabled = Pause.Enabled = false;
+            StatusProgress.Value = 100;
             TaskFinished.Raise(this, e);
         }
 

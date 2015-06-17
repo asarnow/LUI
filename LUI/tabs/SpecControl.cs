@@ -105,9 +105,6 @@ namespace LUI.tabs
 
         protected override void Collect_Click(object sender, EventArgs e)
         {
-            Collect.Enabled = NScan.Enabled = CameraGain.Enabled = false;
-            Abort.Enabled = true;
-
             //CameraStatus.Text = "";
 
             Graph.ClearData();
@@ -139,29 +136,18 @@ namespace LUI.tabs
             WorkArgs args = (WorkArgs)e.Argument;
             int N = args.N;
 
-            worker.ReportProgress(0, Dialog.PROGRESS_DARK.ToString());
-
-            if (worker.CancellationPending)
-            {
-                e.Cancel = true;
-                return;
-            }
+            if (PauseCancelProgress(e, 0, Dialog.PROGRESS_DARK.ToString())) return;
 
             Commander.BeamFlag.CloseLaserAndFlash();
 
             int[] DarkBuffer = Commander.Camera.Acquire();
             for (int i = 0; i < N - 1; i++)
             {
-                if (worker.CancellationPending)
-                {
-                    e.Cancel = true;
-                    return;
-                }
                 Data.Accumulate(DarkBuffer, Commander.Camera.Acquire());
-                worker.ReportProgress(33 + (i / N) * 33, Dialog.PROGRESS_DARK.ToString());
+                if (PauseCancelProgress(e, 33 + (i / N) * 33, Dialog.PROGRESS_DARK.ToString())) return;
             }
 
-            worker.ReportProgress(33, Dialog.BLANK.ToString());
+            if (PauseCancelProgress(e, 33, Dialog.BLANK.ToString())) return;
 
             wait = true;
             bool[] waitparam = { wait };
@@ -174,30 +160,19 @@ namespace LUI.tabs
             int[] BlankBuffer = Commander.Camera.Acquire();
             for (int i = 0; i < N - 1; i++)
             {
-                if (worker.CancellationPending)
-                {
-                    e.Cancel = true;
-                    return;
-                }
                 Data.Accumulate(BlankBuffer, Commander.Camera.Acquire());
-                worker.ReportProgress((i / N) * 33, Dialog.PROGRESS_BLANK.ToString());
+                if (PauseCancelProgress(e, (i / N) * 33, Dialog.PROGRESS_BLANK.ToString())) return;
             }
 
             Commander.BeamFlag.CloseLaserAndFlash();
 
-            worker.ReportProgress(66, Dialog.SAMPLE.ToString());
+            if (PauseCancelProgress(e, 66, Dialog.SAMPLE.ToString())) return;
 
             wait = true;
             Invoke(new Action(BlockingSampleDialog));
             //while (wait) ;
 
-            if (worker.CancellationPending)
-            {
-                e.Cancel = true;
-                return;
-            }
-
-            worker.ReportProgress(66, Dialog.PROGRESS_DATA.ToString());
+            if (PauseCancelProgress(e, 66, Dialog.PROGRESS_DATA.ToString())) return;
 
             Commander.BeamFlag.OpenFlash();
 
@@ -213,13 +188,8 @@ namespace LUI.tabs
             int[] DataBuffer = Commander.Camera.Acquire();
             for (int i = 0; i < N - 1; i++)
             {
-                if (worker.CancellationPending)
-                {
-                    e.Cancel = true;
-                    return;
-                }
                 Data.Accumulate(DataBuffer, Commander.Camera.Acquire());
-                worker.ReportProgress(66 + (i / N) * 33, Dialog.PROGRESS_DATA.ToString());
+                if (PauseCancelProgress(e, 66 + (i / N) * 33, Dialog.PROGRESS_DATA.ToString())) return;
             }
             Commander.BeamFlag.CloseLaserAndFlash();
 
@@ -228,7 +198,7 @@ namespace LUI.tabs
                 Commander.Pump.SetClosed();
             }
 
-            worker.ReportProgress(99, Dialog.PROGRESS_CALC.ToString());
+            if (PauseCancelProgress(e, 99, Dialog.PROGRESS_CALC.ToString())) return;
             e.Result = Data.OpticalDensity(DataBuffer, BlankBuffer, DarkBuffer);
         }
 
@@ -271,6 +241,7 @@ namespace LUI.tabs
         protected override void WorkComplete(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
             Commander.BeamFlag.CloseLaserAndFlash();
+            Commander.Pump.SetClosed();
             if (!e.Cancelled)
             {
                 OD = (double[])e.Result;
@@ -283,9 +254,6 @@ namespace LUI.tabs
             {
                 ProgressLabel.Text = "Aborted";
             }
-            StatusProgress.Value = 100;
-            Collect.Enabled = NScan.Enabled = CameraGain.Enabled = true;
-            Abort.Enabled = false;
             OnTaskFinished(EventArgs.Empty);
         }
 
