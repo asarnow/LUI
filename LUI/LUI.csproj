@@ -224,6 +224,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="GuiUtil.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="tabs\CalibrateControl.cs">
       <SubType>UserControl</SubType>
     </Compile>

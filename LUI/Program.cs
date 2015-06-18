@@ -11,12 +11,12 @@ using lasercom.control;
 using lasercom.ddg;
 using LUI.config;
 using System.Xml.Serialization;
+using System.Reflection;
 
 namespace LUI
 {
     class Program
     {
-
         [STAThread]
         static void Main(string[] args)
         {
@@ -27,7 +27,7 @@ namespace LUI
                 {"f|file", "Configuration file",
                     (string v) => configfile = v },
                 {"h|help", "Show this help text and exit",
-                    v => show_help = v != null }
+                    v => show_help = true }
             };
 
             List<string> extra;
@@ -86,7 +86,7 @@ namespace LUI
 
         static void ShowHelp(OptionSet p)
         {
-            Console.WriteLine("LUI 2.00 Help");
+            Console.WriteLine("LUI " + Assembly.GetExecutingAssembly().GetName().Version + " Help");
             Console.WriteLine("=============");
             foreach (Option o in p)
             {
