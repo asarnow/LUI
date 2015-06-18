@@ -70,8 +70,8 @@ namespace LUI.tabs
 
         protected override void OnLoad(EventArgs e)
         {
-            base.OnLoad(e);
             PumpBox.ObjectChanged += HandlePumpChanged;
+            base.OnLoad(e);
         }
 
         public override void HandleParametersChanged(object sender, EventArgs e)
