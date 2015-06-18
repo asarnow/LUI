@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using lasercom;
 using lasercom.io;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

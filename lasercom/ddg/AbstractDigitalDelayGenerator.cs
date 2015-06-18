@@ -1,8 +1,6 @@
-﻿using lasercom.objects;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using System.Text;
+using lasercom.objects;
 
 namespace lasercom.ddg
 {

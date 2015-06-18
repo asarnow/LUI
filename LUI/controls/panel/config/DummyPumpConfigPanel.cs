@@ -1,5 +1,5 @@
-﻿using lasercom.control;
-using System;
+﻿using System;
+using lasercom.control;
 
 namespace LUI.controls
 {

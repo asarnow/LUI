@@ -1,13 +1,13 @@
-﻿using Extensions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Extensions;
 using lasercom.camera;
 using lasercom.ddg;
 using lasercom.gpib;
 using lasercom.objects;
 using LUI.config;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace LUI_Unit_Tests
 {

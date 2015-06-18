@@ -1,11 +1,4 @@
-﻿using lasercom;
-using lasercom.camera;
-using lasercom.control;
-using lasercom.ddg;
-using lasercom.io;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Windows.Forms;
 
 namespace DetectorTester

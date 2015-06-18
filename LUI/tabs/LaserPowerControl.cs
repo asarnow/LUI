@@ -1,13 +1,13 @@
-﻿using lasercom;
-using lasercom.camera;
-using lasercom.control;
-using LUI.config;
-using LUI.controls;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using lasercom;
+using lasercom.camera;
+using lasercom.control;
+using LUI.config;
+using LUI.controls;
 
 namespace LUI.tabs
 {

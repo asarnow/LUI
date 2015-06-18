@@ -1,6 +1,6 @@
-﻿using lasercom.objects;
-using System;
+﻿using System;
 using System.Runtime.Serialization;
+using lasercom.objects;
 
 namespace lasercom.camera
 {

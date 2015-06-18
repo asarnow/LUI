@@ -1,4 +1,7 @@
-﻿using Extensions;
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+using Extensions;
 using lasercom.camera;
 using lasercom.control;
 using lasercom.ddg;
@@ -6,9 +9,6 @@ using lasercom.gpib;
 using log4net;
 using LUI.config;
 using LUI.controls;
-using System;
-using System.Drawing;
-using System.Windows.Forms;
 
 namespace LUI.tabs
 {

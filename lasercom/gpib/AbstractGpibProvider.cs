@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using lasercom.objects;
 using log4net;
-using lasercom.objects;
 
 namespace lasercom.gpib
 {

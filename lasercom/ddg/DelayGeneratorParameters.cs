@@ -1,7 +1,7 @@
-﻿using lasercom.gpib;
-using lasercom.objects;
-using System;
+﻿using System;
 using System.Runtime.Serialization;
+using lasercom.gpib;
+using lasercom.objects;
 
 namespace lasercom.ddg
 {

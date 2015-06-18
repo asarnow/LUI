@@ -1,15 +1,11 @@
-﻿using lasercom;
-using lasercom.io;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using lasercom;
+using lasercom.io;
 using lasercom.objects;
 
 namespace DetectorTester

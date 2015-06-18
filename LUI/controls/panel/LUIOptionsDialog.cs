@@ -1,8 +1,8 @@
-﻿using Extensions;
-using LUI.config;
-using System;
+﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using Extensions;
+using LUI.config;
 
 namespace LUI.controls
 {

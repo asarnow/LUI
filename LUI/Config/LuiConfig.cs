@@ -1,4 +1,11 @@
-﻿using Extensions;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.Serialization;
+using System.Threading.Tasks;
+using System.Xml.Serialization;
+using Extensions;
 using lasercom;
 using lasercom.objects;
 using log4net;
@@ -6,13 +13,6 @@ using log4net.Appender;
 using log4net.Layout;
 using log4net.Repository.Hierarchy;
 using LUI.tabs;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
 
 //  <summary>
 //      Class for managing LUI XML config files.

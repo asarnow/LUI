@@ -4,15 +4,12 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using System.Windows.Threading;
 using lasercom;
 using lasercom.camera;
-using lasercom.control;
+using lasercom.ddg;
 using lasercom.io;
-using lasercom.objects;
 using LUI.config;
 using LUI.controls;
-using lasercom.ddg;
 
 namespace LUI.tabs
 {

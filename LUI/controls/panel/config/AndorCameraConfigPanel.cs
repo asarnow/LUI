@@ -1,6 +1,6 @@
-﻿using lasercom.camera;
-using System;
+﻿using System;
 using System.Windows.Forms;
+using lasercom.camera;
 
 namespace LUI.controls
 {

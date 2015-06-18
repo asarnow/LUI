@@ -1,12 +1,12 @@
-﻿using log4net;
-using LUI.config;
-using LUI.tabs;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using log4net;
+using LUI.config;
+using LUI.tabs;
 
 namespace LUI
 {

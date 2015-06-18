@@ -1,8 +1,7 @@
-﻿using lasercom.io;
-using lasercom.objects;
-using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
+using lasercom.io;
+using lasercom.objects;
 
 namespace lasercom.camera
 {

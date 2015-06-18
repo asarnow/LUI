@@ -1,5 +1,5 @@
-﻿using lasercom.gpib;
-using System;
+﻿using System;
+using lasercom.gpib;
 
 namespace LUI.controls
 {

@@ -1,17 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Windows.Forms;
-using System.Threading.Tasks;
-using NDesk.Options;
-
-using lasercom;
-using LUI;
-using lasercom.control;
-using lasercom.ddg;
-using LUI.config;
-using System.Xml.Serialization;
 using System.Reflection;
+using System.Windows.Forms;
+using System.Xml.Serialization;
+using LUI.config;
+using NDesk.Options;
 
 namespace LUI
 {

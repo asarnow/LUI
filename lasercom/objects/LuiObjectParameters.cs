@@ -1,6 +1,6 @@
-﻿using Extensions;
-using System;
+﻿using System;
 using System.Runtime.Serialization;
+using Extensions;
 
 
 namespace lasercom.objects

@@ -1,6 +1,6 @@
-﻿using lasercom.control;
-using System;
+﻿using System;
 using System.Windows.Forms;
+using lasercom.control;
 
 namespace LUI.controls
 {

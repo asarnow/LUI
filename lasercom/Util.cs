@@ -1,14 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using log4net;
-using System.Threading;
-using System.Reflection;
-using System.Collections;
 using System.Linq.Expressions;
+using System.Runtime.InteropServices;
+using log4net;
 
 namespace lasercom
 {

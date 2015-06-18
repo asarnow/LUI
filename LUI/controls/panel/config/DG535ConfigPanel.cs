@@ -1,11 +1,6 @@
-﻿using lasercom.ddg;
-using lasercom.objects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 using System.Windows.Forms;
+using lasercom.ddg;
 using lasercom.gpib;
 
 namespace LUI.controls

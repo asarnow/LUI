@@ -1,9 +1,7 @@
-﻿using System;
-using System.Linq;
-using NationalInstruments.NI4882;
-using log4net;
+﻿using System.Linq;
 using lasercom.gpib;
 using lasercom.objects;
+using log4net;
 
 //  <summary>
 //      Represents a Stanford DDG.

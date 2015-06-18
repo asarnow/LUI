@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+
 
 #if x64
 using ATMCD64CS;
 #else
-using ATMCD32CS;
+
 #endif
 
 using log4net;
-using NationalInstruments.NI4882;
 using lasercom.camera;
 using lasercom.control;
 using lasercom.ddg;
-using lasercom.io;
 
 namespace lasercom
 {

@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using log4net;
-using lasercom.gpib;
-using NationalInstruments.NI4882;
 using lasercom.objects;
+using log4net;
 
 namespace lasercom.ddg
 {
