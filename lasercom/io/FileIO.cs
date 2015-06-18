@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using CsvHelper;
+using CsvHelper.Configuration;
 
 namespace lasercom.io
 {
@@ -40,9 +41,14 @@ namespace lasercom.io
 
         public static T[] ReadVector<T>(string FileName) 
         {
-            TextReader reader = File.OpenText(FileName);
-            CsvReader csv = new CsvReader(reader);
-            return csv.GetRecords<T>().ToArray<T>();
+            T[] vector;
+            CsvConfiguration conf = new CsvConfiguration();
+            conf.AllowComments = true;
+            conf.HasHeaderRecord = false;
+            using (TextReader reader = File.OpenText(FileName))
+            using(CsvReader csv = new CsvReader(reader, conf))
+                vector = csv.GetRecords<T>().ToArray<T>();
+            return vector;
         }
 
         public static void WriteVector<T>(string FileName, IEnumerable<T> Vector)

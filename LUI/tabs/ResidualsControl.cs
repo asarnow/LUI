@@ -405,16 +405,8 @@ namespace LUI.tabs
             switch (openFile.FilterIndex)
             {
                 case 1:
-                    try
-                    {
-                        Light = FileIO.ReadVector<double>(openFile.FileName);
-                    }
-                    catch (IOException ex)
-                    {
-                        MessageBox.Show(ex.ToString());
-                    }
-                    break;
                 case 2:
+                case 3:
                     try
                     {
                         Light = FileIO.ReadVector<double>(openFile.FileName);
@@ -423,8 +415,6 @@ namespace LUI.tabs
                     {
                         MessageBox.Show(ex.ToString());
                     }
-                    break;
-                case 3:
                     break;
             }
         }

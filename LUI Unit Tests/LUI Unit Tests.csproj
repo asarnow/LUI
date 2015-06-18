@@ -78,6 +78,7 @@
     <Compile Include="LuiConfigTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MatFileTests.cs" />
+    <Compile Include="FileIOTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Extensions\Extensions.csproj">

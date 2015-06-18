@@ -110,7 +110,7 @@ namespace lasercom.camera
             {
                 try
                 {
-                    Calibration = FileIO.ReadTimesFile(CalFile).ToArray();
+                    Calibration = FileIO.ReadVector<double>(CalFile);
                 }
                 catch (IOException ex)
                 {
