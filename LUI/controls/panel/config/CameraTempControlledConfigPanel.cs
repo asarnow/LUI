@@ -18,6 +18,8 @@ namespace LUI.controls
         {
             Temperature = new LabeledControl<NumericUpDown>(new NumericUpDown(), "Temperature (C):");
             Temperature.Control.Increment = 1;
+            Temperature.Control.Minimum = -30;
+            Temperature.Control.Maximum = 25;
             Temperature.Control.Value = lasercom.Constants.DefaultTemperature;
             Temperature.Control.ValueChanged += (s, e) => OnOptionsChanged(s,e);
             this.Controls.Add(Temperature);

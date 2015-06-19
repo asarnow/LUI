@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             System.Windows.Forms.Label CameraStatusLabel;
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.LoadTimes = new System.Windows.Forms.Button();
             this.CameraStatus = new System.Windows.Forms.TextBox();
             this.TimesView = new System.Windows.Forms.DataGridView();
@@ -38,9 +38,9 @@
             this.DdgConfigBox = new LUI.controls.DdgCommandPanel();
             this.PumpBox = new LUI.controls.ObjectCommandPanel();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.PumpNever = new System.Windows.Forms.RadioButton();
-            this.PumpTs = new System.Windows.Forms.RadioButton();
             this.PumpAlways = new System.Windows.Forms.RadioButton();
+            this.PumpTs = new System.Windows.Forms.RadioButton();
+            this.PumpNever = new System.Windows.Forms.RadioButton();
             this.Discard = new System.Windows.Forms.CheckBox();
             CameraStatusLabel = new System.Windows.Forms.Label();
             this.StatusBox.SuspendLayout();
@@ -58,6 +58,16 @@
             // NScan
             // 
             this.NScan.Margin = new System.Windows.Forms.Padding(9, 7, 9, 7);
+            this.NScan.Minimum = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.NScan.Value = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
             // 
             // Graph
             // 
@@ -137,8 +147,8 @@
             // Value
             // 
             this.Value.DataPropertyName = "Value";
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Value.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Value.DefaultCellStyle = dataGridViewCellStyle1;
             this.Value.HeaderText = "Delay (s)";
             this.Value.Name = "Value";
             this.Value.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
@@ -199,17 +209,16 @@
             this.panel1.Size = new System.Drawing.Size(198, 30);
             this.panel1.TabIndex = 1;
             // 
-            // PumpNever
+            // PumpAlways
             // 
-            this.PumpNever.AutoSize = true;
-            this.PumpNever.Checked = true;
-            this.PumpNever.Location = new System.Drawing.Point(8, 10);
-            this.PumpNever.Name = "PumpNever";
-            this.PumpNever.Size = new System.Drawing.Size(54, 17);
-            this.PumpNever.TabIndex = 0;
-            this.PumpNever.TabStop = true;
-            this.PumpNever.Text = "Never";
-            this.PumpNever.UseVisualStyleBackColor = true;
+            this.PumpAlways.AutoSize = true;
+            this.PumpAlways.Location = new System.Drawing.Point(137, 10);
+            this.PumpAlways.Name = "PumpAlways";
+            this.PumpAlways.Size = new System.Drawing.Size(58, 17);
+            this.PumpAlways.TabIndex = 2;
+            this.PumpAlways.TabStop = true;
+            this.PumpAlways.Text = "Always";
+            this.PumpAlways.UseVisualStyleBackColor = true;
             // 
             // PumpTs
             // 
@@ -222,16 +231,17 @@
             this.PumpTs.Text = "TS Only";
             this.PumpTs.UseVisualStyleBackColor = true;
             // 
-            // PumpAlways
+            // PumpNever
             // 
-            this.PumpAlways.AutoSize = true;
-            this.PumpAlways.Location = new System.Drawing.Point(137, 10);
-            this.PumpAlways.Name = "PumpAlways";
-            this.PumpAlways.Size = new System.Drawing.Size(58, 17);
-            this.PumpAlways.TabIndex = 2;
-            this.PumpAlways.TabStop = true;
-            this.PumpAlways.Text = "Always";
-            this.PumpAlways.UseVisualStyleBackColor = true;
+            this.PumpNever.AutoSize = true;
+            this.PumpNever.Checked = true;
+            this.PumpNever.Location = new System.Drawing.Point(8, 10);
+            this.PumpNever.Name = "PumpNever";
+            this.PumpNever.Size = new System.Drawing.Size(54, 17);
+            this.PumpNever.TabIndex = 0;
+            this.PumpNever.TabStop = true;
+            this.PumpNever.Text = "Never";
+            this.PumpNever.UseVisualStyleBackColor = true;
             // 
             // Discard
             // 
