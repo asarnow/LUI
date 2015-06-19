@@ -237,13 +237,16 @@ namespace LUI.tabs
                     if (DataBuffer[j] > peak) peak = DataBuffer[j];
                 }
 
+                double vartemp;
                 int delta = sum - cmasum;
                 cmasum += delta / (i + 1);
-                varsum += varsum + delta * (sum - cmasum);
+                vartemp = delta * (sum - cmasum);
+                varsum += Math.Sqrt(Math.Abs(vartemp));
 
                 delta = peak - cmapeak;
                 cmapeak += delta / (i + 1);
-                varpeak += varpeak + delta * (peak - cmapeak);
+                vartemp = delta * (peak - cmapeak);
+                varpeak += Math.Sqrt(Math.Abs(vartemp));
                 //cmasum = (sum + i * cmasum) / (i + 1);
                 //cmapeak = (peak + i * cmapeak) / (i + 1);
 
@@ -253,14 +256,16 @@ namespace LUI.tabs
                 //npeak = (peak + n * npeak) / (n + 1);
                 delta = sum - nsum;
                 nsum += delta / (i + 1);
-                nvarsum += nvarsum + delta * (sum - nsum);
+                vartemp = delta * (sum - nsum);
+                nvarsum += Math.Sqrt(Math.Abs(vartemp));
 
                 delta = peak - npeak;
                 npeak += delta / (i + 1);
-                nvarpeak += nvarpeak + delta * (peak - npeak);
+                vartemp = delta * (peak - npeak);
+                nvarpeak += Math.Sqrt(Math.Abs(vartemp));
 
-                ProgressObject progress = new ProgressObject(Array.ConvertAll((int[])DataBuffer, 
-                    x => (double)x), cmasum, varsum / i, cmapeak, varpeak / i, nsum, nvarsum / i, npeak, nvarpeak / i, Dialog.PROGRESS_DATA);
+                ProgressObject progress = new ProgressObject(Array.ConvertAll((int[])DataBuffer, x => (double)x), 
+                    cmasum, varsum / i, cmapeak, varpeak / i, nsum, nvarsum / i, npeak, nvarpeak / i, Dialog.PROGRESS_DATA);
                 if (PauseCancelProgress(e, i * 100 / args.NScans, progress)) return;
             }
 
@@ -291,10 +296,10 @@ namespace LUI.tabs
 
                     DisplayProgress();
 
-                    Peak.Text = Progress.Peak.ToString("n0") + " \u00B1 " + Progress.VarPeak.ToString("f6");
-                    Counts.Text = Progress.Counts.ToString("n0") + " \u00B1 " + Progress.VarCounts.ToString("f0");
-                    PeakN.Text = Progress.PeakN.ToString("n0") + " \u00B1 " + Progress.VarPeakN.ToString("f6");
-                    CountsN.Text = Progress.CountsN.ToString("n0") + " \u00B1 " + Progress.VarCountsN.ToString("f0");
+                    Peak.Text = Progress.Peak.ToString("n0") + " \u00B1 " + Progress.VarPeak.ToString("n3");
+                    Counts.Text = Progress.Counts.ToString("n0") + " \u00B1 " + Progress.VarCounts.ToString("n0");
+                    PeakN.Text = Progress.PeakN.ToString("n0") + " \u00B1 " + Progress.VarPeakN.ToString("n3");
+                    CountsN.Text = Progress.CountsN.ToString("n0") + " \u00B1 " + Progress.VarCountsN.ToString("n0");
 
                     StatusProgress.Value = e.ProgressPercentage;
                     ProgressLabel.Text = "Collecting data";

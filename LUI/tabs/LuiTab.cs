@@ -184,14 +184,15 @@ namespace LUI.tabs
         {
             if (CancelCheck(e)) return true; // If cancelling, set e.Cancel and return true.
             worker.ReportProgress(percentProgress, progress);
-            var OldFlashState = Commander.BeamFlag.FlashState;
-            var OldLaserState = Commander.BeamFlag.LaserState;
-            Commander.BeamFlag.CloseLaserAndFlash();
-            var OldPumpState = Commander.Pump.CurrentState;
-            Commander.Pump.SetClosed();
-            if (WaitForResume()) // Wait if paused.
+            if (WillPause())
             {
-                // Had to resume.
+                // Going to pause.
+                var OldFlashState = Commander.BeamFlag.FlashState;
+                var OldLaserState = Commander.BeamFlag.LaserState;
+                Commander.BeamFlag.CloseLaserAndFlash();
+                var OldPumpState = Commander.Pump.CurrentState;
+                Commander.Pump.SetClosed();
+                WaitForResume();
                 if (OldPumpState == PumpState.Open) Commander.Pump.SetOpen();
                 if (OldFlashState == BeamFlagState.Open) Commander.BeamFlag.OpenFlash();
                 if (OldLaserState == BeamFlagState.Open) Commander.BeamFlag.OpenLaser();
@@ -217,6 +218,16 @@ namespace LUI.tabs
         protected bool WaitForResume()
         {
             return !Paused.WaitOne(Timeout.Infinite);
+        }
+
+        protected bool WaitForResume(int timeout)
+        {
+            return !Paused.WaitOne(timeout);
+        }
+
+        protected bool WillPause()
+        {
+            return !Paused.WaitOne(0);
         }
 
         protected virtual void Collect_Click(object sender, EventArgs e)
