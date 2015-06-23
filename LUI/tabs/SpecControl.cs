@@ -65,7 +65,7 @@ namespace LUI.tabs
             InitializeComponent();
 
             SaveData.Click += (sender, e) => SaveOutput();
-            SaveData.Enabled = false; //TODO Implement save data.
+            SaveData.Enabled = false;
 
             ClearBlank.Click += ClearBlank_Click;
             ClearBlank.Enabled = false;
@@ -265,6 +265,7 @@ namespace LUI.tabs
                 Graph.DrawPoints(Commander.Camera.Calibration, OD);
                 Graph.Invalidate();
                 ProgressLabel.Text = "Complete";
+                SaveData.Enabled = true;
             }
             else
             {
@@ -298,9 +299,15 @@ namespace LUI.tabs
 
         private void SaveOutput()
         {
+            if (OD == null || OD.Length == 0)
+            {
+                MessageBox.Show("No data available.", "Error", MessageBoxButtons.OK);
+                return;
+            }
+
             SaveFileDialog saveFile = new SaveFileDialog();
             //saveFile.Filter = "MAT File|*.mat|CSV File|*.csv";
-            saveFile.Filter = "MAT File|*.mat";
+            saveFile.Filter = "CSV File|*.csv";
             saveFile.Title = "Save Data File";
             saveFile.ShowDialog();
 
@@ -308,7 +315,11 @@ namespace LUI.tabs
 
             switch (saveFile.FilterIndex)
             {
-                case 1: // MAT file; just move temporary MAT file.
+                case 1:
+                    FileIO.WriteVector(saveFile.FileName, OD);
+                    break;
+                case 2: // MAT file; just move temporary MAT file.
+                    throw new NotImplementedException();
                     if (DataFile != null && !DataFile.Closed) DataFile.Close();
                     try
                     {
@@ -320,7 +331,7 @@ namespace LUI.tabs
                         MessageBox.Show(ex.Message);
                     }
                     break;
-                case 2: // CSV file; read LuiData to CSV file.
+                case 3: // CSV file; read LuiData to CSV file.
                     throw new NotImplementedException();
                     //if (DataFile != null)
                     //{
