@@ -155,6 +155,13 @@ namespace LUI.tabs
 
         protected override void Collect_Click(object sender, EventArgs e)
         {
+            if (CollectLaser.Checked && 
+                (DdgConfigBox.PrimaryDelayDdg == null || DdgConfigBox.PrimaryDelayDelay == null))
+            {
+                MessageBox.Show("Primary delay must be configured.", "Error", MessageBoxButtons.OK);
+                return;
+            }
+
             Graph.ClearData();
             CumulativeLight = null;
 
