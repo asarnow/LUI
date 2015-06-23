@@ -21,7 +21,7 @@ namespace LUI
 
         private LuiConfig Config;
 
-        public enum TaskState { IDLE, TROS, CALIBRATE, ALIGN, POWER, RESIDUALS }
+        public enum TaskState { IDLE, TROS, CALIBRATE, ALIGN, POWER, RESIDUALS, SPEC }
 
         private TabControl Tabs;
         private TabPage TROSPage;
@@ -47,6 +47,7 @@ namespace LUI
                 if (CalibrateControl.IsBusy) return TaskState.CALIBRATE;
                 if (TROSControl.IsBusy) return TaskState.TROS;
                 if (LaserPowerControl.IsBusy) return TaskState.POWER;
+                if (SpecControl.IsBusy) return TaskState.SPEC;
                 else return TaskState.IDLE;
             }
         }
@@ -218,7 +219,7 @@ namespace LUI
         {
             try
             {
-                DisableTabs(TROSPage, CalibrationPage, ResidualsPage, PowerPage, OptionsPage);
+                DisableTabs(TROSPage, CalibrationPage, ResidualsPage, PowerPage, SpecPage, OptionsPage);
                 Task Instantiation = Config.InstantiateConfigurationAsync();
                 await Instantiation;
                 Config.OnParametersChanged(sender, e);
