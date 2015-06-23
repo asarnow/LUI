@@ -36,6 +36,7 @@
             this.Discard = new System.Windows.Forms.CheckBox();
             this.CountsLabel = new System.Windows.Forms.Label();
             this.CountsDisplay = new System.Windows.Forms.TextBox();
+            this.ClearBlank = new System.Windows.Forms.Button();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NScan)).BeginInit();
@@ -46,6 +47,16 @@
             this.PumpBox.Flow.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // CommandsBox
+            // 
+            this.CommandsBox.Controls.Add(this.ClearBlank);
+            this.CommandsBox.Controls.SetChildIndex(this.Abort, 0);
+            this.CommandsBox.Controls.SetChildIndex(this.Collect, 0);
+            this.CommandsBox.Controls.SetChildIndex(this.NScan, 0);
+            this.CommandsBox.Controls.SetChildIndex(this.Clear, 0);
+            this.CommandsBox.Controls.SetChildIndex(this.Pause, 0);
+            this.CommandsBox.Controls.SetChildIndex(this.ClearBlank, 0);
             // 
             // Graph
             // 
@@ -161,6 +172,15 @@
             this.CountsDisplay.Text = "0";
             this.CountsDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
+            // ClearBlank
+            // 
+            this.ClearBlank.Location = new System.Drawing.Point(8, 106);
+            this.ClearBlank.Name = "ClearBlank";
+            this.ClearBlank.Size = new System.Drawing.Size(91, 34);
+            this.ClearBlank.TabIndex = 6;
+            this.ClearBlank.Text = "Clear Blank";
+            this.ClearBlank.UseVisualStyleBackColor = true;
+            // 
             // SpecControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -196,5 +216,6 @@
         private System.Windows.Forms.CheckBox Discard;
         private System.Windows.Forms.Label CountsLabel;
         private System.Windows.Forms.TextBox CountsDisplay;
+        private System.Windows.Forms.Button ClearBlank;
     }
 }

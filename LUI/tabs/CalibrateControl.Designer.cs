@@ -41,6 +41,7 @@
             this.Wavelength = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.RemoveCalItem = new System.Windows.Forms.Button();
             this.FlipGraph = new System.Windows.Forms.Button();
+            this.ClearBlank = new System.Windows.Forms.Button();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NScan)).BeginInit();
@@ -49,6 +50,16 @@
             ((System.ComponentModel.ISupportInitialize)(this.CameraGain)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.CalibrationListView)).BeginInit();
             this.SuspendLayout();
+            // 
+            // CommandsBox
+            // 
+            this.CommandsBox.Controls.Add(this.ClearBlank);
+            this.CommandsBox.Controls.SetChildIndex(this.Abort, 0);
+            this.CommandsBox.Controls.SetChildIndex(this.Collect, 0);
+            this.CommandsBox.Controls.SetChildIndex(this.NScan, 0);
+            this.CommandsBox.Controls.SetChildIndex(this.Clear, 0);
+            this.CommandsBox.Controls.SetChildIndex(this.Pause, 0);
+            this.CommandsBox.Controls.SetChildIndex(this.ClearBlank, 0);
             // 
             // Graph
             // 
@@ -202,6 +213,15 @@
             this.FlipGraph.UseVisualStyleBackColor = true;
             this.FlipGraph.Click += new System.EventHandler(this.FlipGraph_Click);
             // 
+            // ClearBlank
+            // 
+            this.ClearBlank.Location = new System.Drawing.Point(8, 106);
+            this.ClearBlank.Name = "ClearBlank";
+            this.ClearBlank.Size = new System.Drawing.Size(91, 34);
+            this.ClearBlank.TabIndex = 7;
+            this.ClearBlank.Text = "Clear Blank";
+            this.ClearBlank.UseVisualStyleBackColor = true;
+            // 
             // CalibrateControl
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
@@ -236,5 +256,6 @@
         private System.Windows.Forms.Label SlopeLabel;
         private controls.DisabledRichTextBox RSquaredLabel;
         private System.Windows.Forms.Button FlipGraph;
+        private System.Windows.Forms.Button ClearBlank;
     }
 }

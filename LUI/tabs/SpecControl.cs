@@ -20,6 +20,7 @@ namespace LUI.tabs
         MatVar<int> RawData;
 
         double[] OD = null;
+        int[] BlankBuffer = null;
 
         int _SelectedChannel = -1;
         int SelectedChannel
@@ -66,6 +67,7 @@ namespace LUI.tabs
             SaveData.Click += (sender, e) => SaveOutput();
             SaveData.Enabled = false; //TODO Implement save data.
 
+            ClearBlank.Click += ClearBlank_Click;
         }
 
         protected override void OnLoad(EventArgs e)
@@ -101,6 +103,18 @@ namespace LUI.tabs
         {
             if (Commander.Pump != null) Commander.Pump.SetClosed();
             Commander.Pump = (IPump)Config.GetObject(PumpBox.SelectedObject);
+        }
+
+        public override void OnTaskStarted(EventArgs e)
+        {
+            base.OnTaskStarted(e);
+            ClearBlank.Enabled = false;
+        }
+
+        public override void OnTaskFinished(EventArgs e)
+        {
+            base.OnTaskFinished(e);
+            ClearBlank.Enabled = true;
         }
 
         protected override void Collect_Click(object sender, EventArgs e)
@@ -149,29 +163,30 @@ namespace LUI.tabs
 
             if (PauseCancelProgress(e, 33, Dialog.BLANK.ToString())) return;
 
-            wait = true;
-            bool[] waitparam = { wait };
-            //args.UI.Invoke(new Action(BlockingBlankDialog), waitparam);
-            Invoke(new Action(BlockingBlankDialog));
-            //while (wait) ;
-
-            Commander.BeamFlag.OpenFlash();
-
-            int[] BlankBuffer = Commander.Camera.Acquire();
-            for (int i = 0; i < N - 1; i++)
+            if (BlankBuffer == null || BlankBuffer.Length != Commander.Camera.AcqSize)
             {
-                Data.Accumulate(BlankBuffer, Commander.Camera.Acquire());
-                if (PauseCancelProgress(e, (i / N) * 33, Dialog.PROGRESS_BLANK.ToString())) return;
+                Invoke(new Action(BlockingBlankDialog));
+
+                Commander.BeamFlag.OpenFlash();
+
+                BlankBuffer = Commander.Camera.Acquire();
+                for (int i = 0; i < N - 1; i++)
+                {
+                    Data.Accumulate(BlankBuffer, Commander.Camera.Acquire());
+                    if (PauseCancelProgress(e, (i / N) * 33, Dialog.PROGRESS_BLANK.ToString())) return;
+                }
+
+                Commander.BeamFlag.CloseLaserAndFlash();
+                
+                if (PauseCancelProgress(e, 66, Dialog.SAMPLE.ToString())) return;
+
+                Invoke(new Action(BlockingSampleDialog));
             }
-
-            Commander.BeamFlag.CloseLaserAndFlash();
-
-            if (PauseCancelProgress(e, 66, Dialog.SAMPLE.ToString())) return;
-
-            wait = true;
-            Invoke(new Action(BlockingSampleDialog));
-            //while (wait) ;
-
+            else
+            {
+                if (PauseCancelProgress(e, 66, Dialog.SAMPLE.ToString())) return;
+            }
+            
             if (PauseCancelProgress(e, 66, Dialog.PROGRESS_DATA.ToString())) return;
 
             Commander.BeamFlag.OpenFlash();
@@ -272,6 +287,11 @@ namespace LUI.tabs
             Graph.ClearAnnotation();
             Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[0], Commander.Camera.Calibration[SelectedChannel]);
             Graph.Invalidate();
+        }
+
+        void ClearBlank_Click(object sender, EventArgs e)
+        {
+            BlankBuffer = null;
         }
 
         private void SaveOutput()
