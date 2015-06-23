@@ -124,13 +124,11 @@ namespace LUI.tabs
 
         struct WorkArgs
         {
-            public WorkArgs(int N, CalibrateControl UI)
+            public WorkArgs(int N)
             {
                 this.N = N;
-                this.UI = UI;
             }
             public readonly int N;
-            public readonly CalibrateControl UI;
         }
 
         public CalibrateControl(LuiConfig config) : base(config)
@@ -153,6 +151,7 @@ namespace LUI.tabs
             Ascending = true;
 
             ClearBlank.Click += ClearBlank_Click;
+            ClearBlank.Enabled = false;
         }
 
         public override void HandleCalibrationChanged(object sender, LuiObjectParametersEventArgs args)
@@ -212,7 +211,7 @@ namespace LUI.tabs
 
             if (BlankBuffer == null || BlankBuffer.Length != Commander.Camera.AcqSize)
             {
-                args.UI.Invoke(new Action(args.UI.BlockingBlankDialog));
+                Invoke(new Action(BlockingBlankDialog));
 
                 Commander.BeamFlag.OpenFlash();
 
@@ -227,7 +226,7 @@ namespace LUI.tabs
 
                 if (PauseCancelProgress(e, 66, Dialog.SAMPLE.ToString())) return;
 
-                args.UI.Invoke(new Action(args.UI.BlockingSampleDialog));
+                Invoke(new Action(BlockingSampleDialog));
             }
             else
             {
@@ -264,7 +263,7 @@ namespace LUI.tabs
             worker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(WorkComplete);
             worker.WorkerSupportsCancellation = true;
             worker.WorkerReportsProgress = true;
-            worker.RunWorkerAsync(new WorkArgs(N, this));
+            worker.RunWorkerAsync(new WorkArgs(N));
             OnTaskStarted(EventArgs.Empty);
         }
 
@@ -539,6 +538,7 @@ namespace LUI.tabs
         void ClearBlank_Click(object sender, EventArgs e)
         {
  	        BlankBuffer = null;
+            ClearBlank.Enabled = false;
         }
     }
 }

@@ -68,6 +68,7 @@ namespace LUI.tabs
             SaveData.Enabled = false; //TODO Implement save data.
 
             ClearBlank.Click += ClearBlank_Click;
+            ClearBlank.Enabled = false;
         }
 
         protected override void OnLoad(EventArgs e)
@@ -292,6 +293,7 @@ namespace LUI.tabs
         void ClearBlank_Click(object sender, EventArgs e)
         {
             BlankBuffer = null;
+            ClearBlank.Enabled = false;
         }
 
         private void SaveOutput()
