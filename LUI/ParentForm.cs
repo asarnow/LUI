@@ -65,7 +65,7 @@ namespace LUI
             StartPosition = FormStartPosition.WindowsDefaultLocation;
             Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             Name = "ParentForm";
-            Text = "LUI";
+            Text = "LUI " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
 
             #region Setup tabs
             Tabs = new TabControl();
