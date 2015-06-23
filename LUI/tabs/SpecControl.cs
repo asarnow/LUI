@@ -266,7 +266,7 @@ namespace LUI.tabs
                 Graph.Invalidate();
                 ProgressLabel.Text = "Complete";
                 SaveData.Enabled = true;
-                SelectedChannel = Commander.Camera.Width / 2;
+                SelectedChannel = (int)Commander.Camera.Width / 2;
             }
             else
             {
