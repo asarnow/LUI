@@ -261,6 +261,12 @@ namespace LUI.tabs
 
         protected override void Collect_Click(object sender, EventArgs e)
         {
+            if (DdgConfigBox.PrimaryDelayDdg == null || DdgConfigBox.PrimaryDelayDelay == null)
+            {
+                MessageBox.Show("Primary delay must be configured.", "Error", MessageBoxButtons.OK);
+                return;
+            }
+
             CameraStatus.Text = "";
 
             Graph.ClearData();
