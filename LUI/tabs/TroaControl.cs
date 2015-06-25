@@ -398,12 +398,13 @@ namespace LUI.tabs
             }
 
             // Excited state scans.
+            Commander.BeamFlag.OpenLaserAndFlash();
             for (int i = 0; i < Times.Count; i++)
             {
                 double Delay = Times[i];
                 progress = new ProgressObject(null, null, Delay, Dialog.PROGRESS_TIME);
                 if (PauseCancelProgress(e, (half + i * N) * 99 / TotalScans, progress)) return; // Display current delay.
-                Commander.BeamFlag.OpenLaserAndFlash();
+                
                 for (int j = 0; j < N; j++)
                 {
 
@@ -416,14 +417,15 @@ namespace LUI.tabs
                     progress = new ProgressObject(null, Commander.Camera.DecodeStatus(ret), Delay, Dialog.PROGRESS_TRANS);
                     if (PauseCancelProgress(e, (N + half + (i + 1) * (j + 1)) * 99 / TotalScans, progress)) return; // Handle new data.
                 }
-                Commander.BeamFlag.CloseLaserAndFlash();
-
+                
                 Data.DivideArray(Excited, N); // Average ES for time point.
                 Data.Dissipate(Excited, Dark); // Subtract average dark from time point average.
                 double[] Difference = Data.DeltaOD(Ground, Excited); // Time point diff. spec. w/ current GS average.
                 progress = new ProgressObject(Difference, null, Delay, Dialog.PROGRESS_TIME_COMPLETE);
                 if (PauseCancelProgress(e, (N + half + N * Times.Count) * 99 / TotalScans, progress)) return;
             }
+            
+            Commander.BeamFlag.CloseLaserAndFlash();
 
             // Set delays for GS.
             Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, 3.2E-8); // Set delay time.
