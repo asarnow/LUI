@@ -193,19 +193,21 @@ namespace lasercom.camera
             int[] data = null;
             if (caller.Contains("TroaControl"))
             {
-                if (line < 320) // Dark.
+                if (line < 350) // Dark.
                 {
                     data = Data.Uniform((int)Width, 1000);
                 }
-                else if (line < 358 || line > 390) // Ground.
+                else if (line < 380 || line > 430) // Ground.
                 {
                     data = Data.Gaussian((int)Width, 32000, Width * 1 / 3, Width / 10);
                     Data.Accumulate(data, Data.Uniform((int)Width, 1000));
+                    for (int i = 0; i < data.Length; i++) data[i] += 1000;
                 }
-                else if (line < 390) // Excited.
+                else if (line < 430) // Excited.
                 {
                     data = Data.Gaussian((int)Width, 32000, Width * 2 / 3, Width / 10);
                     Data.Accumulate(data, Data.Uniform((int)Width, 1000));
+                    for (int i = 0; i < data.Length; i++) data[i] += 1000;
                 }
             }
             else if (caller.Contains("CalibrateControl"))
