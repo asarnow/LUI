@@ -5,9 +5,6 @@
 using ATMCD64CS;
 #else
 using ATMCD32CS;
-
-
-
 #endif
 
 
