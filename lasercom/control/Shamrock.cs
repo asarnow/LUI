@@ -77,7 +77,7 @@ namespace lasercom.control
             }
         }
 
-        public double Wavelength
+        public override double Wavelength
         {
             get
             {
@@ -99,19 +99,19 @@ namespace lasercom.control
             }
         }
 
-        private double _Slitwidth;
-        public double Slitwidth
+        private double _SlitWidth;
+        public override double SlitWidth
         {
             get
             {
-                return _Slitwidth;
+                return _SlitWidth;
             }
             set
             {
                 lock (Shamlock)
                 {
                     LastStatus = ShamrockSdk.ShamrockSetAutoSlitWidth(Device, 0, (float)value);
-                    _Slitwidth = value;
+                    _SlitWidth = value;
                 }
             }
         }
@@ -122,6 +122,11 @@ namespace lasercom.control
             ShamrockSdk.ShamrockInitialize("");
             ShamrockSdk.ShamrockGetNumberGratings(Device, ref _NumGratings);
             ShamrockSdk.ShamrockGetWavelengthLimits(Device, Grating, ref _MinWavelength, ref _MaxWavelength);
+        }
+
+        public override void Close()
+        {
+            throw new NotImplementedException();
         }
     }
 }

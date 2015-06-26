@@ -125,6 +125,7 @@ namespace LUI.tabs
             base.HandleCameraChanged(sender, e);
             LowerBound = (int)Commander.Camera.Width / 6;
             UpperBound = (int)Commander.Camera.Width * 5 / 6;
+            GraphScroll.Maximum = (int)Commander.Camera.Height - 1;
         }
 
         public override void HandleContainingTabSelected(object sender, EventArgs e)

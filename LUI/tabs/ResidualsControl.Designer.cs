@@ -50,6 +50,7 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.DdgConfigBox = new LUI.controls.DdgCommandPanel();
             this.OptionsBox = new System.Windows.Forms.GroupBox();
+            this.GraphScroll = new System.Windows.Forms.VScrollBar();
             label1 = new System.Windows.Forms.Label();
             DiffSumLabel = new System.Windows.Forms.Label();
             NAverageLabel = new System.Windows.Forms.Label();
@@ -57,12 +58,14 @@
             PeakLabel = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
+            this.ParentPanel.SuspendLayout();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NScan)).BeginInit();
             this.CommonObjectPanel.SuspendLayout();
             this.LeftChildArea.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CameraGain)).BeginInit();
+            this.LeftPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NAverage)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.OptionsBox.SuspendLayout();
@@ -83,6 +86,13 @@
             this.LeftChildArea.Controls.Add(this.LoadProfile);
             this.LeftChildArea.Location = new System.Drawing.Point(0, 543);
             this.LeftChildArea.Size = new System.Drawing.Size(1176, 278);
+            // 
+            // LeftPanel
+            // 
+            this.LeftPanel.Controls.Add(this.GraphScroll);
+            this.LeftPanel.Controls.SetChildIndex(this.LeftChildArea, 0);
+            this.LeftPanel.Controls.SetChildIndex(this.Graph, 0);
+            this.LeftPanel.Controls.SetChildIndex(this.GraphScroll, 0);
             // 
             // label1
             // 
@@ -348,10 +358,20 @@
             this.OptionsBox.TabStop = false;
             this.OptionsBox.Text = "Options";
             // 
+            // GraphScroll
+            // 
+            this.GraphScroll.Dock = System.Windows.Forms.DockStyle.Right;
+            this.GraphScroll.Location = new System.Drawing.Point(1159, 0);
+            this.GraphScroll.Name = "GraphScroll";
+            this.GraphScroll.Size = new System.Drawing.Size(17, 543);
+            this.GraphScroll.TabIndex = 14;
+            // 
             // ResidualsControl
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
             this.Name = "ResidualsControl";
+            this.ParentPanel.ResumeLayout(false);
+            this.ParentPanel.PerformLayout();
             this.StatusBox.ResumeLayout(false);
             this.StatusBox.PerformLayout();
             this.CommandsBox.ResumeLayout(false);
@@ -362,6 +382,8 @@
             this.LeftChildArea.ResumeLayout(false);
             this.LeftChildArea.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CameraGain)).EndInit();
+            this.LeftPanel.ResumeLayout(false);
+            this.LeftPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NAverage)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -388,5 +410,6 @@
         private System.Windows.Forms.CheckBox CollectLaser;
         private controls.DdgCommandPanel DdgConfigBox;
         private System.Windows.Forms.GroupBox OptionsBox;
+        private System.Windows.Forms.VScrollBar GraphScroll;
     }
 }
