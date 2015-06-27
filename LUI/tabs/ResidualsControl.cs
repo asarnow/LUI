@@ -470,25 +470,25 @@ namespace LUI.tabs
             if (ShowLast.Checked && LastLight != null)
             {
                 Graph.MarkerColor = Graph.ColorOrder[1];
-                Graph.DrawPoints(Commander.Camera.Calibration, LastLight.Skip(start).Take(count).ToArray());
+                Graph.DrawPoints(Commander.Camera.Calibration, new ArraySegment<double>(LastLight, start, count));
             }
 
             if (ShowDifference.Checked && DiffLight != null)
             {
                 Graph.MarkerColor = Graph.ColorOrder[2];
-                Graph.DrawPoints(Commander.Camera.Calibration, DiffLight.Skip(start).Take(count).ToArray());
+                Graph.DrawPoints(Commander.Camera.Calibration, new ArraySegment<double>(DiffLight, start, count));
             }
 
             if (Light != null)
             {
                 Graph.MarkerColor = Graph.ColorOrder[0];
-                Graph.DrawPoints(Commander.Camera.Calibration, Light.Skip(start).Take(count).ToArray());
+                Graph.DrawPoints(Commander.Camera.Calibration, new ArraySegment<double>(Light, start, count));
             }
 
             if (CumulativeLight != null) // Always false while background task running.
             {
                 Graph.MarkerColor = Graph.ColorOrder[3];
-                Graph.DrawPoints(Commander.Camera.Calibration, CumulativeLight.Skip(start).Take(count).ToArray());
+                Graph.DrawPoints(Commander.Camera.Calibration, new ArraySegment<double>(CumulativeLight, start, count));
             }
 
             Graph.Invalidate();
@@ -509,13 +509,13 @@ namespace LUI.tabs
                 if (ShowDifference.Checked && DiffLight != null)
                 {
                     Graph.MarkerColor = Graph.ColorOrder[2];
-                    Graph.DrawPoints(Commander.Camera.Calibration, DiffLight.Skip(start).Take(count).ToArray());
+                    Graph.DrawPoints(Commander.Camera.Calibration, new ArraySegment<double>(DiffLight, start, count));
                 }
 
                 if (Light != null)
                 {
                     Graph.MarkerColor = Graph.ColorOrder[0];
-                    Graph.DrawPoints(Commander.Camera.Calibration, Light.Skip(start).Take(count).ToArray());
+                    Graph.DrawPoints(Commander.Camera.Calibration, new ArraySegment<double>(Light, start, count));
                 }
                 Graph.Invalidate();
             }
@@ -540,7 +540,7 @@ namespace LUI.tabs
                 int start = Commander.Camera.Image.Width * GraphScroll.Value;
                 int count = Commander.Camera.Image.Width;
                 Graph.MarkerColor = Graph.ColorOrder[3];
-                Graph.DrawPoints(Commander.Camera.Calibration, CumulativeLight.Skip(start).Take(count).ToArray());
+                Graph.DrawPoints(Commander.Camera.Calibration, new ArraySegment<double>(CumulativeLight, start, count));
             }
             Graph.Invalidate();
         }
