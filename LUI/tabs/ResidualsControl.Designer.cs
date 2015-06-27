@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.Windows.Forms.Label label1;
             System.Windows.Forms.Label DiffSumLabel;
             System.Windows.Forms.Label NAverageLabel;
@@ -55,6 +56,7 @@
             this.ImageMode = new System.Windows.Forms.RadioButton();
             this.FvbMode = new System.Windows.Forms.RadioButton();
             this.CameraExtras = new System.Windows.Forms.GroupBox();
+            this.ScrollTip = new System.Windows.Forms.ToolTip(this.components);
             label1 = new System.Windows.Forms.Label();
             DiffSumLabel = new System.Windows.Forms.Label();
             NAverageLabel = new System.Windows.Forms.Label();
@@ -80,7 +82,7 @@
             // 
             // Graph
             // 
-            this.Graph.Size = new System.Drawing.Size(1176, 543);
+            this.Graph.Size = new System.Drawing.Size(1159, 543);
             this.Graph.XLeft = 1F;
             this.Graph.XRight = 1024F;
             // 
@@ -102,8 +104,8 @@
             // 
             this.LeftPanel.Controls.Add(this.GraphScroll);
             this.LeftPanel.Controls.SetChildIndex(this.LeftChildArea, 0);
-            this.LeftPanel.Controls.SetChildIndex(this.Graph, 0);
             this.LeftPanel.Controls.SetChildIndex(this.GraphScroll, 0);
+            this.LeftPanel.Controls.SetChildIndex(this.Graph, 0);
             // 
             // label1
             // 
@@ -421,6 +423,13 @@
             this.CameraExtras.TabStop = false;
             this.CameraExtras.Text = "Additional Camera Options";
             // 
+            // ScrollTip
+            // 
+            this.ScrollTip.AutoPopDelay = 10000;
+            this.ScrollTip.InitialDelay = 50;
+            this.ScrollTip.ReshowDelay = 100;
+            this.ScrollTip.ShowAlways = true;
+            // 
             // ResidualsControl
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
@@ -475,5 +484,6 @@
         private System.Windows.Forms.RadioButton FvbMode;
         private System.Windows.Forms.RadioButton ImageMode;
         private System.Windows.Forms.GroupBox CameraExtras;
+        private System.Windows.Forms.ToolTip ScrollTip;
     }
 }

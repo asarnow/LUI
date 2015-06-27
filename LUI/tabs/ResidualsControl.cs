@@ -102,10 +102,14 @@ namespace LUI.tabs
             Graph.YLabelFormat = "g";
 
             CollectLaser.CheckedChanged += CollectLaser_CheckedChanged;
+
+            GraphScroll.Scroll += GraphScroll_Scroll;
             GraphScroll.ValueChanged += GraphScroll_ValueChanged;
             GraphScroll.Enabled = false;
-            FvbMode.CheckedChanged += FvbMode_CheckedChanged;
-            ImageMode.CheckedChanged += ImageMode_CheckedChanged;
+            GraphScroll.LargeChange = 1;
+            
+            //FvbMode.CheckedChanged += FvbMode_CheckedChanged;
+            //ImageMode.CheckedChanged += ImageMode_CheckedChanged;
 
             DdgConfigBox.Config = Config;
             DdgConfigBox.Commander = Commander;
@@ -129,9 +133,9 @@ namespace LUI.tabs
         public override void HandleCameraChanged(object sender, EventArgs e)
         {
             base.HandleCameraChanged(sender, e);
-            LowerBound = (int)Commander.Camera.Width / 6;
-            UpperBound = (int)Commander.Camera.Width * 5 / 6;
-            GraphScroll.Maximum = (int)Commander.Camera.Height - 1;
+            LowerBound = (int)Commander.Camera.Image.Width / 6;
+            UpperBound = (int)Commander.Camera.Image.Width * 5 / 6;
+            GraphScroll.Maximum = (int)Commander.Camera.Image.Height - 1;
         }
 
         public override void HandleContainingTabSelected(object sender, EventArgs e)
@@ -179,6 +183,8 @@ namespace LUI.tabs
 
             int ReadMode = ImageMode.Checked ? AndorCamera.ReadModeImage : AndorCamera.ReadModeFVB;
 
+            GraphScroll.Enabled = ReadMode == AndorCamera.ReadModeImage;
+
             worker = new BackgroundWorker();
             worker.DoWork += new System.ComponentModel.DoWorkEventHandler(DoWork);
             worker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(WorkProgress);
@@ -194,6 +200,14 @@ namespace LUI.tabs
             base.OnTaskStarted(e);
             DdgConfigBox.Enabled = false;
             OptionsBox.Enabled = CameraExtras.Enabled = false;
+            if (GraphScroll.Enabled)
+            {
+                GraphScroll.Value = GraphScroll.Value == 0 ? GraphScroll.Maximum / 2 : GraphScroll.Value;
+            }
+            else
+            {
+                GraphScroll.Value = 0;
+            }
         }
 
         public override void OnTaskFinished(EventArgs e)
@@ -443,7 +457,7 @@ namespace LUI.tabs
                 case 3:
                     try
                     {
-                        Light = FileIO.ReadVector<double>(openFile.FileName);
+                        LastLight = FileIO.ReadVector<double>(openFile.FileName);
                     }
                     catch (IOException ex)
                     {
@@ -485,7 +499,7 @@ namespace LUI.tabs
                 Graph.DrawPoints(Commander.Camera.Calibration, new ArraySegment<double>(Light, start, count));
             }
 
-            if (CumulativeLight != null) // Always false while background task running.
+            if (CumulativeLight != null && PersistentGraphing.Checked) // Always false while background task running.
             {
                 Graph.MarkerColor = Graph.ColorOrder[3];
                 Graph.DrawPoints(Commander.Camera.Calibration, new ArraySegment<double>(CumulativeLight, start, count));
@@ -617,25 +631,13 @@ namespace LUI.tabs
 
         void GraphScroll_ValueChanged(object sender, EventArgs e)
         {
-            if (worker != null && !worker.IsBusy) Display();
+            if (worker == null || !worker.IsBusy) Display();
         }
 
-        void ImageMode_CheckedChanged(object sender, EventArgs e)
+        void GraphScroll_Scroll(object sender, ScrollEventArgs e)
         {
-            if (ImageMode.Checked)
-            {
-                GraphScroll.Value = GraphScroll.Maximum / 2;
-                GraphScroll.Enabled = true;
-            }
-        }
-
-        void FvbMode_CheckedChanged(object sender, EventArgs e)
-        {
-            if (FvbMode.Checked)
-            {
-                GraphScroll.Value = 0;
-                GraphScroll.Enabled = false;
-            }
+            ScrollTip.SetToolTip(GraphScroll, GraphScroll.Value.ToString());
+            //ScrollTip.Show(GraphScroll.Value.ToString(), GraphScroll, 10000);
         }
     }
 }
