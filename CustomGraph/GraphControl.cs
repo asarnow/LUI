@@ -319,16 +319,16 @@ namespace LUI.controls
             }
         }
 
-        public void DrawPoints(double[] Y)
+        public void DrawPoints(IList<double> Y)
         {
             using (Brush B = new SolidBrush(MarkerColor))
             {
                 float _Min = (float)Y.FiniteMin() < YMin ? (float)Y.FiniteMin() : YMin;
                 float _Max = (float)Y.FiniteMax() > YMax ? (float)Y.FiniteMax() : YMax;
                 RescaleHandler(_Min, _Max);
-                for (int i = 0; i < Y.Length; i++)
+                for (int i = 0; i < Y.Count; i++)
                 {
-                    float x = (float)(i + 1) / Y.Length;
+                    float x = (float)(i + 1) / Y.Count;
                     if (!XAscending) x = 1 - x;
                     float y = Math.Abs(YMax - (float)Y[i]) / ScaleHeight;
                     DrawPoint(BitmapGraphics, B, MarkerFont, Axes, x, y);
@@ -336,16 +336,16 @@ namespace LUI.controls
             }
         }
 
-        public void DrawPoints(int[] Y)
+        public void DrawPoints(IList<int> Y)
         {
             using (Brush B = new SolidBrush(MarkerColor))
             {
                 float _Min = (float)Y.Min() < YMin ? (float)Y.Min() : YMin;
                 float _Max = (float)Y.Max() > YMax ? (float)Y.Max() : YMax;
                 RescaleHandler(_Min, _Max);
-                for (int i = 0; i < Y.Length; i++)
+                for (int i = 0; i < Y.Count; i++)
                 {
-                    float x = (float)(i + 1) / Y.Length;
+                    float x = (float)(i + 1) / Y.Count;
                     if (!XAscending) x = 1 - x;
                     float y = Math.Abs(YMax - (float)Y[i]) / ScaleHeight;
                     DrawPoint(BitmapGraphics, B, MarkerFont, Axes, x, y);
@@ -353,14 +353,14 @@ namespace LUI.controls
             }
         }
 
-        public void DrawPoints(double[] X, double[] Y)
+        public void DrawPoints(IList<double> X, IList<double> Y)
         {
             using (Brush B = new SolidBrush(MarkerColor))
             {
                 float _Min = (float)Y.FiniteMin() < YMin ? (float)Y.FiniteMin() : YMin;
                 float _Max = (float)Y.FiniteMax() > YMax ? (float)Y.FiniteMax() : YMax;
                 RescaleHandler(_Min, _Max);
-                for (int i = 0; i < Y.Length; i++)
+                for (int i = 0; i < Y.Count; i++)
                 {
                     float x = Math.Abs(XLeft - (float)X[i]) / XRange;
                     float y = (YMax - (float)Y[i]) / ScaleHeight;
@@ -369,14 +369,14 @@ namespace LUI.controls
             }
         }
 
-        void DrawPoints(Image Image, double[] X, double[] Y)
+        void DrawPoints(Image Image, IList<double> X, IList<double> Y)
         {
             using (Graphics G = Graphics.FromImage(Image))
             {
                 G.CompositingMode = CompositingMode.SourceOver;
                 using (Brush B = new SolidBrush(MarkerColor))
                 {
-                    for (int i = 0; i < X.Length; i++)
+                    for (int i = 0; i < X.Count; i++)
                     {
                         float x = Math.Abs(XLeft - (float)X[i]) / XRange;
                         float y = (float)Y[i] / YMax;
