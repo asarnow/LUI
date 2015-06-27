@@ -55,15 +55,17 @@ namespace LUI.tabs
 
         struct WorkArgs
         {
-            public WorkArgs(int NScans, int NAverage, bool CollectLaser)
+            public WorkArgs(int NScans, int NAverage, bool CollectLaser, int ReadMode)
             {
                 this.NScans = NScans;
                 this.NAvg = NAverage;
                 this.CollectLaser = CollectLaser;
+                this.ReadMode = ReadMode;
             }
             public readonly int NScans;
             public readonly int NAvg;
             public readonly bool CollectLaser;
+            public readonly int ReadMode;
         }
 
         struct ProgressObject
@@ -100,6 +102,10 @@ namespace LUI.tabs
             Graph.YLabelFormat = "g";
 
             CollectLaser.CheckedChanged += CollectLaser_CheckedChanged;
+            GraphScroll.ValueChanged += GraphScroll_ValueChanged;
+            GraphScroll.Enabled = false;
+            FvbMode.CheckedChanged += FvbMode_CheckedChanged;
+            ImageMode.CheckedChanged += ImageMode_CheckedChanged;
 
             DdgConfigBox.Config = Config;
             DdgConfigBox.Commander = Commander;
@@ -171,13 +177,15 @@ namespace LUI.tabs
             if (CollectLaser.Checked)
                 DdgConfigBox.ApplyPrimaryDelayValue();
 
+            int ReadMode = ImageMode.Checked ? AndorCamera.ReadModeImage : AndorCamera.ReadModeFVB;
+
             worker = new BackgroundWorker();
             worker.DoWork += new System.ComponentModel.DoWorkEventHandler(DoWork);
             worker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(WorkProgress);
             worker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(WorkComplete);
             worker.WorkerSupportsCancellation = true;
             worker.WorkerReportsProgress = true;
-            worker.RunWorkerAsync(new WorkArgs((int)NScan.Value, (int)NAverage.Value, CollectLaser.Checked));
+            worker.RunWorkerAsync(new WorkArgs((int)NScan.Value, (int)NAverage.Value, CollectLaser.Checked, ReadMode));
             OnTaskStarted(EventArgs.Empty);
         }
 
@@ -185,12 +193,14 @@ namespace LUI.tabs
         {
             base.OnTaskStarted(e);
             DdgConfigBox.Enabled = false;
+            OptionsBox.Enabled = CameraExtras.Enabled = false;
         }
 
         public override void OnTaskFinished(EventArgs e)
         {
             base.OnTaskFinished(e);
             DdgConfigBox.Enabled = CollectLaser.Checked;
+            OptionsBox.Enabled = CameraExtras.Enabled = true;
         }
 
         /// <summary>
@@ -205,12 +215,13 @@ namespace LUI.tabs
         /// <param name="e"></param>
         protected override void DoWork(object sender, DoWorkEventArgs e)
         {
+            WorkArgs args = (WorkArgs)e.Argument;
+
             Commander.Camera.AcquisitionMode = AndorCamera.AcquisitionModeSingle;
             Commander.Camera.TriggerMode = AndorCamera.TriggerModeExternalExposure;
             Commander.Camera.DDGTriggerMode = AndorCamera.DDGTriggerModeExternal;
-            Commander.Camera.ReadMode = AndorCamera.ReadModeFVB;
-            WorkArgs args = (WorkArgs)e.Argument;
-
+            Commander.Camera.ReadMode = args.ReadMode;
+            
             int cmasum = 0; // Cumulative moving average over scans
             double varsum = 0;
             int cmapeak = 0;
@@ -219,6 +230,10 @@ namespace LUI.tabs
             double nvarsum = 0;
             int npeak = 0;
             double nvarpeak = 0;
+            int[] pastsums = new int[args.NAvg];
+            int[] pastpeaks = new int[args.NAvg];
+
+
             int[] DataBuffer = new int[Commander.Camera.AcqSize];
             int[] CumulativeDataBuffer = new int[DataBuffer.Length];
 
@@ -259,19 +274,25 @@ namespace LUI.tabs
                 //cmapeak = (peak + i * cmapeak) / (i + 1);
 
                 int n = i % args.NAvg; // Reset NAvg CMA
-                if (n == 0) nvarpeak = nvarsum = npeak = nsum = 0;
-                //nsum = (sum + n * nsum) / (n + 1);
-                //npeak = (peak + n * npeak) / (n + 1);
-                delta = sum - nsum;
-                nsum += delta / (i + 1);
-                vartemp = delta * (sum - nsum);
-                nvarsum += Math.Sqrt(Math.Abs(vartemp));
+                pastsums[n] = sum;
+                pastpeaks[n] = peak;
 
-                delta = peak - npeak;
-                npeak += delta / (i + 1);
-                vartemp = delta * (peak - npeak);
-                nvarpeak += Math.Sqrt(Math.Abs(vartemp));
+                nvarpeak = nvarsum = npeak = nsum = 0;
+                for (int j = 0; j < args.NAvg; j++)
+                {
+                    //nsum = (sum + n * nsum) / (n + 1);
+                    //npeak = (peak + n * npeak) / (n + 1);
+                    delta = pastsums[j] - nsum;
+                    nsum += delta / (j + 1);
+                    vartemp = delta * (pastsums[j] - nsum);
+                    nvarsum += Math.Sqrt(Math.Abs(vartemp));
 
+                    delta = pastpeaks[j] - npeak;
+                    npeak += delta / (j + 1);
+                    vartemp = delta * (pastpeaks[j] - npeak);
+                    nvarpeak += Math.Sqrt(Math.Abs(vartemp));
+                }
+                
                 ProgressObject progress = new ProgressObject(Array.ConvertAll((int[])DataBuffer, x => (double)x), 
                     cmasum, varsum / i, cmapeak, varpeak / i, nsum, nvarsum / i, npeak, nvarpeak / i, Dialog.PROGRESS_DATA);
                 if (PauseCancelProgress(e, i * 100 / args.NScans, progress)) return;
@@ -298,7 +319,7 @@ namespace LUI.tabs
                     Light = (double[])Progress.Data;
                     if (LastLight != null)
                     {
-                        DiffLight = (double[])Light.Clone(); // Deep copy for value types only
+                        DiffLight = (double[])Light.Clone(); // Deep copy for value types only.
                         Data.Dissipate(DiffLight, LastLight);
                     }
 
@@ -441,31 +462,33 @@ namespace LUI.tabs
         /// </summary>
         private void Display()
         {
+            int start = Commander.Camera.Image.Width * GraphScroll.Value;
+            int count = Commander.Camera.Image.Width;
 
             Graph.ClearData();
             
             if (ShowLast.Checked && LastLight != null)
             {
                 Graph.MarkerColor = Graph.ColorOrder[1];
-                Graph.DrawPoints(Commander.Camera.Calibration, LastLight);
+                Graph.DrawPoints(Commander.Camera.Calibration, LastLight.Skip(start).Take(count).ToArray());
             }
 
             if (ShowDifference.Checked && DiffLight != null)
             {
                 Graph.MarkerColor = Graph.ColorOrder[2];
-                Graph.DrawPoints(Commander.Camera.Calibration, DiffLight);
+                Graph.DrawPoints(Commander.Camera.Calibration, DiffLight.Skip(start).Take(count).ToArray());
             }
 
             if (Light != null)
             {
                 Graph.MarkerColor = Graph.ColorOrder[0];
-                Graph.DrawPoints(Commander.Camera.Calibration, Light);
+                Graph.DrawPoints(Commander.Camera.Calibration, Light.Skip(start).Take(count).ToArray());
             }
 
             if (CumulativeLight != null) // Always false while background task running.
             {
                 Graph.MarkerColor = Graph.ColorOrder[3];
-                Graph.DrawPoints(Commander.Camera.Calibration, CumulativeLight);
+                Graph.DrawPoints(Commander.Camera.Calibration, CumulativeLight.Skip(start).Take(count).ToArray());
             }
 
             Graph.Invalidate();
@@ -479,18 +502,20 @@ namespace LUI.tabs
         /// </summary>
         private void DisplayProgress()
         {
+            int start = Commander.Camera.Image.Width * GraphScroll.Value;
+            int count = Commander.Camera.Image.Width;
             if (PersistentGraphing.Checked)
             {
                 if (ShowDifference.Checked && DiffLight != null)
                 {
                     Graph.MarkerColor = Graph.ColorOrder[2];
-                    Graph.DrawPoints(Commander.Camera.Calibration, DiffLight);
+                    Graph.DrawPoints(Commander.Camera.Calibration, DiffLight.Skip(start).Take(count).ToArray());
                 }
 
                 if (Light != null)
                 {
                     Graph.MarkerColor = Graph.ColorOrder[0];
-                    Graph.DrawPoints(Commander.Camera.Calibration, Light);
+                    Graph.DrawPoints(Commander.Camera.Calibration, Light.Skip(start).Take(count).ToArray());
                 }
                 Graph.Invalidate();
             }
@@ -512,8 +537,10 @@ namespace LUI.tabs
             // most useful if it's graphed on top of all previous scans.
             if (CumulativeLight != null && PersistentGraphing.Checked)
             {
+                int start = Commander.Camera.Image.Width * GraphScroll.Value;
+                int count = Commander.Camera.Image.Width;
                 Graph.MarkerColor = Graph.ColorOrder[3];
-                Graph.DrawPoints(Commander.Camera.Calibration, CumulativeLight);
+                Graph.DrawPoints(Commander.Camera.Calibration, CumulativeLight.Skip(start).Take(count).ToArray());
             }
             Graph.Invalidate();
         }
@@ -588,5 +615,27 @@ namespace LUI.tabs
             DdgConfigBox.Enabled = CollectLaser.Checked;
         }
 
+        void GraphScroll_ValueChanged(object sender, EventArgs e)
+        {
+            if (worker != null && !worker.IsBusy) Display();
+        }
+
+        void ImageMode_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ImageMode.Checked)
+            {
+                GraphScroll.Value = GraphScroll.Maximum / 2;
+                GraphScroll.Enabled = true;
+            }
+        }
+
+        void FvbMode_CheckedChanged(object sender, EventArgs e)
+        {
+            if (FvbMode.Checked)
+            {
+                GraphScroll.Value = 0;
+                GraphScroll.Enabled = false;
+            }
+        }
     }
 }

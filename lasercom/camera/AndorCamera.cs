@@ -192,13 +192,15 @@ namespace lasercom.camera
         }
 
         private ImageArea _Image;
-        public virtual ImageArea Image
+        public override ImageArea Image
         {
             get { return _Image; }
             set 
             {
                 _Image = value;
-                AndorSdk.SetImage(value.hbin, value.vbin, value.hstart, value.hend, value.vstart, value.vend);
+                AndorSdk.SetImage(value.hbin, value.vbin, 
+                    value.hstart + 1, value.hstart + value.hcount,
+                    value.vstart + 1, value.vstart + value.vstart);
             }
         }
 
@@ -258,33 +260,18 @@ namespace lasercom.camera
         {
             get
             {
-                if (this.ReadMode == Constants.ReadModeFVB)
+                if (this.ReadMode == ReadModeFVB)
                 {
                     return Width;
                 }
-                else if (ReadMode == Constants.ReadModeImage)
+                else if (ReadMode == ReadModeImage)
                 {
-                    return (uint)((Image.hend - Image.hstart + 1) * (Image.vend - Image.vstart + 1));
+                    return (uint)(Image.Width * Image.Height);
                 }
                 else
                 {
                     throw new NotImplementedException();
                 }
-            }
-        }
-
-        public class ImageArea
-        {
-            public readonly int hbin, vbin, hstart, hend, vstart, vend;
-            public ImageArea(int hbin, int vbin, int hstart, int hend, int vstart, int vend)
-            {
-                this.hbin = hbin;
-                this.vbin = vbin;
-                this.hstart = hstart;
-                this.hend = hend;
-                this.vstart = vstart;
-                this.vend = vend;
-                
             }
         }
 
@@ -304,7 +291,7 @@ namespace lasercom.camera
                 CurrentADChannel = DefaultADChannel;
                 AndorSdk.GetBitDepth(CurrentADChannel, ref _BitDepth);
 
-                Image = new ImageArea(1, 1, 1, (int)Width, 1, (int)Height);
+                Image = new ImageArea(1, 1, 0, (int)Width, 0, (int)Height);
 
                 GateMode = Constants.GatingModeSMBOnly;
                 MCPGating = Constants.MCPGatingOn;
@@ -326,25 +313,28 @@ namespace lasercom.camera
         {
             uint npx = Width * Height;
             int[] data = new int[npx];
-            AndorSdk.SetReadMode(Constants.ReadModeImage);
-            AndorSdk.SetImage(1, 1, 1, (int)Width, 1, (int)Height);
+            ImageArea image = Image;
+            int readMode = ReadMode;
+            ReadMode = ReadModeImage;
+            Image = new ImageArea(1, 1, 0, (int)Width, 0, (int)Height);
             AndorSdk.StartAcquisition();
             AndorSdk.WaitForAcquisition();
             uint ret = AndorSdk.GetAcquiredData(data, npx);
-            ResetReadMode();
-            ResetImage();
+            Image = image;
+            ReadMode = readMode;
             return data;
         }
 
         public override int[] CountsFvb()
         {
             uint npx = Width;
-            AndorSdk.SetReadMode(Constants.ReadModeFVB);
+            int readMode = ReadMode;
+            ReadMode = ReadModeFVB;
             int[] data = new int[npx];
             AndorSdk.StartAcquisition();
             AndorSdk.WaitForAcquisition();
             uint ret = AndorSdk.GetAcquiredData(data, npx);
-            ResetReadMode();
+            ReadMode = readMode;
             return data;
         }
 
@@ -403,47 +393,6 @@ namespace lasercom.camera
                     return "BAD CODE";
             }
         }
-
-        public void ResetCameraParameters()
-        {
-            ResetAcquisitionMode();
-            ResetReadMode();
-            ResetTriggerMode();
-            ResetDDGTriggerMode();
-            ResetNumberAccumulations();
-            ResetImage();
-        }
-
-        public void ResetTriggerMode()
-        {
-            AndorSdk.SetTriggerMode(TriggerMode);
-        }
-
-        public void ResetDDGTriggerMode()
-        {
-            AndorSdk.SetDDGTriggerMode(DDGTriggerMode);
-        }
-
-        public void ResetAcquisitionMode()
-        {
-            AndorSdk.SetAcquisitionMode(AcquisitionMode);
-        }
-
-        public void ResetReadMode()
-        {
-            AndorSdk.SetReadMode(ReadMode);
-        }
-
-        public void ResetNumberAccumulations()
-        {
-            AndorSdk.SetNumberAccumulations(NumberAccumulations);
-        }
-
-        public void ResetImage()
-        {
-            AndorSdk.SetImage(Image.hbin, Image.vbin, Image.hstart, Image.hend, Image.vstart, Image.vend);
-        }
-
 
         protected override void Dispose(bool disposing)
         {

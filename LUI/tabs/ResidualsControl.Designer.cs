@@ -51,6 +51,10 @@
             this.DdgConfigBox = new LUI.controls.DdgCommandPanel();
             this.OptionsBox = new System.Windows.Forms.GroupBox();
             this.GraphScroll = new System.Windows.Forms.VScrollBar();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.ImageMode = new System.Windows.Forms.RadioButton();
+            this.FvbMode = new System.Windows.Forms.RadioButton();
+            this.CameraExtras = new System.Windows.Forms.GroupBox();
             label1 = new System.Windows.Forms.Label();
             DiffSumLabel = new System.Windows.Forms.Label();
             NAverageLabel = new System.Windows.Forms.Label();
@@ -65,10 +69,13 @@
             this.CommonObjectPanel.SuspendLayout();
             this.LeftChildArea.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CameraGain)).BeginInit();
+            this.RightChildArea.SuspendLayout();
             this.LeftPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NAverage)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.OptionsBox.SuspendLayout();
+            this.panel1.SuspendLayout();
+            this.CameraExtras.SuspendLayout();
             this.SuspendLayout();
             // 
             // Graph
@@ -86,6 +93,10 @@
             this.LeftChildArea.Controls.Add(this.LoadProfile);
             this.LeftChildArea.Location = new System.Drawing.Point(0, 543);
             this.LeftChildArea.Size = new System.Drawing.Size(1176, 278);
+            // 
+            // RightChildArea
+            // 
+            this.RightChildArea.Controls.Add(this.CameraExtras);
             // 
             // LeftPanel
             // 
@@ -366,6 +377,50 @@
             this.GraphScroll.Size = new System.Drawing.Size(17, 543);
             this.GraphScroll.TabIndex = 14;
             // 
+            // panel1
+            // 
+            this.panel1.AutoSize = true;
+            this.panel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.panel1.Controls.Add(this.ImageMode);
+            this.panel1.Controls.Add(this.FvbMode);
+            this.panel1.Location = new System.Drawing.Point(6, 19);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(183, 23);
+            this.panel1.TabIndex = 23;
+            // 
+            // ImageMode
+            // 
+            this.ImageMode.AutoSize = true;
+            this.ImageMode.Location = new System.Drawing.Point(126, 3);
+            this.ImageMode.Name = "ImageMode";
+            this.ImageMode.Size = new System.Drawing.Size(54, 17);
+            this.ImageMode.TabIndex = 1;
+            this.ImageMode.Text = "Image";
+            this.ImageMode.UseVisualStyleBackColor = true;
+            // 
+            // FvbMode
+            // 
+            this.FvbMode.AutoSize = true;
+            this.FvbMode.Checked = true;
+            this.FvbMode.Location = new System.Drawing.Point(3, 3);
+            this.FvbMode.Name = "FvbMode";
+            this.FvbMode.Size = new System.Drawing.Size(117, 17);
+            this.FvbMode.TabIndex = 0;
+            this.FvbMode.TabStop = true;
+            this.FvbMode.Text = "Full Vertical Binning";
+            this.FvbMode.UseVisualStyleBackColor = true;
+            // 
+            // CameraExtras
+            // 
+            this.CameraExtras.Controls.Add(this.panel1);
+            this.CameraExtras.Dock = System.Windows.Forms.DockStyle.Top;
+            this.CameraExtras.Location = new System.Drawing.Point(0, 0);
+            this.CameraExtras.Name = "CameraExtras";
+            this.CameraExtras.Size = new System.Drawing.Size(300, 100);
+            this.CameraExtras.TabIndex = 0;
+            this.CameraExtras.TabStop = false;
+            this.CameraExtras.Text = "Additional Camera Options";
+            // 
             // ResidualsControl
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
@@ -382,6 +437,7 @@
             this.LeftChildArea.ResumeLayout(false);
             this.LeftChildArea.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CameraGain)).EndInit();
+            this.RightChildArea.ResumeLayout(false);
             this.LeftPanel.ResumeLayout(false);
             this.LeftPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NAverage)).EndInit();
@@ -389,6 +445,10 @@
             this.groupBox1.PerformLayout();
             this.OptionsBox.ResumeLayout(false);
             this.OptionsBox.PerformLayout();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
+            this.CameraExtras.ResumeLayout(false);
+            this.CameraExtras.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -411,5 +471,9 @@
         private controls.DdgCommandPanel DdgConfigBox;
         private System.Windows.Forms.GroupBox OptionsBox;
         private System.Windows.Forms.VScrollBar GraphScroll;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.RadioButton FvbMode;
+        private System.Windows.Forms.RadioButton ImageMode;
+        private System.Windows.Forms.GroupBox CameraExtras;
     }
 }

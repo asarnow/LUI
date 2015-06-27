@@ -23,10 +23,13 @@ namespace lasercom.camera
             }
         }
 
+        public override ImageArea Image { get; set; }
+
         public DummyCamera()
         {
             _Height = 255;
             _Width = 1024;
+            Image = new ImageArea(1, 1, 0, (int)Width, 0, (int)Height);
             Calibration = Enumerable.Range(0, (int)Width).Select(x=>(double)x).ToArray();
         }
 

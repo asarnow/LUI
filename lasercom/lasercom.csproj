@@ -125,6 +125,7 @@
     <Compile Include="camera\CameraParameters.cs" />
     <Compile Include="camera\DummyAndorCamera.cs" />
     <Compile Include="camera\DummyCamera.cs" />
+    <Compile Include="camera\ImageArea.cs" />
     <Compile Include="control\AbstractBeamFlags.cs" />
     <Compile Include="camera\AndorCamera.cs" />
     <Compile Include="control\AbstractPump.cs" />

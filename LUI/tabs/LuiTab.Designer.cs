@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.Label GainLabel;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LuiTab));
+            System.Windows.Forms.Label GainLabel;
             this.ParentPanel = new System.Windows.Forms.Panel();
             this.LeftPanel = new System.Windows.Forms.Panel();
             this.Graph = new LUI.controls.GraphControl();
@@ -37,15 +37,6 @@
             this.RightPanel = new System.Windows.Forms.Panel();
             this.RightChildArea = new System.Windows.Forms.Panel();
             this.CommonObjectPanel = new System.Windows.Forms.Panel();
-            this.CameraBox = new LUI.controls.ObjectCommandPanel();
-            this.CameraCommands = new System.Windows.Forms.Panel();
-            this.CameraGain = new System.Windows.Forms.NumericUpDown();
-            this.BeamFlagBox = new LUI.controls.ObjectCommandPanel();
-            this.BeamFlagCommands = new System.Windows.Forms.Panel();
-            this.CloseLamp = new System.Windows.Forms.Button();
-            this.OpenLaser = new System.Windows.Forms.Button();
-            this.OpenLamp = new System.Windows.Forms.Button();
-            this.CloseLaser = new System.Windows.Forms.Button();
             this.CommandsBox = new System.Windows.Forms.GroupBox();
             this.Pause = new System.Windows.Forms.Button();
             this.Clear = new System.Windows.Forms.Button();
@@ -56,30 +47,29 @@
             this.StatusBox = new System.Windows.Forms.GroupBox();
             this.ProgressLabel = new System.Windows.Forms.Label();
             this.StatusProgress = new System.Windows.Forms.ProgressBar();
+            this.CameraBox = new LUI.controls.ObjectCommandPanel();
+            this.CameraCommands = new System.Windows.Forms.Panel();
+            this.CameraGain = new System.Windows.Forms.NumericUpDown();
+            this.BeamFlagBox = new LUI.controls.ObjectCommandPanel();
+            this.BeamFlagCommands = new System.Windows.Forms.Panel();
+            this.CloseLamp = new System.Windows.Forms.Button();
+            this.OpenLaser = new System.Windows.Forms.Button();
+            this.OpenLamp = new System.Windows.Forms.Button();
+            this.CloseLaser = new System.Windows.Forms.Button();
             GainLabel = new System.Windows.Forms.Label();
             this.ParentPanel.SuspendLayout();
             this.LeftPanel.SuspendLayout();
             this.RightPanel.SuspendLayout();
             this.CommonObjectPanel.SuspendLayout();
+            this.CommandsBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.NScan)).BeginInit();
+            this.StatusBox.SuspendLayout();
             this.CameraBox.Flow.SuspendLayout();
             this.CameraCommands.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CameraGain)).BeginInit();
             this.BeamFlagBox.Flow.SuspendLayout();
             this.BeamFlagCommands.SuspendLayout();
-            this.CommandsBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.NScan)).BeginInit();
-            this.StatusBox.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // GainLabel
-            // 
-            GainLabel.AutoSize = true;
-            GainLabel.Location = new System.Drawing.Point(4, 6);
-            GainLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            GainLabel.Name = "GainLabel";
-            GainLabel.Size = new System.Drawing.Size(68, 13);
-            GainLabel.TabIndex = 10;
-            GainLabel.Text = "Camera Gain";
             // 
             // ParentPanel
             // 
@@ -189,131 +179,6 @@
             this.CommonObjectPanel.Name = "CommonObjectPanel";
             this.CommonObjectPanel.Size = new System.Drawing.Size(300, 230);
             this.CommonObjectPanel.TabIndex = 14;
-            // 
-            // CameraBox
-            // 
-            this.CameraBox.AutoSize = true;
-            this.CameraBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.CameraBox.Dock = System.Windows.Forms.DockStyle.Top;
-            // 
-            // CameraBox.Flow
-            // 
-            this.CameraBox.Flow.AutoSize = true;
-            this.CameraBox.Flow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.CameraBox.Flow.Controls.Add(this.CameraCommands);
-            this.CameraBox.Flow.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.CameraBox.Flow.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.CameraBox.Flow.Location = new System.Drawing.Point(3, 16);
-            this.CameraBox.Flow.Name = "Flow";
-            this.CameraBox.Flow.Size = new System.Drawing.Size(294, 67);
-            this.CameraBox.Flow.TabIndex = 0;
-            this.CameraBox.Location = new System.Drawing.Point(0, 144);
-            this.CameraBox.Name = "CameraBox";
-            this.CameraBox.SelectedObject = null;
-            this.CameraBox.Size = new System.Drawing.Size(300, 86);
-            this.CameraBox.TabIndex = 13;
-            this.CameraBox.Text = "Camera";
-            // 
-            // CameraCommands
-            // 
-            this.CameraCommands.AutoSize = true;
-            this.CameraCommands.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.CameraCommands.Controls.Add(GainLabel);
-            this.CameraCommands.Controls.Add(this.CameraGain);
-            this.CameraCommands.Location = new System.Drawing.Point(3, 36);
-            this.CameraCommands.Name = "CameraCommands";
-            this.CameraCommands.Size = new System.Drawing.Size(163, 28);
-            this.CameraCommands.TabIndex = 1;
-            // 
-            // CameraGain
-            // 
-            this.CameraGain.Location = new System.Drawing.Point(80, 4);
-            this.CameraGain.Margin = new System.Windows.Forms.Padding(4);
-            this.CameraGain.Maximum = new decimal(new int[] {
-            500,
-            0,
-            0,
-            0});
-            this.CameraGain.Name = "CameraGain";
-            this.CameraGain.Size = new System.Drawing.Size(79, 20);
-            this.CameraGain.TabIndex = 9;
-            // 
-            // BeamFlagBox
-            // 
-            this.BeamFlagBox.AutoSize = true;
-            this.BeamFlagBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.BeamFlagBox.Dock = System.Windows.Forms.DockStyle.Top;
-            // 
-            // BeamFlagBox.Flow
-            // 
-            this.BeamFlagBox.Flow.AutoSize = true;
-            this.BeamFlagBox.Flow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.BeamFlagBox.Flow.Controls.Add(this.BeamFlagCommands);
-            this.BeamFlagBox.Flow.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.BeamFlagBox.Flow.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.BeamFlagBox.Flow.Location = new System.Drawing.Point(3, 16);
-            this.BeamFlagBox.Flow.Name = "Flow";
-            this.BeamFlagBox.Flow.Size = new System.Drawing.Size(294, 125);
-            this.BeamFlagBox.Flow.TabIndex = 0;
-            this.BeamFlagBox.Location = new System.Drawing.Point(0, 0);
-            this.BeamFlagBox.Name = "BeamFlagBox";
-            this.BeamFlagBox.SelectedObject = null;
-            this.BeamFlagBox.Size = new System.Drawing.Size(300, 144);
-            this.BeamFlagBox.TabIndex = 0;
-            this.BeamFlagBox.Text = "Beam Flags";
-            // 
-            // BeamFlagCommands
-            // 
-            this.BeamFlagCommands.AutoSize = true;
-            this.BeamFlagCommands.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.BeamFlagCommands.Controls.Add(this.CloseLamp);
-            this.BeamFlagCommands.Controls.Add(this.OpenLaser);
-            this.BeamFlagCommands.Controls.Add(this.OpenLamp);
-            this.BeamFlagCommands.Controls.Add(this.CloseLaser);
-            this.BeamFlagCommands.Location = new System.Drawing.Point(3, 36);
-            this.BeamFlagCommands.Name = "BeamFlagCommands";
-            this.BeamFlagCommands.Size = new System.Drawing.Size(288, 86);
-            this.BeamFlagCommands.TabIndex = 1;
-            // 
-            // CloseLamp
-            // 
-            this.CloseLamp.Location = new System.Drawing.Point(148, 48);
-            this.CloseLamp.Margin = new System.Windows.Forms.Padding(4);
-            this.CloseLamp.Name = "CloseLamp";
-            this.CloseLamp.Size = new System.Drawing.Size(136, 34);
-            this.CloseLamp.TabIndex = 7;
-            this.CloseLamp.Text = "Close Lamp";
-            this.CloseLamp.UseVisualStyleBackColor = true;
-            // 
-            // OpenLaser
-            // 
-            this.OpenLaser.Location = new System.Drawing.Point(4, 6);
-            this.OpenLaser.Margin = new System.Windows.Forms.Padding(4);
-            this.OpenLaser.Name = "OpenLaser";
-            this.OpenLaser.Size = new System.Drawing.Size(136, 34);
-            this.OpenLaser.TabIndex = 4;
-            this.OpenLaser.Text = "Open Laser";
-            this.OpenLaser.UseVisualStyleBackColor = true;
-            // 
-            // OpenLamp
-            // 
-            this.OpenLamp.Location = new System.Drawing.Point(148, 6);
-            this.OpenLamp.Margin = new System.Windows.Forms.Padding(4);
-            this.OpenLamp.Name = "OpenLamp";
-            this.OpenLamp.Size = new System.Drawing.Size(136, 34);
-            this.OpenLamp.TabIndex = 6;
-            this.OpenLamp.Text = "Open Lamp";
-            this.OpenLamp.UseVisualStyleBackColor = true;
-            // 
-            // CloseLaser
-            // 
-            this.CloseLaser.Location = new System.Drawing.Point(4, 48);
-            this.CloseLaser.Margin = new System.Windows.Forms.Padding(4);
-            this.CloseLaser.Name = "CloseLaser";
-            this.CloseLaser.Size = new System.Drawing.Size(136, 34);
-            this.CloseLaser.TabIndex = 5;
-            this.CloseLaser.Text = "Close Laser";
-            this.CloseLaser.UseVisualStyleBackColor = true;
             // 
             // CommandsBox
             // 
@@ -442,6 +307,141 @@
             this.StatusProgress.Size = new System.Drawing.Size(264, 34);
             this.StatusProgress.TabIndex = 6;
             // 
+            // CameraBox
+            // 
+            this.CameraBox.AutoSize = true;
+            this.CameraBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.CameraBox.Dock = System.Windows.Forms.DockStyle.Top;
+            // 
+            // CameraBox.Flow
+            // 
+            this.CameraBox.Flow.AutoSize = true;
+            this.CameraBox.Flow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.CameraBox.Flow.Controls.Add(this.CameraCommands);
+            this.CameraBox.Flow.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.CameraBox.Flow.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.CameraBox.Flow.Location = new System.Drawing.Point(3, 16);
+            this.CameraBox.Flow.Name = "Flow";
+            this.CameraBox.Flow.Size = new System.Drawing.Size(294, 67);
+            this.CameraBox.Flow.TabIndex = 0;
+            this.CameraBox.Location = new System.Drawing.Point(0, 144);
+            this.CameraBox.Name = "CameraBox";
+            this.CameraBox.SelectedObject = null;
+            this.CameraBox.Size = new System.Drawing.Size(300, 86);
+            this.CameraBox.TabIndex = 13;
+            this.CameraBox.Text = "Camera";
+            // 
+            // CameraCommands
+            // 
+            this.CameraCommands.AutoSize = true;
+            this.CameraCommands.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.CameraCommands.Controls.Add(GainLabel);
+            this.CameraCommands.Controls.Add(this.CameraGain);
+            this.CameraCommands.Location = new System.Drawing.Point(3, 36);
+            this.CameraCommands.Name = "CameraCommands";
+            this.CameraCommands.Size = new System.Drawing.Size(163, 28);
+            this.CameraCommands.TabIndex = 1;
+            // 
+            // GainLabel
+            // 
+            GainLabel.AutoSize = true;
+            GainLabel.Location = new System.Drawing.Point(4, 6);
+            GainLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            GainLabel.Name = "GainLabel";
+            GainLabel.Size = new System.Drawing.Size(68, 13);
+            GainLabel.TabIndex = 10;
+            GainLabel.Text = "Camera Gain";
+            // 
+            // CameraGain
+            // 
+            this.CameraGain.Location = new System.Drawing.Point(80, 4);
+            this.CameraGain.Margin = new System.Windows.Forms.Padding(4);
+            this.CameraGain.Maximum = new decimal(new int[] {
+            500,
+            0,
+            0,
+            0});
+            this.CameraGain.Name = "CameraGain";
+            this.CameraGain.Size = new System.Drawing.Size(79, 20);
+            this.CameraGain.TabIndex = 9;
+            // 
+            // BeamFlagBox
+            // 
+            this.BeamFlagBox.AutoSize = true;
+            this.BeamFlagBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.BeamFlagBox.Dock = System.Windows.Forms.DockStyle.Top;
+            // 
+            // BeamFlagBox.Flow
+            // 
+            this.BeamFlagBox.Flow.AutoSize = true;
+            this.BeamFlagBox.Flow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.BeamFlagBox.Flow.Controls.Add(this.BeamFlagCommands);
+            this.BeamFlagBox.Flow.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.BeamFlagBox.Flow.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.BeamFlagBox.Flow.Location = new System.Drawing.Point(3, 16);
+            this.BeamFlagBox.Flow.Name = "Flow";
+            this.BeamFlagBox.Flow.Size = new System.Drawing.Size(294, 125);
+            this.BeamFlagBox.Flow.TabIndex = 0;
+            this.BeamFlagBox.Location = new System.Drawing.Point(0, 0);
+            this.BeamFlagBox.Name = "BeamFlagBox";
+            this.BeamFlagBox.SelectedObject = null;
+            this.BeamFlagBox.Size = new System.Drawing.Size(300, 144);
+            this.BeamFlagBox.TabIndex = 0;
+            this.BeamFlagBox.Text = "Beam Flags";
+            // 
+            // BeamFlagCommands
+            // 
+            this.BeamFlagCommands.AutoSize = true;
+            this.BeamFlagCommands.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.BeamFlagCommands.Controls.Add(this.CloseLamp);
+            this.BeamFlagCommands.Controls.Add(this.OpenLaser);
+            this.BeamFlagCommands.Controls.Add(this.OpenLamp);
+            this.BeamFlagCommands.Controls.Add(this.CloseLaser);
+            this.BeamFlagCommands.Location = new System.Drawing.Point(3, 36);
+            this.BeamFlagCommands.Name = "BeamFlagCommands";
+            this.BeamFlagCommands.Size = new System.Drawing.Size(288, 86);
+            this.BeamFlagCommands.TabIndex = 1;
+            // 
+            // CloseLamp
+            // 
+            this.CloseLamp.Location = new System.Drawing.Point(148, 48);
+            this.CloseLamp.Margin = new System.Windows.Forms.Padding(4);
+            this.CloseLamp.Name = "CloseLamp";
+            this.CloseLamp.Size = new System.Drawing.Size(136, 34);
+            this.CloseLamp.TabIndex = 7;
+            this.CloseLamp.Text = "Close Lamp";
+            this.CloseLamp.UseVisualStyleBackColor = true;
+            // 
+            // OpenLaser
+            // 
+            this.OpenLaser.Location = new System.Drawing.Point(4, 6);
+            this.OpenLaser.Margin = new System.Windows.Forms.Padding(4);
+            this.OpenLaser.Name = "OpenLaser";
+            this.OpenLaser.Size = new System.Drawing.Size(136, 34);
+            this.OpenLaser.TabIndex = 4;
+            this.OpenLaser.Text = "Open Laser";
+            this.OpenLaser.UseVisualStyleBackColor = true;
+            // 
+            // OpenLamp
+            // 
+            this.OpenLamp.Location = new System.Drawing.Point(148, 6);
+            this.OpenLamp.Margin = new System.Windows.Forms.Padding(4);
+            this.OpenLamp.Name = "OpenLamp";
+            this.OpenLamp.Size = new System.Drawing.Size(136, 34);
+            this.OpenLamp.TabIndex = 6;
+            this.OpenLamp.Text = "Open Lamp";
+            this.OpenLamp.UseVisualStyleBackColor = true;
+            // 
+            // CloseLaser
+            // 
+            this.CloseLaser.Location = new System.Drawing.Point(4, 48);
+            this.CloseLaser.Margin = new System.Windows.Forms.Padding(4);
+            this.CloseLaser.Name = "CloseLaser";
+            this.CloseLaser.Size = new System.Drawing.Size(136, 34);
+            this.CloseLaser.TabIndex = 5;
+            this.CloseLaser.Text = "Close Laser";
+            this.CloseLaser.UseVisualStyleBackColor = true;
+            // 
             // LuiTab
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
@@ -457,6 +457,11 @@
             this.RightPanel.PerformLayout();
             this.CommonObjectPanel.ResumeLayout(false);
             this.CommonObjectPanel.PerformLayout();
+            this.CommandsBox.ResumeLayout(false);
+            this.CommandsBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.NScan)).EndInit();
+            this.StatusBox.ResumeLayout(false);
+            this.StatusBox.PerformLayout();
             this.CameraBox.Flow.ResumeLayout(false);
             this.CameraBox.Flow.PerformLayout();
             this.CameraCommands.ResumeLayout(false);
@@ -465,11 +470,6 @@
             this.BeamFlagBox.Flow.ResumeLayout(false);
             this.BeamFlagBox.Flow.PerformLayout();
             this.BeamFlagCommands.ResumeLayout(false);
-            this.CommandsBox.ResumeLayout(false);
-            this.CommandsBox.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.NScan)).EndInit();
-            this.StatusBox.ResumeLayout(false);
-            this.StatusBox.PerformLayout();
             this.ResumeLayout(false);
 
         }

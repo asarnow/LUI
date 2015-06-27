@@ -90,6 +90,8 @@ namespace lasercom.camera
             }
         }
 
+        public abstract ImageArea Image { get; set; }
+
         public abstract int[] CountsFvb();
 
         public abstract int[] FullResolutionImage();

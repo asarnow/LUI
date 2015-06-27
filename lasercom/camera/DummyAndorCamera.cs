@@ -124,7 +124,7 @@ namespace lasercom.camera
         }
 
         private ImageArea _Image;
-        override public ImageArea Image
+        public override ImageArea Image
         {
             get { return _Image; }
             set
@@ -155,6 +155,7 @@ namespace lasercom.camera
         {
             _Width = 1024;
             _Height = 256;
+            Image = new ImageArea(1, 1, 0, (int)Width, 0, (int)Height);
             Calibration = Enumerable.Range(0, (int)Width).Select(x => (double)x).ToArray();
             LoadCalibration(CalFile);
             MinIntensifierGain = 0;
@@ -226,6 +227,26 @@ namespace lasercom.camera
                     data = Enumerable.Repeat(55000, (int)Width).ToArray();
                     Data.Dissipate(data, Data.Uniform((int)Width, 1000));
                     Data.Dissipate(data, Data.Gaussian((int)Width, 40000, Width * 2 / 3, Width / 10));
+                }
+            }
+            else if (caller.Contains("ResidualsControl"))
+            {
+                if (ReadMode == ReadModeImage)
+                {
+                    data = new int[AcqSize];
+                    for (int i = 0; i < Image.Height; i++)
+                    {
+                        int[] row = Data.Gaussian(Image.Width, 32000, Width * 1 / 2, Width / 10);
+                        Data.Accumulate(row, Data.Uniform(Image.Width, 100 + i*10));
+                        for (int j = 0; j < Image.Width; j++)
+                        {
+                            data[i * Image.Width + j] = row[j];
+                        }
+                    }
+                }
+                else
+                {
+                    data = Data.Gaussian(Image.Width, 32000, Width * 1 / 2, Width / 10);
                 }
             }
 
