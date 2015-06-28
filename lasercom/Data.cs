@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace lasercom
 {
@@ -9,49 +10,49 @@ namespace lasercom
     public static class Data
     {
 
-        public static void NormalizeArray(int[] arr, int maxval)
+        public static void NormalizeArray(IList<int> arr, int maxval)
         {
             int max = AbsMax(arr);
-            for (int i = 0; i < arr.Length; i++)
+            for (int i = 0; i < arr.Count; i++)
             {
                 int denom = max * maxval;
                 arr[i] = denom == 0 ? 0 : arr[i] / denom;
             }
         }
 
-        public static void Accumulate(int[] a, int[] b)
+        public static void Accumulate(IList<int> a, IList<int> b)
         {
-            for (int i = 0; i < a.Length; i++)
+            for (int i = 0; i < a.Count; i++)
                 a[i] += b[i];
         }
 
-        public static void Accumulate(double[] a, int[] b)
+        public static void Accumulate(IList<double> a, IList<int> b)
         {
-            for (int i = 0; i < a.Length; i++)
+            for (int i = 0; i < a.Count; i++)
                 a[i] += b[i];
         }
 
-        public static void Accumulate(double[] a, double[] b)
+        public static void Accumulate(IList<double> a, IList<double> b)
         {
-            for (int i = 0; i < a.Length; i++)
+            for (int i = 0; i < a.Count; i++)
                 a[i] += b[i];
         }
 
-        public static void Dissipate(int[] a, int[] b)
+        public static void Dissipate(IList<int> a, IList<int> b)
         {
-            for (int i = 0; i < a.Length; i++)
+            for (int i = 0; i < a.Count; i++)
                 a[i] -= b[i];
         }
 
-        public static void Dissipate(double[] a, int[] b)
+        public static void Dissipate(IList<double> a, IList<double> b)
         {
-            for (int i = 0; i < a.Length; i++)
+            for (int i = 0; i < a.Count; i++)
                 a[i] -= b[i];
         }
 
-        public static void Dissipate(double[] a, double[] b)
+        public static void Dissipate(IList<double> a, IList<double> b)
         {
-            for (int i = 0; i < a.Length; i++)
+            for (int i = 0; i < a.Count; i++)
                 a[i] -= b[i];
         }
 
@@ -61,7 +62,7 @@ namespace lasercom
             return data;
         }
 
-        public static int AbsMax(int[] arr)
+        public static int AbsMax(IList<int> arr)
         {
             int curmax = int.MinValue;
             foreach (int i in arr)
@@ -69,35 +70,44 @@ namespace lasercom
             return curmax;
         }
 
-        public static void DivideArray(int[] arr, int N)
+        public static void DivideArray(IList<int> arr, int N)
         {
-            for (int i = 0; i < arr.Length; i++)
+            for (int i = 0; i < arr.Count; i++)
             {
                 arr[i] /= N;
             }
         }
 
-        public static void DivideArray(double[] arr, double N)
+        public static void DivideArray(IList<double> arr, double N)
         {
-            for (int i = 0; i < arr.Length; i++)
+            for (int i = 0; i < arr.Count; i++)
             {
                 arr[i] /= N;
             }
         }
 
-        public static void MultiplyArray(int[] arr, int N)
+        public static void MultiplyArray(IList<int> arr, int N)
         {
-            for (int i = 0; i < arr.Length; i++)
+            for (int i = 0; i < arr.Count; i++)
             {
                 arr[i] *= N;
             }
         }
 
-        public static void MultiplyArray(double[] arr, double N)
+        public static void MultiplyArray(IList<double> arr, double N)
         {
-            for (int i = 0; i < arr.Length; i++)
+            for (int i = 0; i < arr.Count; i++)
             {
                 arr[i] *= N;
+            }
+        }
+
+        public static void ColumnSum(IList<double> accumulator, double[] matrix, int width)
+        {
+            for (int i = 0; i < matrix.Length / width; i++)
+            {
+                int start = i * width;
+                Accumulate(accumulator, new ArraySegment<double>(matrix, start, width));
             }
         }
 
@@ -108,9 +118,9 @@ namespace lasercom
         /// <param name="Blank"></param>
         /// <param name="Dark"></param>
         /// <returns>Optical density</returns>
-        public static double[] OpticalDensity(int[] Sample, int[] Blank, int[] Dark)
+        public static double[] OpticalDensity(IList<int> Sample, IList<int> Blank, IList<int> Dark)
         {
-            double[] OD = new double[Sample.Length];
+            double[] OD = new double[Sample.Count];
             for (int i = 0; i < OD.Length; i++)
                 OD[i] = -Math.Log10((double)(Sample[i] - Dark[i]) / (double)(Blank[i] - Dark[i]));
             return OD;
@@ -122,9 +132,9 @@ namespace lasercom
         /// <param name="Sample"></param>
         /// <param name="Blank"></param>
         /// <returns>Optical density</returns>
-        public static double[] OpticalDensity(int[] Sample, int[] Blank)
+        public static double[] OpticalDensity(IList<int> Sample, IList<int> Blank)
         {
-            double[] OD = new double[Sample.Length];
+            double[] OD = new double[Sample.Count];
             for (int i = 0; i < OD.Length; i++)
                 OD[i] = -Math.Log10((double)(Sample[i]) / (double)(Blank[i]));
             return OD;
@@ -137,9 +147,9 @@ namespace lasercom
         /// <param name="Trans"></param>
         /// <param name="Dark"></param>
         /// <returns>Delta OD</returns>
-        public static double[] DeltaOD(int[] Ground, int[] Trans, int[] Dark)
+        public static double[] DeltaOD(IList<int> Ground, IList<int> Trans, IList<int> Dark)
         {
-            double[] OD = new double[Ground.Length];
+            double[] OD = new double[Ground.Count];
             for (int i = 0; i < OD.Length; i++)
                 OD[i] = Math.Log10((double)(Trans[i] - Dark[i]) / (double)(Ground[i] - Dark[i]));
             return OD;
@@ -151,17 +161,17 @@ namespace lasercom
         /// <param name="Ground"></param>
         /// <param name="Trans"></param>
         /// <returns>Delta OD</returns>
-        public static double[] DeltaOD(int[] Ground, int[] Trans)
+        public static double[] DeltaOD(IList<int> Ground, IList<int> Trans)
         {
-            double[] OD = new double[Ground.Length];
+            double[] OD = new double[Ground.Count];
             for (int i = 0; i < OD.Length; i++)
                 OD[i] = Math.Log10((double)(Trans[i]) / (double)(Ground[i]));
             return OD;
         }
 
-        public static double[] DeltaOD(double[] Ground, double[] Trans)
+        public static double[] DeltaOD(IList<double> Ground, IList<double> Trans)
         {
-            double[] OD = new double[Ground.Length];
+            double[] OD = new double[Ground.Count];
             for (int i = 0; i < OD.Length; i++)
                 //OD[i] = Math.Log10((Trans[i]) / (Ground[i]));
                 OD[i] = Math.Log10(Trans[i]) - Math.Log10(Ground[i]);
@@ -190,10 +200,10 @@ namespace lasercom
             return g;
         }
 
-        public static double[] Calibrate(double[] channel, double slope, double intercept)
+        public static double[] Calibrate(IList<double> channel, double slope, double intercept)
         {
-            double[] cal = new double[channel.Length];
-            for (int i = 0; i < channel.Length; i++)
+            double[] cal = new double[channel.Count];
+            for (int i = 0; i < channel.Count; i++)
             {
                 cal[i] = slope * channel[i] + intercept;
             }
@@ -216,15 +226,15 @@ namespace lasercom
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns>Tuple containing slope, y-intercept and R^2</returns>
-        public static Tuple<double,double,double> LinearLeastSquares(double[] x, double[] y)
+        public static Tuple<double, double, double> LinearLeastSquares(IList<double> x, IList<double> y)
         {
-            double n = x.Length;
+            double n = x.Count;
             double xysum = 0;
             double xsum = 0;
             double xsqsum = 0;
             double ysum = 0;
             double ysqsum = 0;
-            for (int i = 0; i < x.Length; i++)
+            for (int i = 0; i < x.Count; i++)
             {
                 xysum += x[i] * y[i];
                 xsum += x[i];
@@ -266,15 +276,15 @@ namespace lasercom
             return A;
         }
 
-        public static void CumulativeMovingAverage(double[] CMA, double[] X, int n)
+        public static void CumulativeMovingAverage(IList<double> CMA, IList<double> X, int n)
         {
-            for (int i = 0; i < CMA.Length; i++)
+            for (int i = 0; i < CMA.Count; i++)
                 CMA[i] = (X[i] + n * CMA[i]) / (n + 1);
         }
-        
-        public static void CumulativeMovingAverage(double[] CMA, int[] X, int n)
+
+        public static void CumulativeMovingAverage(IList<double> CMA, IList<int> X, int n)
         {
-            for (int i = 0; i < CMA.Length; i++)
+            for (int i = 0; i < CMA.Count; i++)
                 CMA[i] = (X[i] + n * CMA[i]) / (n + 1);
         }
     }
