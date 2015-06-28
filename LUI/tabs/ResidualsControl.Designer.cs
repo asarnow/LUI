@@ -53,11 +53,13 @@
             this.OptionsBox = new System.Windows.Forms.GroupBox();
             this.GraphScroll = new System.Windows.Forms.VScrollBar();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.SoftFvbMode = new System.Windows.Forms.RadioButton();
             this.ImageMode = new System.Windows.Forms.RadioButton();
             this.FvbMode = new System.Windows.Forms.RadioButton();
             this.CameraExtras = new System.Windows.Forms.GroupBox();
             this.ScrollTip = new System.Windows.Forms.ToolTip(this.components);
-            this.SoftFvbMode = new System.Windows.Forms.RadioButton();
+            this.CameraTemperature = new System.Windows.Forms.NumericUpDown();
+            this.label4 = new System.Windows.Forms.Label();
             label1 = new System.Windows.Forms.Label();
             DiffSumLabel = new System.Windows.Forms.Label();
             NAverageLabel = new System.Windows.Forms.Label();
@@ -79,6 +81,7 @@
             this.OptionsBox.SuspendLayout();
             this.panel1.SuspendLayout();
             this.CameraExtras.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.CameraTemperature)).BeginInit();
             this.SuspendLayout();
             // 
             // Graph
@@ -392,6 +395,17 @@
             this.panel1.Size = new System.Drawing.Size(279, 23);
             this.panel1.TabIndex = 23;
             // 
+            // SoftFvbMode
+            // 
+            this.SoftFvbMode.AutoSize = true;
+            this.SoftFvbMode.Location = new System.Drawing.Point(186, 3);
+            this.SoftFvbMode.Name = "SoftFvbMode";
+            this.SoftFvbMode.Size = new System.Drawing.Size(90, 17);
+            this.SoftFvbMode.TabIndex = 2;
+            this.SoftFvbMode.TabStop = true;
+            this.SoftFvbMode.Text = "Software FVB";
+            this.SoftFvbMode.UseVisualStyleBackColor = true;
+            // 
             // ImageMode
             // 
             this.ImageMode.AutoSize = true;
@@ -416,6 +430,8 @@
             // 
             // CameraExtras
             // 
+            this.CameraExtras.Controls.Add(this.label4);
+            this.CameraExtras.Controls.Add(this.CameraTemperature);
             this.CameraExtras.Controls.Add(this.panel1);
             this.CameraExtras.Dock = System.Windows.Forms.DockStyle.Top;
             this.CameraExtras.Location = new System.Drawing.Point(0, 0);
@@ -432,16 +448,21 @@
             this.ScrollTip.ReshowDelay = 100;
             this.ScrollTip.ShowAlways = true;
             // 
-            // SoftFvbMode
+            // CameraTemperature
             // 
-            this.SoftFvbMode.AutoSize = true;
-            this.SoftFvbMode.Location = new System.Drawing.Point(186, 3);
-            this.SoftFvbMode.Name = "SoftFvbMode";
-            this.SoftFvbMode.Size = new System.Drawing.Size(90, 17);
-            this.SoftFvbMode.TabIndex = 2;
-            this.SoftFvbMode.TabStop = true;
-            this.SoftFvbMode.Text = "Software FVB";
-            this.SoftFvbMode.UseVisualStyleBackColor = true;
+            this.CameraTemperature.Location = new System.Drawing.Point(138, 48);
+            this.CameraTemperature.Name = "CameraTemperature";
+            this.CameraTemperature.Size = new System.Drawing.Size(48, 20);
+            this.CameraTemperature.TabIndex = 24;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(3, 50);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(129, 13);
+            this.label4.TabIndex = 25;
+            this.label4.Text = "Camera Temperature (°C):";
             // 
             // ResidualsControl
             // 
@@ -471,6 +492,7 @@
             this.panel1.PerformLayout();
             this.CameraExtras.ResumeLayout(false);
             this.CameraExtras.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.CameraTemperature)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -499,5 +521,7 @@
         private System.Windows.Forms.GroupBox CameraExtras;
         private System.Windows.Forms.ToolTip ScrollTip;
         private System.Windows.Forms.RadioButton SoftFvbMode;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.NumericUpDown CameraTemperature;
     }
 }

@@ -109,7 +109,8 @@ namespace LUI.tabs
             GraphScroll.ValueChanged += GraphScroll_ValueChanged;
             GraphScroll.Enabled = false;
             GraphScroll.LargeChange = 1;
-            
+
+            CameraTemperature.Enabled = false;
             //FvbMode.CheckedChanged += FvbMode_CheckedChanged;
             //ImageMode.CheckedChanged += ImageMode_CheckedChanged;
 
@@ -138,6 +139,29 @@ namespace LUI.tabs
             LowerBound = (int)Commander.Camera.Image.Width / 6;
             UpperBound = (int)Commander.Camera.Image.Width * 5 / 6;
             GraphScroll.Maximum = (int)Commander.Camera.Image.Height - 1;
+            if (Commander.Camera is CameraTempControlled)
+            {
+                CameraTemperature.Enabled = true;
+                var camct = (CameraTempControlled)Commander.Camera;
+                CameraTemperature.Minimum = camct.MinTemp;
+                CameraTemperature.Maximum = camct.MaxTemp;
+                CameraTemperature.Value = camct.Temperature;
+                CameraTemperature.ValueChanged += CameraTemperature_ValueChanged;
+            }
+            else
+            {
+                CameraTemperature.Enabled = false;
+                CameraTemperature.ValueChanged -= CameraTemperature_ValueChanged;
+            }
+        }
+
+        void CameraTemperature_ValueChanged(object sender, EventArgs e)
+        {
+            var camct = Commander.Camera as CameraTempControlled;
+            if (camct != null)
+            {
+                camct.EquilibrateTemperature((int)CameraTemperature.Value);
+            }
         }
 
         public override void HandleContainingTabSelected(object sender, EventArgs e)

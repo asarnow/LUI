@@ -36,6 +36,26 @@ namespace lasercom.camera
             }
         }
 
+        public int Temperature
+        {
+            get
+            {
+                int currentTemperature = 0;
+                AndorSdk.GetTemperature(ref currentTemperature);
+                return currentTemperature;
+            }
+        }
+
+        public float TemperatureF
+        {
+            get
+            {
+                float currentTemperature = 0;
+                AndorSdk.GetTemperatureF(ref currentTemperature);
+                return currentTemperature;
+            }
+        }
+
         public CameraTempControlled(string CalFile, string Dir, int InitialGain, int Temperature)
             : base(CalFile, Dir, InitialGain)
         {
