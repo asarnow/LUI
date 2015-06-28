@@ -144,6 +144,7 @@ namespace LUI.tabs
                 var camct = (CameraTempControlled)Commander.Camera;
                 CameraTemperature.Minimum = camct.MinTemp;
                 CameraTemperature.Maximum = camct.MaxTemp;
+                CameraTemperature.Increment = (int)CameraTempControlled.TemperatureEps;
                 CameraTemperature.Value = camct.Temperature;
                 //CameraTemperature.ValueChanged -= CameraTemperature_ValueChanged; // Avoid double subscription.
                 //CameraTemperature.ValueChanged += CameraTemperature_ValueChanged;
@@ -152,16 +153,6 @@ namespace LUI.tabs
             {
                 CameraTemperature.Enabled = false;
                 //CameraTemperature.ValueChanged -= CameraTemperature_ValueChanged;
-            }
-        }
-
-        void CameraTemperature_ValueChanged(object sender, EventArgs e)
-        {
-            var camct = Commander.Camera as CameraTempControlled;
-            if (camct != null)
-            {
-                camct.EquilibrateTemperature((int)CameraTemperature.Value); // Wait for 3 deg. threshold.
-                camct.EquilibrateTemperature(); // Wait for driver signal.
             }
         }
 
@@ -665,6 +656,18 @@ namespace LUI.tabs
         {
             ScrollTip.SetToolTip(GraphScroll, GraphScroll.Value.ToString());
             //ScrollTip.Show(GraphScroll.Value.ToString(), GraphScroll, 10000);
+        }
+
+        void CameraTemperature_ValueChanged(object sender, EventArgs e)
+        {
+            var camct = Commander.Camera as CameraTempControlled;
+            if (camct != null)
+            {
+                CameraTemperature.ForeColor = Color.Red;
+                camct.EquilibrateTemperature((int)CameraTemperature.Value); // Wait for 3 deg. threshold.
+                camct.EquilibrateTemperature(); // Wait for driver signal.
+                CameraTemperature.ForeColor = Color.Black;
+            }
         }
     }
 }
