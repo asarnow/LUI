@@ -300,6 +300,11 @@ namespace lasercom.camera
                 //TriggerLevel = Constants.DefaultTriggerLevel; // TTL signal is 4.0V
                 AndorSdk.GetMCPGainRange(ref _MinMCPGain, ref _MaxMCPGain);
                 IntensifierGain = InitialGain;
+
+                AcquisitionMode = AcquisitionModeSingle;
+                TriggerMode = TriggerModeExternalExposure;
+                DDGTriggerMode = DDGTriggerModeExternal;
+                ReadMode = ReadModeFVB;
             }
             LoadCalibration(CalFile);
         }

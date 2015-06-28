@@ -110,9 +110,8 @@ namespace LUI.tabs
             GraphScroll.Enabled = false;
             GraphScroll.LargeChange = 1;
 
+            CameraTemperature.ValueChanged += CameraTemperature_ValueChanged;
             CameraTemperature.Enabled = false;
-            //FvbMode.CheckedChanged += FvbMode_CheckedChanged;
-            //ImageMode.CheckedChanged += ImageMode_CheckedChanged;
 
             DdgConfigBox.Config = Config;
             DdgConfigBox.Commander = Commander;
@@ -146,12 +145,13 @@ namespace LUI.tabs
                 CameraTemperature.Minimum = camct.MinTemp;
                 CameraTemperature.Maximum = camct.MaxTemp;
                 CameraTemperature.Value = camct.Temperature;
-                CameraTemperature.ValueChanged += CameraTemperature_ValueChanged;
+                //CameraTemperature.ValueChanged -= CameraTemperature_ValueChanged; // Avoid double subscription.
+                //CameraTemperature.ValueChanged += CameraTemperature_ValueChanged;
             }
             else
             {
                 CameraTemperature.Enabled = false;
-                CameraTemperature.ValueChanged -= CameraTemperature_ValueChanged;
+                //CameraTemperature.ValueChanged -= CameraTemperature_ValueChanged;
             }
         }
 
@@ -160,7 +160,8 @@ namespace LUI.tabs
             var camct = Commander.Camera as CameraTempControlled;
             if (camct != null)
             {
-                camct.EquilibrateTemperature((int)CameraTemperature.Value);
+                camct.EquilibrateTemperature((int)CameraTemperature.Value); // Wait for 3 deg. threshold.
+                camct.EquilibrateTemperature(); // Wait for driver signal.
             }
         }
 
@@ -257,9 +258,6 @@ namespace LUI.tabs
         {
             WorkArgs args = (WorkArgs)e.Argument;
 
-            Commander.Camera.AcquisitionMode = AndorCamera.AcquisitionModeSingle;
-            Commander.Camera.TriggerMode = AndorCamera.TriggerModeExternalExposure;
-            Commander.Camera.DDGTriggerMode = AndorCamera.DDGTriggerModeExternal;
             Commander.Camera.ReadMode = args.ReadMode;
             
             int cmasum = 0; // Cumulative moving average over scans
