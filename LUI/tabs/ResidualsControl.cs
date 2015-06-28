@@ -55,17 +55,19 @@ namespace LUI.tabs
 
         struct WorkArgs
         {
-            public WorkArgs(int NScans, int NAverage, bool CollectLaser, int ReadMode)
+            public WorkArgs(int NScans, int NAverage, bool CollectLaser, int ReadMode, bool SoftwareBinning)
             {
                 this.NScans = NScans;
                 this.NAvg = NAverage;
                 this.CollectLaser = CollectLaser;
                 this.ReadMode = ReadMode;
+                this.SoftwareBinning = SoftwareBinning;
             }
             public readonly int NScans;
             public readonly int NAvg;
             public readonly bool CollectLaser;
             public readonly int ReadMode;
+            public readonly bool SoftwareBinning;
         }
 
         struct ProgressObject
@@ -181,9 +183,9 @@ namespace LUI.tabs
             if (CollectLaser.Checked)
                 DdgConfigBox.ApplyPrimaryDelayValue();
 
-            int ReadMode = ImageMode.Checked ? AndorCamera.ReadModeImage : AndorCamera.ReadModeFVB;
+            int ReadMode = FvbMode.Checked ? AndorCamera.ReadModeFVB : AndorCamera.ReadModeImage;
 
-            GraphScroll.Enabled = ReadMode == AndorCamera.ReadModeImage;
+            GraphScroll.Enabled = ImageMode.Checked;
 
             worker = new BackgroundWorker();
             worker.DoWork += new System.ComponentModel.DoWorkEventHandler(DoWork);
@@ -191,7 +193,7 @@ namespace LUI.tabs
             worker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(WorkComplete);
             worker.WorkerSupportsCancellation = true;
             worker.WorkerReportsProgress = true;
-            worker.RunWorkerAsync(new WorkArgs((int)NScan.Value, (int)NAverage.Value, CollectLaser.Checked, ReadMode));
+            worker.RunWorkerAsync(new WorkArgs((int)NScan.Value, (int)NAverage.Value, CollectLaser.Checked, ReadMode, SoftFvbMode.Checked));
             OnTaskStarted(EventArgs.Empty);
         }
 
@@ -247,9 +249,11 @@ namespace LUI.tabs
             int[] pastsums = new int[args.NAvg];
             int[] pastpeaks = new int[args.NAvg];
 
+            uint finalSize = Commander.Camera.AcqSize;
+            if (args.SoftwareBinning) finalSize /= (uint)Commander.Camera.Image.Height;
 
             int[] DataBuffer = new int[Commander.Camera.AcqSize];
-            int[] CumulativeDataBuffer = new int[DataBuffer.Length];
+            int[] CumulativeDataBuffer = new int[finalSize];
 
             if (args.CollectLaser)
             {
@@ -264,7 +268,7 @@ namespace LUI.tabs
             {
                 uint ret = Commander.Camera.Acquire(DataBuffer);
 
-                Data.Accumulate(CumulativeDataBuffer, DataBuffer);
+                Data.ColumnSum(CumulativeDataBuffer, DataBuffer);
 
                 int sum = 0;
                 int peak = int.MinValue;
@@ -314,8 +318,9 @@ namespace LUI.tabs
 
             Commander.BeamFlag.CloseLaserAndFlash();
 
-            Data.DivideArray(CumulativeDataBuffer, args.NScans);
-            e.Result = Array.ConvertAll((int[])CumulativeDataBuffer, x=> (double)x);
+            double[] CumulativeData = Array.ConvertAll((int[])CumulativeDataBuffer, x=> (double)x);
+            Data.DivideArray(CumulativeData, args.NScans * DataBuffer.Length / CumulativeDataBuffer.Length);
+            e.Result = CumulativeData;
         }
 
         /// <summary>

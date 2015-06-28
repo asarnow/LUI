@@ -57,6 +57,7 @@
             this.FvbMode = new System.Windows.Forms.RadioButton();
             this.CameraExtras = new System.Windows.Forms.GroupBox();
             this.ScrollTip = new System.Windows.Forms.ToolTip(this.components);
+            this.SoftFvbMode = new System.Windows.Forms.RadioButton();
             label1 = new System.Windows.Forms.Label();
             DiffSumLabel = new System.Windows.Forms.Label();
             NAverageLabel = new System.Windows.Forms.Label();
@@ -383,11 +384,12 @@
             // 
             this.panel1.AutoSize = true;
             this.panel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.panel1.Controls.Add(this.SoftFvbMode);
             this.panel1.Controls.Add(this.ImageMode);
             this.panel1.Controls.Add(this.FvbMode);
             this.panel1.Location = new System.Drawing.Point(6, 19);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(183, 23);
+            this.panel1.Size = new System.Drawing.Size(279, 23);
             this.panel1.TabIndex = 23;
             // 
             // ImageMode
@@ -429,6 +431,17 @@
             this.ScrollTip.InitialDelay = 50;
             this.ScrollTip.ReshowDelay = 100;
             this.ScrollTip.ShowAlways = true;
+            // 
+            // SoftFvbMode
+            // 
+            this.SoftFvbMode.AutoSize = true;
+            this.SoftFvbMode.Location = new System.Drawing.Point(186, 3);
+            this.SoftFvbMode.Name = "SoftFvbMode";
+            this.SoftFvbMode.Size = new System.Drawing.Size(90, 17);
+            this.SoftFvbMode.TabIndex = 2;
+            this.SoftFvbMode.TabStop = true;
+            this.SoftFvbMode.Text = "Software FVB";
+            this.SoftFvbMode.UseVisualStyleBackColor = true;
             // 
             // ResidualsControl
             // 
@@ -485,5 +498,6 @@
         private System.Windows.Forms.RadioButton ImageMode;
         private System.Windows.Forms.GroupBox CameraExtras;
         private System.Windows.Forms.ToolTip ScrollTip;
+        private System.Windows.Forms.RadioButton SoftFvbMode;
     }
 }

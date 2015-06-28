@@ -50,7 +50,7 @@ namespace lasercom
                 a[i] -= b[i];
         }
 
-        public static void Dissipate(IList<double> a, IList<double> b)
+        public static void Dissipate(IList<double> a, IList<int> b)
         {
             for (int i = 0; i < a.Count; i++)
                 a[i] -= b[i];
@@ -102,12 +102,30 @@ namespace lasercom
             }
         }
 
-        public static void ColumnSum(IList<double> accumulator, double[] matrix, int width)
+        public static void ColumnSum(IList<double> accumulator, double[] matrix)
         {
-            for (int i = 0; i < matrix.Length / width; i++)
+            for (int i = 0; i < matrix.Length / accumulator.Count; i++)
             {
-                int start = i * width;
-                Accumulate(accumulator, new ArraySegment<double>(matrix, start, width));
+                int start = i * accumulator.Count;
+                Accumulate(accumulator, new ArraySegment<double>(matrix, start, accumulator.Count));
+            }
+        }
+
+        public static void ColumnSum(IList<int> accumulator, int[] matrix)
+        {
+            for (int i = 0; i < matrix.Length / accumulator.Count; i++)
+            {
+                int start = i * accumulator.Count;
+                Accumulate(accumulator, new ArraySegment<int>(matrix, start, accumulator.Count));
+            }
+        }
+
+        public static void ColumnSum(IList<double> accumulator, int[] matrix)
+        {
+            for (int i = 0; i < matrix.Length / accumulator.Count; i++)
+            {
+                int start = i * accumulator.Count;
+                Accumulate(accumulator, new ArraySegment<int>(matrix, start, accumulator.Count));
             }
         }
 
