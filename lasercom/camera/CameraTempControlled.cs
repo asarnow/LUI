@@ -32,7 +32,7 @@ namespace lasercom.camera
         {
             get
             {
-                return MaxTemp;
+                return _MaxTemp;
             }
         }
 
