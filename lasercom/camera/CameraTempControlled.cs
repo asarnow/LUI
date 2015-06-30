@@ -5,6 +5,7 @@ using ATMCD64CS;
 #else
 using ATMCD32CS;
 using System.Threading.Tasks;
+using System.Threading;
 #endif
 
 //  <summary>
@@ -90,9 +91,24 @@ namespace lasercom.camera
             }
         }
 
+        public async Task EquilibrateTemperatureAsync(int targetTemperature)
+        {
+            await Task.Run(() => EquilibrateTemperature(targetTemperature));
+        }
+
+        public async Task EquilibrateTemperatureAsync(int targetTemperature, CancellationToken token)
+        {
+            await Task.Run(() => EquilibrateTemperature(targetTemperature), token);
+        }
+
         public async Task EquilibrateTemperatureAsync()
         {
             await Task.Run(() => EquilibrateTemperature());
+        }
+
+        public async Task EquilibrateTemperatureAsync(CancellationToken token)
+        {
+            await Task.Run(() => EquilibrateTemperature(), token);
         }
 
         public void WaitForTemperatureIncrease(int thresholdTemperature)

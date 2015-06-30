@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 using lasercom;
 using lasercom.camera;
@@ -15,9 +16,11 @@ namespace LUI.tabs
 {
     public partial class ResidualsControl : LuiTab
     {
+        CancellationTokenSource TemperatureCts = null;
         private double[] Light = null;
         private double[] LastLight = null;
         private double[] CumulativeLight = null;
+        
         private double[] _DiffLight = null;
         private double[] DiffLight
         {
@@ -670,11 +673,23 @@ namespace LUI.tabs
             var camct = Commander.Camera as CameraTempControlled;
             if (camct != null)
             {
+                if (TemperatureCts != null) TemperatureCts.Cancel();
+                TemperatureCts = new CancellationTokenSource();
+
                 CameraTemperature.ForeColor = Color.Red;
-                camct.EquilibrateTemperature((int)CameraTemperature.Value); // Wait for 3 deg. threshold.
-                await camct.EquilibrateTemperatureAsync(); // Wait for driver signal.
+                await camct.EquilibrateTemperatureAsync((int)CameraTemperature.Value, TemperatureCts.Token); // Wait for 3 deg. threshold.
+                CameraTemperature.ValueChanged -= CameraTemperature_ValueChanged;
                 CameraTemperature.Value = camct.Temperature;
+                CameraTemperature.ValueChanged += CameraTemperature_ValueChanged;
+                CameraTemperature.ForeColor = Color.Yellow;
+                
+                await camct.EquilibrateTemperatureAsync(TemperatureCts.Token); // Wait for driver signal.
+                CameraTemperature.ValueChanged -= CameraTemperature_ValueChanged;
+                CameraTemperature.Value = camct.Temperature;
+                CameraTemperature.ValueChanged += CameraTemperature_ValueChanged;
                 CameraTemperature.ForeColor = Color.Black;
+
+                TemperatureCts = null;
             }
         }
     }
