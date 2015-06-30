@@ -4,6 +4,7 @@
 using ATMCD64CS;
 #else
 using ATMCD32CS;
+using System.Threading.Tasks;
 #endif
 
 //  <summary>
@@ -62,7 +63,6 @@ namespace lasercom.camera
             AndorSdk.GetTemperatureRange(ref _MinTemp, ref _MaxTemp);
             AndorSdk.CoolerON();
             EquilibrateTemperature(Temperature);
-            EquilibrateTemperature();
         }
 
         public void EquilibrateTemperature(int targetTemperature)
@@ -88,6 +88,11 @@ namespace lasercom.camera
             {
                 status = AndorSdk.GetTemperature(ref currentTemperature);
             }
+        }
+
+        public async Task EquilibrateTemperatureAsync()
+        {
+            await Task.Run(() => EquilibrateTemperature());
         }
 
         public void WaitForTemperatureIncrease(int thresholdTemperature)
