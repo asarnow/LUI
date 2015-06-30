@@ -285,12 +285,16 @@ namespace LUI.tabs
 
                 int sum = 0;
                 int peak = int.MinValue;
-                for (int j = LowerBound; j <= UpperBound; j++)
+                for (int k = 0; k < Commander.Camera.AcqSize / Commander.Camera.Image.Width; k++)
                 {
-                    sum += DataBuffer[j];
-                    if (DataBuffer[j] > peak) peak = DataBuffer[j];
+                    for (int j = LowerBound; j <= UpperBound; j++)
+                    {
+                        int idx = k * Commander.Camera.Image.Width + j;
+                        sum += DataBuffer[idx];
+                        if (DataBuffer[idx] > peak) peak = DataBuffer[idx];
+                    }
                 }
-
+                    
                 double vartemp;
                 int delta = sum - cmasum;
                 cmasum += delta / (i + 1);
