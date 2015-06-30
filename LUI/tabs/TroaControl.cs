@@ -6,6 +6,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Windows.Forms;
 using lasercom;
 using lasercom.camera;
@@ -319,14 +320,22 @@ namespace LUI.tabs
 
             if (Commander.Camera is CameraTempControlled)
             {
-                bool equil = (bool)Invoke(new Func<bool>(TemperatureStabilizedDialog));
                 var camct = (CameraTempControlled)Commander.Camera;
-                if (equil)
+                if (camct.TemperatureStatus != CameraTempControlled.TemperatureStabilized)
                 {
-                    progress = new ProgressObject(null, null, 0, Dialog.TEMPERATURE);
-                    if (PauseCancelProgress(e, 0, progress)) return;
-                    camct.EquilibrateTemperature();
+                    bool equil = (bool)Invoke(new Func<bool>(TemperatureStabilizedDialog));
+                    if (equil)
+                    {
+                        progress = new ProgressObject(null, null, 0, Dialog.TEMPERATURE);
+                        if (PauseCancelProgress(e, 0, progress)) return;
+                        while (camct.TemperatureStatus != CameraTempControlled.TemperatureStabilized)
+                        {
+                            Thread.Sleep(200);
+                            if (PauseCancelProgress(e, 0, progress)) return;
+                        }
+                    }
                 }
+                
             }
 
             var args = (WorkArgs)e.Argument;
