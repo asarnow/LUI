@@ -110,7 +110,7 @@ namespace LUI.tabs
             GraphScroll.Enabled = false;
             GraphScroll.LargeChange = 1;
 
-            CameraTemperature.ValueChanged += CameraTemperature_ValueChanged;
+            //CameraTemperature.ValueChanged += CameraTemperature_ValueChanged;
             CameraTemperature.Enabled = false;
 
             DdgConfigBox.Config = Config;
@@ -145,14 +145,14 @@ namespace LUI.tabs
                 CameraTemperature.Minimum = camct.MinTemp;
                 CameraTemperature.Maximum = camct.MaxTemp;
                 CameraTemperature.Increment = (int)CameraTempControlled.TemperatureEps;
+                CameraTemperature.ValueChanged -= CameraTemperature_ValueChanged; // Avoid double subscription.
                 CameraTemperature.Value = camct.Temperature;
-                //CameraTemperature.ValueChanged -= CameraTemperature_ValueChanged; // Avoid double subscription.
-                //CameraTemperature.ValueChanged += CameraTemperature_ValueChanged;
+                CameraTemperature.ValueChanged += CameraTemperature_ValueChanged;
             }
             else
             {
                 CameraTemperature.Enabled = false;
-                //CameraTemperature.ValueChanged -= CameraTemperature_ValueChanged;
+                CameraTemperature.ValueChanged -= CameraTemperature_ValueChanged;
             }
         }
 
