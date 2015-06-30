@@ -62,6 +62,7 @@ namespace lasercom.camera
             AndorSdk.GetTemperatureRange(ref _MinTemp, ref _MaxTemp);
             AndorSdk.CoolerON();
             EquilibrateTemperature(Temperature);
+            EquilibrateTemperature();
         }
 
         public void EquilibrateTemperature(int targetTemperature)

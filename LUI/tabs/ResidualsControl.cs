@@ -336,7 +336,7 @@ namespace LUI.tabs
             Commander.BeamFlag.CloseLaserAndFlash();
 
             double[] CumulativeData = Array.ConvertAll((int[])CumulativeDataBuffer, x=> (double)x);
-            Data.DivideArray(CumulativeData, args.NScans * DataBuffer.Length / CumulativeDataBuffer.Length);
+            Data.DivideArray(CumulativeData, args.NScans * (double)DataBuffer.Length / CumulativeDataBuffer.Length);
             e.Result = CumulativeData;
         }
 
