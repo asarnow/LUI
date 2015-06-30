@@ -468,7 +468,7 @@ namespace LUI.tabs
             LuiData.Write(Times.ToArray(), new long[] { 1, 0 }, ColSize);
             
             // Read ground state values and average.
-            Ground.Initialize(); // Zero ground state buffer.
+            Array.Clear(Ground, 0, Ground.Length); // Zero ground state buffer.
             // Read 1st half
             for (int i = 0; i < half; i++)
             {
@@ -485,7 +485,7 @@ namespace LUI.tabs
             Data.Dissipate(Ground, Dark); // Subtract average dark.
 
             // Read excited state values, average and compute delta OD.
-            Excited.Initialize(); // Zero excited state buffer.
+            Array.Clear(Excited, 0, Excited.Length); // Zero excited state buffer.
             for (int i = 0; i < Times.Count; i++ )
             {
                 for (int j = 0; j < N; j++)

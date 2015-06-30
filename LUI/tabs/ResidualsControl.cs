@@ -264,8 +264,9 @@ namespace LUI.tabs
 
             uint finalSize = Commander.Camera.AcqSize;
             if (args.SoftwareBinning) finalSize /= (uint)Commander.Camera.Image.Height;
-
+            double nrows = (double)Commander.Camera.AcqSize / finalSize;
             int[] DataBuffer = new int[Commander.Camera.AcqSize];
+            int[] BinnedDataBuffer = new int[finalSize];
             int[] CumulativeDataBuffer = new int[finalSize];
 
             if (args.CollectLaser)
@@ -280,8 +281,6 @@ namespace LUI.tabs
             for (int i = 0; i < args.NScans; i++)
             {
                 uint ret = Commander.Camera.Acquire(DataBuffer);
-
-                Data.ColumnSum(CumulativeDataBuffer, DataBuffer);
 
                 int sum = 0;
                 int peak = int.MinValue;
@@ -308,12 +307,13 @@ namespace LUI.tabs
                 //cmasum = (sum + i * cmasum) / (i + 1);
                 //cmapeak = (peak + i * cmapeak) / (i + 1);
 
-                int n = i % args.NAvg; // Reset NAvg CMA
+                int n = i % args.NAvg;
                 pastsums[n] = sum;
                 pastpeaks[n] = peak;
 
                 nvarpeak = nvarsum = npeak = nsum = 0;
-                for (int j = 0; j < args.NAvg; j++)
+                int localN = i < args.NAvg ? n : args.NAvg;
+                for (int j = 0; j < localN; j++)
                 {
                     //nsum = (sum + n * nsum) / (n + 1);
                     //npeak = (peak + n * npeak) / (n + 1);
@@ -327,16 +327,19 @@ namespace LUI.tabs
                     vartemp = delta * (pastpeaks[j] - npeak);
                     nvarpeak += Math.Sqrt(Math.Abs(vartemp));
                 }
-                
-                ProgressObject progress = new ProgressObject(Array.ConvertAll((int[])DataBuffer, x => (double)x), 
+
+                Array.Clear(BinnedDataBuffer, 0, BinnedDataBuffer.Length);
+                Data.ColumnSum(BinnedDataBuffer, DataBuffer);
+                Data.Accumulate(CumulativeDataBuffer, BinnedDataBuffer);
+
+                ProgressObject progress = new ProgressObject(Array.ConvertAll((int[])BinnedDataBuffer, x => (double)x / nrows), 
                     cmasum, varsum / i, cmapeak, varpeak / i, nsum, nvarsum / i, npeak, nvarpeak / i, Dialog.PROGRESS_DATA);
                 if (PauseCancelProgress(e, i * 100 / args.NScans, progress)) return;
             }
 
             Commander.BeamFlag.CloseLaserAndFlash();
 
-            double[] CumulativeData = Array.ConvertAll((int[])CumulativeDataBuffer, x=> (double)x);
-            Data.DivideArray(CumulativeData, args.NScans * (double)DataBuffer.Length / CumulativeDataBuffer.Length);
+            double[] CumulativeData = Array.ConvertAll((int[])CumulativeDataBuffer, x => (double)x / (args.NScans * nrows));
             e.Result = CumulativeData;
         }
 
@@ -662,14 +665,15 @@ namespace LUI.tabs
             //ScrollTip.Show(GraphScroll.Value.ToString(), GraphScroll, 10000);
         }
 
-        void CameraTemperature_ValueChanged(object sender, EventArgs e)
+        async void CameraTemperature_ValueChanged(object sender, EventArgs e)
         {
             var camct = Commander.Camera as CameraTempControlled;
             if (camct != null)
             {
                 CameraTemperature.ForeColor = Color.Red;
                 camct.EquilibrateTemperature((int)CameraTemperature.Value); // Wait for 3 deg. threshold.
-                camct.EquilibrateTemperature(); // Wait for driver signal.
+                await camct.EquilibrateTemperatureAsync(); // Wait for driver signal.
+                CameraTemperature.Value = camct.Temperature;
                 CameraTemperature.ForeColor = Color.Black;
             }
         }
