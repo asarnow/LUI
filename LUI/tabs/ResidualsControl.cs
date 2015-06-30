@@ -217,7 +217,7 @@ namespace LUI.tabs
 
             GraphScroll.Enabled = ImageMode.Checked;
             UpdateGraphScroll();
-            //GraphScroll_ValueChanged(sender, e); //TODO Figure it out.
+            
             CameraImage_ValueChanged(sender, e);
             ImageMode_CheckedChanged(sender, e);
             FvbMode_CheckedChanged(sender, e);
