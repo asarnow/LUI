@@ -310,13 +310,13 @@ namespace LUI.tabs
             if (PauseCancelProgress(e, 0, progress)) return; // Show zero progress.
 
             // Set camera for external gate and full vertical binning.
-            if (Commander.Camera is AndorCamera)
-            {
-                Commander.Camera.AcquisitionMode = AndorCamera.AcquisitionModeSingle;
-                Commander.Camera.TriggerMode = AndorCamera.TriggerModeExternalExposure;
-                Commander.Camera.DDGTriggerMode = AndorCamera.DDGTriggerModeExternal;
-                Commander.Camera.ReadMode = AndorCamera.ReadModeFVB;
-            }
+            //if (Commander.Camera is AndorCamera)
+            //{
+            //    Commander.Camera.AcquisitionMode = AndorCamera.AcquisitionModeSingle;
+            //    Commander.Camera.TriggerMode = AndorCamera.TriggerModeExternalExposure;
+            //    Commander.Camera.DDGTriggerMode = AndorCamera.DDGTriggerModeExternal;
+            //    Commander.Camera.ReadMode = AndorCamera.ReadModeFVB;
+            //}
 
             if (Commander.Camera is CameraTempControlled)
             {
@@ -342,29 +342,36 @@ namespace LUI.tabs
             int N = args.N; // Save typing for later.
             int half = N / 2; // Integer division rounds down.
             IList<double> Times = args.Times;
+            int AcqSize = (int)Commander.Camera.AcqSize;
+            int finalSize = AcqSize;
+            if (Commander.Camera.ReadMode == AndorCamera.ReadModeImage) finalSize /= Commander.Camera.Image.Height;
 
             // Total scans = dark scans + ground state scans + plus time series scans.
             int TotalScans = 2*N + Times.Count * N;
 
             // Create the data store.
-            InitDataFile((int)Commander.Camera.AcqSize, TotalScans, Times.Count);
+            InitDataFile(finalSize, TotalScans, Times.Count);
 
             // Measure dark current.
             progress = new ProgressObject(null, null, 0, Dialog.PROGRESS_DARK);
             if (PauseCancelProgress(e, 0, progress)) return;
-            
+
+            // Buffer for acuisition data.
+            int[] DataBuffer = new int[AcqSize];
+            int[] DataRow = new int[finalSize];
+
             // Dark buffers.
-            int[] DarkBuffer = new int[Commander.Camera.AcqSize];
-            int[] Dark = new int[Commander.Camera.AcqSize];
+            int[] Dark = new int[finalSize];
 
             // Dark scans.
             Commander.BeamFlag.CloseLaserAndFlash();
             for (int i = 0; i < N; i++)
             {
-                uint ret = Commander.Camera.Acquire(DarkBuffer);
-                RawData.WriteNext(DarkBuffer, 0);
-                Data.Accumulate(Dark, DarkBuffer);
-
+                uint ret = Commander.Camera.Acquire(DataBuffer);
+                Data.ColumnSum(DataRow, DataBuffer);
+                RawData.WriteNext(DataRow, 0);
+                Data.Accumulate(Dark, DataRow);
+                Array.Clear(DataRow, 0, finalSize);
                 progress = new ProgressObject(null, Commander.Camera.DecodeStatus(ret), 0, Dialog.PROGRESS_DARK);
                 if (PauseCancelProgress(e, (i + 1) * 99 / TotalScans, progress)) return;
             }
@@ -373,9 +380,7 @@ namespace LUI.tabs
             // Set delays for GS.
             Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, 3.2E-8); // Set delay time.
 
-            // Buffer for acuisition data.
-            int[] DataBuffer = new int[Commander.Camera.AcqSize];
-            double[] Ground = new double[Commander.Camera.AcqSize];
+            double[] Ground = new double[finalSize];
 
             // Flow-flash.
             if (args.Pump == PumpMode.ALWAYS)
@@ -392,9 +397,10 @@ namespace LUI.tabs
             for (int i = 0; i < half; i++)
             {
                 uint ret = Commander.Camera.Acquire(DataBuffer);
-                RawData.WriteNext(DataBuffer, 0);
-                Data.Accumulate(Ground, DataBuffer);
-
+                Data.ColumnSum(DataRow, DataBuffer);
+                RawData.WriteNext(DataRow, 0);
+                Data.Accumulate(Ground, DataRow);
+                Array.Clear(DataRow, 0, finalSize);
                 progress = new ProgressObject(null, Commander.Camera.DecodeStatus(ret), 0, Dialog.PROGRESS_FLASH);
                 if (PauseCancelProgress(e, (N + (i + 1)) * 99 / TotalScans, progress)) return; // Handle new data.
             }
@@ -406,7 +412,7 @@ namespace LUI.tabs
 
 
             // Excited state buffer.
-            double[] Excited = new double[Commander.Camera.AcqSize];
+            double[] Excited = new double[finalSize];
 
             // Flow-flash.
             if (args.Pump == PumpMode.TRANS)
@@ -425,16 +431,15 @@ namespace LUI.tabs
                 double Delay = Times[i];
                 progress = new ProgressObject(null, null, Delay, Dialog.PROGRESS_TIME);
                 if (PauseCancelProgress(e, (half + i * N) * 99 / TotalScans, progress)) return; // Display current delay.
-                
                 for (int j = 0; j < N; j++)
                 {
-
                     Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, Delay); // Set delay time.
                     
                     uint ret = Commander.Camera.Acquire(DataBuffer);
-                    RawData.WriteNext(DataBuffer, 0);
-                    Data.Accumulate(Excited, DataBuffer);
-
+                    Data.ColumnSum(DataRow, DataBuffer);
+                    RawData.WriteNext(DataRow, 0);
+                    Data.Accumulate(Excited, DataRow);
+                    Array.Clear(DataRow, 0, finalSize);
                     progress = new ProgressObject(null, Commander.Camera.DecodeStatus(ret), Delay, Dialog.PROGRESS_TRANS);
                     if (PauseCancelProgress(e, (N + half + (i + 1) * (j + 1)) * 99 / TotalScans, progress)) return; // Handle new data.
                 }
@@ -442,6 +447,7 @@ namespace LUI.tabs
                 Data.DivideArray(Excited, N); // Average ES for time point.
                 Data.Dissipate(Excited, Dark); // Subtract average dark from time point average.
                 double[] Difference = Data.DeltaOD(Ground, Excited); // Time point diff. spec. w/ current GS average.
+                Array.Clear(Excited, 0, finalSize);
                 progress = new ProgressObject(Difference, null, Delay, Dialog.PROGRESS_TIME_COMPLETE);
                 if (PauseCancelProgress(e, (N + half + N * Times.Count) * 99 / TotalScans, progress)) return;
             }
@@ -463,8 +469,9 @@ namespace LUI.tabs
             for (int i = 0; i < half2; i++)
             {
                 uint ret = Commander.Camera.Acquire(DataBuffer);
-                RawData.WriteNext(DataBuffer, 0);
-
+                Data.ColumnSum(DataRow, DataBuffer);
+                RawData.WriteNext(DataRow, 0);
+                Array.Clear(DataRow, 0, finalSize);
                 progress = new ProgressObject(null, Commander.Camera.DecodeStatus(ret), 0, Dialog.PROGRESS_FLASH);
                 if (PauseCancelProgress(e, (N + half + (N * Times.Count) + (i + 1)) * 99 / TotalScans, progress)) return;
             }
@@ -482,7 +489,7 @@ namespace LUI.tabs
             // Write dummy value (number of scans).
             LuiData.Write((double)args.N, new long[] { 0, 0 });
             // Write wavelengths.
-            long[] RowSize = { 1, Commander.Camera.AcqSize };
+            long[] RowSize = { 1, finalSize };
             LuiData.Write(Commander.Camera.Calibration, new long[] { 0, 1 }, RowSize);
             // Write times.
             long[] ColSize = { Times.Count, 1 };
@@ -493,14 +500,14 @@ namespace LUI.tabs
             // Read 1st half
             for (int i = 0; i < half; i++)
             {
-                RawData.Read(DataBuffer, new long[] { i, 0 }, RowSize);
-                Data.Accumulate(Ground, DataBuffer);
+                RawData.Read(DataRow, new long[] { i, 0 }, RowSize);
+                Data.Accumulate(Ground, DataRow);
             }
             // Read 2nd half
             for (int i = (N + half + N * Times.Count); i < TotalScans; i++)
-            {   
-                RawData.Read(DataBuffer, new long[] { i, 0 }, RowSize);
-                Data.Accumulate(Ground, DataBuffer);
+            {
+                RawData.Read(DataRow, new long[] { i, 0 }, RowSize);
+                Data.Accumulate(Ground, DataRow);
             }
             Data.DivideArray(Ground, N); // Average ground state.
             Data.Dissipate(Ground, Dark); // Subtract average dark.
@@ -513,8 +520,8 @@ namespace LUI.tabs
                 {
                     // Read time point j
                     int idx = N + half + (i * N) + j;
-                    RawData.Read(DataBuffer, new long[] { idx, 0 }, RowSize);
-                    Data.Accumulate(Excited, DataBuffer);
+                    RawData.Read(DataRow, new long[] { idx, 0 }, RowSize);
+                    Data.Accumulate(Excited, DataRow);
                 }
                 Data.DivideArray(Excited, N); // Average excited state for time point.
                 Data.Dissipate(Excited, Dark); // Subtract average dark.

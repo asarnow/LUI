@@ -129,6 +129,17 @@ namespace lasercom
             }
         }
 
+        public static void ColumnSumInPlace(int[] matrix, int width)
+        {
+            var AllButLastRow = new ArraySegment<int>(matrix, 0, matrix.Length - width);
+            var LastRow = new ArraySegment<int>(matrix, matrix.Length - width, width);
+            for (int i = 0; i < AllButLastRow.Count / width; i++)
+            {
+                int start = i * width;
+                Accumulate(LastRow, new ArraySegment<int>(matrix, start, width));
+            }
+        }
+
         /// <summary>
         /// Computes OD from Sample and Blank counts, subtracting Dark counts from both.
         /// </summary>

@@ -51,6 +51,8 @@ namespace LUI.tabs
         int LowerBound { get; set; }
         int UpperBound { get; set; }
 
+        int SelectedRow { get; set; }
+
         public enum Dialog
         {
             PROGRESS_CAMERA, PROGRESS_DATA
@@ -58,18 +60,16 @@ namespace LUI.tabs
 
         struct WorkArgs
         {
-            public WorkArgs(int NScans, int NAverage, bool CollectLaser, int ReadMode, bool SoftwareBinning)
+            public WorkArgs(int NScans, int NAverage, bool CollectLaser, bool SoftwareBinning)
             {
                 this.NScans = NScans;
                 this.NAvg = NAverage;
                 this.CollectLaser = CollectLaser;
-                this.ReadMode = ReadMode;
                 this.SoftwareBinning = SoftwareBinning;
             }
             public readonly int NScans;
             public readonly int NAvg;
             public readonly bool CollectLaser;
-            public readonly int ReadMode;
             public readonly bool SoftwareBinning;
         }
 
@@ -107,14 +107,25 @@ namespace LUI.tabs
             Graph.YLabelFormat = "g";
 
             CollectLaser.CheckedChanged += CollectLaser_CheckedChanged;
+            ImageMode.CheckedChanged += ImageMode_CheckedChanged;
+            FvbMode.CheckedChanged += FvbMode_CheckedChanged;
+            SoftFvbMode.CheckedChanged += SoftFvbMode_CheckedChanged;
 
             GraphScroll.Scroll += GraphScroll_Scroll;
             GraphScroll.ValueChanged += GraphScroll_ValueChanged;
             GraphScroll.Enabled = false;
             GraphScroll.LargeChange = 1;
+            SelectedRow = 0;
 
-            //CameraTemperature.ValueChanged += CameraTemperature_ValueChanged;
             CameraTemperature.Enabled = false;
+
+            VBin.Minimum = 1;
+            VBin.Value = 1;
+            VBin.ValueChanged += CameraImage_ValueChanged;
+            VStart.Minimum = 1;
+            VStart.ValueChanged += CameraImage_ValueChanged;
+            VEnd.Minimum = 1;
+            VEnd.ValueChanged += CameraImage_ValueChanged;
 
             DdgConfigBox.Config = Config;
             DdgConfigBox.Commander = Commander;
@@ -140,7 +151,8 @@ namespace LUI.tabs
             base.HandleCameraChanged(sender, e);
             LowerBound = (int)Commander.Camera.Image.Width / 6;
             UpperBound = (int)Commander.Camera.Image.Width * 5 / 6;
-            GraphScroll.Maximum = (int)Commander.Camera.Image.Height - 1;
+            UpdateReadMode();
+            UpdateCameraImage();
             if (Commander.Camera is CameraTempControlled)
             {
                 CameraTemperature.Enabled = true;
@@ -148,9 +160,7 @@ namespace LUI.tabs
                 CameraTemperature.Minimum = camct.MinTemp;
                 CameraTemperature.Maximum = camct.MaxTemp;
                 CameraTemperature.Increment = (int)CameraTempControlled.TemperatureEps;
-                CameraTemperature.ValueChanged -= CameraTemperature_ValueChanged; // Avoid double subscription.
-                CameraTemperature.Value = camct.Temperature;
-                CameraTemperature.ValueChanged += CameraTemperature_ValueChanged;
+                UpdateCameraTemperature(); // Subscribes ValueChanged.
             }
             else
             {
@@ -163,6 +173,9 @@ namespace LUI.tabs
         {
             base.HandleContainingTabSelected(sender, e);
             DdgConfigBox.UpdatePrimaryDelayValue();
+            UpdateReadMode();
+            UpdateCameraTemperature();
+            UpdateCameraImage();
         }
 
         protected override void LoadSettings()
@@ -202,9 +215,13 @@ namespace LUI.tabs
             if (CollectLaser.Checked)
                 DdgConfigBox.ApplyPrimaryDelayValue();
 
-            int ReadMode = FvbMode.Checked ? AndorCamera.ReadModeFVB : AndorCamera.ReadModeImage;
-
             GraphScroll.Enabled = ImageMode.Checked;
+            UpdateGraphScroll();
+            //GraphScroll_ValueChanged(sender, e); //TODO Figure it out.
+            CameraImage_ValueChanged(sender, e);
+            ImageMode_CheckedChanged(sender, e);
+            FvbMode_CheckedChanged(sender, e);
+            SoftFvbMode_CheckedChanged(sender, e);
 
             worker = new BackgroundWorker();
             worker.DoWork += new System.ComponentModel.DoWorkEventHandler(DoWork);
@@ -212,7 +229,7 @@ namespace LUI.tabs
             worker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(WorkComplete);
             worker.WorkerSupportsCancellation = true;
             worker.WorkerReportsProgress = true;
-            worker.RunWorkerAsync(new WorkArgs((int)NScan.Value, (int)NAverage.Value, CollectLaser.Checked, ReadMode, SoftFvbMode.Checked));
+            worker.RunWorkerAsync(new WorkArgs((int)NScan.Value, (int)NAverage.Value, CollectLaser.Checked, SoftFvbMode.Checked));
             OnTaskStarted(EventArgs.Empty);
         }
 
@@ -221,14 +238,6 @@ namespace LUI.tabs
             base.OnTaskStarted(e);
             DdgConfigBox.Enabled = false;
             OptionsBox.Enabled = CameraExtras.Enabled = false;
-            if (GraphScroll.Enabled)
-            {
-                GraphScroll.Value = GraphScroll.Value == 0 ? GraphScroll.Maximum / 2 : GraphScroll.Value;
-            }
-            else
-            {
-                GraphScroll.Value = 0;
-            }
         }
 
         public override void OnTaskFinished(EventArgs e)
@@ -251,8 +260,6 @@ namespace LUI.tabs
         protected override void DoWork(object sender, DoWorkEventArgs e)
         {
             WorkArgs args = (WorkArgs)e.Argument;
-
-            Commander.Camera.ReadMode = args.ReadMode;
             
             int cmasum = 0; // Cumulative moving average over scans
             double varsum = 0;
@@ -504,7 +511,7 @@ namespace LUI.tabs
         /// </summary>
         private void Display()
         {
-            int start = Commander.Camera.Image.Width * GraphScroll.Value;
+            int start = Commander.Camera.Image.Width * SelectedRow;
             int count = Commander.Camera.Image.Width;
 
             Graph.ClearData();
@@ -544,7 +551,7 @@ namespace LUI.tabs
         /// </summary>
         private void DisplayProgress()
         {
-            int start = Commander.Camera.Image.Width * GraphScroll.Value;
+            int start = Commander.Camera.Image.Width * SelectedRow;
             int count = Commander.Camera.Image.Width;
             if (PersistentGraphing.Checked)
             {
@@ -579,7 +586,7 @@ namespace LUI.tabs
             // most useful if it's graphed on top of all previous scans.
             if (CumulativeLight != null && PersistentGraphing.Checked)
             {
-                int start = Commander.Camera.Image.Width * GraphScroll.Value;
+                int start = Commander.Camera.Image.Width * SelectedRow;
                 int count = Commander.Camera.Image.Width;
                 Graph.MarkerColor = Graph.ColorOrder[3];
                 Graph.DrawPoints(Commander.Camera.Calibration, new ArraySegment<double>(CumulativeLight, start, count));
@@ -659,12 +666,18 @@ namespace LUI.tabs
 
         void GraphScroll_ValueChanged(object sender, EventArgs e)
         {
+            UpdateSelectedRow();
             if (worker == null || !worker.IsBusy) Display();
+        }
+
+        void UpdateSelectedRow()
+        {
+            SelectedRow = (int)(GraphScroll.Value - GraphScroll.Minimum - 0.5) / Commander.Camera.Image.vbin;
         }
 
         void GraphScroll_Scroll(object sender, ScrollEventArgs e)
         {
-            ScrollTip.SetToolTip(GraphScroll, GraphScroll.Value.ToString());
+            ScrollTip.SetToolTip(GraphScroll, SelectedRow.ToString() + " (" + GraphScroll.Value.ToString() + ")");
             //ScrollTip.Show(GraphScroll.Value.ToString(), GraphScroll, 10000);
         }
 
@@ -678,19 +691,106 @@ namespace LUI.tabs
 
                 CameraTemperature.ForeColor = Color.Red;
                 await camct.EquilibrateTemperatureAsync((int)CameraTemperature.Value, TemperatureCts.Token); // Wait for 3 deg. threshold.
-                CameraTemperature.ValueChanged -= CameraTemperature_ValueChanged;
-                CameraTemperature.Value = camct.Temperature;
-                CameraTemperature.ValueChanged += CameraTemperature_ValueChanged;
-                CameraTemperature.ForeColor = Color.Yellow;
-                
+                CameraTemperature.ForeColor = Color.Goldenrod;
                 await camct.EquilibrateTemperatureAsync(TemperatureCts.Token); // Wait for driver signal.
-                CameraTemperature.ValueChanged -= CameraTemperature_ValueChanged;
-                CameraTemperature.Value = camct.Temperature;
-                CameraTemperature.ValueChanged += CameraTemperature_ValueChanged;
+                UpdateCameraTemperature();
                 CameraTemperature.ForeColor = Color.Black;
 
                 TemperatureCts = null;
             }
+        }
+
+        private void UpdateCameraTemperature()
+        {
+            var camct = Commander.Camera as CameraTempControlled;
+            if (camct != null)
+            {
+                CameraTemperature.ValueChanged -= CameraTemperature_ValueChanged;
+                CameraTemperature.Value = camct.Temperature;
+                CameraTemperature.ValueChanged += CameraTemperature_ValueChanged;
+            }
+        }
+
+        private void UpdateCameraImage()
+        {
+            VStart.ValueChanged -= CameraImage_ValueChanged;
+            VBin.ValueChanged -= CameraImage_ValueChanged;
+            VEnd.ValueChanged -= CameraImage_ValueChanged;
+
+            VStart.Minimum = 0;
+            VStart.Maximum = Commander.Camera.Height - 1;
+            VStart.Value = Commander.Camera.Image.vstart;
+            VEnd.Minimum = 0;
+            VEnd.Maximum = Commander.Camera.Height - 1;
+            VEnd.Value = Commander.Camera.Image.vstart + Commander.Camera.Image.vcount - 1;
+            VBin.Minimum = 1;
+            VBin.Maximum = Commander.Camera.Image.Height;
+            VBin.Value = Commander.Camera.Image.hbin;
+
+            
+            VStart.ValueChanged += CameraImage_ValueChanged;
+            VBin.ValueChanged += CameraImage_ValueChanged;
+            VEnd.ValueChanged += CameraImage_ValueChanged;
+        }
+
+        private void UpdateGraphScroll()
+        {
+            if (GraphScroll.Enabled)
+            {
+                GraphScroll.Minimum = (int)Commander.Camera.Image.vstart;
+                GraphScroll.Maximum = (int)(Commander.Camera.Image.vstart + Commander.Camera.Image.vcount - 1);
+                GraphScroll.LargeChange = Commander.Camera.Image.vbin;
+                GraphScroll.Value = GraphScroll.Value > GraphScroll.Maximum ||
+                    GraphScroll.Value <= GraphScroll.Minimum
+                    ?
+                    GraphScroll.Minimum + (GraphScroll.Maximum - GraphScroll.Minimum) / 2
+                    :
+                    GraphScroll.Value;
+                UpdateSelectedRow();
+            }
+            else
+            {
+                SelectedRow = 0;
+            }
+        }
+
+        private void UpdateReadMode()
+        {
+            if (Commander.Camera.ReadMode == AndorCamera.ReadModeImage)
+            {
+                ImageMode.Checked = true;
+            }
+            else
+            {
+                FvbMode.Checked = true;
+            }
+        }
+
+        private void CameraImage_ValueChanged(object sender, EventArgs e)
+        {
+            Commander.Camera.Image = new ImageArea(Commander.Camera.Image.hbin, (int)VBin.Value,
+                Commander.Camera.Image.hstart, Commander.Camera.Image.hcount,
+                (int)VStart.Value, (int)(VEnd.Value - VStart.Value + 1));
+        }
+
+        void SoftFvbMode_CheckedChanged(object sender, EventArgs e)
+        {
+            if (SoftFvbMode.Checked)
+                Commander.Camera.ReadMode = AndorCamera.ReadModeImage;
+        }
+
+        void FvbMode_CheckedChanged(object sender, EventArgs e)
+        {
+            if (FvbMode.Checked)
+            {
+                Commander.Camera.ReadMode = AndorCamera.ReadModeFVB;
+            }
+        }
+
+        void ImageMode_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ImageMode.Checked)
+                Commander.Camera.ReadMode = AndorCamera.ReadModeImage;
         }
     }
 }

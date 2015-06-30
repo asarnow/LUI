@@ -89,15 +89,16 @@ namespace lasercom.camera
             }
         }
 
+        private int _ReadMode = AndorCamera.ReadModeFVB;
         public override int ReadMode
         {
             get
             {
-                throw new NotImplementedException();
+                return _ReadMode;
             }
             set
             {
-                throw new NotImplementedException();
+                _ReadMode = value;
             }
         }
 

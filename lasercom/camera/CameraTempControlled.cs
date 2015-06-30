@@ -21,6 +21,7 @@ namespace lasercom.camera
         public const int ShutdownTemp = 5;
 
         public const uint TemperatureStabilized = AndorSDK.DRV_TEMP_STABILIZED;
+        public const uint TemperatureNotStabilized = AndorSDK.DRV_TEMP_NOT_STABILIZED;
 
         private int _MinTemp;
         public int MinTemp
