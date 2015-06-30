@@ -126,7 +126,7 @@ namespace LUI.tabs
         {
             INITIALIZE, PROGRESS, PROGRESS_DARK, PROGRESS_TIME, 
             PROGRESS_TIME_COMPLETE, PROGRESS_FLASH, PROGRESS_TRANS,
-            CALCULATE
+            CALCULATE, TEMPERATURE
         }
 
         public enum PumpMode
@@ -315,6 +315,18 @@ namespace LUI.tabs
                 Commander.Camera.TriggerMode = AndorCamera.TriggerModeExternalExposure;
                 Commander.Camera.DDGTriggerMode = AndorCamera.DDGTriggerModeExternal;
                 Commander.Camera.ReadMode = AndorCamera.ReadModeFVB;
+            }
+
+            if (Commander.Camera is CameraTempControlled)
+            {
+                bool equil = (bool)Invoke(new Func<bool>(TemperatureStabilizedDialog));
+                var camct = (CameraTempControlled)Commander.Camera;
+                if (equil)
+                {
+                    progress = new ProgressObject(null, null, 0, Dialog.TEMPERATURE);
+                    if (PauseCancelProgress(e, 0, progress)) return;
+                    camct.EquilibrateTemperature();
+                }
             }
 
             var args = (WorkArgs)e.Argument;
@@ -537,6 +549,9 @@ namespace LUI.tabs
                 case Dialog.CALCULATE:
                     ProgressLabel.Text = "Calculating...";
                     break;
+                case Dialog.TEMPERATURE:
+                    ProgressLabel.Text = "Waiting for temperature...";
+                    break;
             }
         }
 
@@ -676,6 +691,20 @@ namespace LUI.tabs
                     }
                     break;
             }
+        }
+
+        private bool TemperatureStabilizedDialog()
+        {
+            var result = MessageBox.Show("Camera temperature has not stabilized. Wait before running?", "Error", MessageBoxButtons.YesNoCancel);
+            if (result == DialogResult.Cancel)
+            {
+                worker.CancelAsync();
+            }
+            else if (result == DialogResult.Yes)
+            {
+                return true;
+            }
+            return false;
         }
 
     }

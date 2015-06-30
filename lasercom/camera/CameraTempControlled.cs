@@ -20,6 +20,8 @@ namespace lasercom.camera
         public const float TemperatureEps = 3F;
         public const int ShutdownTemp = 5;
 
+        public static const uint TemperatureStabilized = AndorSDK.DRV_TEMP_STABILIZED;
+
         private int _MinTemp;
         public int MinTemp
         {
@@ -55,6 +57,15 @@ namespace lasercom.camera
                 float currentTemperature = 0;
                 AndorSdk.GetTemperatureF(ref currentTemperature);
                 return currentTemperature;
+            }
+        }
+
+        public uint TemperatureStatus
+        {
+            get
+            {
+                int currentTemperature = 0;
+                return AndorSdk.GetTemperature(ref currentTemperature);
             }
         }
 
