@@ -6,7 +6,6 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Windows.Forms;
 using lasercom;
 using lasercom.camera;
@@ -306,17 +305,7 @@ namespace LUI.tabs
 
         protected override void DoWork(object sender, DoWorkEventArgs e)
         {
-            var progress = new ProgressObject(null, null, 0, Dialog.INITIALIZE);
-            if (PauseCancelProgress(e, 0, progress)) return; // Show zero progress.
-
-            // Set camera for external gate and full vertical binning.
-            //if (Commander.Camera is AndorCamera)
-            //{
-            //    Commander.Camera.AcquisitionMode = AndorCamera.AcquisitionModeSingle;
-            //    Commander.Camera.TriggerMode = AndorCamera.TriggerModeExternalExposure;
-            //    Commander.Camera.DDGTriggerMode = AndorCamera.DDGTriggerModeExternal;
-            //    Commander.Camera.ReadMode = AndorCamera.ReadModeFVB;
-            //}
+            ProgressObject progress;
 
             if (Commander.Camera is CameraTempControlled)
             {
@@ -327,16 +316,19 @@ namespace LUI.tabs
                     if (equil)
                     {
                         progress = new ProgressObject(null, null, 0, Dialog.TEMPERATURE);
-                        if (PauseCancelProgress(e, 0, progress)) return;
-                        while (camct.TemperatureStatus != CameraTempControlled.TemperatureStabilized)
-                        {
-                            Thread.Sleep(200);
-                            if (PauseCancelProgress(e, 0, progress)) return;
-                        }
+                        //if (PauseCancelProgress(e, 0, progress)) return;
+                        //while (camct.TemperatureStatus != CameraTempControlled.TemperatureStabilized)
+                        //{
+                        //    Thread.Sleep(200);
+                        //    if (PauseCancelProgress(e, 0, progress)) return;
+                        //}
+                        if (camct.EquilibrateUntil(() => PauseCancelProgress(e, 0, progress))) return;
                     }
                 }
-                
             }
+
+            progress = new ProgressObject(null, null, 0, Dialog.INITIALIZE);
+            if (PauseCancelProgress(e, 0, progress)) return; // Show zero progress.
 
             var args = (WorkArgs)e.Argument;
             int N = args.N; // Save typing for later.

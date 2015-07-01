@@ -123,6 +123,24 @@ namespace lasercom.camera
             await Task.Run(() => EquilibrateTemperature(), token);
         }
 
+        public bool EquilibrateUntil(Func<bool> BreakoutCondition)
+        {
+            return EquilibrateUntil(BreakoutCondition, 200);
+        }
+
+        public bool EquilibrateUntil(Func<bool> BreakoutCondition, int PollDelayMs)
+        {
+            int currentTemperature = 0;
+            uint status = AndorSDK.DRV_TEMP_NOT_STABILIZED;
+            while (status != AndorSDK.DRV_TEMP_STABILIZED)
+            {
+                status = AndorSdk.GetTemperature(ref currentTemperature);
+                if (BreakoutCondition()) return true;
+                Thread.Sleep(PollDelayMs);
+            }
+            return false;
+        }
+
         public void WaitForTemperatureIncrease(int thresholdTemperature)
         {
             float currentTemperature = 0;
