@@ -112,25 +112,26 @@ namespace LUI.tabs
         {
             if (PauseCancelProgress(e, 0, Dialog.INITIALIZE)) return;
 
-            Commander.Camera.AcquisitionMode = AndorCamera.AcquisitionModeSingle;
-            Commander.Camera.TriggerMode = AndorCamera.TriggerModeExternalExposure;
-            Commander.Camera.ReadMode = AndorCamera.ReadModeFVB;
             var args = (WorkArgs)e.Argument;
             int N = args.N;
 
             int TotalScans = 3 * N;
 
+            int AcqSize = (int)Commander.Camera.AcqSize;
+            int finalSize = Commander.Camera.ReadMode == AndorCamera.ReadModeImage ?
+                AcqSize / Commander.Camera.Image.Height : AcqSize;
+
             if (PauseCancelProgress(e, 0, Dialog.PROGRESS_DARK)) return;
 
             Commander.BeamFlag.CloseLaserAndFlash();
 
-            int[] DataBuffer = new int[Commander.Camera.AcqSize];
-            double[] Dark = new double[Commander.Camera.AcqSize];
+            int[] DataBuffer = new int[AcqSize];
+            double[] Dark = new double[finalSize];
             for (int i = 0; i < N; i++)
             {
                 uint ret = Commander.Camera.Acquire(DataBuffer);
 
-                Data.Accumulate(Dark, DataBuffer);
+                Data.ColumnSum(Dark, DataBuffer);
 
                 if (PauseCancelProgress(e, i * 99 / TotalScans, Dialog.PROGRESS_DARK)) return;
             }
@@ -150,12 +151,12 @@ namespace LUI.tabs
 
             Commander.BeamFlag.OpenFlash();
 
-            double[] Ground = new double[Commander.Camera.AcqSize];
+            double[] Ground = new double[finalSize];
             for (int i = 0; i < N; i++)
             {
                 uint ret = Commander.Camera.Acquire(DataBuffer);
                 
-                Data.Accumulate(Ground, DataBuffer);
+                Data.ColumnSum(Ground, DataBuffer);
 
                 if (PauseCancelProgress(e, (N + i) * 99 / TotalScans, Dialog.PROGRESS_FLASH)) return;
             }
@@ -176,12 +177,12 @@ namespace LUI.tabs
 
             Commander.BeamFlag.OpenLaserAndFlash();
 
-            double[] Excited = new double[Commander.Camera.AcqSize];
+            double[] Excited = new double[finalSize];
             for (int i = 0; i < N; i++)
             {
                 uint ret = Commander.Camera.Acquire(DataBuffer);
 
-                Data.Accumulate(Excited, DataBuffer);
+                Data.ColumnSum(Excited, DataBuffer);
 
                 if (PauseCancelProgress(e, (2 * N + i) * 99 / TotalScans, Dialog.PROGRESS_TRANS)) return;
             }

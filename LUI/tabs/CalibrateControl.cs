@@ -189,21 +189,23 @@ namespace LUI.tabs
 
         protected override void DoWork(object sender, DoWorkEventArgs e)
         {
-            Commander.Camera.AcquisitionMode = AndorCamera.AcquisitionModeSingle;
-            Commander.Camera.TriggerMode = AndorCamera.TriggerModeExternalExposure;
-            Commander.Camera.DDGTriggerMode = AndorCamera.DDGTriggerModeExternal;
-            Commander.Camera.ReadMode = AndorCamera.ReadModeFVB;
             WorkArgs args = (WorkArgs)e.Argument;
             int N = args.N;
 
+            int AcqSize = (int)Commander.Camera.AcqSize;
+            int finalSize = Commander.Camera.ReadMode == AndorCamera.ReadModeImage ?
+                AcqSize / Commander.Camera.Image.Height : AcqSize;
+
             if (PauseCancelProgress(e, 0, Dialog.PROGRESS_DARK.ToString())) return;
 
-            Commander.BeamFlag.CloseLaserAndFlash();
+            int[] DataBuffer = new int[AcqSize];
+            int[] DarkBuffer = new int[finalSize];
 
-            int[] DarkBuffer = Commander.Camera.Acquire();
-            for (int i = 0; i < N - 1; i++)
+            Commander.BeamFlag.CloseLaserAndFlash();
+            for (int i = 0; i < N; i++)
             {
-                Data.Accumulate(DarkBuffer, Commander.Camera.Acquire());
+                uint ret = Commander.Camera.Acquire(DataBuffer);
+                Data.ColumnSum(DarkBuffer, DataBuffer);
                 if (PauseCancelProgress(e, 33 + (i / N) * 33, Dialog.PROGRESS_DARK.ToString())) return;
             }
 
@@ -215,10 +217,11 @@ namespace LUI.tabs
 
                 Commander.BeamFlag.OpenFlash();
 
-                BlankBuffer = Commander.Camera.Acquire();
-                for (int i = 0; i < N - 1; i++)
+                BlankBuffer = new int[finalSize];
+                for (int i = 0; i < N; i++)
                 {
-                    Data.Accumulate(BlankBuffer, Commander.Camera.Acquire());
+                    uint ret = Commander.Camera.Acquire(DataBuffer);
+                    Data.ColumnSum(BlankBuffer, DataBuffer);
                     if (PauseCancelProgress(e, (i / N) * 33, Dialog.PROGRESS_BLANK.ToString())) return;
                 }
 
@@ -237,15 +240,16 @@ namespace LUI.tabs
 
             Commander.BeamFlag.OpenFlash();
 
-            int[] DataBuffer = Commander.Camera.Acquire();
-            for (int i = 0; i < N - 1; i++)
+            int[] SampleBuffer = new int[finalSize];
+            for (int i = 0; i < N; i++)
             {
-                Data.Accumulate(DataBuffer, Commander.Camera.Acquire());
+                uint ret = Commander.Camera.Acquire(DataBuffer);
+                Data.ColumnSum(SampleBuffer, DataBuffer);
                 if (PauseCancelProgress(e, 66 + (i / N) * 33, Dialog.PROGRESS_DATA.ToString())) return;
             }
             Commander.BeamFlag.CloseLaserAndFlash();
             if (PauseCancelProgress(e, 99, Dialog.PROGRESS_CALC.ToString())) return;
-            e.Result = Data.OpticalDensity(DataBuffer, BlankBuffer, DarkBuffer);
+            e.Result = Data.OpticalDensity(SampleBuffer, BlankBuffer, DarkBuffer);
         }
 
         protected override void Collect_Click(object sender, EventArgs e)
