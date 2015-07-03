@@ -9,7 +9,7 @@ namespace lasercom.ddg
     {
         public static IDigitalDelayGenerator CreateDelayGenerator(DelayGeneratorParameters p)
         {
-            return (IDigitalDelayGenerator)Activator.CreateInstance(p.Type, p.ConstructorArray);
+            return (IDigitalDelayGenerator)Activator.CreateInstance(p.Type, p);
         }
     }
 }

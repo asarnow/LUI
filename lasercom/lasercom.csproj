@@ -146,6 +146,7 @@
     <Compile Include="control\ISpectrograph.cs" />
     <Compile Include="control\PumpParameters.cs" />
     <Compile Include="control\Shamrock.cs" />
+    <Compile Include="control\SpectrographParameters.cs" />
     <Compile Include="Data.cs" />
     <Compile Include="ddg\AbstractDigitalDelayGenerator.cs" />
     <Compile Include="ddg\DelayGeneratorFactory.cs" />

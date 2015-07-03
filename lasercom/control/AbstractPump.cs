@@ -5,7 +5,7 @@ namespace lasercom.control
     /// <summary>
     /// Base class for all pumps.
     /// </summary>
-    public abstract class AbstractPump : LuiObject, IPump
+    public abstract class AbstractPump : LuiObject<PumpParameters>, IPump
     {
         private PumpState _CurrentState;
         public PumpState CurrentState
@@ -48,6 +48,11 @@ namespace lasercom.control
         public virtual PumpState GetState()
         {
             return CurrentState;
+        }
+
+        public override void Update(PumpParameters p)
+        {
+            throw new System.NotImplementedException();
         }
 
     }

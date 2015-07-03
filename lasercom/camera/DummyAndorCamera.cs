@@ -2,9 +2,11 @@
 #if x64
 using ATMCD64CS;
 #else
+using System;
 using System.Diagnostics;
 using System.Linq;
 using ATMCD32CS;
+using lasercom.objects;
 
 
 #endif
@@ -129,7 +131,71 @@ namespace lasercom.camera
             get { return _Image; }
             set
             {
-                _Image = value;
+                int hbin, vbin, hstart, hcount, vstart, vcount;
+
+                if (value.hcount == -1)
+                {
+                    hcount = _Image.hcount;
+                }
+                else
+                {
+                    hcount = Math.Max(1, value.hcount); // At least 1.
+                    hcount = Math.Min((int)Width, hcount); // At most Width.
+                }
+
+                if (value.vcount == -1)
+                {
+                    vcount = _Image.vcount;
+                }
+                else
+                {
+                    vcount = Math.Max(1, value.vcount); // At least 1.
+                    vcount = Math.Min((int)Height, vcount); // At most Height.
+                }
+
+                if (value.hstart == -1)
+                {
+                    hstart = _Image.hstart;
+                }
+                else
+                {
+                    hstart = Math.Max(0, value.hstart); // At least 0.
+                    hstart = Math.Min(hstart, (int)Width - 1); // At most Width - 1.
+                }
+
+                if (value.vstart == -1)
+                {
+                    vstart = _Image.vstart;
+                }
+                else
+                {
+                    vstart = Math.Max(0, value.vstart); // At least 0.
+                    vstart = Math.Min(vstart, (int)Height - 1); // At most Height - 1.
+                }
+
+                if (value.hbin == -1)
+                {
+                    hbin = _Image.hbin;
+                }
+                else
+                {
+                    hbin = Math.Max(1, value.hbin); // At least 1.
+                    hbin = Math.Min(hbin, hcount); // At most image width.
+                }
+
+                if (value.vbin == -1)
+                {
+                    vbin = _Image.vbin;
+                }
+                else
+                {
+                    vbin = Math.Max(1, value.vbin); // At least 1.
+                    vbin = Math.Min(vbin, vcount); // At most image height.
+                }
+
+                _Image = new ImageArea(hbin, vbin,
+                    hstart, hcount,
+                    vstart, vcount);
             }
         }
 
@@ -151,16 +217,26 @@ namespace lasercom.camera
             }
         }
 
-        public DummyAndorCamera(string CalFile = null, int InitialGain = AndorCamera.DefaultMCPGain) : base(CalFile)
+        public DummyAndorCamera(LuiObjectParameters p) : this(p as CameraParameters) { }
+
+        public DummyAndorCamera(CameraParameters p)
         {
+            if (p == null) 
+                throw new ArgumentException("Non-null CameraParameters instance required");
+
             _Width = 1024;
             _Height = 256;
-            Image = new ImageArea(1, 1, 0, (int)Width, 0, (int)Height);
+            _Image = new ImageArea(1, 1, 0, (int)Width, 0, (int)Height);
+            Image = p.Image;
             Calibration = Enumerable.Range(0, (int)Width).Select(x => (double)x).ToArray();
-            LoadCalibration(CalFile);
+            LoadCalibration(p.CalFile);
             MinIntensifierGain = 0;
             MaxIntensifierGain = 4095;
-            IntensifierGain = InitialGain;
+            IntensifierGain = p.InitialGain;
+            ReadMode = p.ReadMode;
+
+            p.Image = Image;
+            p.ReadMode = ReadMode;
         }
 
         public override int[] FullResolutionImage()
@@ -194,64 +270,124 @@ namespace lasercom.camera
             int[] data = null;
             if (caller.Contains("TroaControl"))
             {
-                if (line < 350) // Dark.
+                if (line < 370) // Dark.
                 {
-                    data = Data.Uniform((int)Width, 1000);
+                    data = Dark(1000);
                 }
-                else if (line < 380 || line > 430) // Ground.
+                else if (line < 400 || line > 450) // Ground.
                 {
-                    data = Data.Gaussian((int)Width, 32000, Width * 1 / 3, Width / 10);
-                    Data.Accumulate(data, Data.Uniform((int)Width, 1000));
+                    data = Blank(55000);
+                    Data.Dissipate(data, SampleData(0.3333, 32000));
                     for (int i = 0; i < data.Length; i++) data[i] += 1000;
                 }
-                else if (line < 430) // Excited.
+                else if (line < 450) // Excited.
                 {
-                    data = Data.Gaussian((int)Width, 32000, Width * 2 / 3, Width / 10);
-                    Data.Accumulate(data, Data.Uniform((int)Width, 1000));
+                    data = Blank(55000);
+                    Data.Dissipate(data, SampleData(0.6667, 32000));
                     for (int i = 0; i < data.Length; i++) data[i] += 1000;
                 }
             }
             else if (caller.Contains("CalibrateControl"))
             {
-                if (line < 200) // Dark.
+                if (line < 210) // Dark.
                 {
-                    data = Data.Uniform((int)Width, 1000);
+                    data = Dark(1000);
                 }
-                else if (line > 200 && line < 220) // Blank.
+                else if (line < 230) // Blank.
                 {
-                    data = Enumerable.Repeat(55000, (int)Width).ToArray();
-                    Data.Dissipate(data, Data.Uniform((int)Width, 1000));
+                    data = Blank(55000);
                 }
                 else // Sample.
                 {
-                    data = Enumerable.Repeat(55000, (int)Width).ToArray();
-                    Data.Dissipate(data, Data.Uniform((int)Width, 1000));
-                    Data.Dissipate(data, Data.Gaussian((int)Width, 40000, Width * 2 / 3, Width / 10));
+                    data = Blank(55000);
+                    Data.Dissipate(data, SampleData(0.5, 32000));
                 }
             }
             else if (caller.Contains("ResidualsControl"))
             {
-                if (ReadMode == ReadModeImage)
-                {
-                    data = new int[AcqSize];
-                    for (int i = 0; i < Image.Height; i++)
-                    {
-                        int[] row = Data.Gaussian(Image.Width, 32000, Width * 1 / 2, Width / 10);
-                        Data.Accumulate(row, Data.Uniform(Image.Width, 100 + i*10));
-                        for (int j = 0; j < Image.Width; j++)
-                        {
-                            data[i * Image.Width + j] = row[j];
-                        }
-                    }
-                }
-                else
-                {
-                    data = Data.Gaussian(Image.Width, 32000, Width * 1 / 2, Width / 10);
-                }
+                data = Blank(55000);
             }
 
             if (data != null) data.CopyTo(DataBuffer, 0);
             return AndorSDK.DRV_SUCCESS;
+        }
+
+        private int[] Dark(int scale = 1000)
+        {
+            return ReadMode == ReadModeImage ?
+                DarkImage(scale) : Data.Uniform(Image.Width, scale);
+        }
+
+        private int[] DarkImage(int scale)
+        {
+            int[] data = new int[AcqSize];
+            for (int i = 0; i < Image.Height; i++)
+            {
+                int[] row = Data.Uniform(Image.Width, scale);
+                for (int j = 0; j < Image.Width; j++)
+                {
+                    data[i * Image.Width + j] = row[j];
+                }
+            }
+            return data;
+        }
+
+        private int[] Blank(int scale = 55000)
+        {
+            return ReadMode == ReadModeFVB ? BlankFvb(scale) : BlankImage(scale);
+        }
+
+        private int[] BlankFvb(int scale)
+        {
+            int[] data = Data.Uniform((int)Width, 1000);
+            for (int i = 1; i < 10; i++)
+            {
+                Data.Accumulate(data, Data.Gaussian((int)Width, scale, Width * i / 10D, Width / 10D));
+            }
+            return data;
+        }
+
+        private int[] BlankImage(int scale)
+        {
+            int[] data = new int[AcqSize];
+            for (int i = 0; i < Image.Height; i++)
+            {
+                int ymax = Image.Height / 2;
+                int yscale = (int)(scale * (1 - Math.Abs((double)i - ymax) / ymax));
+                int[] row = BlankFvb(yscale);
+                for (int j = 0; j < Image.Width; j++)
+                {
+                    data[i * Image.Width + j] = row[j];
+                }
+            }
+            return data;
+        }
+
+        private int[] SampleData(double centerNormalized = 0.5, int scale = 32000)
+        {
+            return ReadMode == ReadModeImage ?
+                GenerateDataImage(centerNormalized, scale) :
+                GenerateData(centerNormalized, scale);
+        }
+
+        private int[] GenerateData(double centerNormalized, int scale)
+        {
+            int[] data = Data.Gaussian((int)Width, scale, Width * centerNormalized, Width / 10D);
+            return data;
+        }
+
+        private int[] GenerateDataImage(double centerNormalized, int scale)
+        {
+            int[] data = new int[AcqSize];
+            for (int i = 0; i < Image.Height; i++)
+            {
+                int[] row = Data.Gaussian(Image.Width, scale, Image.Width * centerNormalized, Width / 10);
+                for (int j = 0; j < Image.Width; j++)
+                {
+                    data[i * Image.Width + j] = row[j];
+                }
+            }
+            return data;
         }
 
         public override void Close()

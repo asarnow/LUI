@@ -6,6 +6,7 @@ using ATMCD64CS;
 using ATMCD32CS;
 using System.Threading.Tasks;
 using System.Threading;
+using lasercom.objects;
 #endif
 
 //  <summary>
@@ -17,6 +18,7 @@ namespace lasercom.camera
 
     public class CameraTempControlled:AndorCamera
     {
+        public const int DefaultTemperature = 20;
         public const float TemperatureEps = 3F;
         public const int ShutdownTemp = 5;
 
@@ -70,12 +72,19 @@ namespace lasercom.camera
             }
         }
 
-        public CameraTempControlled(string CalFile, string Dir, int InitialGain, int Temperature)
-            : base(CalFile, Dir, InitialGain)
+        public CameraTempControlled(LuiObjectParameters p) : this(p as CameraParameters) { }
+
+        public CameraTempControlled(CameraParameters p) : base(p)
         {
             AndorSdk.GetTemperatureRange(ref _MinTemp, ref _MaxTemp);
             AndorSdk.CoolerON();
             EquilibrateTemperature(Temperature);
+        }
+
+        public override void Update(CameraParameters p)
+        {
+            base.Update(p);
+            EquilibrateTemperature(p.Temperature);
         }
 
         public void EquilibrateTemperature(int targetTemperature)

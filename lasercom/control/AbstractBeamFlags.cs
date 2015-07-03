@@ -1,15 +1,15 @@
-﻿using lasercom.objects;
+﻿using System;
+using lasercom.objects;
 
 namespace lasercom.control
 {
     /// <summary>
     /// Base class for all beam flag classes.
     /// </summary>
-    public abstract class AbstractBeamFlags: LuiObject, IBeamFlags
+    public abstract class AbstractBeamFlags: LuiObject<BeamFlagsParameters>, IBeamFlags
     {
         public BeamFlagState FlashState { get; set; }
         public BeamFlagState LaserState { get; set; }
-        public int Delay { get; set; } // Time in miliseconds to sleep between commands.
 
         virtual public BeamFlagState ToggleLaser()
         {
@@ -75,6 +75,11 @@ namespace lasercom.control
         {
             LaserState = BeamFlagState.Closed;
             FlashState = BeamFlagState.Closed;
+        }
+
+        public override void Update(BeamFlagsParameters p)
+        {
+            throw new NotImplementedException();
         }
 
     }

@@ -18,14 +18,6 @@ namespace lasercom.objects
         [DataMember]
         public string Name { get; set; }
 
-        public LuiObjectParameters Self
-        {
-            get
-            {
-                return this;
-            }
-        }
-
         private Type _Type;
         public Type Type
         {
@@ -59,8 +51,6 @@ namespace lasercom.objects
                 return new LuiObjectParameters[0];
             }
         }
-
-        public abstract object[] ConstructorArray { get; }
 
         static Type[] GetKnownTypes()
         {
@@ -96,14 +86,6 @@ namespace lasercom.objects
     public abstract class LuiObjectParameters<P> : LuiObjectParameters, 
         IEquatable<P> where P : LuiObjectParameters<P>
     {
-
-        public new LuiObjectParameters<P> Self
-        {
-            get
-            {
-                return this;
-            }
-        }
 
         public LuiObjectParameters()
         {
@@ -147,5 +129,12 @@ namespace lasercom.objects
         {
             return Util.Hash(Type, Name);
         }
+
+        public virtual bool NeedsReinstantiation(P other)
+        {
+            return Type != other.Type;
+        }
+
+        public abstract bool NeedsUpdate(P other);
     }
 }

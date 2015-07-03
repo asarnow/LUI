@@ -6,7 +6,7 @@ namespace lasercom.camera
     {
         public static ICamera CreateCamera(CameraParameters p)
         {
-            return (ICamera)Activator.CreateInstance(p.Type, p.ConstructorArray);
+            return (ICamera)Activator.CreateInstance(p.Type, p);
         }
     }
 }

@@ -10,6 +10,9 @@ namespace lasercom.control
         [DataMember]
         public string PortName { get; set; }
 
+        [DataMember]
+        public int Delay { get; set; }
+
         public BeamFlagsParameters(Type Type, string PortName)
             : base(Type)
         {
@@ -20,23 +23,6 @@ namespace lasercom.control
             : base(other)
         {
 
-        }
-
-        override public object[] ConstructorArray
-        {
-            get
-            {
-                object[] arr = null;
-                if (Type == typeof(BeamFlags))
-                {
-                    arr = new object[] { PortName };
-                }
-                else if (Type == typeof(DummyBeamFlags))
-                {
-                    arr = new object[0];
-                }
-                return arr;
-            }
         }
 
         public BeamFlagsParameters(Type Type)
@@ -55,32 +41,50 @@ namespace lasercom.control
         {
             base.Copy(other);
             this.PortName = other.PortName;
+            this.Delay = other.Delay;
         }
 
-        public override bool Equals(BeamFlagsParameters other)
+        //public override bool Equals(BeamFlagsParameters other)
+        //{
+        //    bool iseq = base.Equals(other);
+        //    if (!iseq) return iseq;
+
+        //    if (Type == typeof(BeamFlags))
+        //    {
+        //        iseq &= this.PortName == other.PortName;
+        //    }
+        //    return iseq;
+        //}
+
+        //public override int GetHashCode()
+        //{
+        //    unchecked // Overflow is fine, just wrap
+        //    {
+        //        int hash = Util.Hash(Type, Name);
+        //        if (Type == typeof(BeamFlags))
+        //        {
+        //            hash = Util.Hash(hash, PortName);
+        //        }
+        //        return hash;
+        //    }
+        //}
+
+        public override bool NeedsReinstantiation(BeamFlagsParameters other)
         {
-            bool iseq = base.Equals(other);
-            if (!iseq) return iseq;
+            bool needs = base.NeedsReinstantiation(other);
+            if (needs) return true;
 
-            if (Type == typeof(BeamFlags))
+            if (Type == typeof(BeamFlags) || Type.IsSubclassOf(typeof(BeamFlags)))
             {
-                iseq &= this.PortName == other.PortName;
+                needs |= other.PortName != PortName;
             }
-            return iseq;
+            return needs;
         }
 
-        public override int GetHashCode()
+        public override bool NeedsUpdate(BeamFlagsParameters other)
         {
-            unchecked // Overflow is fine, just wrap
-            {
-                int hash = Util.Hash(Type, Name);
-                if (Type == typeof(BeamFlags))
-                {
-                    hash = Util.Hash(hash, PortName);
-                }
-                return hash;
-            }
+            bool needs = other.Delay != Delay;
+            return needs;
         }
-
     }
 }

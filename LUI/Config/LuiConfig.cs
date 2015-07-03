@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Extensions;
 using lasercom;
+using lasercom.camera;
+using lasercom.control;
+using lasercom.ddg;
 using lasercom.objects;
 using log4net;
 using log4net.Appender;
@@ -327,16 +330,27 @@ namespace LUI.config
 
             foreach (var pair in sameNames)
             {
-                if (!pair.Old.Equals(pair.New)) // Existing entry needs update.
+                //if (!pair.Old.Equals(pair.New)) // Existing entry needs update.
+                if (pair.Old.NeedsReinstantiation(pair.New))
                 {
-                    var luiObject = LuiObjectTableIndex[pair.Old.GetType()][pair.Old];
+                    ILuiObject luiObject = LuiObjectTableIndex[pair.Old.GetType()][pair.Old];
+                    // if NeedsReinstantion, Dispose and set null.
+                    // else if NeedsUpdate, update but don't null.
                     if (luiObject != null) luiObject.Dispose();
                     LuiObjectTableIndex[pair.Old.GetType()].Remove(pair.Old);
                     LuiObjectTableIndex[pair.New.GetType()].Add(pair.New, null);
                 }
+                else if (pair.Old.NeedsUpdate(pair.New))
+                {
+                    LuiObject<P> luiObject = (LuiObject<P>) LuiObjectTableIndex[pair.Old.GetType()][pair.Old];
+                    if (luiObject != null) luiObject.Update(pair.New);
+                    LuiObjectTableIndex[pair.Old.GetType()].Remove(pair.Old);
+                    LuiObjectTableIndex[pair.New.GetType()].Add(pair.New, luiObject);
+                }
             }
 
-            // At this point, all entries in the object table are null EXCEPT ones with no changed parameters.
+            // At this point, all entries in the object table are null 
+            // EXCEPT those with no changed parameters OR which have been updated without reinstantiation.
         }
 
         public System.Xml.Schema.XmlSchema GetSchema()
@@ -592,6 +606,20 @@ namespace LUI.config
             if (!(sender is ParentForm)) Saved = false;
         }
 
+        public static LuiConfig DummyConfig()
+        {
+            var config = new LuiConfig();
+            var bf = new BeamFlagsParameters(typeof(DummyBeamFlags));
+            bf.Name = "Dummy";
+            var cam = new CameraParameters(typeof(DummyAndorCamera));
+            cam.Name = "Dummy";
+            var dg = new DelayGeneratorParameters(typeof(DummyDigitalDelayGenerator));
+            dg.Name = "Dummy";
+            config.AddParameters(bf);
+            config.AddParameters(cam);
+            config.AddParameters(dg);
+            return config;
+        }
     }
 
 }

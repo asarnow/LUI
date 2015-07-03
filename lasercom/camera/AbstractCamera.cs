@@ -5,7 +5,7 @@ using lasercom.objects;
 
 namespace lasercom.camera
 {
-    public abstract class AbstractCamera:LuiObject, ICamera
+    public abstract class AbstractCamera:LuiObject<CameraParameters>, ICamera
     {
         public abstract uint Width
         {
@@ -18,6 +18,16 @@ namespace lasercom.camera
         }
 
         public abstract uint AcqSize
+        {
+            get;
+        }
+
+        public abstract int AcqWidth
+        {
+            get;
+        }
+
+        public abstract int AcqHeight
         {
             get;
         }
@@ -101,6 +111,14 @@ namespace lasercom.camera
         public abstract uint Acquire(int[] DataBuffer);
 
         public abstract string DecodeStatus(uint status);
+        
+        public override void Update(CameraParameters p)
+        {
+            LoadCalibration(p.CalFile);
+            ReadMode = p.ReadMode;
+            Image = p.Image;
+            if (HasIntensifier) IntensifierGain = p.InitialGain;
+        }
 
         protected void LoadCalibration(string CalFile)
         {

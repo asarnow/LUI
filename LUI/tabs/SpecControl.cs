@@ -149,7 +149,7 @@ namespace LUI.tabs
 
             int AcqSize = (int)Commander.Camera.AcqSize;
             int finalSize = Commander.Camera.ReadMode == AndorCamera.ReadModeImage ? 
-                AcqSize /= Commander.Camera.Image.Height : AcqSize;
+                AcqSize / Commander.Camera.Image.Height : AcqSize;
 
             if (PauseCancelProgress(e, 0, Dialog.PROGRESS_DARK.ToString())) return;
 

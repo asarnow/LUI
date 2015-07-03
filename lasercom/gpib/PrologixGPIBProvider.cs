@@ -3,6 +3,7 @@ using System.IO;
 using System.IO.Ports;
 using System.Text;
 using System.Threading;
+using lasercom.objects;
 
 namespace lasercom.gpib
 {
@@ -49,12 +50,20 @@ namespace lasercom.gpib
         const int DefaultTimeout = 500;
 
         public PrologixGpibProvider(string PortName)
-            : this(PortName, DefaultTimeout)
         {
-
+            Init(PortName, DefaultTimeout);
         }
 
-        public PrologixGpibProvider(string PortName, int Timeout)
+        public PrologixGpibProvider(LuiObjectParameters p) : this(p as GpibProviderParameters) { }
+
+        public PrologixGpibProvider(GpibProviderParameters p)
+        {
+            if (p == null || p.PortName == null)
+                throw new ArgumentException("PortName must be defined.");
+            Init(p.PortName, p.Timeout);
+        }
+
+        private void Init(string PortName, int Timeout)
         {
             #region Serial port configuration
             
@@ -239,6 +248,11 @@ namespace lasercom.gpib
         private void WriteAsciiBytes(string data)
         {
             _port.Write(AsciiEncoding.GetBytes(data), 0, AsciiEncoding.GetByteCount(data));
+        }
+
+        public override void Update(GpibProviderParameters p)
+        {
+            Timeout = p.Timeout;
         }
     }
 }

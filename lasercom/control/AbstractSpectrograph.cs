@@ -2,7 +2,7 @@
 using lasercom.objects;
 namespace lasercom.control
 {
-    public abstract class AbstractSpectrograph : LuiObject, ISpectrograph
+    public abstract class AbstractSpectrograph : LuiObject<SpectrographParameters>, ISpectrograph
     {
         public abstract double Wavelength { get; set; }
         public abstract double SlitWidth { get; set; }
@@ -15,6 +15,11 @@ namespace lasercom.control
             {
                 Close();
             }
+        }
+
+        public override void Update(SpectrographParameters p)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

@@ -5,6 +5,7 @@
 using ATMCD64CS;
 #else
 using ATMCD32CS;
+using lasercom.objects;
 #endif
 
 
@@ -197,10 +198,77 @@ namespace lasercom.camera
             get { return _Image; }
             set 
             {
-                _Image = value;
-                AndorSdk.SetImage(value.hbin, value.vbin, 
-                    value.hstart + 1, value.hstart + value.hcount,
-                    value.vstart + 1, value.vstart + value.vstart);
+                int hbin, vbin, hstart, hcount, vstart, vcount;
+                
+                if (value.hcount == -1)
+                {
+                    hcount = _Image.hcount;
+                }
+                else
+                {
+                    hcount = Math.Min(1, value.hcount); // At least 1.
+                    hcount = Math.Min((int)Width, hcount); // At most Width.
+                }
+
+                if (value.vcount == -1)
+                {
+                    vcount = _Image.vcount;
+                }
+                else
+                {
+                    vcount = Math.Min(1, value.vcount); // At least 1.
+                    vcount = Math.Min((int)Height, vcount); // At most Height.
+                }
+
+                if (value.hstart == -1)
+                {
+                    hstart = _Image.hstart;
+                }
+                else
+                {
+                    hstart = Math.Max(0, value.hstart); // At least 0.
+                    hstart = Math.Min(hstart, (int)Width - 1); // At most Width - 1.
+                }
+
+                if (value.vstart == -1)
+                {
+                    vstart = _Image.vstart;
+                }
+                else
+                {
+                    vstart = Math.Max(0, value.vstart); // At least 0.
+                    vstart = Math.Min(vstart, (int)Height - 1); // At most Height - 1.
+                }
+
+                if (value.hbin == -1)
+                {
+                    hbin = _Image.hbin;
+                }
+                else
+                {
+                    hbin = Math.Max(1, value.hbin); // At least 1.
+                    hbin = Math.Min(hbin, hcount); // At most image width.
+                }
+
+                if (value.vbin == -1)
+                {
+                    vbin = _Image.vbin;
+                }
+                else
+                {
+                    vbin = Math.Max(1, value.vbin); // At least 1.
+                    vbin = Math.Min(vbin, vcount); // At most image height.
+                }
+
+                _Image = new ImageArea(hbin, vbin,
+                    hstart, hcount,
+                    vstart, vcount);
+                
+                uint ret = AndorSdk.SetImage(
+                    _Image.hbin, _Image.vbin,
+                    _Image.hstart + 1, _Image.hstart + _Image.hcount,
+                    _Image.vstart + 1, _Image.vstart + _Image.vstart);
+                Log.Debug(DecodeStatus(ret));
             }
         }
 
@@ -270,16 +338,61 @@ namespace lasercom.camera
                 }
                 else
                 {
-                    throw new NotImplementedException();
+                    throw new NotImplementedException("Unsupported read mode.");
                 }
             }
         }
 
-        public AndorCamera(string CalFile = null, string dir = ".", int InitialGain = AndorCamera.DefaultMCPGain)
+        public override int AcqWidth
         {
-            if (dir != null)
+            get
             {
-                InitVal = AndorSdk.Initialize(dir);
+                if (ReadMode == ReadModeFVB)
+                {
+                    return (int)Width;
+                }
+                else if (ReadMode == ReadModeImage)
+                {
+                    return Image.Width;
+                }
+                else
+                {
+                    throw new NotImplementedException("Unsupported read mode.");
+                }
+            }
+        }
+
+        public override int AcqHeight
+        {
+            get
+            {
+                if (ReadMode == ReadModeFVB)
+                {
+                    return (int)Height;
+                }
+                else if (ReadMode == ReadModeImage)
+                {
+                    return Image.Height;
+                }
+                else
+                {
+                    throw new NotImplementedException("Unsupported read mode.");
+                }
+            }
+        }
+
+        public AndorCamera() { }
+
+        public AndorCamera(LuiObjectParameters p) : 
+            this(p as CameraParameters) { }
+
+        public AndorCamera(CameraParameters p)
+        {
+            if (p == null) throw new ArgumentException();
+            
+            if (p.Dir != null)
+            {
+                InitVal = AndorSdk.Initialize(p.Dir);
                 AndorSdk.GetCapabilities(ref Capabilities);
                 AndorSdk.FreeInternalMemory();
 
@@ -291,7 +404,8 @@ namespace lasercom.camera
                 CurrentADChannel = DefaultADChannel;
                 AndorSdk.GetBitDepth(CurrentADChannel, ref _BitDepth);
 
-                Image = new ImageArea(1, 1, 0, (int)Width, 0, (int)Height);
+                _Image = new ImageArea(1, 1, 0, (int)Width, 0, (int)Height);
+                Image = p.Image;
 
                 GateMode = Constants.GatingModeSMBOnly;
                 MCPGating = Constants.MCPGatingOn;
@@ -299,14 +413,18 @@ namespace lasercom.camera
                 //TriggerInvert = Constants.TriggerInvertRising;
                 //TriggerLevel = Constants.DefaultTriggerLevel; // TTL signal is 4.0V
                 AndorSdk.GetMCPGainRange(ref _MinMCPGain, ref _MaxMCPGain);
-                IntensifierGain = InitialGain;
+                IntensifierGain = p.InitialGain;
 
                 AcquisitionMode = AcquisitionModeSingle;
                 TriggerMode = TriggerModeExternalExposure;
                 DDGTriggerMode = DDGTriggerModeExternal;
-                ReadMode = ReadModeFVB;
+                ReadMode = p.ReadMode;
             }
-            LoadCalibration(CalFile);
+            
+            LoadCalibration(p.CalFile);
+            
+            p.Image = Image;
+            p.ReadMode = ReadMode;
         }
 
         public virtual void Close()

@@ -19,10 +19,18 @@ namespace lasercom.ddg
         public IGpibProvider GPIBProvider { get; set; }
         public byte GPIBAddress { get; set; }
 
-        public StanfordDigitalDelayGenerator(byte _GPIBAddress, params ILuiObject[] dependencies)
+        public StanfordDigitalDelayGenerator(LuiObjectParameters p, params ILuiObject[] dependencies) : 
+            this(p as DelayGeneratorParameters, dependencies) { }
+
+        public StanfordDigitalDelayGenerator(DelayGeneratorParameters p, params ILuiObject[] dependencies)
+        {
+            Init(p.GpibAddress, dependencies);
+        }
+
+        private void Init(byte _GpibAddress, params ILuiObject[] dependencies)
         {
             GPIBProvider = (IGpibProvider)dependencies.First(d => d is IGpibProvider);
-            GPIBAddress = _GPIBAddress;
+            GPIBAddress = _GpibAddress;
         }
 
         protected override void Dispose(bool disposing)
@@ -31,6 +39,11 @@ namespace lasercom.ddg
             {
                 // Nothing to dispose of.
             }
+        }
+
+        public override void Update(DelayGeneratorParameters p)
+        {
+            GPIBAddress = p.GpibAddress;
         }
 
     }

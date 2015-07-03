@@ -28,22 +28,6 @@ namespace lasercom.ddg
             }
         }
 
-        public override object[] ConstructorArray
-        {
-            get
-            { 
-                object[] arr = null;
-                if (Type == typeof(DG535)){
-                    arr = new object[] { GpibAddress };
-                } 
-                else if (Type == typeof(DummyDigitalDelayGenerator))
-                {
-                    arr = new object[0];
-                }
-                return arr;
-            }
-        }
-
         public DelayGeneratorParameters(Type Type)
             : base(Type)
         {
@@ -69,38 +53,63 @@ namespace lasercom.ddg
             this.GpibProvider = other.GpibProvider;
         }
 
-        public override bool Equals(DelayGeneratorParameters other)
-        {
-            bool iseq = base.Equals(other);
-            if (!iseq) return iseq;
+        //public override bool Equals(DelayGeneratorParameters other)
+        //{
+        //    bool iseq = base.Equals(other);
+        //    if (!iseq) return iseq;
 
-            if (Type == typeof(DG535))
-            {
-                iseq &= GpibAddress == other.GpibAddress &&
-                        ( GpibProvider==other.GpibProvider || (GpibProvider !=null && GpibProvider.Equals(other.GpibProvider)) );
-                // Equal if (addresses are the same AND (providers ref. equal OR (provider is not null AND equals other provider)).
-                // Note that providers will be ref. equal if both are null and that due to short circuiting
-                // GpibProvider.Equals wont be called if GpibProvider is null.
-            }
-            return iseq;
-        }
-        public override bool Equals(object other)
+        //    if (Type == typeof(DG535))
+        //    {
+        //        iseq &= GpibAddress == other.GpibAddress &&
+        //                ( GpibProvider==other.GpibProvider || (GpibProvider !=null && GpibProvider.Equals(other.GpibProvider)) );
+        //        // Equal if (addresses are the same AND (providers ref. equal OR (provider is not null AND equals other provider)).
+        //        // Note that providers will be ref. equal if both are null and that due to short circuiting
+        //        // GpibProvider.Equals wont be called if GpibProvider is null.
+        //    }
+        //    return iseq;
+        //}
+
+        //public override bool Equals(object other)
+        //{
+        //    return Equals(other as DelayGeneratorParameters);
+        //}
+
+        //public override int GetHashCode()
+        //{
+        //    unchecked
+        //    {
+        //        int hash = Util.Hash(Type, Name);
+        //        if (Type == typeof(DG535))
+        //        {
+        //            hash = Util.Hash(hash, GpibProvider);
+        //            hash = Util.Hash(hash, GpibAddress);
+        //        }
+        //        return hash;
+        //    }
+        //}
+
+        public override bool NeedsReinstantiation(DelayGeneratorParameters other)
         {
-            return Equals(other as DelayGeneratorParameters);
+            bool needs = base.NeedsReinstantiation(other);
+            if (needs) return true;
+
+            if (Type == typeof(StanfordDigitalDelayGenerator) || Type.IsSubclassOf(typeof(StanfordDigitalDelayGenerator)))
+            {
+                needs |= (GpibProvider != other.GpibProvider || (GpibProvider != null && !GpibProvider.Equals(other.GpibProvider)));
+            }
+            return needs;
         }
 
-        public override int GetHashCode()
+        public override bool NeedsUpdate(DelayGeneratorParameters other)
         {
-            unchecked
+            bool needs = false;
+
+            if (Type == typeof(StanfordDigitalDelayGenerator) || Type.IsSubclassOf(typeof(StanfordDigitalDelayGenerator)))
             {
-                int hash = Util.Hash(Type, Name);
-                if (Type == typeof(DG535))
-                {
-                    hash = Util.Hash(hash, GpibProvider);
-                    hash = Util.Hash(hash, GpibAddress);
-                }
-                return hash;
+                needs |= other.GpibAddress != GpibAddress;
             }
+
+            return needs;
         }
     }
 }

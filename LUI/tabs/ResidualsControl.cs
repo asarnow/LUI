@@ -53,6 +53,9 @@ namespace LUI.tabs
 
         int SelectedRow { get; set; }
 
+        int LastAcqWidth;
+        int LastVBin;
+
         public enum Dialog
         {
             PROGRESS_CAMERA, PROGRESS_DATA
@@ -215,6 +218,9 @@ namespace LUI.tabs
             if (CollectLaser.Checked)
                 DdgConfigBox.ApplyPrimaryDelayValue();
 
+            LastAcqWidth = Commander.Camera.AcqWidth;
+            LastVBin = Commander.Camera.Image.vbin;
+
             GraphScroll.Enabled = ImageMode.Checked;
             UpdateGraphScroll();
             
@@ -294,7 +300,7 @@ namespace LUI.tabs
 
                 int sum = 0;
                 int peak = int.MinValue;
-                for (int k = 0; k < Commander.Camera.AcqSize / Commander.Camera.Image.Width; k++)
+                for (int k = 0; k < Commander.Camera.AcqSize / Commander.Camera.AcqWidth; k++)
                 {
                     for (int j = LowerBound; j <= UpperBound; j++)
                     {
@@ -511,8 +517,8 @@ namespace LUI.tabs
         /// </summary>
         private void Display()
         {
-            int start = Commander.Camera.Image.Width * SelectedRow;
-            int count = Commander.Camera.Image.Width;
+            int start = LastAcqWidth * SelectedRow;
+            int count = LastAcqWidth;
 
             Graph.ClearData();
             
@@ -551,8 +557,8 @@ namespace LUI.tabs
         /// </summary>
         private void DisplayProgress()
         {
-            int start = Commander.Camera.Image.Width * SelectedRow;
-            int count = Commander.Camera.Image.Width;
+            int start = LastAcqWidth * SelectedRow;
+            int count = LastAcqWidth;
             if (PersistentGraphing.Checked)
             {
                 if (ShowDifference.Checked && DiffLight != null)
@@ -586,8 +592,8 @@ namespace LUI.tabs
             // most useful if it's graphed on top of all previous scans.
             if (CumulativeLight != null && PersistentGraphing.Checked)
             {
-                int start = Commander.Camera.Image.Width * SelectedRow;
-                int count = Commander.Camera.Image.Width;
+                int start = LastAcqWidth * SelectedRow;
+                int count = LastAcqWidth;
                 Graph.MarkerColor = Graph.ColorOrder[3];
                 Graph.DrawPoints(Commander.Camera.Calibration, new ArraySegment<double>(CumulativeLight, start, count));
             }
@@ -672,7 +678,7 @@ namespace LUI.tabs
 
         void UpdateSelectedRow()
         {
-            SelectedRow = (int)(GraphScroll.Value - GraphScroll.Minimum - 0.5) / Commander.Camera.Image.vbin;
+            SelectedRow = (int)(GraphScroll.Value - GraphScroll.Minimum - 0.5) / LastVBin;
         }
 
         void GraphScroll_Scroll(object sender, ScrollEventArgs e)
@@ -725,9 +731,8 @@ namespace LUI.tabs
             VEnd.Value = Commander.Camera.Image.vstart + Commander.Camera.Image.vcount - 1;
             VBin.Minimum = 1;
             VBin.Maximum = Commander.Camera.Image.Height;
-            VBin.Value = Commander.Camera.Image.hbin;
+            VBin.Value = Commander.Camera.Image.vbin;
 
-            
             VStart.ValueChanged += CameraImage_ValueChanged;
             VBin.ValueChanged += CameraImage_ValueChanged;
             VEnd.ValueChanged += CameraImage_ValueChanged;
@@ -737,6 +742,7 @@ namespace LUI.tabs
         {
             if (GraphScroll.Enabled)
             {
+                GraphScroll.ValueChanged -= GraphScroll_ValueChanged;
                 GraphScroll.Minimum = (int)Commander.Camera.Image.vstart;
                 GraphScroll.Maximum = (int)(Commander.Camera.Image.vstart + Commander.Camera.Image.vcount - 1);
                 GraphScroll.LargeChange = Commander.Camera.Image.vbin;
@@ -747,6 +753,7 @@ namespace LUI.tabs
                     :
                     GraphScroll.Value;
                 UpdateSelectedRow();
+                GraphScroll.ValueChanged += GraphScroll_ValueChanged;
             }
             else
             {
@@ -771,6 +778,7 @@ namespace LUI.tabs
             Commander.Camera.Image = new ImageArea(Commander.Camera.Image.hbin, (int)VBin.Value,
                 Commander.Camera.Image.hstart, Commander.Camera.Image.hcount,
                 (int)VStart.Value, (int)(VEnd.Value - VStart.Value + 1));
+            UpdateCameraImage();
         }
 
         void SoftFvbMode_CheckedChanged(object sender, EventArgs e)

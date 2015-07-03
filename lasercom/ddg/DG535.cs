@@ -140,12 +140,7 @@ namespace lasercom.ddg
             }
         }
 
-        //public DDG535(int address):base(address)
-        //{
-        //    ReadAllDelays();
-        //}
-
-        public DG535(byte GPIBAddress, params ILuiObject[] dependencies) : base(GPIBAddress, dependencies)
+        public DG535(DelayGeneratorParameters p, ILuiObject[] dependencies) : base(p, dependencies)
         {
             ReadAllDelays();
         }
@@ -319,6 +314,12 @@ namespace lasercom.ddg
             // e.g. "1,+0.001000000000"
             string response = GPIBProvider.LoggedQuery(GPIBAddress, command);
             _DDelay = response;
+        }
+
+        public override void Update(DelayGeneratorParameters p)
+        {
+            base.Update(p);
+            ReadAllDelays();
         }
 
     }

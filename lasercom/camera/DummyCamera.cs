@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using lasercom.objects;
 
 namespace lasercom.camera
 {
@@ -25,12 +26,53 @@ namespace lasercom.camera
 
         public override ImageArea Image { get; set; }
 
+        public override int AcqWidth
+        {
+            get
+            {
+                if (ReadMode == AndorCamera.ReadModeFVB)
+                {
+                    return (int)Width;
+                }
+                else if (ReadMode == AndorCamera.ReadModeImage)
+                {
+                    return Image.Width;
+                }
+                else
+                {
+                    throw new NotImplementedException("Unsupported read mode.");
+                }
+            }
+        }
+
+        public override int AcqHeight
+        {
+            get
+            {
+                if (ReadMode == AndorCamera.ReadModeFVB)
+                {
+                    return (int)Height;
+                }
+                else if (ReadMode == AndorCamera.ReadModeImage)
+                {
+                    return Image.Height;
+                }
+                else
+                {
+                    throw new NotImplementedException("Unsupported read mode.");
+                }
+            }
+        }
+
+        public DummyCamera(LuiObjectParameters p) : this() { }
+
         public DummyCamera()
         {
             _Height = 255;
             _Width = 1024;
             Image = new ImageArea(1, 1, 0, (int)Width, 0, (int)Height);
             Calibration = Enumerable.Range(0, (int)Width).Select(x=>(double)x).ToArray();
+            ReadMode = AndorCamera.ReadModeFVB;
         }
 
         public override int[] FullResolutionImage()
@@ -89,7 +131,7 @@ namespace lasercom.camera
             }
         }
 
-        private int _ReadMode = AndorCamera.ReadModeFVB;
+        private int _ReadMode;
         public override int ReadMode
         {
             get

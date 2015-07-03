@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO.Ports;
+using lasercom.objects;
 
 namespace lasercom.control
 {
@@ -9,12 +10,27 @@ namespace lasercom.control
     /// </summary>
     public class HarvardPump:AbstractPump
     {
-        private readonly SerialPort _port;
+        private SerialPort _port;
+
+        public HarvardPump(LuiObjectParameters p) : 
+            this(p as PumpParameters) { }
+
+        public HarvardPump(PumpParameters p)
+        {
+            if (p == null || p.PortName == null)
+                throw new ArgumentException("PortName must be defined.");
+            Init(p.PortName);
+        }
 
         public HarvardPump(String portName)
         {
+            Init(portName);
+        }
+
+        private void Init(string portName)
+        {
             // DtrEnable causes DTR pin to go high on port open
-            _port = new SerialPort(portName) { DtrEnable = true };            
+            _port = new SerialPort(portName) { DtrEnable = true };
             SetClosed();
         }
 

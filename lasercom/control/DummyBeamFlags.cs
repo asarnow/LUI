@@ -1,4 +1,5 @@
 ﻿
+using lasercom.objects;
 namespace lasercom.control
 {
     /// <summary>
@@ -6,6 +7,8 @@ namespace lasercom.control
     /// </summary>
     public class DummyBeamFlags:AbstractBeamFlags
     {
+        public DummyBeamFlags(LuiObjectParameters p) : this() { }
+
         public DummyBeamFlags()
         {
             

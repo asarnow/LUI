@@ -1,4 +1,5 @@
 ﻿using System;
+using lasercom.objects;
 using NationalInstruments.NI4882;
 
 namespace lasercom.gpib
@@ -12,7 +13,16 @@ namespace lasercom.gpib
 
         public Board Board { get; set; }
 
-        public NIGpibProvider(int _BoardNumber)
+        public NIGpibProvider(LuiObjectParameters p) : this(p as GpibProviderParameters) { }
+
+        public NIGpibProvider(GpibProviderParameters p)
+        {
+            if (p == null)
+                throw new ArgumentException("GpibProviderParameters null");
+            Init(p.BoardNumber);
+        }
+
+        private void Init(int _BoardNumber)
         {
             Board = new Board(_BoardNumber);
             Board.SendInterfaceClear();

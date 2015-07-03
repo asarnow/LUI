@@ -1,4 +1,5 @@
 ﻿using System;
+using lasercom.objects;
 
 namespace lasercom.ddg
 {
@@ -7,6 +8,8 @@ namespace lasercom.ddg
     /// </summary>
     public class DummyDigitalDelayGenerator:AbstractDigitalDelayGenerator
     {
+
+        public DummyDigitalDelayGenerator(LuiObjectParameters p) : this() { }
 
         public DummyDigitalDelayGenerator()
         {

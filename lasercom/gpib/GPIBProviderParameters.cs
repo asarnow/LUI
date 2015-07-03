@@ -31,27 +31,6 @@ namespace lasercom.gpib
         [DataMember]
         public int Timeout { get; set; }
 
-        override public object[] ConstructorArray
-        {
-            get
-            {
-                object[] arr = null;
-                if (Type == typeof(NIGpibProvider))
-                {
-                    arr = new object[] { BoardNumber };
-                }
-                else if (Type == typeof(PrologixGpibProvider))
-                {
-                    arr = new object[] { PortName, Timeout };
-                }
-                else if (Type == typeof(DummyGpibProvider))
-                {
-                    arr = new object[0];
-                }
-                return arr;
-            }
-        }
-
         public GpibProviderParameters(Type type)
             : base(type)
         {
@@ -70,45 +49,45 @@ namespace lasercom.gpib
 
         }
 
-        public override bool Equals(GpibProviderParameters other)
-        {
-            bool iseq = base.Equals(other);
-            if (!iseq) return iseq;
+        //public override bool Equals(GpibProviderParameters other)
+        //{
+        //    bool iseq = base.Equals(other);
+        //    if (!iseq) return iseq;
 
-            if (Type == typeof(NIGpibProvider))
-            {
-                iseq &= BoardNumber == other.BoardNumber;
-            }
-            else if (Type == typeof(PrologixGpibProvider))
-            {
-                iseq &= PortName == other.PortName &&
-                        Timeout == other.Timeout;
-            }
-            return iseq;
-        }
+        //    if (Type == typeof(NIGpibProvider))
+        //    {
+        //        iseq &= BoardNumber == other.BoardNumber;
+        //    }
+        //    else if (Type == typeof(PrologixGpibProvider))
+        //    {
+        //        iseq &= PortName == other.PortName &&
+        //                Timeout == other.Timeout;
+        //    }
+        //    return iseq;
+        //}
 
-        public override bool Equals(object other)
-        {
-            return Equals(other as GpibProviderParameters);
-        }
+        //public override bool Equals(object other)
+        //{
+        //    return Equals(other as GpibProviderParameters);
+        //}
 
-        public override int GetHashCode()
-        {
-            unchecked // Overflow is fine, just wrap
-            {
-                int hash = Util.Hash(Type, Name);
-                if (Type == typeof(NIGpibProvider))
-                {
-                    hash = Util.Hash(hash,BoardNumber);
-                }
-                else if (Type == typeof(PrologixGpibProvider))
-                {
-                    hash = Util.Hash(hash, PortName);
-                    hash = Util.Hash(hash, Timeout);
-                }
-                return hash;
-            }
-        }
+        //public override int GetHashCode()
+        //{
+        //    unchecked // Overflow is fine, just wrap
+        //    {
+        //        int hash = Util.Hash(Type, Name);
+        //        if (Type == typeof(NIGpibProvider))
+        //        {
+        //            hash = Util.Hash(hash,BoardNumber);
+        //        }
+        //        else if (Type == typeof(PrologixGpibProvider))
+        //        {
+        //            hash = Util.Hash(hash, PortName);
+        //            hash = Util.Hash(hash, Timeout);
+        //        }
+        //        return hash;
+        //    }
+        //}
 
         //public static override bool operator==(GPIBProvider p, GPIBProvider q){
         //    return p.Equals(q);
@@ -122,6 +101,33 @@ namespace lasercom.gpib
             this.BoardNumber = other.BoardNumber;
         }
 
+        public override bool NeedsReinstantiation(GpibProviderParameters other)
+        {
+            bool needs = base.NeedsReinstantiation(other);
+            if (needs) return true;
+
+            if (Type == typeof(NIGpibProvider))
+            {
+                needs |= BoardNumber != other.BoardNumber;
+            }
+            else if (Type == typeof(PrologixGpibProvider))
+            {
+                needs |= PortName != other.PortName;
+            }
+            return needs;
+        }
+
+        public override bool NeedsUpdate(GpibProviderParameters other)
+        {
+            bool needs = false;
+
+            if (Type == typeof(PrologixGpibProvider))
+            {
+                needs |= other.Timeout != Timeout;
+            }
+
+            return needs;
+        }
     }
 }
 

@@ -15,23 +15,6 @@ namespace lasercom.control
             this.PortName = PortName;
         }
 
-        override public object[] ConstructorArray
-        {
-            get
-            {
-                object[] arr = null;
-                if (Type == typeof(HarvardPump))
-                {
-                    arr = new object[] { PortName };
-                }
-                else if (Type == typeof(DummyPump))
-                {
-                    arr = new object[0];
-                }
-                return arr;
-            }
-        }
-
         public PumpParameters(Type Type)
             : base(Type)
         {
@@ -56,30 +39,46 @@ namespace lasercom.control
             this.PortName = other.PortName;
         }
 
-        public override bool Equals(PumpParameters other)
-        {
-            bool iseq = base.Equals(other);
-            if (!iseq) return iseq;
+        //public override bool Equals(PumpParameters other)
+        //{
+        //    bool iseq = base.Equals(other);
+        //    if (!iseq) return iseq;
 
-            if (Type == typeof(HarvardPump))
+        //    if (Type == typeof(HarvardPump))
+        //    {
+        //        iseq &= this.PortName == other.PortName;
+        //    }
+        //    return iseq;
+        //}
+
+        //public override int GetHashCode()
+        //{
+        //    unchecked // Overflow is fine, just wrap
+        //    {
+        //        int hash = Util.Hash(Type, Name);
+        //        if (Type == typeof(HarvardPump))
+        //        {
+        //            hash = Util.Hash(hash, PortName);
+        //        }
+        //        return hash;
+        //    }
+        //}
+
+        public override bool NeedsReinstantiation(PumpParameters other)
+        {
+            bool needs =  base.NeedsReinstantiation(other);
+            if (needs) return true;
+
+            if (Type == typeof(HarvardPump) || Type.IsSubclassOf(typeof(HarvardPump)))
             {
-                iseq &= this.PortName == other.PortName;
+                needs |= other.PortName != PortName;
             }
-            return iseq;
+            return needs;
         }
 
-        public override int GetHashCode()
+        public override bool NeedsUpdate(PumpParameters other)
         {
-            unchecked // Overflow is fine, just wrap
-            {
-                int hash = Util.Hash(Type, Name);
-                if (Type == typeof(HarvardPump))
-                {
-                    hash = Util.Hash(hash, PortName);
-                }
-                return hash;
-            }
+            throw new NotImplementedException();
         }
-
     }
 }

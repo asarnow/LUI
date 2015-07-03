@@ -57,11 +57,11 @@ namespace LUI
             {
                 if (ex is FileNotFoundException)
                 {
-                    Config = new LuiConfig();
+                    Config = LuiConfig.DummyConfig();
                 }
                 else if (ex is InvalidOperationException)
                 {
-                    Config = new LuiConfig();
+                    Config = LuiConfig.DummyConfig();
                 }
                 else
                 {

@@ -24,26 +24,31 @@ namespace lasercom.objects
 
         public static ILuiObject Create<P>(LuiObjectParameters<P> p) where P:LuiObjectParameters<P>
         {
-            return (ILuiObject)Activator.CreateInstance(p.Type, p.ConstructorArray);
+            return (ILuiObject)Activator.CreateInstance(p.Type, p);
         }
 
         public static ILuiObject Create(LuiObjectParameters p)
         {
-            return (ILuiObject)Activator.CreateInstance(p.Type, p.ConstructorArray);
+            return (ILuiObject)Activator.CreateInstance(p.Type, p);
         }
 
         public static ILuiObject Create(LuiObjectParameters p, IEnumerable<ILuiObject> dependencies)
         {
-            IEnumerable<object> args = p.ConstructorArray.AsEnumerable().Concat(dependencies);
-            object[] ctorArgs = args.ToArray();
+            var args = (new object[] { p }).Concat(dependencies).ToArray();
             return (ILuiObject)Activator.CreateInstance(p.Type,
                     BindingFlags.CreateInstance |
                     BindingFlags.Public |
                     BindingFlags.Instance |
                     BindingFlags.OptionalParamBinding,
                     null, 
-                    ctorArgs,
+                    args,
                     CultureInfo.CurrentCulture);
         }
+
+    }
+
+    public abstract class LuiObject<P> : LuiObject where P : LuiObjectParameters<P>
+    {   
+        public abstract void Update(P p);
     }
 }

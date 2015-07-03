@@ -9,7 +9,6 @@ namespace lasercom.control
     {
         BeamFlagState FlashState { get; }
         BeamFlagState LaserState { get; }
-        int Delay { get; set; } // Time in miliseconds to sleep between commands.
 
         BeamFlagState ToggleLaser();
         BeamFlagState ToggleFlash();

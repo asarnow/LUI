@@ -9,7 +9,7 @@ namespace lasercom.control
     {
         public static AbstractBeamFlags CreateBeamFlags(BeamFlagsParameters p)
         {
-            return (AbstractBeamFlags)Activator.CreateInstance(p.Type, p.ConstructorArray);
+            return (AbstractBeamFlags)Activator.CreateInstance(p.Type, p);
         }
     }
 }

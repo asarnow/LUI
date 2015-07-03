@@ -7,9 +7,8 @@ namespace lasercom.ddg
     /// <summary>
     /// Base class for all DDGs.
     /// </summary>
-    public abstract class AbstractDigitalDelayGenerator : LuiObject, IDigitalDelayGenerator
+    public abstract class AbstractDigitalDelayGenerator : LuiObject<DelayGeneratorParameters>, IDigitalDelayGenerator
     {
-
         public abstract void SetDelay(string DelayName, string TriggerName, double Delay);
 
         public abstract void SetDelayPulse(Tuple<string, string> DelayPair, string TriggerName, double Delay, double Width);
@@ -40,5 +39,9 @@ namespace lasercom.ddg
             return Triggers.Except(new string[] { DelayName }).ToArray();
         }
 
+        public override void Update(DelayGeneratorParameters p)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

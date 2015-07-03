@@ -7,6 +7,11 @@ namespace lasercom.objects
     /// </summary>
     public interface ILuiObject : IDisposable
     {
-        
+
+    }
+
+    public interface ILuiObject<P> : ILuiObject where P : LuiObjectParameters<P>
+    {
+        void Update(P p);
     }
 }

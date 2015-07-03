@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO.Ports;
+using lasercom.objects;
 
 namespace lasercom.control
 {
@@ -22,9 +23,25 @@ namespace lasercom.control
         // Approximate time in ms for solenoid to switch.
         public const int DefaultDelay = 150;
 
-        private readonly SerialPort _port;
+        public int Delay { get; set; } // Time in miliseconds to sleep between commands.
+
+        private SerialPort _port;
+
+        public BeamFlags(LuiObjectParameters p) : this(p as BeamFlagsParameters) { }
+
+        public BeamFlags(BeamFlagsParameters p)
+        {
+            if (p == null || p.PortName == null)
+                throw new ArgumentException("PortName must be defined.");
+            Init(p.PortName);
+        }
 
         public BeamFlags(String portName)
+        {
+            Init(portName);
+        }
+
+        private void Init(string portName)
         {
             Delay = DefaultDelay;
             _port = new SerialPort(portName);
@@ -127,6 +144,11 @@ namespace lasercom.control
                 CloseLaserAndFlash();
                 EnsurePortDisposed();
             }
+        }
+
+        public override void Update(BeamFlagsParameters p)
+        {
+            Delay = p.Delay;
         }
     }
 }

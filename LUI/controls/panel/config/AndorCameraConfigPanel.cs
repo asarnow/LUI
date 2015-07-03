@@ -35,7 +35,8 @@ namespace LUI.controls
             InitialGain.Control.Increment = 1;
             InitialGain.Control.Maximum = 1024;
             InitialGain.Control.Value = AndorCamera.DefaultMCPGain;
-            InitialGain.Control.ValueChanged += (s, e) => OnOptionsChanged(s, e);
+            InitialGain.Control.ValueChanged += OnOptionsChanged;
+            InitialGain.Control.Width = 54;
             this.Controls.Add(InitialGain);
         }
 

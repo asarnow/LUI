@@ -28,6 +28,16 @@ namespace lasercom.camera
         uint AcqSize { get; }
 
         /// <summary>
+        /// Number of columns in acquisition data given current camera settings.
+        /// </summary>
+        int AcqWidth { get; }
+
+        /// <summary>
+        /// Number of rows in acquisition data given current camera settings.
+        /// </summary>
+        int AcqHeight { get; }
+
+        /// <summary>
         /// Current acquistion mode (single, sequence, etc.).
         /// </summary>
         int AcquisitionMode { get; set; }

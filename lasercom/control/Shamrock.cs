@@ -116,9 +116,9 @@ namespace lasercom.control
             }
         }
 
-        public Shamrock(int Device = 0)
+        public Shamrock(SpectrographParameters p)
         {
-            this.Device = Device;
+            this.Device = p.Device;
             ShamrockSdk.ShamrockInitialize("");
             ShamrockSdk.ShamrockGetNumberGratings(Device, ref _NumGratings);
             ShamrockSdk.ShamrockGetWavelengthLimits(Device, Grating, ref _MinWavelength, ref _MaxWavelength);
