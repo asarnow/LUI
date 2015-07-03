@@ -57,6 +57,7 @@ namespace LUI.controls
             ReadMode.Control.ValueMember = "Item2";
             ReadMode.Control.Items.Add(new Tuple<string, int>("Full Vertical Binning", AndorCamera.ReadModeFVB));
             ReadMode.Control.Items.Add(new Tuple<string, int>("Image", AndorCamera.ReadModeImage));
+            ReadMode.Control.SelectedIndex = 0;
             ReadMode.Control.SelectedIndexChanged += OnOptionsChanged;
             this.Controls.Add(ReadMode);
             this.ResumeLayout();
@@ -97,7 +98,7 @@ namespace LUI.controls
             other.VBin = (int)VBin.Control.Value;
             other.VStart = (int)VStart.Control.Value;
             other.VCount = (int)Math.Max(-1, VEnd.Control.Value - VStart.Control.Value + 1);
-            other.ReadMode = ((Tuple<string,int>)ReadMode.Control.SelectedItem).Item2;
+            other.ReadMode = ReadMode.Control.SelectedItem != null ? ((Tuple<string,int>)ReadMode.Control.SelectedItem).Item2 : AndorCamera.ReadModeFVB;
         }
     }
 }

@@ -206,7 +206,7 @@ namespace lasercom.camera
                 }
                 else
                 {
-                    hcount = Math.Min(1, value.hcount); // At least 1.
+                    hcount = Math.Max(1, value.hcount); // At least 1.
                     hcount = Math.Min((int)Width, hcount); // At most Width.
                 }
 
@@ -216,7 +216,7 @@ namespace lasercom.camera
                 }
                 else
                 {
-                    vcount = Math.Min(1, value.vcount); // At least 1.
+                    vcount = Math.Max(1, value.vcount); // At least 1.
                     vcount = Math.Min((int)Height, vcount); // At most Height.
                 }
 

@@ -20,7 +20,7 @@ namespace lasercom.ddg
         public byte GPIBAddress { get; set; }
 
         public StanfordDigitalDelayGenerator(LuiObjectParameters p, params ILuiObject[] dependencies) : 
-            this(p as DelayGeneratorParameters, dependencies) { }
+            this(p as DelayGeneratorParameters, dependencies) { } //TODO just take IGpibProvider instead of params array.
 
         public StanfordDigitalDelayGenerator(DelayGeneratorParameters p, params ILuiObject[] dependencies)
         {

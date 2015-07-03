@@ -140,7 +140,13 @@ namespace lasercom.ddg
             }
         }
 
-        public DG535(DelayGeneratorParameters p, ILuiObject[] dependencies) : base(p, dependencies)
+        public DG535(LuiObjectParameters p, params ILuiObject[] dependencies)
+            : this(p as DelayGeneratorParameters, dependencies)
+        {
+
+        }
+
+        public DG535(DelayGeneratorParameters p, params ILuiObject[] dependencies) : base(p, dependencies)
         {
             ReadAllDelays();
         }

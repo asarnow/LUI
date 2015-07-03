@@ -78,7 +78,7 @@ namespace lasercom.control
 
         public override bool NeedsUpdate(PumpParameters other)
         {
-            throw new NotImplementedException();
+            return false;
         }
     }
 }
