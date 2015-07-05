@@ -79,7 +79,7 @@ namespace LUI.tabs
         struct ProgressObject
         {
             public ProgressObject(object Data, int Counts, double VarCounts, int Peak, double VarPeak, 
-                int CountsN, double VarCountsN, int PeakN, double VarPeakN, Dialog Status)
+                int CountsN, double VarCountsN, int PeakN, double VarPeakN, uint CameraStatus, Dialog Status)
             {
                 this.Data = Data;
                 this.Counts = Counts;
@@ -91,6 +91,7 @@ namespace LUI.tabs
                 this.PeakN = PeakN;
                 this.VarPeakN = VarPeakN;
                 this.Status = Status;
+                this.CameraStatus = CameraStatus;
             }                             
             public readonly object Data;
             public readonly int Counts;
@@ -101,6 +102,7 @@ namespace LUI.tabs
             public readonly int PeakN;
             public readonly double VarCountsN;
             public readonly double VarPeakN;
+            public readonly uint CameraStatus;
             public readonly Dialog Status;
         }
 
@@ -210,6 +212,8 @@ namespace LUI.tabs
                 return;
             }
 
+            CameraStatus.Text = "";
+
             Graph.ClearData();
             CumulativeLight = null;
 
@@ -229,12 +233,7 @@ namespace LUI.tabs
             FvbMode_CheckedChanged(sender, e);
             SoftFvbMode_CheckedChanged(sender, e);
 
-            worker = new BackgroundWorker();
-            worker.DoWork += new System.ComponentModel.DoWorkEventHandler(DoWork);
-            worker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(WorkProgress);
-            worker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(WorkComplete);
-            worker.WorkerSupportsCancellation = true;
-            worker.WorkerReportsProgress = true;
+            SetupWorker();
             worker.RunWorkerAsync(new WorkArgs((int)NScan.Value, (int)NAverage.Value, CollectLaser.Checked, SoftFvbMode.Checked));
             OnTaskStarted(EventArgs.Empty);
         }
@@ -349,7 +348,7 @@ namespace LUI.tabs
                 Data.Accumulate(CumulativeDataBuffer, BinnedDataBuffer);
 
                 ProgressObject progress = new ProgressObject(Array.ConvertAll((int[])BinnedDataBuffer, x => (double)x / nrows), 
-                    cmasum, varsum / i, cmapeak, varpeak / i, nsum, nvarsum / i, npeak, nvarpeak / i, Dialog.PROGRESS_DATA);
+                    cmasum, varsum / i, cmapeak, varpeak / i, nsum, nvarsum / i, npeak, nvarpeak / i, ret, Dialog.PROGRESS_DATA);
                 if (PauseCancelProgress(e, i * 100 / args.NScans, progress)) return;
             }
 
@@ -371,6 +370,7 @@ namespace LUI.tabs
             switch (Progress.Status)
             {
                 case Dialog.PROGRESS_DATA:
+                    CameraStatus.Text = Commander.Camera.DecodeStatus(Progress.CameraStatus);
                     Light = (double[])Progress.Data;
                     if (LastLight != null)
                     {

@@ -28,10 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.Label CameraStatusLabel;
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.LoadTimes = new System.Windows.Forms.Button();
-            this.CameraStatus = new System.Windows.Forms.TextBox();
             this.TimesView = new System.Windows.Forms.DataGridView();
             this.Value = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.SaveData = new System.Windows.Forms.Button();
@@ -42,7 +40,7 @@
             this.PumpTs = new System.Windows.Forms.RadioButton();
             this.PumpNever = new System.Windows.Forms.RadioButton();
             this.Discard = new System.Windows.Forms.CheckBox();
-            CameraStatusLabel = new System.Windows.Forms.Label();
+            this.ParentPanel.SuspendLayout();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NScan)).BeginInit();
@@ -50,6 +48,7 @@
             this.LeftChildArea.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CameraGain)).BeginInit();
             this.RightChildArea.SuspendLayout();
+            this.LeftPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.TimesView)).BeginInit();
             this.PumpBox.Flow.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -94,16 +93,6 @@
             // 
             this.RightChildArea.Controls.Add(this.PumpBox);
             // 
-            // CameraStatusLabel
-            // 
-            CameraStatusLabel.AutoSize = true;
-            CameraStatusLabel.Location = new System.Drawing.Point(22, 208);
-            CameraStatusLabel.Name = "CameraStatusLabel";
-            CameraStatusLabel.Size = new System.Drawing.Size(76, 13);
-            CameraStatusLabel.TabIndex = 9;
-            CameraStatusLabel.Text = "Camera Status";
-            CameraStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
             // LoadTimes
             // 
             this.LoadTimes.Location = new System.Drawing.Point(959, 7);
@@ -114,15 +103,6 @@
             this.LoadTimes.Text = "Load Times";
             this.LoadTimes.UseVisualStyleBackColor = true;
             this.LoadTimes.Click += new System.EventHandler(this.LoadTimes_Click);
-            // 
-            // CameraStatus
-            // 
-            this.CameraStatus.Location = new System.Drawing.Point(7, 228);
-            this.CameraStatus.Name = "CameraStatus";
-            this.CameraStatus.ReadOnly = true;
-            this.CameraStatus.Size = new System.Drawing.Size(132, 20);
-            this.CameraStatus.TabIndex = 8;
-            this.CameraStatus.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // TimesView
             // 
@@ -147,8 +127,8 @@
             // Value
             // 
             this.Value.DataPropertyName = "Value";
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Value.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Value.DefaultCellStyle = dataGridViewCellStyle2;
             this.Value.HeaderText = "Delay (s)";
             this.Value.Name = "Value";
             this.Value.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
@@ -257,6 +237,8 @@
             // 
             this.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.Name = "TroaControl";
+            this.ParentPanel.ResumeLayout(false);
+            this.ParentPanel.PerformLayout();
             this.StatusBox.ResumeLayout(false);
             this.StatusBox.PerformLayout();
             this.CommandsBox.ResumeLayout(false);
@@ -269,6 +251,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.CameraGain)).EndInit();
             this.RightChildArea.ResumeLayout(false);
             this.RightChildArea.PerformLayout();
+            this.LeftPanel.ResumeLayout(false);
+            this.LeftPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.TimesView)).EndInit();
             this.PumpBox.Flow.ResumeLayout(false);
             this.PumpBox.Flow.PerformLayout();
@@ -281,7 +265,6 @@
         #endregion
 
         private System.Windows.Forms.Button LoadTimes;
-        private System.Windows.Forms.TextBox CameraStatus;
         private System.Windows.Forms.DataGridView TimesView;
         private System.Windows.Forms.Button SaveData;
         private System.Windows.Forms.DataGridViewTextBoxColumn Value;

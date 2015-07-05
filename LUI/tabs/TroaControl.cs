@@ -280,12 +280,7 @@ namespace LUI.tabs
 
             Commander.BeamFlag.CloseLaserAndFlash();
 
-            worker = new BackgroundWorker();
-            worker.DoWork += new System.ComponentModel.DoWorkEventHandler(DoWork);
-            worker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(WorkProgress);
-            worker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(WorkComplete);
-            worker.WorkerSupportsCancellation = true;
-            worker.WorkerReportsProgress = true;
+            SetupWorker();
             worker.RunWorkerAsync(new WorkArgs(N, Times, DdgConfigBox.PrimaryDelayDelay, DdgConfigBox.PrimaryDelayTrigger, Mode, Discard.Checked));
             OnTaskStarted(EventArgs.Empty);
         }

@@ -230,16 +230,21 @@ namespace LUI.tabs
             return !Paused.WaitOne(0);
         }
 
-        protected virtual void Collect_Click(object sender, EventArgs e)
+        protected void SetupWorker()
         {
-            int N = (int)NScan.Value;
-            Commander.BeamFlag.CloseLaserAndFlash();
             worker = new BackgroundWorker();
             worker.DoWork += new System.ComponentModel.DoWorkEventHandler(DoWork);
             worker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(WorkProgress);
             worker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(WorkComplete);
             worker.WorkerSupportsCancellation = true;
             worker.WorkerReportsProgress = true;
+        }
+
+        protected virtual void Collect_Click(object sender, EventArgs e)
+        {
+            int N = (int)NScan.Value;
+            Commander.BeamFlag.CloseLaserAndFlash();
+            SetupWorker();
             worker.RunWorkerAsync(N);
             OnTaskStarted(EventArgs.Empty);
         }
@@ -352,8 +357,6 @@ namespace LUI.tabs
             return false;
         }
 
-        #region dialogs
-
         protected void BlockingBlankDialog()
         {
             DialogResult result = MessageBox.Show("Please insert blank",
@@ -377,8 +380,6 @@ namespace LUI.tabs
             }
             wait = false;
         }
-
-        #endregion
 
     }
 }
