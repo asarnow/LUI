@@ -315,7 +315,5 @@ namespace DetectorTester
             if (DataFile != null) DataFile.Close();
         }
 
-
-
     }
 }
