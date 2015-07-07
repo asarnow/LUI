@@ -253,6 +253,7 @@
             this.TimeProgress.ReadOnly = true;
             this.TimeProgress.Size = new System.Drawing.Size(58, 20);
             this.TimeProgress.TabIndex = 14;
+            this.TimeProgress.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // TroaControl
             // 

@@ -340,6 +340,7 @@
             this.ScanProgress.ReadOnly = true;
             this.ScanProgress.Size = new System.Drawing.Size(58, 20);
             this.ScanProgress.TabIndex = 12;
+            this.ScanProgress.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // CameraBox
             // 

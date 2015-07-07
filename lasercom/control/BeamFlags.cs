@@ -21,7 +21,7 @@ namespace lasercom.control
         public const string CloseLaserAndFlashCommand = "!0SO000";
 
         // Approximate time in ms for solenoid to switch.
-        public const int DefaultDelay = 150;
+        public const int DefaultDelay = 300;
 
         public int Delay { get; set; } // Time in miliseconds to sleep between commands.
 

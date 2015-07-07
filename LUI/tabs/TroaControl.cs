@@ -652,22 +652,22 @@ namespace LUI.tabs
                     break;
                 case Dialog.PROGRESS_DARK:
                     ProgressLabel.Text = "Collecting dark";
-                    ScanProgress.Text = progressValue;
+                    ScanProgress.Text = progressValue + "/" + NScan.Value.ToString();
                     break;
                 case Dialog.PROGRESS_TIME:
                     DdgConfigBox.PrimaryDelayValue = progress.Delay;
                     break;
                 case Dialog.PROGRESS_TIME_COMPLETE:
-                    TimeProgress.Text = progressValue;
+                    TimeProgress.Text = progressValue + "/" + Times.Count.ToString();
                     Display(progress.Data);
                     break;
                 case Dialog.PROGRESS_FLASH:
                     ProgressLabel.Text = "Collecting ground";
-                    ScanProgress.Text = progressValue;
+                    ScanProgress.Text = progressValue + "/" + NScan.Value.ToString();
                     break;
                 case Dialog.PROGRESS_TRANS:
                     ProgressLabel.Text = "Collecting transient";
-                    ScanProgress.Text = progressValue;
+                    ScanProgress.Text = progressValue + "/" + NScan.Value.ToString();
                     break;
                 case Dialog.CALCULATE:
                     ProgressLabel.Text = "Calculating...";
