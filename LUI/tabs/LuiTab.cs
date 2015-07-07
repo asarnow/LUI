@@ -29,6 +29,14 @@ namespace LUI.tabs
         protected BackgroundWorker ioWorker;
         protected Dispatcher Dispatcher;
 
+        protected uint CameraStatusCode
+        {
+            set
+            {
+                BeginInvoke(new Action(() => CameraStatus.Text = Commander.Camera.DecodeStatus(value)));
+            }
+        }
+
         public LuiTab(LuiConfig config)
         {
             Config = config;
