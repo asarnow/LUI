@@ -36,5 +36,21 @@ namespace lasercom.camera
                 return vcount / vbin;
             }
         }
+
+        public int vend
+        {
+            get
+            {
+                return vstart + vcount - 1;
+            }
+        }
+
+        public int hend
+        {
+            get
+            {
+                return hstart + hcount - 1;
+            }
+        }
     }
 }
