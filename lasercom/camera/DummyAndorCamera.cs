@@ -265,22 +265,24 @@ namespace lasercom.camera
             {
                 frame++;
             }
-            caller = (new StackFrame(frame,true)).GetFileName();
+            caller = (new StackFrame(frame, true)).GetMethod().Name;
+            if (caller == "DoAcq") frame++;
+            caller = (new StackFrame(frame, true)).GetFileName();
             int line = (new StackFrame(frame,true)).GetFileLineNumber();
             int[] data = null;
             if (caller.Contains("TroaControl"))
             {
-                if (line < 370) // Dark.
+                if (line < 600) // Dark.
                 {
                     data = Dark(1000);
                 }
-                else if (line < 400 || line > 450) // Ground.
+                else if (line < 610 || line > 615) // Ground.
                 {
                     data = Blank(55000);
                     Data.Dissipate(data, SampleData(0.3333, 32000));
                     for (int i = 0; i < data.Length; i++) data[i] += 1000;
                 }
-                else if (line < 450) // Excited.
+                else if (line < 615) // Excited.
                 {
                     data = Blank(55000);
                     Data.Dissipate(data, SampleData(0.6667, 32000));

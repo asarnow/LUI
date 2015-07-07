@@ -40,6 +40,7 @@
             this.PumpTs = new System.Windows.Forms.RadioButton();
             this.PumpNever = new System.Windows.Forms.RadioButton();
             this.Discard = new System.Windows.Forms.CheckBox();
+            this.TimeProgress = new System.Windows.Forms.TextBox();
             this.ParentPanel.SuspendLayout();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
@@ -53,6 +54,19 @@
             this.PumpBox.Flow.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // StatusBox
+            // 
+            this.StatusBox.Controls.Add(this.TimeProgress);
+            this.StatusBox.Controls.SetChildIndex(this.StatusProgress, 0);
+            this.StatusBox.Controls.SetChildIndex(this.ProgressLabel, 0);
+            this.StatusBox.Controls.SetChildIndex(this.CameraStatus, 0);
+            this.StatusBox.Controls.SetChildIndex(this.ScanProgress, 0);
+            this.StatusBox.Controls.SetChildIndex(this.TimeProgress, 0);
+            // 
+            // StatusProgress
+            // 
+            this.StatusProgress.Location = new System.Drawing.Point(141, 37);
             // 
             // NScan
             // 
@@ -87,6 +101,10 @@
             // RightChildArea
             // 
             this.RightChildArea.Controls.Add(this.PumpBox);
+            // 
+            // ScanProgress
+            // 
+            this.ScanProgress.Location = new System.Drawing.Point(13, 37);
             // 
             // LoadTimes
             // 
@@ -228,6 +246,14 @@
             this.Discard.Text = "Discard First";
             this.Discard.UseVisualStyleBackColor = true;
             // 
+            // TimeProgress
+            // 
+            this.TimeProgress.Location = new System.Drawing.Point(77, 37);
+            this.TimeProgress.Name = "TimeProgress";
+            this.TimeProgress.ReadOnly = true;
+            this.TimeProgress.Size = new System.Drawing.Size(58, 20);
+            this.TimeProgress.TabIndex = 14;
+            // 
             // TroaControl
             // 
             this.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
@@ -270,6 +296,7 @@
         private System.Windows.Forms.RadioButton PumpTs;
         private System.Windows.Forms.RadioButton PumpNever;
         private System.Windows.Forms.CheckBox Discard;
+        protected System.Windows.Forms.TextBox TimeProgress;
 
     }
 }

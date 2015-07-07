@@ -160,6 +160,9 @@ namespace LUI.tabs
         {
             SuspendLayout();
 
+            ScanProgress.Text = "0";
+            TimeProgress.Text = "0";
+
             NScan.Minimum = 2;
             NScan.Increment = 2;
             NScan.ValueChanged += (sender, e) =>
@@ -294,6 +297,8 @@ namespace LUI.tabs
         {
             base.OnTaskStarted(e);
             DdgConfigBox.Enabled = false;
+            ScanProgress.Text = "0";
+            TimeProgress.Text = "0";
         }
 
         public override void OnTaskFinished(EventArgs e)
@@ -303,29 +308,12 @@ namespace LUI.tabs
             SaveData.Enabled = true;
         }
 
-        protected override void DoWork(object sender, DoWorkEventArgs e)
+        protected void DoWorkOld(object sender, DoWorkEventArgs e)
         {
             ProgressObject progress;
-
-            if (Commander.Camera is CameraTempControlled)
-            {
-                var camct = (CameraTempControlled)Commander.Camera;
-                if (camct.TemperatureStatus != CameraTempControlled.TemperatureStabilized)
-                {
-                    bool equil = (bool)Invoke(new Func<bool>(TemperatureStabilizedDialog));
-                    if (equil)
-                    {
-                        progress = new ProgressObject(null, 0, Dialog.TEMPERATURE);
-                        //if (PauseCancelProgress(e, 0, progress)) return;
-                        //while (camct.TemperatureStatus != CameraTempControlled.TemperatureStabilized)
-                        //{
-                        //    Thread.Sleep(200);
-                        //    if (PauseCancelProgress(e, 0, progress)) return;
-                        //}
-                        if (camct.EquilibrateUntil(() => PauseCancelProgress(e, 0, progress))) return;
-                    }
-                }
-            }
+            
+            progress = new ProgressObject(null, 0, Dialog.TEMPERATURE);
+            DoTempCheck(() => PauseCancelProgress(e, 0, progress));
 
             progress = new ProgressObject(null, 0, Dialog.INITIALIZE);
             if (PauseCancelProgress(e, 0, progress)) return; // Show zero progress.
@@ -541,19 +529,29 @@ namespace LUI.tabs
             }
         }
 
-        private void DoAcq(int[] AcqBuffer, int[] DataBuffer, int N, Func<bool> Breakout)
+        /// <summary>
+        /// Acquire in loop, exit early if breakout function returns true.
+        /// </summary>
+        /// <param name="AcqBuffer">Array for raw camera data.</param>
+        /// <param name="DataBuffer">Array for binned camera data.</param>
+        /// <param name="SumBuffer">Array for accumulated binned data.</param>
+        /// <param name="N"></param>
+        /// <param name="Breakout"></param>
+        private void DoAcq(int[] AcqBuffer, int[] DataBuffer, int[] SumBuffer, int N, Func<int,bool> Breakout)
         {
-            Array.Clear(DataBuffer, 0, DataBuffer.Length);
+            Array.Clear(SumBuffer, 0, SumBuffer.Length);
             for (int i = 0; i < N; i++)
             {
+                Array.Clear(DataBuffer, 0, DataBuffer.Length);
                 CameraStatusCode = Commander.Camera.Acquire(AcqBuffer);
                 Data.ColumnSum(DataBuffer, AcqBuffer);
+                Data.Accumulate(SumBuffer, DataBuffer);
                 RawData.WriteNext(DataBuffer, 0);
-                if (Breakout()) return;
+                if (Breakout(i)) return;
             }
         }
 
-        protected override void DoWorkNew(object sender, DoWorkEventArgs e)
+        protected override void DoWork(object sender, DoWorkEventArgs e)
         {
             ProgressObject progress;
             progress = new ProgressObject(null, 0, Dialog.TEMPERATURE);
@@ -586,34 +584,44 @@ namespace LUI.tabs
 
             // Buffers for acuisition data.
             int[] AcqBuffer = new int[AcqSize];
+            int[] AcqRow = new int[AcqWidth];
+            int[] Drk = new int[AcqWidth];
             int[] Gnd1 = new int[AcqWidth];
             int[] Gnd2 = new int[AcqWidth];
             int[] Exc = new int[AcqWidth];
             double[] Ground = new double[AcqWidth];
             double[] Excited = new double[AcqWidth];
             double[] Dark = new double[AcqWidth];
-            
-            // Collection scheme.
+
+            // Collect dark.
+            Commander.BeamFlag.CloseLaserAndFlash();
+            DoAcq(AcqBuffer, AcqRow, Drk, N, (p) => PauseCancelProgress(e, p, new ProgressObject(null, 0, Dialog.PROGRESS_DARK)));
+            Data.Accumulate(Dark, Drk);
+            Data.DivideArray(Dark, N);
+
+            // Run data collection scheme.
             Commander.BeamFlag.OpenFlash();
             Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, 3.2E-8); // Set delay for GS (avoids laser tail).
-            DoAcq(AcqBuffer, Gnd1, half, () => PauseCancelProgress(e, 0, progress));
+            DoAcq(AcqBuffer, AcqRow, Gnd1, half, (p) => PauseCancelProgress(e, p, new ProgressObject(null, 0, Dialog.PROGRESS_FLASH)));
 
             for (int i = 0; i < Times.Count; i++)
             {
                 double Delay = Times[i];
                 Commander.BeamFlag.OpenLaserAndFlash();
                 Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, Delay); // Set delay time.
-                DoAcq(AcqBuffer, Exc, N, () => PauseCancelProgress(e, 0, progress));                
+                progress = new ProgressObject(null, Delay, Dialog.PROGRESS_TIME);
+                PauseCancelProgress(e, i, progress);
+                DoAcq(AcqBuffer, AcqRow, Exc, N, (p) => PauseCancelProgress(e, p, new ProgressObject(null, Delay, Dialog.PROGRESS_TRANS)));
                 Commander.BeamFlag.CloseLaserAndFlash();
                 Commander.BeamFlag.OpenFlash();
                 Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, 3.2E-8); // Set delay for GS (avoids laser tail).
-                if (i % 2 == 0)
+                if (i % 2 == 0) // Alternate between Gnd1 and Gnd2.
                 {
-                    DoAcq(AcqBuffer, Gnd2, half, () => PauseCancelProgress(e, 0, progress));
+                    DoAcq(AcqBuffer, AcqRow, Gnd2, half, (p) => PauseCancelProgress(e, p, new ProgressObject(null, 0, Dialog.PROGRESS_FLASH)));
                 }
                 else
                 {
-                    DoAcq(AcqBuffer, Gnd1, half, () => PauseCancelProgress(e, 0, progress));
+                    DoAcq(AcqBuffer, AcqRow, Gnd1, half, (p) => PauseCancelProgress(e, p, new ProgressObject(null, 0, Dialog.PROGRESS_FLASH)));
                 }
                 Data.Accumulate(Ground, Gnd1);
                 Data.Accumulate(Ground, Gnd2);
@@ -621,22 +629,20 @@ namespace LUI.tabs
                 Data.Accumulate(Excited, Exc);
                 Data.DivideArray(Excited, N);
                 double[] deltaOD = Data.DeltaOD(Ground, Excited, Dark);
-                LuiData.Write(Data.DeltaOD(Ground, Excited), new long[] { i + 1, 1 }, RowSize);
+                LuiData.Write(deltaOD, new long[] { i + 1, 1 }, RowSize);
                 progress = new ProgressObject(deltaOD, Delay, Dialog.PROGRESS_TIME_COMPLETE);
-                if (PauseCancelProgress(e, 0, progress)) return;
+                if (PauseCancelProgress(e, i, progress)) return;
                 Array.Clear(Ground, 0, Ground.Length);
                 Array.Clear(Excited, 0, Excited.Length);
             }
-
             Commander.BeamFlag.CloseLaserAndFlash();
-            // Calculate LuiData matrix.
-            // Done with everything.
         }
 
         protected override void WorkProgress(object sender, ProgressChangedEventArgs e)
         {
             var progress = (ProgressObject)e.UserState;
-            StatusProgress.Value = e.ProgressPercentage;
+            //StatusProgress.Value = e.ProgressPercentage;
+            var progressValue = (e.ProgressPercentage + 1).ToString();
             switch (progress.Status)
             {
                 case Dialog.INITIALIZE:
@@ -646,18 +652,22 @@ namespace LUI.tabs
                     break;
                 case Dialog.PROGRESS_DARK:
                     ProgressLabel.Text = "Collecting dark";
+                    ScanProgress.Text = progressValue;
                     break;
                 case Dialog.PROGRESS_TIME:
                     DdgConfigBox.PrimaryDelayValue = progress.Delay;
                     break;
                 case Dialog.PROGRESS_TIME_COMPLETE:
+                    TimeProgress.Text = progressValue;
                     Display(progress.Data);
                     break;
                 case Dialog.PROGRESS_FLASH:
                     ProgressLabel.Text = "Collecting ground";
+                    ScanProgress.Text = progressValue;
                     break;
                 case Dialog.PROGRESS_TRANS:
                     ProgressLabel.Text = "Collecting transient";
+                    ScanProgress.Text = progressValue;
                     break;
                 case Dialog.CALCULATE:
                     ProgressLabel.Text = "Calculating...";
