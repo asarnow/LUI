@@ -1,6 +1,7 @@
-﻿using System;
+﻿using lasercom.objects;
+using System;
 using System.IO.Ports;
-using lasercom.objects;
+using System.Threading;
 
 namespace lasercom.control
 {
@@ -25,6 +26,14 @@ namespace lasercom.control
 
         public int Delay { get; set; } // Time in miliseconds to sleep between commands.
 
+        public string PortName
+        {
+            get
+            {
+                return _port.PortName;
+            }
+        }
+
         private SerialPort _port;
 
         public BeamFlags(LuiObjectParameters p) : this(p as BeamFlagsParameters) { }
@@ -45,15 +54,8 @@ namespace lasercom.control
         {
             Delay = DefaultDelay;
             _port = new SerialPort(portName);
+            _port.Open();
             CloseLaserAndFlash();
-        }
-
-        public string PortName
-        {
-            get
-            {
-                return _port.PortName;
-            }
         }
 
         public override void OpenLaser()
@@ -61,12 +63,15 @@ namespace lasercom.control
             OpenLaser(true);
         }
 
-        public void OpenLaser(bool wait)
+        /// <summary>
+        /// Opens the laser flag, optionally sleeping to ensure the flag has opened completely.
+        /// LaserState is updated only after sleeping in case of monitoring by another thread.
+        /// </summary>
+        /// <param name="wait"></param>
+        private void OpenLaser(bool wait)
         {
-            _port.Open();
             _port.Write(OpenLaserCommand);
-            _port.Close();
-            if (wait) System.Threading.Thread.Sleep(Delay);
+            if (wait) Thread.Sleep(Delay);
             LaserState = BeamFlagState.Open;
         }
 
@@ -75,12 +80,10 @@ namespace lasercom.control
             OpenFlash(true);
         }
 
-        public void OpenFlash(bool wait)
+        private void OpenFlash(bool wait)
         {
-            _port.Open();
             _port.Write(OpenFlashCommand);
-            _port.Close();
-            if (wait) System.Threading.Thread.Sleep(Delay);
+            if (wait) Thread.Sleep(Delay);
             FlashState = BeamFlagState.Open;
         }
 
@@ -89,41 +92,58 @@ namespace lasercom.control
             OpenLaserAndFlash(true);
         }
 
-        public void OpenLaserAndFlash(bool wait)
+        private void OpenLaserAndFlash(bool wait)
         {
-            _port.Open();
             _port.Write(OpenLaserAndFlashCommand);
-            _port.Close();
-            if (wait) System.Threading.Thread.Sleep(Delay);
+            if (wait) Thread.Sleep(Delay);
             LaserState = BeamFlagState.Open;
             FlashState = BeamFlagState.Open;
         }
 
         public override void CloseLaser()
         {
-            _port.Open();
+            CloseLaser(true);
+        }
+
+        /// <summary>
+        /// Emulating closing the laser flag independently by closing both flags
+        /// and then re-opening the flash flag if necessary.
+        /// Using the sleep in OpenFlash() allows both State values to be updated
+        /// after waking (ensuring the flags have reached their new positions).
+        /// </summary>
+        /// <param name="wait"></param>
+        private void CloseLaser(bool wait)
+        {
             _port.Write(CloseLaserAndFlashCommand);
-            _port.Close();
+            if (FlashState == BeamFlagState.Open) OpenFlash(wait); // Sleep in OpenFlash if requested.
+            else if (wait) Thread.Sleep(Delay); // Didn't enter OpenFlash, need to sleep.
             LaserState = BeamFlagState.Closed;
-            if (FlashState == BeamFlagState.Open) OpenFlash(false);
             //throw new NotImplementedException("Can't close flags independently");
         }
 
         public override void CloseFlash()
         {
-            _port.Open();
+            CloseFlash(true);
+        }
+
+        private void CloseFlash(bool wait)
+        {
             _port.Write(CloseLaserAndFlashCommand);
-            _port.Close();
+            if (LaserState == BeamFlagState.Open) OpenLaser(wait);
+            else if (wait) Thread.Sleep(Delay);
             FlashState = BeamFlagState.Closed;
-            if (LaserState == BeamFlagState.Open) OpenLaser(false);
             //throw new NotImplementedException("Can't close flags independently");
         }
 
         public override void CloseLaserAndFlash()
         {
-            _port.Open();
+            CloseLaserAndFlash(true);
+        }
+
+        private void CloseLaserAndFlash(bool wait)
+        {
             _port.Write(CloseLaserAndFlashCommand);
-            _port.Close();
+            if (wait) Thread.Sleep(Delay);
             LaserState = BeamFlagState.Closed;
             FlashState = BeamFlagState.Closed;
         }
