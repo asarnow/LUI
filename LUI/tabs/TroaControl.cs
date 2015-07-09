@@ -1,4 +1,11 @@
-﻿using System;
+﻿using lasercom;
+using lasercom.camera;
+using lasercom.control;
+using lasercom.ddg;
+using lasercom.io;
+using LUI.config;
+using LUI.controls;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -7,13 +14,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
-using lasercom;
-using lasercom.camera;
-using lasercom.control;
-using lasercom.ddg;
-using lasercom.io;
-using LUI.config;
-using LUI.controls;
 
 namespace LUI.tabs
 {
@@ -607,13 +607,15 @@ namespace LUI.tabs
             for (int i = 0; i < Times.Count; i++)
             {
                 double Delay = Times[i];
-                Commander.BeamFlag.OpenLaserAndFlash();
+                Commander.BeamFlag.OpenLaser();
+                //Commander.BeamFlag.OpenLaserAndFlash();
                 Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, Delay); // Set delay time.
                 progress = new ProgressObject(null, Delay, Dialog.PROGRESS_TIME);
                 PauseCancelProgress(e, i, progress);
                 DoAcq(AcqBuffer, AcqRow, Exc, N, (p) => PauseCancelProgress(e, p, new ProgressObject(null, Delay, Dialog.PROGRESS_TRANS)));
-                Commander.BeamFlag.CloseLaserAndFlash();
-                Commander.BeamFlag.OpenFlash();
+                Commander.BeamFlag.CloseLaser();
+                //Commander.BeamFlag.CloseLaserAndFlash();
+                //Commander.BeamFlag.OpenFlash();
                 Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, 3.2E-8); // Set delay for GS (avoids laser tail).
                 if (i % 2 == 0) // Alternate between Gnd1 and Gnd2.
                 {
