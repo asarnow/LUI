@@ -185,6 +185,21 @@ namespace lasercom
         }
 
         /// <summary>
+        /// Computes delta OD from Ground, Trans and Dark counts.
+        /// </summary>
+        /// <param name="Ground"></param>
+        /// <param name="Trans"></param>
+        /// <param name="Dark"></param>
+        /// <returns>Delta OD</returns>
+        public static double[] DeltaOD(IList<double> Ground, IList<double> Trans, IList<double> Dark)
+        {
+            double[] OD = new double[Ground.Count];
+            for (int i = 0; i < OD.Length; i++)
+                OD[i] = Math.Log10((double)(Trans[i] - Dark[i]) / (double)(Ground[i] - Dark[i]));
+            return OD;
+        }
+
+        /// <summary>
         /// Computes delta OD from Ground and Trans. Assumes Dark has been applied or is zero.
         /// </summary>
         /// <param name="Ground"></param>

@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.LoadTimes = new System.Windows.Forms.Button();
             this.TimesView = new System.Windows.Forms.DataGridView();
             this.Value = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -40,6 +40,7 @@
             this.PumpTs = new System.Windows.Forms.RadioButton();
             this.PumpNever = new System.Windows.Forms.RadioButton();
             this.Discard = new System.Windows.Forms.CheckBox();
+            this.TimeProgress = new System.Windows.Forms.TextBox();
             this.ParentPanel.SuspendLayout();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
@@ -54,14 +55,22 @@
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
+            // StatusBox
+            // 
+            this.StatusBox.Controls.Add(this.TimeProgress);
+            this.StatusBox.Controls.SetChildIndex(this.StatusProgress, 0);
+            this.StatusBox.Controls.SetChildIndex(this.ProgressLabel, 0);
+            this.StatusBox.Controls.SetChildIndex(this.CameraStatus, 0);
+            this.StatusBox.Controls.SetChildIndex(this.ScanProgress, 0);
+            this.StatusBox.Controls.SetChildIndex(this.TimeProgress, 0);
+            // 
+            // StatusProgress
+            // 
+            this.StatusProgress.Location = new System.Drawing.Point(141, 37);
+            // 
             // NScan
             // 
             this.NScan.Margin = new System.Windows.Forms.Padding(9, 7, 9, 7);
-            this.NScan.Minimum = new decimal(new int[] {
-            2,
-            0,
-            0,
-            0});
             this.NScan.Value = new decimal(new int[] {
             2,
             0,
@@ -92,6 +101,10 @@
             // RightChildArea
             // 
             this.RightChildArea.Controls.Add(this.PumpBox);
+            // 
+            // ScanProgress
+            // 
+            this.ScanProgress.Location = new System.Drawing.Point(13, 37);
             // 
             // LoadTimes
             // 
@@ -127,8 +140,8 @@
             // Value
             // 
             this.Value.DataPropertyName = "Value";
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Value.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Value.DefaultCellStyle = dataGridViewCellStyle1;
             this.Value.HeaderText = "Delay (s)";
             this.Value.Name = "Value";
             this.Value.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
@@ -233,6 +246,15 @@
             this.Discard.Text = "Discard First";
             this.Discard.UseVisualStyleBackColor = true;
             // 
+            // TimeProgress
+            // 
+            this.TimeProgress.Location = new System.Drawing.Point(77, 37);
+            this.TimeProgress.Name = "TimeProgress";
+            this.TimeProgress.ReadOnly = true;
+            this.TimeProgress.Size = new System.Drawing.Size(58, 20);
+            this.TimeProgress.TabIndex = 14;
+            this.TimeProgress.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
             // TroaControl
             // 
             this.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
@@ -275,6 +297,7 @@
         private System.Windows.Forms.RadioButton PumpTs;
         private System.Windows.Forms.RadioButton PumpNever;
         private System.Windows.Forms.CheckBox Discard;
+        protected System.Windows.Forms.TextBox TimeProgress;
 
     }
 }

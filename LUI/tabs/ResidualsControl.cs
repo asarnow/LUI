@@ -79,7 +79,7 @@ namespace LUI.tabs
         struct ProgressObject
         {
             public ProgressObject(object Data, int Counts, double VarCounts, int Peak, double VarPeak, 
-                int CountsN, double VarCountsN, int PeakN, double VarPeakN, uint CameraStatus, Dialog Status)
+                int CountsN, double VarCountsN, int PeakN, double VarPeakN, Dialog Status)
             {
                 this.Data = Data;
                 this.Counts = Counts;
@@ -91,7 +91,6 @@ namespace LUI.tabs
                 this.PeakN = PeakN;
                 this.VarPeakN = VarPeakN;
                 this.Status = Status;
-                this.CameraStatus = CameraStatus;
             }                             
             public readonly object Data;
             public readonly int Counts;
@@ -102,7 +101,6 @@ namespace LUI.tabs
             public readonly int PeakN;
             public readonly double VarCountsN;
             public readonly double VarPeakN;
-            public readonly uint CameraStatus;
             public readonly Dialog Status;
         }
 
@@ -295,7 +293,7 @@ namespace LUI.tabs
 
             for (int i = 0; i < args.NScans; i++)
             {
-                uint ret = Commander.Camera.Acquire(DataBuffer);
+                CameraStatusCode = Commander.Camera.Acquire(DataBuffer);
 
                 int sum = 0;
                 int peak = int.MinValue;
@@ -348,8 +346,8 @@ namespace LUI.tabs
                 Data.Accumulate(CumulativeDataBuffer, BinnedDataBuffer);
 
                 ProgressObject progress = new ProgressObject(Array.ConvertAll((int[])BinnedDataBuffer, x => (double)x / nrows), 
-                    cmasum, varsum / i, cmapeak, varpeak / i, nsum, nvarsum / i, npeak, nvarpeak / i, ret, Dialog.PROGRESS_DATA);
-                if (PauseCancelProgress(e, i * 100 / args.NScans, progress)) return;
+                    cmasum, varsum / i, cmapeak, varpeak / i, nsum, nvarsum / i, npeak, nvarpeak / i, Dialog.PROGRESS_DATA);
+                if (PauseCancelProgress(e, i, progress)) return;
             }
 
             Commander.BeamFlag.CloseLaserAndFlash();
@@ -366,11 +364,10 @@ namespace LUI.tabs
         protected override void WorkProgress(object sender, ProgressChangedEventArgs e)
         {
             ProgressObject Progress = (ProgressObject)e.UserState;
-
+            var progressValue = e.ProgressPercentage;
             switch (Progress.Status)
             {
                 case Dialog.PROGRESS_DATA:
-                    CameraStatus.Text = Commander.Camera.DecodeStatus(Progress.CameraStatus);
                     Light = (double[])Progress.Data;
                     if (LastLight != null)
                     {
@@ -385,7 +382,7 @@ namespace LUI.tabs
                     PeakN.Text = Progress.PeakN.ToString("n0") + " \u00B1 " + Progress.VarPeakN.ToString("n3");
                     CountsN.Text = Progress.CountsN.ToString("n0") + " \u00B1 " + Progress.VarCountsN.ToString("n0");
 
-                    StatusProgress.Value = e.ProgressPercentage;
+                    ScanProgress.Text = progressValue.ToString() + "/" + NScan.Value.ToString();
                     ProgressLabel.Text = "Collecting data";
                     break;
             }
