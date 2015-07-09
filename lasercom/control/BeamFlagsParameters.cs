@@ -1,6 +1,6 @@
-﻿using System;
+﻿using lasercom.objects;
+using System;
 using System.Runtime.Serialization;
-using lasercom.objects;
 
 namespace lasercom.control
 {
@@ -10,8 +10,19 @@ namespace lasercom.control
         [DataMember]
         public string PortName { get; set; }
 
+        private int _Delay = BeamFlags.DefaultDelay;
         [DataMember]
-        public int Delay { get; set; }
+        public int Delay
+        {
+            get
+            {
+                return _Delay;
+            }
+            set
+            {
+                _Delay = value;
+            }
+        }
 
         public BeamFlagsParameters(Type Type, string PortName)
             : base(Type)
