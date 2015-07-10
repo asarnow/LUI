@@ -10,6 +10,21 @@ namespace DetectorTester
             InitializeComponent();
         }
 
+        void Detector_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            this.Close();
+        }
+
+        void DG_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            this.Close();
+        }
+
+        void BF_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            this.Close();
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
             Form Detector = new DetectorTestForm();
@@ -26,14 +41,12 @@ namespace DetectorTester
             DG.Show();
         }
 
-        void Detector_FormClosed(object sender, FormClosedEventArgs e)
+        private void button3_Click(object sender, EventArgs e)
         {
-            this.Close();
-        }
-
-        void DG_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            this.Close();
+            //Form BF = new BeamFlagTestForm();
+            this.Hide();
+            //BF.FormClosed += BF_FormClosed;
+            //BF.Show();
         }
     }
 }
