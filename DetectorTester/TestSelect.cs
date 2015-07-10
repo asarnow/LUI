@@ -43,10 +43,10 @@ namespace DetectorTester
 
         private void button3_Click(object sender, EventArgs e)
         {
-            //Form BF = new BeamFlagTestForm();
+            Form BF = new BeamFlagTestForm();
             this.Hide();
-            //BF.FormClosed += BF_FormClosed;
-            //BF.Show();
+            BF.FormClosed += BF_FormClosed;
+            BF.Show();
         }
     }
 }

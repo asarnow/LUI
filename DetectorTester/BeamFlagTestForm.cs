@@ -1,4 +1,6 @@
-﻿using System;
+﻿using lasercom;
+using System;
+using System.Collections.Generic;
 using System.IO.Ports;
 using System.Text;
 using System.Threading;
@@ -20,6 +22,12 @@ namespace DetectorTester
                 BaudRate.Items.Add(rate);
             }
             BaudRate.SelectedItem = 9600;
+
+            IList<string> ports = Util.EnumerateSerialPorts();
+            foreach (var port in ports)
+            {
+                ComPorts.Items.Add(port);
+            }
 
             ComPorts.SelectedIndexChanged += ComPorts_SelectedIndexChanged;
             BaudRate.SelectedIndexChanged += BaudRate_SelectedIndexChanged;
@@ -46,8 +54,8 @@ namespace DetectorTester
 
             // RTS/CTS handshakings
             ComPort.Handshake = Handshake.RequestToSend;
-            ComPort.DtrEnable = false;
-            ComPort.RtsEnable = false;
+            ComPort.DtrEnable = DtrEnable.Checked;
+            ComPort.RtsEnable = RtsEnable.Checked;
 
             // Error handling
             ComPort.DiscardNull = false;
@@ -58,9 +66,15 @@ namespace DetectorTester
 
         protected override void OnFormClosed(FormClosedEventArgs e)
         {
-            ComPort.Close();
-            Thread.Sleep(100);
-            ComPort.Dispose();
+            if (ComPort != null)
+            {
+                if (ComPort.IsOpen)
+                {
+                    ComPort.Close();
+                    Thread.Sleep(100);
+                    ComPort.Dispose();
+                }
+            }
             base.OnFormClosed(e);
         }
 
@@ -81,7 +95,7 @@ namespace DetectorTester
             {
                 int result = ComPort.ReadByte();
                 byte[] bytes = BitConverter.GetBytes(result);
-                e.Message = Convert.ToString(bytes[0]);
+                e.Message = Convert.ToString(bytes[0], 2);
             }
             else
             {
@@ -107,6 +121,16 @@ namespace DetectorTester
         private void SendThree_Click(object sender, EventArgs e)
         {
             ComPort.Write("!0SO3");
+        }
+
+        private void DtrEnable_CheckedChanged(object sender, EventArgs e)
+        {
+            InitComPort();
+        }
+
+        private void RtsEnable_CheckedChanged(object sender, EventArgs e)
+        {
+            InitComPort();
         }
     }
 }

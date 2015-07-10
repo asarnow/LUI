@@ -41,19 +41,19 @@
             this.label2 = new System.Windows.Forms.Label();
             this.BaudRate = new System.Windows.Forms.ComboBox();
             this.ConfigFlowRight = new System.Windows.Forms.FlowLayoutPanel();
-            this.TimeoutFlow = new System.Windows.Forms.FlowLayoutPanel();
+            this.DelayFlow = new System.Windows.Forms.FlowLayoutPanel();
             this.label5 = new System.Windows.Forms.Label();
             this.Delay = new System.Windows.Forms.NumericUpDown();
+            this.DtrRtsFlow = new System.Windows.Forms.FlowLayoutPanel();
+            this.DtrEnable = new System.Windows.Forms.CheckBox();
+            this.RtsEnable = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.SendThree = new System.Windows.Forms.Button();
+            this.SendTwo = new System.Windows.Forms.Button();
+            this.SendOne = new System.Windows.Forms.Button();
             this.Splitter = new System.Windows.Forms.SplitContainer();
             this.ConsoleBox = new System.Windows.Forms.GroupBox();
             this.Console = new CommandPrompt.CommandPrompt();
-            this.DtrEnable = new System.Windows.Forms.CheckBox();
-            this.RtsEnable = new System.Windows.Forms.CheckBox();
-            this.DtrRtsFlow = new System.Windows.Forms.FlowLayoutPanel();
-            this.SendOne = new System.Windows.Forms.Button();
-            this.SendTwo = new System.Windows.Forms.Button();
-            this.SendThree = new System.Windows.Forms.Button();
             this.RightFlow.SuspendLayout();
             this.ConfigBox.SuspendLayout();
             this.ConfigFlow.SuspendLayout();
@@ -62,15 +62,15 @@
             this.ComFlow.SuspendLayout();
             this.BaudFlow.SuspendLayout();
             this.ConfigFlowRight.SuspendLayout();
-            this.TimeoutFlow.SuspendLayout();
+            this.DelayFlow.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Delay)).BeginInit();
+            this.DtrRtsFlow.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Splitter)).BeginInit();
             this.Splitter.Panel1.SuspendLayout();
             this.Splitter.Panel2.SuspendLayout();
             this.Splitter.SuspendLayout();
             this.ConsoleBox.SuspendLayout();
-            this.DtrRtsFlow.SuspendLayout();
             this.SuspendLayout();
             // 
             // SendZero
@@ -214,7 +214,7 @@
             // 
             this.ConfigFlowRight.AutoSize = true;
             this.ConfigFlowRight.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ConfigFlowRight.Controls.Add(this.TimeoutFlow);
+            this.ConfigFlowRight.Controls.Add(this.DelayFlow);
             this.ConfigFlowRight.Controls.Add(this.DtrRtsFlow);
             this.ConfigFlowRight.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ConfigFlowRight.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
@@ -223,16 +223,17 @@
             this.ConfigFlowRight.Size = new System.Drawing.Size(115, 66);
             this.ConfigFlowRight.TabIndex = 5;
             // 
-            // TimeoutFlow
+            // DelayFlow
             // 
-            this.TimeoutFlow.AutoSize = true;
-            this.TimeoutFlow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.TimeoutFlow.Controls.Add(this.label5);
-            this.TimeoutFlow.Controls.Add(this.Delay);
-            this.TimeoutFlow.Location = new System.Drawing.Point(3, 3);
-            this.TimeoutFlow.Name = "TimeoutFlow";
-            this.TimeoutFlow.Size = new System.Drawing.Size(92, 26);
-            this.TimeoutFlow.TabIndex = 4;
+            this.DelayFlow.AutoSize = true;
+            this.DelayFlow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.DelayFlow.Controls.Add(this.label5);
+            this.DelayFlow.Controls.Add(this.Delay);
+            this.DelayFlow.Enabled = false;
+            this.DelayFlow.Location = new System.Drawing.Point(3, 3);
+            this.DelayFlow.Name = "DelayFlow";
+            this.DelayFlow.Size = new System.Drawing.Size(92, 26);
+            this.DelayFlow.TabIndex = 4;
             // 
             // label5
             // 
@@ -261,6 +262,39 @@
             0,
             0});
             // 
+            // DtrRtsFlow
+            // 
+            this.DtrRtsFlow.AutoSize = true;
+            this.DtrRtsFlow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.DtrRtsFlow.Controls.Add(this.DtrEnable);
+            this.DtrRtsFlow.Controls.Add(this.RtsEnable);
+            this.DtrRtsFlow.Location = new System.Drawing.Point(3, 35);
+            this.DtrRtsFlow.Name = "DtrRtsFlow";
+            this.DtrRtsFlow.Size = new System.Drawing.Size(109, 23);
+            this.DtrRtsFlow.TabIndex = 2;
+            // 
+            // DtrEnable
+            // 
+            this.DtrEnable.AutoSize = true;
+            this.DtrEnable.Location = new System.Drawing.Point(3, 3);
+            this.DtrEnable.Name = "DtrEnable";
+            this.DtrEnable.Size = new System.Drawing.Size(49, 17);
+            this.DtrEnable.TabIndex = 5;
+            this.DtrEnable.Text = "DTR";
+            this.DtrEnable.UseVisualStyleBackColor = true;
+            this.DtrEnable.CheckedChanged += new System.EventHandler(this.DtrEnable_CheckedChanged);
+            // 
+            // RtsEnable
+            // 
+            this.RtsEnable.AutoSize = true;
+            this.RtsEnable.Location = new System.Drawing.Point(58, 3);
+            this.RtsEnable.Name = "RtsEnable";
+            this.RtsEnable.Size = new System.Drawing.Size(48, 17);
+            this.RtsEnable.TabIndex = 6;
+            this.RtsEnable.Text = "RTS";
+            this.RtsEnable.UseVisualStyleBackColor = true;
+            this.RtsEnable.CheckedChanged += new System.EventHandler(this.RtsEnable_CheckedChanged);
+            // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.SendThree);
@@ -273,6 +307,42 @@
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Commands";
+            // 
+            // SendThree
+            // 
+            this.SendThree.AutoSize = true;
+            this.SendThree.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.SendThree.Location = new System.Drawing.Point(75, 48);
+            this.SendThree.Name = "SendThree";
+            this.SendThree.Size = new System.Drawing.Size(66, 23);
+            this.SendThree.TabIndex = 3;
+            this.SendThree.Text = "Send SO3";
+            this.SendThree.UseVisualStyleBackColor = true;
+            this.SendThree.Click += new System.EventHandler(this.SendThree_Click);
+            // 
+            // SendTwo
+            // 
+            this.SendTwo.AutoSize = true;
+            this.SendTwo.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.SendTwo.Location = new System.Drawing.Point(3, 48);
+            this.SendTwo.Name = "SendTwo";
+            this.SendTwo.Size = new System.Drawing.Size(66, 23);
+            this.SendTwo.TabIndex = 2;
+            this.SendTwo.Text = "Send SO2";
+            this.SendTwo.UseVisualStyleBackColor = true;
+            this.SendTwo.Click += new System.EventHandler(this.SendTwo_Click);
+            // 
+            // SendOne
+            // 
+            this.SendOne.AutoSize = true;
+            this.SendOne.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.SendOne.Location = new System.Drawing.Point(75, 19);
+            this.SendOne.Name = "SendOne";
+            this.SendOne.Size = new System.Drawing.Size(66, 23);
+            this.SendOne.TabIndex = 1;
+            this.SendOne.Text = "Send SO1";
+            this.SendOne.UseVisualStyleBackColor = true;
+            this.SendOne.Click += new System.EventHandler(this.SendOne_Click);
             // 
             // Splitter
             // 
@@ -316,73 +386,6 @@
             this.Console.Size = new System.Drawing.Size(136, 251);
             this.Console.TabIndex = 0;
             // 
-            // DtrEnable
-            // 
-            this.DtrEnable.AutoSize = true;
-            this.DtrEnable.Location = new System.Drawing.Point(3, 3);
-            this.DtrEnable.Name = "DtrEnable";
-            this.DtrEnable.Size = new System.Drawing.Size(49, 17);
-            this.DtrEnable.TabIndex = 5;
-            this.DtrEnable.Text = "DTR";
-            this.DtrEnable.UseVisualStyleBackColor = true;
-            // 
-            // RtsEnable
-            // 
-            this.RtsEnable.AutoSize = true;
-            this.RtsEnable.Location = new System.Drawing.Point(58, 3);
-            this.RtsEnable.Name = "RtsEnable";
-            this.RtsEnable.Size = new System.Drawing.Size(48, 17);
-            this.RtsEnable.TabIndex = 6;
-            this.RtsEnable.Text = "RTS";
-            this.RtsEnable.UseVisualStyleBackColor = true;
-            // 
-            // DtrRtsFlow
-            // 
-            this.DtrRtsFlow.AutoSize = true;
-            this.DtrRtsFlow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.DtrRtsFlow.Controls.Add(this.DtrEnable);
-            this.DtrRtsFlow.Controls.Add(this.RtsEnable);
-            this.DtrRtsFlow.Location = new System.Drawing.Point(3, 35);
-            this.DtrRtsFlow.Name = "DtrRtsFlow";
-            this.DtrRtsFlow.Size = new System.Drawing.Size(109, 23);
-            this.DtrRtsFlow.TabIndex = 2;
-            // 
-            // SendOne
-            // 
-            this.SendOne.AutoSize = true;
-            this.SendOne.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.SendOne.Location = new System.Drawing.Point(75, 19);
-            this.SendOne.Name = "SendOne";
-            this.SendOne.Size = new System.Drawing.Size(66, 23);
-            this.SendOne.TabIndex = 1;
-            this.SendOne.Text = "Send SO1";
-            this.SendOne.UseVisualStyleBackColor = true;
-            this.SendOne.Click += new System.EventHandler(this.SendOne_Click);
-            // 
-            // SendTwo
-            // 
-            this.SendTwo.AutoSize = true;
-            this.SendTwo.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.SendTwo.Location = new System.Drawing.Point(3, 48);
-            this.SendTwo.Name = "SendTwo";
-            this.SendTwo.Size = new System.Drawing.Size(66, 23);
-            this.SendTwo.TabIndex = 2;
-            this.SendTwo.Text = "Send SO2";
-            this.SendTwo.UseVisualStyleBackColor = true;
-            this.SendTwo.Click += new System.EventHandler(this.SendTwo_Click);
-            // 
-            // SendThree
-            // 
-            this.SendThree.AutoSize = true;
-            this.SendThree.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.SendThree.Location = new System.Drawing.Point(75, 48);
-            this.SendThree.Name = "SendThree";
-            this.SendThree.Size = new System.Drawing.Size(66, 23);
-            this.SendThree.TabIndex = 3;
-            this.SendThree.Text = "Send SO3";
-            this.SendThree.UseVisualStyleBackColor = true;
-            this.SendThree.Click += new System.EventHandler(this.SendThree_Click);
-            // 
             // BeamFlagTestForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -407,9 +410,11 @@
             this.BaudFlow.PerformLayout();
             this.ConfigFlowRight.ResumeLayout(false);
             this.ConfigFlowRight.PerformLayout();
-            this.TimeoutFlow.ResumeLayout(false);
-            this.TimeoutFlow.PerformLayout();
+            this.DelayFlow.ResumeLayout(false);
+            this.DelayFlow.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Delay)).EndInit();
+            this.DtrRtsFlow.ResumeLayout(false);
+            this.DtrRtsFlow.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.Splitter.Panel1.ResumeLayout(false);
@@ -418,8 +423,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.Splitter)).EndInit();
             this.Splitter.ResumeLayout(false);
             this.ConsoleBox.ResumeLayout(false);
-            this.DtrRtsFlow.ResumeLayout(false);
-            this.DtrRtsFlow.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -439,7 +442,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ComboBox BaudRate;
         private System.Windows.Forms.FlowLayoutPanel ConfigFlowRight;
-        private System.Windows.Forms.FlowLayoutPanel TimeoutFlow;
+        private System.Windows.Forms.FlowLayoutPanel DelayFlow;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.NumericUpDown Delay;
         private System.Windows.Forms.GroupBox groupBox1;
