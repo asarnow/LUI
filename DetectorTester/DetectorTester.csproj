@@ -124,6 +124,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BeamFlagTestForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BeamFlagTestForm.Designer.cs">
+      <DependentUpon>BeamFlagTestForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="DelayGeneratorTestForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -150,6 +156,9 @@
     <Compile Include="TestSelect.Designer.cs">
       <DependentUpon>TestSelect.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="BeamFlagTestForm.resx">
+      <DependentUpon>BeamFlagTestForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="DelayGeneratorTestForm.resx">
       <DependentUpon>DelayGeneratorTestForm.cs</DependentUpon>
     </EmbeddedResource>
