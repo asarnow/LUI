@@ -607,15 +607,12 @@ namespace LUI.tabs
             for (int i = 0; i < Times.Count; i++)
             {
                 double Delay = Times[i];
-                Commander.BeamFlag.OpenLaser();
-                //Commander.BeamFlag.OpenLaserAndFlash();
+                Commander.BeamFlag.OpenLaserAndFlash();
                 Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, Delay); // Set delay time.
                 progress = new ProgressObject(null, Delay, Dialog.PROGRESS_TIME);
                 PauseCancelProgress(e, i, progress);
                 DoAcq(AcqBuffer, AcqRow, Exc, N, (p) => PauseCancelProgress(e, p, new ProgressObject(null, Delay, Dialog.PROGRESS_TRANS)));
-                Commander.BeamFlag.CloseLaser();
-                //Commander.BeamFlag.CloseLaserAndFlash();
-                //Commander.BeamFlag.OpenFlash();
+                Commander.BeamFlag.OpenFlash();
                 Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, 3.2E-8); // Set delay for GS (avoids laser tail).
                 if (i % 2 == 0) // Alternate between Gnd1 and Gnd2.
                 {
