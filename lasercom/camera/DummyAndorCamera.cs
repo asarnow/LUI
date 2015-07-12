@@ -2,11 +2,11 @@
 #if x64
 using ATMCD64CS;
 #else
+using ATMCD32CS;
+using lasercom.objects;
 using System;
 using System.Diagnostics;
 using System.Linq;
-using ATMCD32CS;
-using lasercom.objects;
 
 
 #endif
@@ -272,17 +272,17 @@ namespace lasercom.camera
             int[] data = null;
             if (caller.Contains("TroaControl"))
             {
-                if (line < 600) // Dark.
+                if (line < 605) // Dark.
                 {
                     data = Dark(1000);
                 }
-                else if (line < 610 || line > 615) // Ground.
+                else if (line < 615 || line > 625) // Ground.
                 {
                     data = Blank(55000);
                     Data.Dissipate(data, SampleData(0.3333, 32000));
                     for (int i = 0; i < data.Length; i++) data[i] += 1000;
                 }
-                else if (line < 615) // Excited.
+                else if (line < 625) // Excited.
                 {
                     data = Blank(55000);
                     Data.Dissipate(data, SampleData(0.6667, 32000));
