@@ -1,15 +1,15 @@
-﻿using System;
-using System.ComponentModel;
-using System.Threading;
-using System.Windows.Forms;
-using System.Windows.Threading;
-using Extensions;
+﻿using Extensions;
 using lasercom;
 using lasercom.camera;
 using lasercom.control;
 using lasercom.objects;
 using log4net;
 using LUI.config;
+using System;
+using System.ComponentModel;
+using System.Threading;
+using System.Windows.Forms;
+using System.Windows.Threading;
 
 namespace LUI.tabs
 {
@@ -33,7 +33,16 @@ namespace LUI.tabs
         {
             set
             {
-                BeginInvoke(new Action(() => CameraStatus.Text = Commander.Camera.DecodeStatus(value)));
+                if (InvokeRequired)
+                {
+                    BeginInvoke(new Action(() => 
+                        CameraStatus.Text = Commander.Camera.DecodeStatus(value)));
+                }
+                else
+                {
+                    CameraStatus.Text = Commander.Camera.DecodeStatus(value);
+                }
+                
             }
         }
 
@@ -347,7 +356,6 @@ namespace LUI.tabs
         {
             Collect.Enabled = NScan.Enabled = CameraGain.Enabled = true;
             Abort.Enabled = Pause.Enabled = false;
-            StatusProgress.Value = 100;
             TaskFinished.Raise(this, e);
         }
 
@@ -389,5 +397,13 @@ namespace LUI.tabs
             wait = false;
         }
 
+        protected void OpenPump(bool discard)
+        {
+            Commander.Pump.SetOpen();
+            if (discard)
+            {
+                Commander.Camera.Acquire();
+            }
+        }
     }
 }

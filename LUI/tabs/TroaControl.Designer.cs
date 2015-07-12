@@ -58,15 +58,10 @@
             // StatusBox
             // 
             this.StatusBox.Controls.Add(this.TimeProgress);
-            this.StatusBox.Controls.SetChildIndex(this.StatusProgress, 0);
             this.StatusBox.Controls.SetChildIndex(this.ProgressLabel, 0);
             this.StatusBox.Controls.SetChildIndex(this.CameraStatus, 0);
             this.StatusBox.Controls.SetChildIndex(this.ScanProgress, 0);
             this.StatusBox.Controls.SetChildIndex(this.TimeProgress, 0);
-            // 
-            // StatusProgress
-            // 
-            this.StatusProgress.Location = new System.Drawing.Point(141, 37);
             // 
             // NScan
             // 

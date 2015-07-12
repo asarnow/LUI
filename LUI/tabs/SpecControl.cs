@@ -1,15 +1,15 @@
-﻿using System;
-using System.ComponentModel;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Windows.Forms;
-using lasercom;
+﻿using lasercom;
 using lasercom.camera;
 using lasercom.control;
 using lasercom.io;
 using LUI.config;
 using LUI.controls;
+using System;
+using System.ComponentModel;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
 
 namespace LUI.tabs
 {
@@ -159,12 +159,12 @@ namespace LUI.tabs
             Commander.BeamFlag.CloseLaserAndFlash();
             for (int i = 0; i < N; i++)
             {
-                uint ret = Commander.Camera.Acquire(DataBuffer);
+                CameraStatusCode = Commander.Camera.Acquire(DataBuffer);
                 Data.ColumnSum(DarkBuffer, DataBuffer);
-                if (PauseCancelProgress(e, 33 + (i / N) * 33, Dialog.PROGRESS_DARK.ToString())) return;
+                if (PauseCancelProgress(e, i+1, Dialog.PROGRESS_DARK.ToString())) return;
             }
 
-            if (PauseCancelProgress(e, 33, Dialog.BLANK.ToString())) return;
+            if (PauseCancelProgress(e, 0, Dialog.BLANK.ToString())) return;
 
             if (BlankBuffer == null || BlankBuffer.Length != Commander.Camera.AcqSize)
             {
@@ -175,41 +175,37 @@ namespace LUI.tabs
                 BlankBuffer = new int[finalSize];
                 for (int i = 0; i < N; i++)
                 {
-                    uint ret = Commander.Camera.Acquire(DataBuffer);
+                    CameraStatusCode = Commander.Camera.Acquire(DataBuffer);
                     Data.ColumnSum(BlankBuffer, DataBuffer);
-                    if (PauseCancelProgress(e, (i / N) * 33, Dialog.PROGRESS_BLANK.ToString())) return;
+                    if (PauseCancelProgress(e, i+1, Dialog.PROGRESS_BLANK.ToString())) return;
                 }
 
                 Commander.BeamFlag.CloseLaserAndFlash();
                 
-                if (PauseCancelProgress(e, 66, Dialog.SAMPLE.ToString())) return;
+                if (PauseCancelProgress(e, 0, Dialog.SAMPLE.ToString())) return;
 
                 Invoke(new Action(BlockingSampleDialog));
             }
             else
             {
-                if (PauseCancelProgress(e, 66, Dialog.SAMPLE.ToString())) return;
+                if (PauseCancelProgress(e, 0, Dialog.SAMPLE.ToString())) return;
             }
             
-            if (PauseCancelProgress(e, 66, Dialog.PROGRESS_DATA.ToString())) return;
+            if (PauseCancelProgress(e, 0, Dialog.PROGRESS_DATA.ToString())) return;
 
             Commander.BeamFlag.OpenFlash();
 
             if (args.Pump == PumpMode.ALWAYS)
             {
-                Commander.Pump.SetOpen();
-                if (args.DiscardFirst)
-                {
-                    var ret = Commander.Camera.Acquire();
-                }
+                OpenPump(args.DiscardFirst);
             }
 
             int[] SampleBuffer = new int[finalSize];
             for (int i = 0; i < N; i++)
             {
-                uint ret = Commander.Camera.Acquire(DataBuffer);
+                CameraStatusCode = Commander.Camera.Acquire(DataBuffer);
                 Data.ColumnSum(SampleBuffer, DataBuffer);
-                if (PauseCancelProgress(e, 66 + (i / N) * 33, Dialog.PROGRESS_DATA.ToString())) return;
+                if (PauseCancelProgress(e, i+1, Dialog.PROGRESS_DATA.ToString())) return;
             }
             Commander.BeamFlag.CloseLaserAndFlash();
 
@@ -218,41 +214,36 @@ namespace LUI.tabs
                 Commander.Pump.SetClosed();
             }
 
-            if (PauseCancelProgress(e, 99, Dialog.PROGRESS_CALC.ToString())) return;
+            if (PauseCancelProgress(e, -1, Dialog.PROGRESS_CALC.ToString())) return;
             e.Result = Data.OpticalDensity(SampleBuffer, BlankBuffer, DarkBuffer);
         }
 
         protected override void WorkProgress(object sender, System.ComponentModel.ProgressChangedEventArgs e)
         {
             Dialog operation = (Dialog)Enum.Parse(typeof(Dialog), (string)e.UserState);
+            if (e.ProgressPercentage != -1)
+                ScanProgress.Text = e.ProgressPercentage.ToString() + "/" + NScan.Value.ToString();
             switch (operation)
             {
                 case Dialog.BLANK:
-                    StatusProgress.Value = e.ProgressPercentage;
                     ProgressLabel.Text = "Waiting";
                     break;
                 case Dialog.SAMPLE:
-                    StatusProgress.Value = e.ProgressPercentage;
                     ProgressLabel.Text = "Waiting";
                     break;
                 case Dialog.PROGRESS:
-                    StatusProgress.Value = e.ProgressPercentage;
                     ProgressLabel.Text = "Busy";
                     break;
                 case Dialog.PROGRESS_BLANK:
-                    StatusProgress.Value = e.ProgressPercentage;
                     ProgressLabel.Text = "Collecting blank";
                     break;
                 case Dialog.PROGRESS_DARK:
-                    StatusProgress.Value = e.ProgressPercentage;
                     ProgressLabel.Text = "Collecting dark";
                     break;
                 case Dialog.PROGRESS_DATA:
-                    StatusProgress.Value = e.ProgressPercentage;
                     ProgressLabel.Text = "Collecting data";
                     break;
                 case Dialog.PROGRESS_CALC:
-                    StatusProgress.Value = e.ProgressPercentage;
                     ProgressLabel.Text = "Calculating";
                     break;
             }

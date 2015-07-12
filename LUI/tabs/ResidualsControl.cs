@@ -1,16 +1,16 @@
-﻿using System;
+﻿using lasercom;
+using lasercom.camera;
+using lasercom.ddg;
+using lasercom.io;
+using LUI.config;
+using LUI.controls;
+using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
-using lasercom;
-using lasercom.camera;
-using lasercom.ddg;
-using lasercom.io;
-using LUI.config;
-using LUI.controls;
 
 namespace LUI.tabs
 {
@@ -58,7 +58,7 @@ namespace LUI.tabs
 
         public enum Dialog
         {
-            PROGRESS_CAMERA, PROGRESS_DATA
+            INIT, PROGRESS_DATA
         }
 
         struct WorkArgs
@@ -262,6 +262,9 @@ namespace LUI.tabs
         /// <param name="e"></param>
         protected override void DoWork(object sender, DoWorkEventArgs e)
         {
+            if (PauseCancelProgress(e, -1, 
+                new ProgressObject(null, 0, 0, 0, 0, 0, 0 ,0, 0, Dialog.INIT))) return;
+            
             WorkArgs args = (WorkArgs)e.Argument;
             
             int cmasum = 0; // Cumulative moving average over scans
@@ -345,9 +348,11 @@ namespace LUI.tabs
                 Data.ColumnSum(BinnedDataBuffer, DataBuffer);
                 Data.Accumulate(CumulativeDataBuffer, BinnedDataBuffer);
 
-                ProgressObject progress = new ProgressObject(Array.ConvertAll((int[])BinnedDataBuffer, x => (double)x / nrows), 
-                    cmasum, varsum / i, cmapeak, varpeak / i, nsum, nvarsum / i, npeak, nvarpeak / i, Dialog.PROGRESS_DATA);
-                if (PauseCancelProgress(e, i, progress)) return;
+                var progress = new ProgressObject(
+                    Array.ConvertAll((int[])BinnedDataBuffer, x => (double)x / nrows), 
+                    cmasum, varsum / i, cmapeak, varpeak / i, nsum, nvarsum / i, 
+                    npeak, nvarpeak / i, Dialog.PROGRESS_DATA);
+                if (PauseCancelProgress(e, i+1, progress)) return;
             }
 
             Commander.BeamFlag.CloseLaserAndFlash();
@@ -364,9 +369,11 @@ namespace LUI.tabs
         protected override void WorkProgress(object sender, ProgressChangedEventArgs e)
         {
             ProgressObject Progress = (ProgressObject)e.UserState;
-            var progressValue = e.ProgressPercentage;
             switch (Progress.Status)
             {
+                case Dialog.INIT:
+                    ProgressLabel.Text = "Initializing";
+                    break;
                 case Dialog.PROGRESS_DATA:
                     Light = (double[])Progress.Data;
                     if (LastLight != null)
@@ -382,7 +389,7 @@ namespace LUI.tabs
                     PeakN.Text = Progress.PeakN.ToString("n0") + " \u00B1 " + Progress.VarPeakN.ToString("n3");
                     CountsN.Text = Progress.CountsN.ToString("n0") + " \u00B1 " + Progress.VarCountsN.ToString("n0");
 
-                    ScanProgress.Text = progressValue.ToString() + "/" + NScan.Value.ToString();
+                    ScanProgress.Text = e.ProgressPercentage.ToString() + "/" + NScan.Value.ToString();
                     ProgressLabel.Text = "Collecting data";
                     break;
             }

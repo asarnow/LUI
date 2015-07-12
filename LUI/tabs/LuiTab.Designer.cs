@@ -48,7 +48,6 @@
             this.StatusBox = new System.Windows.Forms.GroupBox();
             this.CameraStatus = new System.Windows.Forms.TextBox();
             this.ProgressLabel = new System.Windows.Forms.Label();
-            this.StatusProgress = new System.Windows.Forms.ProgressBar();
             this.ScanProgress = new System.Windows.Forms.TextBox();
             this.CameraBox = new LUI.controls.ObjectCommandPanel();
             this.CameraCommands = new System.Windows.Forms.Panel();
@@ -295,7 +294,6 @@
             this.StatusBox.Controls.Add(CameraStatusLabel);
             this.StatusBox.Controls.Add(this.CameraStatus);
             this.StatusBox.Controls.Add(this.ProgressLabel);
-            this.StatusBox.Controls.Add(this.StatusProgress);
             this.StatusBox.Dock = System.Windows.Forms.DockStyle.Top;
             this.StatusBox.Location = new System.Drawing.Point(0, 0);
             this.StatusBox.Margin = new System.Windows.Forms.Padding(4);
@@ -324,14 +322,6 @@
             this.ProgressLabel.Size = new System.Drawing.Size(34, 17);
             this.ProgressLabel.TabIndex = 7;
             this.ProgressLabel.Text = "Idle";
-            // 
-            // StatusProgress
-            // 
-            this.StatusProgress.Location = new System.Drawing.Point(72, 37);
-            this.StatusProgress.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.StatusProgress.Name = "StatusProgress";
-            this.StatusProgress.Size = new System.Drawing.Size(120, 20);
-            this.StatusProgress.TabIndex = 6;
             // 
             // ScanProgress
             // 
@@ -514,7 +504,6 @@
         protected System.Windows.Forms.Panel ParentPanel;
         protected System.Windows.Forms.GroupBox StatusBox;
         protected System.Windows.Forms.Label ProgressLabel;
-        protected System.Windows.Forms.ProgressBar StatusProgress;
         protected System.Windows.Forms.GroupBox CommandsBox;
         protected System.Windows.Forms.Button Clear;
         private System.Windows.Forms.Label label1;

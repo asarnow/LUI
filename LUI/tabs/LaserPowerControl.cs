@@ -1,13 +1,13 @@
-﻿using System;
-using System.ComponentModel;
-using System.Drawing;
-using System.Linq;
-using System.Windows.Forms;
-using lasercom;
+﻿using lasercom;
 using lasercom.camera;
 using lasercom.control;
 using LUI.config;
 using LUI.controls;
+using System;
+using System.ComponentModel;
+using System.Drawing;
+using System.Linq;
+using System.Windows.Forms;
 
 namespace LUI.tabs
 {
@@ -133,11 +133,11 @@ namespace LUI.tabs
 
                 Data.ColumnSum(Dark, DataBuffer);
 
-                if (PauseCancelProgress(e, i * 99 / TotalScans, Dialog.PROGRESS_DARK)) return;
+                if (PauseCancelProgress(e, i+1, Dialog.PROGRESS_DARK)) return;
             }
             Data.DivideArray(Dark, N);
 
-            if (PauseCancelProgress(e, 33, Dialog.PROGRESS_FLASH)) return;
+            if (PauseCancelProgress(e, 0, Dialog.PROGRESS_FLASH)) return;
 
             // Flow-flash.
             if (args.Pump == PumpMode.ALWAYS)
@@ -158,12 +158,12 @@ namespace LUI.tabs
                 
                 Data.ColumnSum(Ground, DataBuffer);
 
-                if (PauseCancelProgress(e, (N + i) * 99 / TotalScans, Dialog.PROGRESS_FLASH)) return;
+                if (PauseCancelProgress(e, i+1, Dialog.PROGRESS_FLASH)) return;
             }
             Data.DivideArray(Ground, N);
             Data.Dissipate(Ground, Dark);
 
-            if (PauseCancelProgress(e, 66, Dialog.PROGRESS_TRANS)) return;
+            if (PauseCancelProgress(e, 0, Dialog.PROGRESS_TRANS)) return;
 
             // Flow-flash.
             if (args.Pump == PumpMode.TRANS)
@@ -184,7 +184,7 @@ namespace LUI.tabs
 
                 Data.ColumnSum(Excited, DataBuffer);
 
-                if (PauseCancelProgress(e, (2 * N + i) * 99 / TotalScans, Dialog.PROGRESS_TRANS)) return;
+                if (PauseCancelProgress(e, i+1, Dialog.PROGRESS_TRANS)) return;
             }
 
             Commander.BeamFlag.CloseLaserAndFlash();
@@ -198,7 +198,7 @@ namespace LUI.tabs
             Data.DivideArray(Excited, N);
             Data.Dissipate(Excited, Dark);
 
-            if (PauseCancelProgress(e, 99, Dialog.CALCULATE)) return;
+            if (PauseCancelProgress(e, -1, Dialog.CALCULATE)) return;
             
             e.Result = Data.DeltaOD(Ground, Excited);
         }
@@ -206,7 +206,8 @@ namespace LUI.tabs
         protected override void WorkProgress(object sender, ProgressChangedEventArgs e)
         {
             Dialog operation = (Dialog)Enum.Parse(typeof(Dialog), e.UserState.ToString());
-            StatusProgress.Value = e.ProgressPercentage;
+            if (e.ProgressPercentage != -1)
+                ScanProgress.Text = e.ProgressPercentage.ToString() + "/" + NScan.Value.ToString();
             switch (operation)
             {
                 case Dialog.INITIALIZE:
