@@ -129,7 +129,7 @@ namespace LUI.tabs
             double[] Dark = new double[finalSize];
             for (int i = 0; i < N; i++)
             {
-                uint ret = Commander.Camera.Acquire(DataBuffer);
+                CameraStatusCode = Commander.Camera.Acquire(DataBuffer);
 
                 Data.ColumnSum(Dark, DataBuffer);
 
@@ -145,7 +145,7 @@ namespace LUI.tabs
                 Commander.Pump.SetOpen();
                 if (args.DiscardFirst)
                 {
-                    var ret = Commander.Camera.Acquire(DataBuffer);
+                    CameraStatusCode = Commander.Camera.Acquire(DataBuffer);
                 }
             }
 
@@ -154,7 +154,7 @@ namespace LUI.tabs
             double[] Ground = new double[finalSize];
             for (int i = 0; i < N; i++)
             {
-                uint ret = Commander.Camera.Acquire(DataBuffer);
+                CameraStatusCode = Commander.Camera.Acquire(DataBuffer);
                 
                 Data.ColumnSum(Ground, DataBuffer);
 
@@ -171,7 +171,7 @@ namespace LUI.tabs
                 Commander.Pump.SetOpen();
                 if (args.DiscardFirst)
                 {
-                    var ret = Commander.Camera.Acquire(DataBuffer);
+                    CameraStatusCode = Commander.Camera.Acquire(DataBuffer);
                 }
             }
 
