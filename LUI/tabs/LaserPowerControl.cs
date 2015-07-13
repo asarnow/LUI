@@ -129,7 +129,7 @@ namespace LUI.tabs
             double[] Dark = new double[finalSize];
             for (int i = 0; i < N; i++)
             {
-                CameraStatusCode = Commander.Camera.Acquire(DataBuffer);
+                TryAcquire(DataBuffer);
 
                 Data.ColumnSum(Dark, DataBuffer);
 
@@ -142,11 +142,8 @@ namespace LUI.tabs
             // Flow-flash.
             if (args.Pump == PumpMode.ALWAYS)
             {
-                Commander.Pump.SetOpen();
-                if (args.DiscardFirst)
-                {
-                    CameraStatusCode = Commander.Camera.Acquire(DataBuffer);
-                }
+                OpenPump(args.DiscardFirst);
+                if (PauseCancelProgress(e, -1, Dialog.PROGRESS)) return;
             }
 
             Commander.BeamFlag.OpenFlash();
@@ -154,7 +151,7 @@ namespace LUI.tabs
             double[] Ground = new double[finalSize];
             for (int i = 0; i < N; i++)
             {
-                CameraStatusCode = Commander.Camera.Acquire(DataBuffer);
+                TryAcquire(DataBuffer);
                 
                 Data.ColumnSum(Ground, DataBuffer);
 
@@ -168,11 +165,8 @@ namespace LUI.tabs
             // Flow-flash.
             if (args.Pump == PumpMode.TRANS)
             {
-                Commander.Pump.SetOpen();
-                if (args.DiscardFirst)
-                {
-                    CameraStatusCode = Commander.Camera.Acquire(DataBuffer);
-                }
+                OpenPump(args.DiscardFirst);
+                if (PauseCancelProgress(e, -1, Dialog.PROGRESS)) return;
             }
 
             Commander.BeamFlag.OpenLaserAndFlash();
@@ -180,7 +174,7 @@ namespace LUI.tabs
             double[] Excited = new double[finalSize];
             for (int i = 0; i < N; i++)
             {
-                uint ret = Commander.Camera.Acquire(DataBuffer);
+                TryAcquire(DataBuffer);
 
                 Data.ColumnSum(Excited, DataBuffer);
 

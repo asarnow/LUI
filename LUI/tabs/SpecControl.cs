@@ -159,7 +159,7 @@ namespace LUI.tabs
             Commander.BeamFlag.CloseLaserAndFlash();
             for (int i = 0; i < N; i++)
             {
-                CameraStatusCode = Commander.Camera.Acquire(DataBuffer);
+                TryAcquire(DataBuffer);
                 Data.ColumnSum(DarkBuffer, DataBuffer);
                 if (PauseCancelProgress(e, i+1, Dialog.PROGRESS_DARK.ToString())) return;
             }
@@ -175,7 +175,7 @@ namespace LUI.tabs
                 BlankBuffer = new int[finalSize];
                 for (int i = 0; i < N; i++)
                 {
-                    CameraStatusCode = Commander.Camera.Acquire(DataBuffer);
+                    TryAcquire(DataBuffer);
                     Data.ColumnSum(BlankBuffer, DataBuffer);
                     if (PauseCancelProgress(e, i+1, Dialog.PROGRESS_BLANK.ToString())) return;
                 }
@@ -203,7 +203,7 @@ namespace LUI.tabs
             int[] SampleBuffer = new int[finalSize];
             for (int i = 0; i < N; i++)
             {
-                CameraStatusCode = Commander.Camera.Acquire(DataBuffer);
+                TryAcquire(DataBuffer);
                 Data.ColumnSum(SampleBuffer, DataBuffer);
                 if (PauseCancelProgress(e, i+1, Dialog.PROGRESS_DATA.ToString())) return;
             }

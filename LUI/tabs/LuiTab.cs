@@ -402,7 +402,27 @@ namespace LUI.tabs
             Commander.Pump.SetOpen();
             if (discard)
             {
-                Commander.Camera.Acquire();
+                TryAcquire();
+            }
+        }
+
+        protected void TryAcquire()
+        {
+            int[] dummy = new int[Commander.Camera.AcqSize];
+            TryAcquire(dummy);
+        }
+
+        protected void TryAcquire(int[] AcqBuffer)
+        {
+            try
+            {
+                CameraStatusCode = Commander.Camera.Acquire(AcqBuffer);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Log.Error(ex);
+                if (worker != null && worker.IsBusy) worker.CancelAsync();
+                BeginInvoke(new Action(() => MessageBox.Show("Sensor saturation occurred. Aborting run.", "Error", MessageBoxButtons.OK)));
             }
         }
     }

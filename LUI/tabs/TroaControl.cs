@@ -313,6 +313,7 @@ namespace LUI.tabs
             SaveData.Enabled = true;
         }
 
+        [Obsolete("Deprecated, use DoWork instead.", true)]
         protected void DoWorkOld(object sender, DoWorkEventArgs e)
         {
             ProgressObject progress;
@@ -352,7 +353,7 @@ namespace LUI.tabs
             Commander.BeamFlag.CloseLaserAndFlash();
             for (int i = 0; i < N; i++)
             {
-                CameraStatusCode = Commander.Camera.Acquire(DataBuffer);
+                TryAcquire(DataBuffer);
                 Data.ColumnSum(DataRow, DataBuffer);
                 RawData.WriteNext(DataRow, 0);
                 Data.Accumulate(Dark, DataRow);
@@ -373,7 +374,7 @@ namespace LUI.tabs
                 Commander.Pump.SetOpen();
                 if (args.DiscardFirst)
                 {
-                    CameraStatusCode = Commander.Camera.Acquire(DataBuffer);
+                    TryAcquire(DataBuffer);
                 }
             }
 
@@ -381,7 +382,7 @@ namespace LUI.tabs
             Commander.BeamFlag.OpenFlash();
             for (int i = 0; i < half; i++)
             {
-                CameraStatusCode = Commander.Camera.Acquire(DataBuffer);
+                TryAcquire(DataBuffer);
                 Data.ColumnSum(DataRow, DataBuffer);
                 RawData.WriteNext(DataRow, 0);
                 Data.Accumulate(Ground, DataRow);
@@ -405,7 +406,7 @@ namespace LUI.tabs
                 Commander.Pump.SetOpen();
                 if (args.DiscardFirst)
                 {
-                    CameraStatusCode = Commander.Camera.Acquire(DataBuffer);
+                    TryAcquire(DataBuffer);
                 }
             }
 
@@ -420,7 +421,7 @@ namespace LUI.tabs
                 {
                     Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, Delay); // Set delay time.
                     
-                    CameraStatusCode = Commander.Camera.Acquire(DataBuffer);
+                    TryAcquire(DataBuffer);
                     Data.ColumnSum(DataRow, DataBuffer);
                     RawData.WriteNext(DataRow, 0);
                     Data.Accumulate(Excited, DataRow);
@@ -453,7 +454,7 @@ namespace LUI.tabs
             int half2 = N % 2 == 0 ? half : half + 1; // If N is odd, need 1 more GS scan in the second half.
             for (int i = 0; i < half2; i++)
             {
-                CameraStatusCode = Commander.Camera.Acquire(DataBuffer);
+                TryAcquire(DataBuffer);
                 Data.ColumnSum(DataRow, DataBuffer);
                 RawData.WriteNext(DataRow, 0);
                 Array.Clear(DataRow, 0, finalSize);
@@ -548,7 +549,7 @@ namespace LUI.tabs
             for (int i = 0; i < N; i++)
             {
                 Array.Clear(DataBuffer, 0, DataBuffer.Length);
-                CameraStatusCode = Commander.Camera.Acquire(AcqBuffer);
+                TryAcquire(AcqBuffer);
                 Data.ColumnSum(DataBuffer, AcqBuffer);
                 Data.Accumulate(SumBuffer, DataBuffer);
                 RawData.WriteNext(DataBuffer, 0);
@@ -558,12 +559,9 @@ namespace LUI.tabs
 
         protected override void DoWork(object sender, DoWorkEventArgs e)
         {
-            ProgressObject progress;
-            progress = new ProgressObject(null, 0, Dialog.TEMPERATURE);
-            DoTempCheck(() => PauseCancelProgress(e, 0, progress));
+            DoTempCheck(() => PauseCancelProgress(e, 0, new ProgressObject(null, 0, Dialog.TEMPERATURE)));
 
-            progress = new ProgressObject(null, 0, Dialog.INITIALIZE);
-            if (PauseCancelProgress(e, 0, progress)) return; // Show zero progress.
+            if (PauseCancelProgress(e, 0, new ProgressObject(null, 0, Dialog.INITIALIZE))) return; // Show zero progress.
 
             var args = (WorkArgs)e.Argument;
             int N = args.N; // Save typing for later.
@@ -601,6 +599,7 @@ namespace LUI.tabs
             // Collect dark.
             Commander.BeamFlag.CloseLaserAndFlash();
             DoAcq(AcqBuffer, AcqRow, Drk, N, (p) => PauseCancelProgress(e, p, new ProgressObject(null, 0, Dialog.PROGRESS_DARK)));
+            if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
             Data.Accumulate(Dark, Drk);
             Data.DivideArray(Dark, N);
 
@@ -609,6 +608,7 @@ namespace LUI.tabs
             Commander.BeamFlag.OpenFlash();
             Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, 3.2E-8); // Set delay for GS (avoids laser tail).
             DoAcq(AcqBuffer, AcqRow, Gnd1, half, (p) => PauseCancelProgress(e, p, new ProgressObject(null, 0, Dialog.PROGRESS_FLASH)));
+            if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
 
             for (int i = 0; i < Times.Count; i++)
             {
@@ -616,19 +616,21 @@ namespace LUI.tabs
                 if (args.Pump == PumpMode.TRANS) OpenPump(args.DiscardFirst);
                 Commander.BeamFlag.OpenLaserAndFlash();
                 Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, Delay); // Set delay time.
-                progress = new ProgressObject(null, Delay, Dialog.PROGRESS_TIME);
-                if (PauseCancelProgress(e, -1, progress)) return;
+                if (PauseCancelProgress(e, -1, new ProgressObject(null, Delay, Dialog.PROGRESS_TIME))) return;
                 DoAcq(AcqBuffer, AcqRow, Exc, N, (p) => PauseCancelProgress(e, p, new ProgressObject(null, Delay, Dialog.PROGRESS_TRANS)));
+                if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
                 if (args.Pump == PumpMode.TRANS) Commander.Pump.SetClosed();
                 Commander.BeamFlag.OpenFlash();
                 Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, 3.2E-8); // Set delay for GS (avoids laser tail).
                 if (i % 2 == 0) // Alternate between Gnd1 and Gnd2.
                 {
                     DoAcq(AcqBuffer, AcqRow, Gnd2, half, (p) => PauseCancelProgress(e, p % half + half, new ProgressObject(null, 0, Dialog.PROGRESS_FLASH)));
+                    if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
                 }
                 else
                 {
                     DoAcq(AcqBuffer, AcqRow, Gnd1, half, (p) => PauseCancelProgress(e, p, new ProgressObject(null, 0, Dialog.PROGRESS_FLASH)));
+                    if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
                 }
                 Data.Accumulate(Ground, Gnd1);
                 Data.Accumulate(Ground, Gnd2);
@@ -637,8 +639,7 @@ namespace LUI.tabs
                 Data.DivideArray(Excited, N);
                 double[] deltaOD = Data.DeltaOD(Ground, Excited, Dark);
                 LuiData.Write(deltaOD, new long[] { i + 1, 1 }, RowSize);
-                progress = new ProgressObject(deltaOD, Delay, Dialog.PROGRESS_TIME_COMPLETE);
-                if (PauseCancelProgress(e, i, progress)) return;
+                if (PauseCancelProgress(e, i, new ProgressObject(deltaOD, Delay, Dialog.PROGRESS_TIME_COMPLETE))) return;
                 Array.Clear(Ground, 0, Ground.Length);
                 Array.Clear(Excited, 0, Excited.Length);
             }

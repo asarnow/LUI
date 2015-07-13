@@ -296,7 +296,7 @@ namespace LUI.tabs
 
             for (int i = 0; i < args.NScans; i++)
             {
-                CameraStatusCode = Commander.Camera.Acquire(DataBuffer);
+                TryAcquire(DataBuffer);
 
                 int sum = 0;
                 int peak = int.MinValue;

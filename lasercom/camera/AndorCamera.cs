@@ -491,6 +491,8 @@ namespace lasercom.camera
             AndorSdk.StartAcquisition();
             AndorSdk.WaitForAcquisition();
             uint ret = AndorSdk.GetAcquiredData(DataBuffer, npx);
+            Log.Debug("Camera returned " + DecodeStatus(ret));
+            ThrowIfSaturated(DataBuffer);
             return ret;
         }
 
@@ -522,6 +524,21 @@ namespace lasercom.camera
             if (disposing)
             {
                 Close();
+            }
+        }
+
+        protected void ThrowIfSaturated(int[] data)
+        {
+            var limit = Math.Pow(2, BitDepth) - 1;
+            for (int i = 0; i < data.Length; i++)
+            {
+                if (data[i] >= limit)
+                {
+                    var ex = new InvalidOperationException("Sensor saturation detected.");
+                    ex.Data["Pixel"] = i;
+                    ex.Data["Value"] = data[i];
+                    throw ex;
+                }
             }
         }
     }
