@@ -37,7 +37,7 @@ namespace LUI.tabs
             set
             {
                 _SelectedChannel = value;
-                _SelectedChannel = Math.Max(Math.Min(value, (int)Commander.Camera.Width - 1), 0);
+                _SelectedChannel = Math.Max(Math.Min(value, Commander.Camera.Width - 1), 0);
             }
         }
 
@@ -192,7 +192,7 @@ namespace LUI.tabs
             WorkArgs args = (WorkArgs)e.Argument;
             int N = args.N;
 
-            int AcqSize = (int)Commander.Camera.AcqSize;
+            int AcqSize = Commander.Camera.AcqSize;
             int finalSize = Commander.Camera.ReadMode == AndorCamera.ReadModeImage ?
                 AcqSize / Commander.Camera.Image.Height : AcqSize;
 
@@ -467,7 +467,7 @@ namespace LUI.tabs
         {
             Tuple<double, double, double> fitdata = Data.LinearLeastSquares(CalibrationList.Select(it => (double)it.Channel).ToArray(),
                 CalibrationList.Select(it => (double)it.Wavelength).ToArray());
-            Commander.Camera.Calibration = Data.Calibrate((int)Commander.Camera.Width, fitdata.Item1, fitdata.Item2);
+            Commander.Camera.Calibration = Data.Calibrate(Commander.Camera.Width, fitdata.Item1, fitdata.Item2);
             CalibrationChanged.Raise(this, new LuiObjectParametersEventArgs(CameraBox.SelectedObject));
             Slope.Text = fitdata.Item1.ToString("n4");
             Intercept.Text = fitdata.Item2.ToString("n4");

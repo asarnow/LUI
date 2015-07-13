@@ -328,7 +328,7 @@ namespace LUI.tabs
             int N = args.N; // Save typing for later.
             int half = N / 2; // Integer division rounds down.
             IList<double> Times = args.Times;
-            int AcqSize = (int)Commander.Camera.AcqSize;
+            int AcqSize = Commander.Camera.AcqSize;
             int finalSize = Commander.Camera.ReadMode == AndorCamera.ReadModeImage ?
                 AcqSize / Commander.Camera.Image.Height : AcqSize;
 
@@ -567,7 +567,7 @@ namespace LUI.tabs
             int N = args.N; // Save typing for later.
             int half = N / 2; // N is always even.
             IList<double> Times = args.Times;
-            int AcqSize = (int)Commander.Camera.AcqSize;
+            int AcqSize = Commander.Camera.AcqSize;
             int AcqWidth = Commander.Camera.AcqWidth;
 
             // Total scans = dark scans + ground state scans + plus time series scans.

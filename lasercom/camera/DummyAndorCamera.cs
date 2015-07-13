@@ -140,7 +140,7 @@ namespace lasercom.camera
                 else
                 {
                     hcount = Math.Max(1, value.hcount); // At least 1.
-                    hcount = Math.Min((int)Width, hcount); // At most Width.
+                    hcount = Math.Min(Width, hcount); // At most Width.
                 }
 
                 if (value.vcount == -1)
@@ -150,7 +150,7 @@ namespace lasercom.camera
                 else
                 {
                     vcount = Math.Max(1, value.vcount); // At least 1.
-                    vcount = Math.Min((int)Height, vcount); // At most Height.
+                    vcount = Math.Min(Height, vcount); // At most Height.
                 }
 
                 if (value.hstart == -1)
@@ -160,7 +160,7 @@ namespace lasercom.camera
                 else
                 {
                     hstart = Math.Max(0, value.hstart); // At least 0.
-                    hstart = Math.Min(hstart, (int)Width - 1); // At most Width - 1.
+                    hstart = Math.Min(hstart, Width - 1); // At most Width - 1.
                 }
 
                 if (value.vstart == -1)
@@ -170,7 +170,7 @@ namespace lasercom.camera
                 else
                 {
                     vstart = Math.Max(0, value.vstart); // At least 0.
-                    vstart = Math.Min(vstart, (int)Height - 1); // At most Height - 1.
+                    vstart = Math.Min(vstart, Height - 1); // At most Height - 1.
                 }
 
                 if (value.hbin == -1)
@@ -199,24 +199,6 @@ namespace lasercom.camera
             }
         }
 
-        private uint _Height;
-        public override uint Height
-        {
-            get
-            {
-                return _Height;
-            }
-        }
-
-        private uint _Width;
-        public override uint Width
-        {
-            get
-            {
-                return _Width;
-            }
-        }
-
         public DummyAndorCamera(LuiObjectParameters p) : this(p as CameraParameters) { }
 
         public DummyAndorCamera(CameraParameters p)
@@ -226,9 +208,9 @@ namespace lasercom.camera
 
             _Width = 1024;
             _Height = 256;
-            _Image = new ImageArea(1, 1, 0, (int)Width, 0, (int)Height);
+            _Image = new ImageArea(1, 1, 0, Width, 0, Height);
             Image = p.Image;
-            Calibration = Enumerable.Range(0, (int)Width).Select(x => (double)x).ToArray();
+            Calibration = Enumerable.Range(0, Width).Select(x => (double)x).ToArray();
             LoadCalibration(p.CalFile);
             MinIntensifierGain = 0;
             MaxIntensifierGain = 4095;
@@ -341,10 +323,10 @@ namespace lasercom.camera
 
         private int[] BlankFvb(int scale)
         {
-            int[] data = Data.Uniform((int)Width, 1000);
+            int[] data = Data.Uniform(Width, 1000);
             for (int i = 1; i < 10; i++)
             {
-                Data.Accumulate(data, Data.Gaussian((int)Width, scale, Width * i / 10D, Width / 10D));
+                Data.Accumulate(data, Data.Gaussian(Width, scale, Width * i / 10D, Width / 10D));
             }
             return data;
         }
@@ -374,7 +356,7 @@ namespace lasercom.camera
 
         private int[] GenerateData(double centerNormalized, int scale)
         {
-            int[] data = Data.Gaussian((int)Width, scale, Width * centerNormalized, Width / 10D);
+            int[] data = Data.Gaussian(Width, scale, Width * centerNormalized, Width / 10D);
             return data;
         }
 

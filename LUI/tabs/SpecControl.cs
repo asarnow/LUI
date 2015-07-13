@@ -31,7 +31,7 @@ namespace LUI.tabs
             }
             set
             {
-                _SelectedChannel = Math.Max(Math.Min(value, (int)Commander.Camera.Width - 1), 0);
+                _SelectedChannel = Math.Max(Math.Min(value, Commander.Camera.Width - 1), 0);
                 if (OD != null) CountsDisplay.Text = OD[_SelectedChannel].ToString("n");
             }
         }
@@ -147,7 +147,7 @@ namespace LUI.tabs
             WorkArgs args = (WorkArgs)e.Argument;
             int N = args.N;
 
-            int AcqSize = (int)Commander.Camera.AcqSize;
+            int AcqSize = Commander.Camera.AcqSize;
             int finalSize = Commander.Camera.ReadMode == AndorCamera.ReadModeImage ? 
                 AcqSize / Commander.Camera.Image.Height : AcqSize;
 
@@ -261,7 +261,7 @@ namespace LUI.tabs
                 Graph.Invalidate();
                 ProgressLabel.Text = "Complete";
                 SaveData.Enabled = true;
-                SelectedChannel = (int)Commander.Camera.Width / 2;
+                SelectedChannel = Commander.Camera.Width / 2;
             }
             else
             {

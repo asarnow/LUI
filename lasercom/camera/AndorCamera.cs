@@ -207,7 +207,7 @@ namespace lasercom.camera
                 else
                 {
                     hcount = Math.Max(1, value.hcount); // At least 1.
-                    hcount = Math.Min((int)Width, hcount); // At most Width.
+                    hcount = Math.Min(Width, hcount); // At most Width.
                 }
 
                 if (value.vcount == -1)
@@ -217,7 +217,7 @@ namespace lasercom.camera
                 else
                 {
                     vcount = Math.Max(1, value.vcount); // At least 1.
-                    vcount = Math.Min((int)Height, vcount); // At most Height.
+                    vcount = Math.Min(Height, vcount); // At most Height.
                 }
 
                 if (value.hstart == -1)
@@ -227,7 +227,7 @@ namespace lasercom.camera
                 else
                 {
                     hstart = Math.Max(0, value.hstart); // At least 0.
-                    hstart = Math.Min(hstart, (int)Width - 1); // At most Width - 1.
+                    hstart = Math.Min(hstart, Width - 1); // At most Width - 1.
                 }
 
                 if (value.vstart == -1)
@@ -237,7 +237,7 @@ namespace lasercom.camera
                 else
                 {
                     vstart = Math.Max(0, value.vstart); // At least 0.
-                    vstart = Math.Min(vstart, (int)Height - 1); // At most Height - 1.
+                    vstart = Math.Min(vstart, Height - 1); // At most Height - 1.
                 }
 
                 if (value.hbin == -1)
@@ -272,8 +272,8 @@ namespace lasercom.camera
             }
         }
 
-        private uint _Height;
-        override public uint Height
+        protected int _Height;
+        override public int Height
         {
             get
             {
@@ -281,8 +281,8 @@ namespace lasercom.camera
             }
         }
 
-        private uint _Width;
-        override public uint Width
+        protected int _Width;
+        override public int Width
         { 
             get
             {
@@ -324,7 +324,7 @@ namespace lasercom.camera
             }
         }
 
-        public override uint AcqSize
+        public override int AcqSize
         {
             get
             {
@@ -334,7 +334,7 @@ namespace lasercom.camera
                 }
                 else if (ReadMode == ReadModeImage)
                 {
-                    return (uint)(Image.Width * Image.Height);
+                    return Image.Width * Image.Height;
                 }
                 else
                 {
@@ -349,7 +349,7 @@ namespace lasercom.camera
             {
                 if (ReadMode == ReadModeFVB)
                 {
-                    return (int)Width;
+                    return Width;
                 }
                 else if (ReadMode == ReadModeImage)
                 {
@@ -368,7 +368,7 @@ namespace lasercom.camera
             {
                 if (ReadMode == ReadModeFVB)
                 {
-                    return (int)Height;
+                    return Height;
                 }
                 else if (ReadMode == ReadModeImage)
                 {
@@ -390,6 +390,8 @@ namespace lasercom.camera
             }
             set
             {
+                if (value >= Math.Pow(2, BitDepth)) 
+                    throw new ArgumentException("Saturation level may not exceed 2^BitDepth - 1.");
                 _SaturationLevel = value;
             }
         }
@@ -408,17 +410,13 @@ namespace lasercom.camera
                 InitVal = AndorSdk.Initialize(p.Dir);
                 AndorSdk.GetCapabilities(ref Capabilities);
                 AndorSdk.FreeInternalMemory();
-
-                int width = 0, height = 0;
-                AndorSdk.GetDetector(ref width, ref height);
-                _Width = (uint)width;
-                _Height = (uint)height;
+                AndorSdk.GetDetector(ref _Width, ref _Height);
                 AndorSdk.GetNumberADChannels(ref _NumberADChannels);
                 CurrentADChannel = DefaultADChannel;
                 AndorSdk.GetBitDepth(CurrentADChannel, ref _BitDepth);
                 SaturationLevel = (int)Math.Pow(2, BitDepth) - 1;
 
-                _Image = new ImageArea(1, 1, 0, (int)Width, 0, (int)Height);
+                _Image = new ImageArea(1, 1, 0, Width, 0, Height);
                 Image = p.Image;
 
                 GateMode = Constants.GatingModeSMBOnly;
@@ -448,12 +446,12 @@ namespace lasercom.camera
 
         public override int[] FullResolutionImage()
         {
-            uint npx = Width * Height;
-            int[] data = new int[npx];
             ImageArea image = Image;
             int readMode = ReadMode;
             ReadMode = ReadModeImage;
-            Image = new ImageArea(1, 1, 0, (int)Width, 0, (int)Height);
+            Image = new ImageArea(1, 1, 0, Width, 0, Height);
+            uint npx = (uint)(Width * Height);
+            int[] data = new int[npx];
             AndorSdk.StartAcquisition();
             AndorSdk.WaitForAcquisition();
             uint ret = AndorSdk.GetAcquiredData(data, npx);
@@ -464,7 +462,7 @@ namespace lasercom.camera
 
         public override int[] CountsFvb()
         {
-            uint npx = Width;
+            uint npx = (uint)Width;
             int readMode = ReadMode;
             ReadMode = ReadModeFVB;
             int[] data = new int[npx];
@@ -477,7 +475,7 @@ namespace lasercom.camera
 
         public override int[] Acquire()
         {
-            uint npx = AcqSize;
+            uint npx = (uint)AcqSize;
             int[] data = new int[npx];
             uint ret = Acquire(data);
             return data;

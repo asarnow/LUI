@@ -15,17 +15,17 @@ namespace lasercom.camera
         /// <summary>
         /// Number of detector hardware pixels in horizontal axis.
         /// </summary>
-        uint Width { get; }
+        int Width { get; }
 
         /// <summary>
         /// Number of detector hardware pixels in vertical axis.
         /// </summary>
-        uint Height { get; }
+        int Height { get; }
 
         /// <summary>
         /// Number of elements in acquisition data given current camera settings.
         /// </summary>
-        uint AcqSize { get; }
+        int AcqSize { get; }
 
         /// <summary>
         /// Number of columns in acquisition data given current camera settings.

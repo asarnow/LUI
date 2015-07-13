@@ -1,23 +1,23 @@
-﻿using System.IO;
-using System.Linq;
-using lasercom.io;
+﻿using lasercom.io;
 using lasercom.objects;
+using System.IO;
+using System.Linq;
 
 namespace lasercom.camera
 {
     public abstract class AbstractCamera:LuiObject<CameraParameters>, ICamera
     {
-        public abstract uint Width
+        public abstract int Width
         {
             get;
         }
 
-        public abstract uint Height
+        public abstract int Height
         {
             get;
         }
 
-        public abstract uint AcqSize
+        public abstract int AcqSize
         {
             get;
         }

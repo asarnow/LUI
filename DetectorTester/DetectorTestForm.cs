@@ -1,15 +1,15 @@
-﻿using System;
+﻿using lasercom;
+using lasercom.camera;
+using lasercom.control;
+using lasercom.io;
+using lasercom.objects;
+using System;
 using System.Drawing;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
-using lasercom;
-using lasercom.camera;
-using lasercom.control;
-using lasercom.io;
-using lasercom.objects;
 
 namespace DetectorTester
 {
@@ -91,7 +91,7 @@ namespace DetectorTester
             GraphScroll.Minimum = 0;
             VBin.Minimum = 1;
             FirstRow.Value = FirstRow.Minimum = 0;
-            LastRow.Value = LastRow.Maximum = VBin.Maximum = GraphScroll.Maximum = (int)Camera.Height - 1;
+            LastRow.Value = LastRow.Maximum = VBin.Maximum = GraphScroll.Maximum = Camera.Height - 1;
 
             GraphScroll.ValueChanged += GraphScroll_ValueChanged;
             VBin.ValueChanged += CameraImage_ValueChanged;

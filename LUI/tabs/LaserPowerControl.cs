@@ -37,7 +37,7 @@ namespace LUI.tabs
             }
             set
             {
-                _SelectedChannel = Math.Max(Math.Min(value, (int)Commander.Camera.Width - 1), 0);
+                _SelectedChannel = Math.Max(Math.Min(value, Commander.Camera.Width - 1), 0);
                 if (Light != null) CountsDisplay.Text = Light[_SelectedChannel].ToString("n");
             }
         }
@@ -117,7 +117,7 @@ namespace LUI.tabs
 
             int TotalScans = 3 * N;
 
-            int AcqSize = (int)Commander.Camera.AcqSize;
+            int AcqSize = Commander.Camera.AcqSize;
             int finalSize = Commander.Camera.ReadMode == AndorCamera.ReadModeImage ?
                 AcqSize / Commander.Camera.Image.Height : AcqSize;
 

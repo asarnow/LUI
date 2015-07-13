@@ -44,7 +44,7 @@ namespace LUI.tabs
             }
             set
             {
-                _SelectedChannel = Math.Max(Math.Min(value, (int)Commander.Camera.Width - 1), 0);
+                _SelectedChannel = Math.Max(Math.Min(value, Commander.Camera.Width - 1), 0);
             }
         }
 
@@ -152,8 +152,8 @@ namespace LUI.tabs
         public override void HandleCameraChanged(object sender, EventArgs e)
         {
             base.HandleCameraChanged(sender, e);
-            LowerBound = (int)Commander.Camera.Image.Width / 6;
-            UpperBound = (int)Commander.Camera.Image.Width * 5 / 6;
+            LowerBound = Commander.Camera.Image.Width / 6;
+            UpperBound = Commander.Camera.Image.Width * 5 / 6;
             UpdateReadMode();
             UpdateCameraImage();
             if (Commander.Camera is CameraTempControlled)
@@ -278,8 +278,9 @@ namespace LUI.tabs
             int[] pastsums = new int[args.NAvg];
             int[] pastpeaks = new int[args.NAvg];
 
-            uint finalSize = Commander.Camera.AcqSize;
-            if (args.SoftwareBinning) finalSize /= (uint)Commander.Camera.Image.Height;
+            int finalSize = args.SoftwareBinning ?
+                Commander.Camera.AcqSize / Commander.Camera.Image.Height : 
+                Commander.Camera.AcqSize;
             double nrows = (double)Commander.Camera.AcqSize / finalSize;
             int[] DataBuffer = new int[Commander.Camera.AcqSize];
             int[] BinnedDataBuffer = new int[finalSize];
@@ -747,8 +748,8 @@ namespace LUI.tabs
             if (GraphScroll.Enabled)
             {
                 GraphScroll.ValueChanged -= GraphScroll_ValueChanged;
-                GraphScroll.Minimum = (int)Commander.Camera.Image.vstart;
-                GraphScroll.Maximum = (int)(Commander.Camera.Image.vstart + Commander.Camera.Image.vcount - 1);
+                GraphScroll.Minimum = Commander.Camera.Image.vstart;
+                GraphScroll.Maximum = (Commander.Camera.Image.vstart + Commander.Camera.Image.vcount - 1);
                 GraphScroll.LargeChange = Commander.Camera.Image.vbin;
                 GraphScroll.Value = GraphScroll.Value > GraphScroll.Maximum ||
                     GraphScroll.Value <= GraphScroll.Minimum

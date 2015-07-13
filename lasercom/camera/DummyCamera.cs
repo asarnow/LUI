@@ -1,13 +1,13 @@
-﻿using System;
+﻿using lasercom.objects;
+using System;
 using System.Linq;
-using lasercom.objects;
 
 namespace lasercom.camera
 {
     public class DummyCamera : AbstractCamera
     {
-        private uint _Width;
-        public override uint Width
+        private int _Width;
+        public override int Width
         {
             get
             {
@@ -15,8 +15,8 @@ namespace lasercom.camera
             }
         }
 
-        private uint _Height;
-        public override uint Height
+        private int _Height;
+        public override int Height
         {
             get
             {
@@ -32,7 +32,7 @@ namespace lasercom.camera
             {
                 if (ReadMode == AndorCamera.ReadModeFVB)
                 {
-                    return (int)Width;
+                    return Width;
                 }
                 else if (ReadMode == AndorCamera.ReadModeImage)
                 {
@@ -51,7 +51,7 @@ namespace lasercom.camera
             {
                 if (ReadMode == AndorCamera.ReadModeFVB)
                 {
-                    return (int)Height;
+                    return Height;
                 }
                 else if (ReadMode == AndorCamera.ReadModeImage)
                 {
@@ -70,8 +70,8 @@ namespace lasercom.camera
         {
             _Height = 255;
             _Width = 1024;
-            Image = new ImageArea(1, 1, 0, (int)Width, 0, (int)Height);
-            Calibration = Enumerable.Range(0, (int)Width).Select(x=>(double)x).ToArray();
+            Image = new ImageArea(1, 1, 0, Width, 0, Height);
+            Calibration = Enumerable.Range(0, Width).Select(x=>(double)x).ToArray();
             ReadMode = AndorCamera.ReadModeFVB;
         }
 
@@ -90,7 +90,7 @@ namespace lasercom.camera
             return null;
         }
 
-        public override uint AcqSize
+        public override int AcqSize
         {
             get { throw new NotImplementedException(); }
         }
