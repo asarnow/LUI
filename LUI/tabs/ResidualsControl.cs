@@ -855,7 +855,6 @@ namespace LUI.tabs
             else
             {
                 TempFileName = Path.GetTempFileName();
-                TempFileName = TempFileName.Replace(".tmp", ".mat");
             }
             DataFile = new MatFile(TempFileName);
             RawData = DataFile.CreateVariable<int>("rawdata", NumScans, NumChannels);

@@ -1,11 +1,4 @@
-﻿using lasercom;
-using lasercom.camera;
-using lasercom.control;
-using lasercom.ddg;
-using lasercom.io;
-using LUI.config;
-using LUI.controls;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -14,6 +7,13 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
+using lasercom;
+using lasercom.camera;
+using lasercom.control;
+using lasercom.ddg;
+using lasercom.io;
+using LUI.config;
+using LUI.controls;
 
 namespace LUI.tabs
 {
@@ -246,7 +246,6 @@ namespace LUI.tabs
         private void InitDataFile(int NumChannels, int NumScans, int NumTimes)
         {
             string TempFileName = Path.GetTempFileName();
-            TempFileName = TempFileName.Replace(".tmp", ".mat");
             DataFile = new MatFile(TempFileName);
             RawData = DataFile.CreateVariable<int>("rawdata", NumScans, NumChannels);
             LuiData = DataFile.CreateVariable<double>("luidata", NumTimes + 1, NumChannels + 1);
