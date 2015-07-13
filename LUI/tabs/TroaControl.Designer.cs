@@ -41,6 +41,8 @@
             this.PumpNever = new System.Windows.Forms.RadioButton();
             this.Discard = new System.Windows.Forms.CheckBox();
             this.TimeProgress = new System.Windows.Forms.TextBox();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.label2 = new System.Windows.Forms.Label();
             this.ParentPanel.SuspendLayout();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
@@ -53,15 +55,18 @@
             ((System.ComponentModel.ISupportInitialize)(this.TimesView)).BeginInit();
             this.PumpBox.Flow.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // StatusBox
             // 
+            this.StatusBox.Controls.Add(this.label2);
             this.StatusBox.Controls.Add(this.TimeProgress);
             this.StatusBox.Controls.SetChildIndex(this.ProgressLabel, 0);
             this.StatusBox.Controls.SetChildIndex(this.CameraStatus, 0);
             this.StatusBox.Controls.SetChildIndex(this.ScanProgress, 0);
             this.StatusBox.Controls.SetChildIndex(this.TimeProgress, 0);
+            this.StatusBox.Controls.SetChildIndex(this.label2, 0);
             // 
             // NScan
             // 
@@ -78,7 +83,7 @@
             this.Graph.InitialYMax = 1F;
             this.Graph.InitialYMin = -1F;
             this.Graph.ScaleHeight = 2F;
-            this.Graph.Size = new System.Drawing.Size(1176, 584);
+            this.Graph.Size = new System.Drawing.Size(1142, 583);
             this.Graph.XLeft = 1F;
             this.Graph.XRight = 1024F;
             this.Graph.YMax = 1F;
@@ -86,24 +91,18 @@
             // 
             // LeftChildArea
             // 
+            this.LeftChildArea.Controls.Add(this.panel2);
             this.LeftChildArea.Controls.Add(this.DdgConfigBox);
-            this.LeftChildArea.Controls.Add(this.SaveData);
-            this.LeftChildArea.Controls.Add(this.TimesView);
-            this.LeftChildArea.Controls.Add(this.LoadTimes);
-            this.LeftChildArea.Location = new System.Drawing.Point(0, 584);
-            this.LeftChildArea.Size = new System.Drawing.Size(1176, 237);
+            this.LeftChildArea.Location = new System.Drawing.Point(0, 583);
+            this.LeftChildArea.Size = new System.Drawing.Size(1142, 238);
             // 
             // RightChildArea
             // 
             this.RightChildArea.Controls.Add(this.PumpBox);
             // 
-            // ScanProgress
-            // 
-            this.ScanProgress.Location = new System.Drawing.Point(13, 37);
-            // 
             // LoadTimes
             // 
-            this.LoadTimes.Location = new System.Drawing.Point(959, 7);
+            this.LoadTimes.Location = new System.Drawing.Point(3, 2);
             this.LoadTimes.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.LoadTimes.Name = "LoadTimes";
             this.LoadTimes.Size = new System.Drawing.Size(136, 34);
@@ -122,7 +121,7 @@
             this.TimesView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.TimesView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Value});
-            this.TimesView.Location = new System.Drawing.Point(959, 46);
+            this.TimesView.Location = new System.Drawing.Point(3, 41);
             this.TimesView.MultiSelect = false;
             this.TimesView.Name = "TimesView";
             this.TimesView.RowHeadersVisible = false;
@@ -143,7 +142,7 @@
             // 
             // SaveData
             // 
-            this.SaveData.Location = new System.Drawing.Point(959, 201);
+            this.SaveData.Location = new System.Drawing.Point(3, 196);
             this.SaveData.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.SaveData.Name = "SaveData";
             this.SaveData.Size = new System.Drawing.Size(136, 34);
@@ -243,12 +242,34 @@
             // 
             // TimeProgress
             // 
-            this.TimeProgress.Location = new System.Drawing.Point(77, 37);
+            this.TimeProgress.Location = new System.Drawing.Point(151, 37);
             this.TimeProgress.Name = "TimeProgress";
             this.TimeProgress.ReadOnly = true;
             this.TimeProgress.Size = new System.Drawing.Size(58, 20);
             this.TimeProgress.TabIndex = 14;
             this.TimeProgress.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // panel2
+            // 
+            this.panel2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel2.AutoSize = true;
+            this.panel2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.panel2.Controls.Add(this.LoadTimes);
+            this.panel2.Controls.Add(this.TimesView);
+            this.panel2.Controls.Add(this.SaveData);
+            this.panel2.Location = new System.Drawing.Point(994, 3);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(142, 232);
+            this.panel2.TabIndex = 16;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(110, 40);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(35, 13);
+            this.label2.TabIndex = 15;
+            this.label2.Text = "Times";
             // 
             // TroaControl
             // 
@@ -275,6 +296,7 @@
             this.PumpBox.Flow.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.panel2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -293,6 +315,8 @@
         private System.Windows.Forms.RadioButton PumpNever;
         private System.Windows.Forms.CheckBox Discard;
         protected System.Windows.Forms.TextBox TimeProgress;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Label label2;
 
     }
 }

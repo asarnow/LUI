@@ -67,6 +67,7 @@
             this.CameraTemperature = new System.Windows.Forms.NumericUpDown();
             this.ScrollTip = new System.Windows.Forms.ToolTip(this.components);
             this.SaveData = new System.Windows.Forms.Button();
+            this.panel2 = new System.Windows.Forms.Panel();
             label1 = new System.Windows.Forms.Label();
             DiffSumLabel = new System.Windows.Forms.Label();
             NAverageLabel = new System.Windows.Forms.Label();
@@ -92,6 +93,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.VStart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.VBin)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.CameraTemperature)).BeginInit();
+            this.panel2.SuspendLayout();
             this.SuspendLayout();
             this.StatusBox.Controls.SetChildIndex(this.ProgressLabel, 0);
             this.StatusBox.Controls.SetChildIndex(this.CameraStatus, 0);
@@ -105,12 +107,10 @@
             // 
             // LeftChildArea
             // 
-            this.LeftChildArea.Controls.Add(this.SaveData);
+            this.LeftChildArea.Controls.Add(this.panel2);
             this.LeftChildArea.Controls.Add(this.OptionsBox);
             this.LeftChildArea.Controls.Add(this.DdgConfigBox);
             this.LeftChildArea.Controls.Add(this.groupBox1);
-            this.LeftChildArea.Controls.Add(this.SaveProfile);
-            this.LeftChildArea.Controls.Add(this.LoadProfile);
             this.LeftChildArea.Location = new System.Drawing.Point(0, 543);
             this.LeftChildArea.Size = new System.Drawing.Size(1142, 278);
             // 
@@ -233,7 +233,7 @@
             // 
             // SaveProfile
             // 
-            this.SaveProfile.Location = new System.Drawing.Point(960, 40);
+            this.SaveProfile.Location = new System.Drawing.Point(3, 40);
             this.SaveProfile.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.SaveProfile.Name = "SaveProfile";
             this.SaveProfile.Size = new System.Drawing.Size(136, 34);
@@ -311,7 +311,7 @@
             // 
             // LoadProfile
             // 
-            this.LoadProfile.Location = new System.Drawing.Point(960, 2);
+            this.LoadProfile.Location = new System.Drawing.Point(3, 2);
             this.LoadProfile.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.LoadProfile.Name = "LoadProfile";
             this.LoadProfile.Size = new System.Drawing.Size(136, 34);
@@ -536,13 +536,26 @@
             // 
             // SaveData
             // 
-            this.SaveData.Location = new System.Drawing.Point(960, 78);
+            this.SaveData.Location = new System.Drawing.Point(3, 78);
             this.SaveData.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.SaveData.Name = "SaveData";
             this.SaveData.Size = new System.Drawing.Size(136, 34);
             this.SaveData.TabIndex = 23;
             this.SaveData.Text = "Save Data";
             this.SaveData.UseVisualStyleBackColor = true;
+            // 
+            // panel2
+            // 
+            this.panel2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel2.AutoSize = true;
+            this.panel2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.panel2.Controls.Add(this.LoadProfile);
+            this.panel2.Controls.Add(this.SaveData);
+            this.panel2.Controls.Add(this.SaveProfile);
+            this.panel2.Location = new System.Drawing.Point(994, 3);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(142, 114);
+            this.panel2.TabIndex = 24;
             // 
             // ResidualsControl
             // 
@@ -577,6 +590,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.VStart)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.VBin)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.CameraTemperature)).EndInit();
+            this.panel2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -614,5 +628,6 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.NumericUpDown VEnd;
         private System.Windows.Forms.Button SaveData;
+        private System.Windows.Forms.Panel panel2;
     }
 }

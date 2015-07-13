@@ -30,6 +30,7 @@
         {
             System.Windows.Forms.Label CameraStatusLabel;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LuiTab));
+            System.Windows.Forms.Label label2;
             System.Windows.Forms.Label GainLabel;
             this.ParentPanel = new System.Windows.Forms.Panel();
             this.LeftPanel = new System.Windows.Forms.Panel();
@@ -46,9 +47,9 @@
             this.Collect = new System.Windows.Forms.Button();
             this.Abort = new System.Windows.Forms.Button();
             this.StatusBox = new System.Windows.Forms.GroupBox();
+            this.ScanProgress = new System.Windows.Forms.TextBox();
             this.CameraStatus = new System.Windows.Forms.TextBox();
             this.ProgressLabel = new System.Windows.Forms.Label();
-            this.ScanProgress = new System.Windows.Forms.TextBox();
             this.CameraBox = new LUI.controls.ObjectCommandPanel();
             this.CameraCommands = new System.Windows.Forms.Panel();
             this.CameraGain = new System.Windows.Forms.NumericUpDown();
@@ -59,6 +60,7 @@
             this.OpenLamp = new System.Windows.Forms.Button();
             this.CloseLaser = new System.Windows.Forms.Button();
             CameraStatusLabel = new System.Windows.Forms.Label();
+            label2 = new System.Windows.Forms.Label();
             GainLabel = new System.Windows.Forms.Label();
             this.ParentPanel.SuspendLayout();
             this.LeftPanel.SuspendLayout();
@@ -290,6 +292,7 @@
             // 
             this.StatusBox.AutoSize = true;
             this.StatusBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.StatusBox.Controls.Add(label2);
             this.StatusBox.Controls.Add(this.ScanProgress);
             this.StatusBox.Controls.Add(CameraStatusLabel);
             this.StatusBox.Controls.Add(this.CameraStatus);
@@ -303,6 +306,15 @@
             this.StatusBox.TabIndex = 9;
             this.StatusBox.TabStop = false;
             this.StatusBox.Text = "Status";
+            // 
+            // ScanProgress
+            // 
+            this.ScanProgress.Location = new System.Drawing.Point(46, 37);
+            this.ScanProgress.Name = "ScanProgress";
+            this.ScanProgress.ReadOnly = true;
+            this.ScanProgress.Size = new System.Drawing.Size(58, 20);
+            this.ScanProgress.TabIndex = 12;
+            this.ScanProgress.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // CameraStatus
             // 
@@ -323,14 +335,15 @@
             this.ProgressLabel.TabIndex = 7;
             this.ProgressLabel.Text = "Idle";
             // 
-            // ScanProgress
+            // label2
             // 
-            this.ScanProgress.Location = new System.Drawing.Point(6, 37);
-            this.ScanProgress.Name = "ScanProgress";
-            this.ScanProgress.ReadOnly = true;
-            this.ScanProgress.Size = new System.Drawing.Size(58, 20);
-            this.ScanProgress.TabIndex = 12;
-            this.ScanProgress.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            label2.AutoSize = true;
+            label2.Location = new System.Drawing.Point(3, 40);
+            label2.Name = "label2";
+            label2.Size = new System.Drawing.Size(37, 13);
+            label2.TabIndex = 13;
+            label2.Text = "Scans";
+            label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // CameraBox
             // 

@@ -42,14 +42,21 @@
             this.RemoveCalItem = new System.Windows.Forms.Button();
             this.FlipGraph = new System.Windows.Forms.Button();
             this.ClearBlank = new System.Windows.Forms.Button();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.ParentPanel.SuspendLayout();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NScan)).BeginInit();
             this.CommonObjectPanel.SuspendLayout();
             this.LeftChildArea.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CameraGain)).BeginInit();
+            this.LeftPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CalibrationListView)).BeginInit();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
+            this.StatusBox.Controls.SetChildIndex(this.ProgressLabel, 0);
+            this.StatusBox.Controls.SetChildIndex(this.CameraStatus, 0);
+            this.StatusBox.Controls.SetChildIndex(this.ScanProgress, 0);
             // 
             // CommandsBox
             // 
@@ -63,31 +70,24 @@
             // 
             // Graph
             // 
-            this.Graph.Size = new System.Drawing.Size(1176, 582);
+            this.Graph.Size = new System.Drawing.Size(1142, 582);
             this.Graph.XLeft = 1F;
             this.Graph.XRight = 1024F;
             // 
             // LeftChildArea
             // 
+            this.LeftChildArea.Controls.Add(this.panel1);
             this.LeftChildArea.Controls.Add(this.FlipGraph);
-            this.LeftChildArea.Controls.Add(this.RSquaredLabel);
-            this.LeftChildArea.Controls.Add(this.InterceptLabel);
-            this.LeftChildArea.Controls.Add(this.SlopeLabel);
-            this.LeftChildArea.Controls.Add(this.SaveCal);
-            this.LeftChildArea.Controls.Add(this.Slope);
-            this.LeftChildArea.Controls.Add(this.Intercept);
-            this.LeftChildArea.Controls.Add(this.RSquared);
-            this.LeftChildArea.Controls.Add(this.RunCal);
             this.LeftChildArea.Controls.Add(this.CalibrationListView);
             this.LeftChildArea.Controls.Add(this.RemoveCalItem);
             this.LeftChildArea.Location = new System.Drawing.Point(0, 582);
-            this.LeftChildArea.Size = new System.Drawing.Size(1176, 239);
+            this.LeftChildArea.Size = new System.Drawing.Size(1142, 239);
             this.LeftChildArea.TabIndex = 7;
             // 
             // RSquaredLabel
             // 
             this.RSquaredLabel.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.RSquaredLabel.Location = new System.Drawing.Point(843, 16);
+            this.RSquaredLabel.Location = new System.Drawing.Point(206, 2);
             this.RSquaredLabel.Margin = new System.Windows.Forms.Padding(4);
             this.RSquaredLabel.Name = "RSquaredLabel";
             this.RSquaredLabel.ReadOnly = true;
@@ -100,7 +100,7 @@
             // InterceptLabel
             // 
             this.InterceptLabel.AutoSize = true;
-            this.InterceptLabel.Location = new System.Drawing.Point(839, 71);
+            this.InterceptLabel.Location = new System.Drawing.Point(202, 57);
             this.InterceptLabel.Name = "InterceptLabel";
             this.InterceptLabel.Size = new System.Drawing.Size(49, 13);
             this.InterceptLabel.TabIndex = 15;
@@ -109,7 +109,7 @@
             // SlopeLabel
             // 
             this.SlopeLabel.AutoSize = true;
-            this.SlopeLabel.Location = new System.Drawing.Point(839, 44);
+            this.SlopeLabel.Location = new System.Drawing.Point(202, 30);
             this.SlopeLabel.Name = "SlopeLabel";
             this.SlopeLabel.Size = new System.Drawing.Size(34, 13);
             this.SlopeLabel.TabIndex = 14;
@@ -117,7 +117,7 @@
             // 
             // SaveCal
             // 
-            this.SaveCal.Location = new System.Drawing.Point(637, 55);
+            this.SaveCal.Location = new System.Drawing.Point(0, 41);
             this.SaveCal.Margin = new System.Windows.Forms.Padding(4);
             this.SaveCal.Name = "SaveCal";
             this.SaveCal.Size = new System.Drawing.Size(91, 34);
@@ -129,7 +129,7 @@
             // Slope
             // 
             this.Slope.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.Slope.Location = new System.Drawing.Point(735, 42);
+            this.Slope.Location = new System.Drawing.Point(98, 28);
             this.Slope.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Slope.Name = "Slope";
             this.Slope.Size = new System.Drawing.Size(101, 20);
@@ -138,7 +138,7 @@
             // Intercept
             // 
             this.Intercept.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.Intercept.Location = new System.Drawing.Point(735, 70);
+            this.Intercept.Location = new System.Drawing.Point(98, 56);
             this.Intercept.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Intercept.Name = "Intercept";
             this.Intercept.Size = new System.Drawing.Size(101, 20);
@@ -147,7 +147,7 @@
             // RSquared
             // 
             this.RSquared.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.RSquared.Location = new System.Drawing.Point(735, 14);
+            this.RSquared.Location = new System.Drawing.Point(98, 0);
             this.RSquared.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.RSquared.Name = "RSquared";
             this.RSquared.Size = new System.Drawing.Size(101, 20);
@@ -155,7 +155,7 @@
             // 
             // RunCal
             // 
-            this.RunCal.Location = new System.Drawing.Point(637, 14);
+            this.RunCal.Location = new System.Drawing.Point(0, 0);
             this.RunCal.Margin = new System.Windows.Forms.Padding(4);
             this.RunCal.Name = "RunCal";
             this.RunCal.Size = new System.Drawing.Size(91, 34);
@@ -193,7 +193,7 @@
             // 
             // RemoveCalItem
             // 
-            this.RemoveCalItem.Location = new System.Drawing.Point(341, 46);
+            this.RemoveCalItem.Location = new System.Drawing.Point(341, 45);
             this.RemoveCalItem.Margin = new System.Windows.Forms.Padding(4);
             this.RemoveCalItem.Name = "RemoveCalItem";
             this.RemoveCalItem.Size = new System.Drawing.Size(91, 34);
@@ -204,7 +204,8 @@
             // 
             // FlipGraph
             // 
-            this.FlipGraph.Location = new System.Drawing.Point(1078, 6);
+            this.FlipGraph.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.FlipGraph.Location = new System.Drawing.Point(1047, 4);
             this.FlipGraph.Margin = new System.Windows.Forms.Padding(4);
             this.FlipGraph.Name = "FlipGraph";
             this.FlipGraph.Size = new System.Drawing.Size(91, 34);
@@ -222,10 +223,29 @@
             this.ClearBlank.Text = "Clear Blank";
             this.ClearBlank.UseVisualStyleBackColor = true;
             // 
+            // panel1
+            // 
+            this.panel1.AutoSize = true;
+            this.panel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.panel1.Controls.Add(this.RunCal);
+            this.panel1.Controls.Add(this.RSquared);
+            this.panel1.Controls.Add(this.RSquaredLabel);
+            this.panel1.Controls.Add(this.Intercept);
+            this.panel1.Controls.Add(this.InterceptLabel);
+            this.panel1.Controls.Add(this.Slope);
+            this.panel1.Controls.Add(this.SlopeLabel);
+            this.panel1.Controls.Add(this.SaveCal);
+            this.panel1.Location = new System.Drawing.Point(341, 86);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(255, 79);
+            this.panel1.TabIndex = 19;
+            // 
             // CalibrateControl
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
             this.Name = "CalibrateControl";
+            this.ParentPanel.ResumeLayout(false);
+            this.ParentPanel.PerformLayout();
             this.StatusBox.ResumeLayout(false);
             this.StatusBox.PerformLayout();
             this.CommandsBox.ResumeLayout(false);
@@ -236,7 +256,11 @@
             this.LeftChildArea.ResumeLayout(false);
             this.LeftChildArea.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CameraGain)).EndInit();
+            this.LeftPanel.ResumeLayout(false);
+            this.LeftPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CalibrationListView)).EndInit();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -257,5 +281,6 @@
         private controls.DisabledRichTextBox RSquaredLabel;
         private System.Windows.Forms.Button FlipGraph;
         private System.Windows.Forms.Button ClearBlank;
+        private System.Windows.Forms.Panel panel1;
     }
 }

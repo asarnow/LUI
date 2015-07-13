@@ -37,6 +37,7 @@
             this.CountsLabel = new System.Windows.Forms.Label();
             this.CountsDisplay = new System.Windows.Forms.TextBox();
             this.ClearBlank = new System.Windows.Forms.Button();
+            this.ParentPanel.SuspendLayout();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NScan)).BeginInit();
@@ -44,9 +45,13 @@
             this.LeftChildArea.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CameraGain)).BeginInit();
             this.RightChildArea.SuspendLayout();
+            this.LeftPanel.SuspendLayout();
             this.PumpBox.Flow.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
+            this.StatusBox.Controls.SetChildIndex(this.ProgressLabel, 0);
+            this.StatusBox.Controls.SetChildIndex(this.CameraStatus, 0);
+            this.StatusBox.Controls.SetChildIndex(this.ScanProgress, 0);
             // 
             // CommandsBox
             // 
@@ -75,7 +80,8 @@
             // 
             // SaveData
             // 
-            this.SaveData.Location = new System.Drawing.Point(1037, 4);
+            this.SaveData.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.SaveData.Location = new System.Drawing.Point(1000, 4);
             this.SaveData.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.SaveData.Name = "SaveData";
             this.SaveData.Size = new System.Drawing.Size(136, 34);
@@ -186,6 +192,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Name = "SpecControl";
+            this.ParentPanel.ResumeLayout(false);
+            this.ParentPanel.PerformLayout();
             this.StatusBox.ResumeLayout(false);
             this.StatusBox.PerformLayout();
             this.CommandsBox.ResumeLayout(false);
@@ -198,6 +206,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.CameraGain)).EndInit();
             this.RightChildArea.ResumeLayout(false);
             this.RightChildArea.PerformLayout();
+            this.LeftPanel.ResumeLayout(false);
+            this.LeftPanel.PerformLayout();
             this.PumpBox.Flow.ResumeLayout(false);
             this.PumpBox.Flow.PerformLayout();
             this.panel1.ResumeLayout(false);
