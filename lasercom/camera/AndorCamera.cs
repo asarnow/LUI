@@ -381,6 +381,19 @@ namespace lasercom.camera
             }
         }
 
+        private int _SaturationLevel;
+        public int SaturationLevel
+        {
+            get
+            {
+                return _SaturationLevel;
+            }
+            set
+            {
+                _SaturationLevel = value;
+            }
+        }
+
         public AndorCamera() { }
 
         public AndorCamera(LuiObjectParameters p) : 
@@ -403,6 +416,7 @@ namespace lasercom.camera
                 AndorSdk.GetNumberADChannels(ref _NumberADChannels);
                 CurrentADChannel = DefaultADChannel;
                 AndorSdk.GetBitDepth(CurrentADChannel, ref _BitDepth);
+                SaturationLevel = (int)Math.Pow(2, BitDepth) - 1;
 
                 _Image = new ImageArea(1, 1, 0, (int)Width, 0, (int)Height);
                 Image = p.Image;
@@ -529,10 +543,9 @@ namespace lasercom.camera
 
         protected void ThrowIfSaturated(int[] data)
         {
-            var limit = Math.Pow(2, BitDepth) - 1;
             for (int i = 0; i < data.Length; i++)
             {
-                if (data[i] >= limit)
+                if (data[i] >= SaturationLevel)
                 {
                     var ex = new InvalidOperationException("Sensor saturation detected.");
                     ex.Data["Pixel"] = i;
