@@ -1,16 +1,16 @@
-﻿using lasercom;
-using lasercom.camera;
-using lasercom.ddg;
-using lasercom.io;
-using LUI.config;
-using LUI.controls;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
+using lasercom;
+using lasercom.camera;
+using lasercom.ddg;
+using lasercom.io;
+using LUI.config;
+using LUI.controls;
 
 namespace LUI.tabs
 {
@@ -22,7 +22,10 @@ namespace LUI.tabs
         private double[] Light = null;
         private double[] LastLight = null;
         private double[] CumulativeLight = null;
-        
+
+        int LastAcqWidth;
+        int LastVBin;
+
         private double[] _DiffLight = null;
         private double[] DiffLight
         {
@@ -54,9 +57,6 @@ namespace LUI.tabs
         int UpperBound { get; set; }
 
         int SelectedRow { get; set; }
-
-        int LastAcqWidth;
-        int LastVBin;
 
         public enum Dialog
         {
@@ -140,6 +140,25 @@ namespace LUI.tabs
             DdgConfigBox.AllowZero = true;
             DdgConfigBox.Enabled = false;
             DdgConfigBox.HandleParametersChanged(this, EventArgs.Empty);
+        }
+
+        /// <summary> 
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (DataFile != null)
+                {
+                    var FileName = DataFile.FileName;
+                    DataFile.Dispose();
+                    if (File.Exists(FileName)) File.Delete(FileName);
+                }
+                if (components != null) components.Dispose();
+            }
+            base.Dispose(disposing);
         }
 
         protected override void OnLoad(EventArgs e)
@@ -826,8 +845,18 @@ namespace LUI.tabs
         /// <param name="NumTimes"></param>
         void InitDataFile(int NumChannels, int NumScans)
         {
-            string TempFileName = Path.GetTempFileName();
-            TempFileName = TempFileName.Replace(".tmp", ".mat");
+            string TempFileName;
+            if (DataFile != null)
+            {
+                if (!DataFile.Closed) DataFile.Close();
+                File.Delete(DataFile.FileName);
+                TempFileName = DataFile.FileName;
+            }
+            else
+            {
+                TempFileName = Path.GetTempFileName();
+                TempFileName = TempFileName.Replace(".tmp", ".mat");
+            }
             DataFile = new MatFile(TempFileName);
             RawData = DataFile.CreateVariable<int>("rawdata", NumScans, NumChannels);
         }
