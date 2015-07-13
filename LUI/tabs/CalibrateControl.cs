@@ -478,7 +478,7 @@ namespace LUI.tabs
         {
             SaveFileDialog saveFile = new SaveFileDialog();
             saveFile.Filter = "CAL File|*.cal|All Files|*.*";
-            saveFile.Title = "Save Calibration Data";
+            saveFile.Title = "Save As";
             saveFile.ShowDialog();
 
             if (saveFile.FileName == "") return;

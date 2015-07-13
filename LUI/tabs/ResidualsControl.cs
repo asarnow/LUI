@@ -16,6 +16,8 @@ namespace LUI.tabs
 {
     public partial class ResidualsControl : LuiTab
     {
+        MatVar<int> RawData;
+        MatFile DataFile;
         CancellationTokenSource TemperatureCts = null;
         private double[] Light = null;
         private double[] LastLight = null;
@@ -108,6 +110,9 @@ namespace LUI.tabs
         {
             InitializeComponent();
             Graph.YLabelFormat = "g";
+
+            SaveData.Click += SaveData_Click;
+            SaveData.Enabled = false;
 
             CollectLaser.CheckedChanged += CollectLaser_CheckedChanged;
             ImageMode.CheckedChanged += ImageMode_CheckedChanged;
@@ -248,6 +253,7 @@ namespace LUI.tabs
             base.OnTaskFinished(e);
             DdgConfigBox.Enabled = CollectLaser.Checked;
             OptionsBox.Enabled = CameraExtras.Enabled = true;
+            SaveData.Enabled = true;
         }
 
         /// <summary>
@@ -286,6 +292,8 @@ namespace LUI.tabs
             int[] BinnedDataBuffer = new int[finalSize];
             int[] CumulativeDataBuffer = new int[finalSize];
 
+            InitDataFile(finalSize, args.NScans);
+
             if (args.CollectLaser)
             {
                 Commander.BeamFlag.OpenLaserAndFlash();
@@ -298,6 +306,7 @@ namespace LUI.tabs
             for (int i = 0; i < args.NScans; i++)
             {
                 TryAcquire(DataBuffer);
+                RawData.WriteNext(DataBuffer, 0);
 
                 int sum = 0;
                 int peak = int.MinValue;
@@ -419,6 +428,9 @@ namespace LUI.tabs
                 CumulativeLight = (double[])e.Result;
                 DisplayComplete();
             }
+
+            if (DataFile != null) DataFile.Close();
+
             OnTaskFinished(EventArgs.Empty);
         }
 
@@ -624,7 +636,7 @@ namespace LUI.tabs
         {
             SaveFileDialog saveFile = new SaveFileDialog();
             saveFile.Filter = "ALN File|*.aln|MAT File|*.mat|All Files|*.*";
-            saveFile.Title = "Save Light Profile";
+            saveFile.Title = "Save As";
             saveFile.ShowDialog();
 
             if (saveFile.FileName == "") return;
@@ -804,6 +816,61 @@ namespace LUI.tabs
         {
             if (ImageMode.Checked)
                 Commander.Camera.ReadMode = AndorCamera.ReadModeImage;
+        }
+
+        /// <summary>
+        /// Create temporary MAT file and initialize variables.
+        /// </summary>
+        /// <param name="NumChannels"></param>
+        /// <param name="NumScans"></param>
+        /// <param name="NumTimes"></param>
+        void InitDataFile(int NumChannels, int NumScans)
+        {
+            string TempFileName = Path.GetTempFileName();
+            TempFileName = TempFileName.Replace(".tmp", ".mat");
+            DataFile = new MatFile(TempFileName);
+            RawData = DataFile.CreateVariable<int>("rawdata", NumScans, NumChannels);
+        }
+
+        private void SaveData_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveFile = new SaveFileDialog();
+            saveFile.Filter = "MAT File|*.mat|CSV File|*.csv";
+            saveFile.Title = "Save As";
+            saveFile.ShowDialog();
+
+            if (saveFile.FileName == "") return;
+
+            switch (saveFile.FilterIndex)
+            {
+                case 1: // MAT file; just move temporary MAT file.
+                    if (DataFile != null && !DataFile.Closed) DataFile.Close();
+                    try
+                    {
+                        File.Copy(DataFile.FileName, saveFile.FileName);
+                    }
+                    catch (IOException ex)
+                    {
+                        Log.Error(ex);
+                        MessageBox.Show(ex.Message);
+                    }
+                    break;
+                case 2: // CSV file; copy data to CSV file.
+                    if (DataFile != null)
+                    {
+                        if (DataFile.Closed) DataFile.Reopen();
+
+                        if (!RawData.Closed)
+                        {
+                            int[,] Matrix = new int[RawData.Dims[0], RawData.Dims[1]];
+                            RawData.Read(Matrix, new long[] { 0, 0 }, RawData.Dims);
+                            FileIO.WriteMatrix(saveFile.FileName, Matrix);
+                        }
+
+                        DataFile.Close();
+                    }
+                    break;
+            }
         }
     }
 }

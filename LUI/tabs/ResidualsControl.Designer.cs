@@ -57,6 +57,8 @@
             this.ImageMode = new System.Windows.Forms.RadioButton();
             this.FvbMode = new System.Windows.Forms.RadioButton();
             this.CameraExtras = new System.Windows.Forms.GroupBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.VEnd = new System.Windows.Forms.NumericUpDown();
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.VStart = new System.Windows.Forms.NumericUpDown();
@@ -64,8 +66,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.CameraTemperature = new System.Windows.Forms.NumericUpDown();
             this.ScrollTip = new System.Windows.Forms.ToolTip(this.components);
-            this.label7 = new System.Windows.Forms.Label();
-            this.VEnd = new System.Windows.Forms.NumericUpDown();
+            this.SaveData = new System.Windows.Forms.Button();
             label1 = new System.Windows.Forms.Label();
             DiffSumLabel = new System.Windows.Forms.Label();
             NAverageLabel = new System.Windows.Forms.Label();
@@ -87,27 +88,31 @@
             this.OptionsBox.SuspendLayout();
             this.panel1.SuspendLayout();
             this.CameraExtras.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.VEnd)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.VStart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.VBin)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.CameraTemperature)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.VEnd)).BeginInit();
             this.SuspendLayout();
+            this.StatusBox.Controls.SetChildIndex(this.ProgressLabel, 0);
+            this.StatusBox.Controls.SetChildIndex(this.CameraStatus, 0);
+            this.StatusBox.Controls.SetChildIndex(this.ScanProgress, 0);
             // 
             // Graph
             // 
-            this.Graph.Size = new System.Drawing.Size(1159, 543);
+            this.Graph.Size = new System.Drawing.Size(1125, 543);
             this.Graph.XLeft = 1F;
             this.Graph.XRight = 1024F;
             // 
             // LeftChildArea
             // 
+            this.LeftChildArea.Controls.Add(this.SaveData);
             this.LeftChildArea.Controls.Add(this.OptionsBox);
             this.LeftChildArea.Controls.Add(this.DdgConfigBox);
             this.LeftChildArea.Controls.Add(this.groupBox1);
             this.LeftChildArea.Controls.Add(this.SaveProfile);
             this.LeftChildArea.Controls.Add(this.LoadProfile);
             this.LeftChildArea.Location = new System.Drawing.Point(0, 543);
-            this.LeftChildArea.Size = new System.Drawing.Size(1176, 278);
+            this.LeftChildArea.Size = new System.Drawing.Size(1142, 278);
             // 
             // RightChildArea
             // 
@@ -228,7 +233,7 @@
             // 
             // SaveProfile
             // 
-            this.SaveProfile.Location = new System.Drawing.Point(960, 42);
+            this.SaveProfile.Location = new System.Drawing.Point(960, 40);
             this.SaveProfile.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.SaveProfile.Name = "SaveProfile";
             this.SaveProfile.Size = new System.Drawing.Size(136, 34);
@@ -387,7 +392,7 @@
             // GraphScroll
             // 
             this.GraphScroll.Dock = System.Windows.Forms.DockStyle.Right;
-            this.GraphScroll.Location = new System.Drawing.Point(1159, 0);
+            this.GraphScroll.Location = new System.Drawing.Point(1125, 0);
             this.GraphScroll.Name = "GraphScroll";
             this.GraphScroll.Size = new System.Drawing.Size(17, 543);
             this.GraphScroll.TabIndex = 14;
@@ -458,6 +463,22 @@
             this.CameraExtras.TabStop = false;
             this.CameraExtras.Text = "Additional Camera Options";
             // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(127, 76);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(55, 13);
+            this.label7.TabIndex = 31;
+            this.label7.Text = "Last Row:";
+            // 
+            // VEnd
+            // 
+            this.VEnd.Location = new System.Drawing.Point(188, 74);
+            this.VEnd.Name = "VEnd";
+            this.VEnd.Size = new System.Drawing.Size(54, 20);
+            this.VEnd.TabIndex = 30;
+            // 
             // label6
             // 
             this.label6.AutoSize = true;
@@ -513,21 +534,15 @@
             this.ScrollTip.ReshowDelay = 100;
             this.ScrollTip.ShowAlways = true;
             // 
-            // label7
+            // SaveData
             // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(127, 76);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(55, 13);
-            this.label7.TabIndex = 31;
-            this.label7.Text = "Last Row:";
-            // 
-            // VEnd
-            // 
-            this.VEnd.Location = new System.Drawing.Point(188, 74);
-            this.VEnd.Name = "VEnd";
-            this.VEnd.Size = new System.Drawing.Size(54, 20);
-            this.VEnd.TabIndex = 30;
+            this.SaveData.Location = new System.Drawing.Point(960, 78);
+            this.SaveData.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.SaveData.Name = "SaveData";
+            this.SaveData.Size = new System.Drawing.Size(136, 34);
+            this.SaveData.TabIndex = 23;
+            this.SaveData.Text = "Save Data";
+            this.SaveData.UseVisualStyleBackColor = true;
             // 
             // ResidualsControl
             // 
@@ -558,10 +573,10 @@
             this.panel1.PerformLayout();
             this.CameraExtras.ResumeLayout(false);
             this.CameraExtras.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.VEnd)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.VStart)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.VBin)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.CameraTemperature)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.VEnd)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -598,5 +613,6 @@
         private System.Windows.Forms.NumericUpDown VBin;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.NumericUpDown VEnd;
+        private System.Windows.Forms.Button SaveData;
     }
 }
