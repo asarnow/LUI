@@ -37,6 +37,7 @@
             this.CountsLabel = new System.Windows.Forms.Label();
             this.CountsDisplay = new System.Windows.Forms.TextBox();
             this.ClearBlank = new System.Windows.Forms.Button();
+            this.CurvesView = new LUI.controls.PlotCurveListView();
             this.ParentPanel.SuspendLayout();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
@@ -65,14 +66,18 @@
             // 
             // Graph
             // 
+            this.Graph.Size = new System.Drawing.Size(1176, 663);
             this.Graph.XLeft = 1F;
             this.Graph.XRight = 1024F;
             // 
             // LeftChildArea
             // 
+            this.LeftChildArea.Controls.Add(this.CurvesView);
             this.LeftChildArea.Controls.Add(this.CountsLabel);
             this.LeftChildArea.Controls.Add(this.CountsDisplay);
             this.LeftChildArea.Controls.Add(this.SaveData);
+            this.LeftChildArea.Location = new System.Drawing.Point(0, 663);
+            this.LeftChildArea.Size = new System.Drawing.Size(1176, 158);
             // 
             // RightChildArea
             // 
@@ -81,7 +86,7 @@
             // SaveData
             // 
             this.SaveData.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.SaveData.Location = new System.Drawing.Point(1000, 4);
+            this.SaveData.Location = new System.Drawing.Point(1034, 4);
             this.SaveData.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.SaveData.Name = "SaveData";
             this.SaveData.Size = new System.Drawing.Size(136, 34);
@@ -160,7 +165,7 @@
             // CountsLabel
             // 
             this.CountsLabel.AutoSize = true;
-            this.CountsLabel.Location = new System.Drawing.Point(144, 9);
+            this.CountsLabel.Location = new System.Drawing.Point(438, 9);
             this.CountsLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.CountsLabel.Name = "CountsLabel";
             this.CountsLabel.Size = new System.Drawing.Size(76, 13);
@@ -169,7 +174,7 @@
             // 
             // CountsDisplay
             // 
-            this.CountsDisplay.Location = new System.Drawing.Point(4, 6);
+            this.CountsDisplay.Location = new System.Drawing.Point(298, 6);
             this.CountsDisplay.Margin = new System.Windows.Forms.Padding(4);
             this.CountsDisplay.Name = "CountsDisplay";
             this.CountsDisplay.ReadOnly = true;
@@ -186,6 +191,13 @@
             this.ClearBlank.TabIndex = 6;
             this.ClearBlank.Text = "Clear Blank";
             this.ClearBlank.UseVisualStyleBackColor = true;
+            // 
+            // CurvesView
+            // 
+            this.CurvesView.Location = new System.Drawing.Point(3, 5);
+            this.CurvesView.Name = "CurvesView";
+            this.CurvesView.Size = new System.Drawing.Size(288, 150);
+            this.CurvesView.TabIndex = 16;
             // 
             // SpecControl
             // 
@@ -227,5 +239,6 @@
         private System.Windows.Forms.Label CountsLabel;
         private System.Windows.Forms.TextBox CountsDisplay;
         private System.Windows.Forms.Button ClearBlank;
+        private controls.PlotCurveListView CurvesView;
     }
 }

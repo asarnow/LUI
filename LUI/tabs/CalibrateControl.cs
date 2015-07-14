@@ -1,11 +1,4 @@
-﻿using Extensions;
-using lasercom;
-using lasercom.camera;
-using lasercom.io;
-using lasercom.objects;
-using LUI.config;
-using LUI.controls;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
@@ -13,6 +6,13 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
+using Extensions;
+using lasercom;
+using lasercom.camera;
+using lasercom.io;
+using lasercom.objects;
+using LUI.config;
+using LUI.controls;
 
 namespace LUI.tabs
 {
@@ -179,12 +179,16 @@ namespace LUI.tabs
         {
             base.OnTaskStarted(e);
             ClearBlank.Enabled = false;
+            FlipGraph.Enabled = RemoveCalItem.Enabled = RunCal.Enabled = SaveCal.Enabled = false;
+            CalibrationListView.Enabled = false;
         }
 
         public override void OnTaskFinished(EventArgs e)
         {
             base.OnTaskFinished(e);
             ClearBlank.Enabled = true;
+            FlipGraph.Enabled = RemoveCalItem.Enabled = RunCal.Enabled = SaveCal.Enabled = true;
+            CalibrationListView.Enabled = true;
         }
 
         protected override void DoWork(object sender, DoWorkEventArgs e)
@@ -320,7 +324,7 @@ namespace LUI.tabs
             OnTaskFinished(EventArgs.Empty);
         }
 
-        protected override void  Graph_Click(object sender, MouseEventArgs e)
+        protected override void Graph_Click(object sender, MouseEventArgs e)
         {
             SelectedChannel = Ascending ?
                 (int)Math.Round(Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y))).X * (Commander.Camera.Width - 1))
@@ -479,9 +483,12 @@ namespace LUI.tabs
             SaveFileDialog saveFile = new SaveFileDialog();
             saveFile.Filter = "CAL File|*.cal|All Files|*.*";
             saveFile.Title = "Save As";
-            saveFile.ShowDialog();
+            saveFile.OverwritePrompt = true;
+            var result = saveFile.ShowDialog();
 
-            if (saveFile.FileName == "") return;
+            if (result != DialogResult.OK || saveFile.FileName == "") return;
+
+            if (File.Exists(saveFile.FileName)) File.Delete(saveFile.FileName);
 
             switch (saveFile.FilterIndex)
             {
@@ -502,7 +509,7 @@ namespace LUI.tabs
                     {
                         MatFile mat = new MatFile(saveFile.FileName);
                         MatVar<double> V = mat.CreateVariable<double>("cal", Commander.Camera.Calibration.Length, 1);
-                        V.WriteNext(Commander.Camera.Calibration,1);
+                        V.WriteNext(Commander.Camera.Calibration, 1);
                         mat.Dispose();
                     }
                     catch (IOException ex)

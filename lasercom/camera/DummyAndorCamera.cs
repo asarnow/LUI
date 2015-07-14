@@ -2,11 +2,11 @@
 #if x64
 using ATMCD64CS;
 #else
-using ATMCD32CS;
-using lasercom.objects;
 using System;
 using System.Diagnostics;
 using System.Linq;
+using ATMCD32CS;
+using lasercom.objects;
 
 
 #endif
@@ -248,48 +248,29 @@ namespace lasercom.camera
                 frame++;
             }
             caller = (new StackFrame(frame, true)).GetMethod().Name;
-            if (caller == "DoAcq") frame++;
+            while (caller == "DoAcq" || caller == "TryAcquire") caller = (new StackFrame(++frame, true)).GetMethod().Name;
             caller = (new StackFrame(frame, true)).GetFileName();
             int line = (new StackFrame(frame,true)).GetFileLineNumber();
             int[] data = null;
-            if (caller.Contains("TroaControl"))
+            if (caller.Contains("SpecControl"))
             {
-                if (line < 605) // Dark.
-                {
-                    data = Dark(1000);
-                }
-                else if (line < 615 || line > 625) // Ground.
-                {
-                    data = Blank(55000);
-                    Data.Dissipate(data, SampleData(0.3333, 32000));
-                    for (int i = 0; i < data.Length; i++) data[i] += 1000;
-                }
-                else if (line < 625) // Excited.
-                {
-                    data = Blank(55000);
-                    Data.Dissipate(data, SampleData(0.6667, 32000));
-                    for (int i = 0; i < data.Length; i++) data[i] += 1000;
-                }
+                data = Spec(line);
+            }
+            else if (caller.Contains("TroaControl"))
+            {
+                data = Troa(line);
             }
             else if (caller.Contains("CalibrateControl"))
             {
-                if (line < 210) // Dark.
-                {
-                    data = Dark(1000);
-                }
-                else if (line < 230) // Blank.
-                {
-                    data = Blank(55000);
-                }
-                else // Sample.
-                {
-                    data = Blank(55000);
-                    Data.Dissipate(data, SampleData(0.5, 32000));
-                }
+                data = Calibrate(line);
             }
             else if (caller.Contains("ResidualsControl"))
             {
-                data = Blank(55000);
+                data = Residuals(line);
+            }
+            else if (caller.Contains("LaserPowerControl"))
+            {
+                data = LaserPower(line);
             }
 
             if (data != null) data.CopyTo(DataBuffer, 0);
@@ -370,6 +351,94 @@ namespace lasercom.camera
                 {
                     data[i * Image.Width + j] = row[j];
                 }
+            }
+            return data;
+        }
+
+        int[] Spec(int line)
+        {
+            int[] data = null;
+            if (line == 161) // Dark.
+            {
+                data = Dark(1000);
+            }
+            else if (line == 177) // Blank.
+            {
+                data = Blank(55000);
+            }
+            else if (line == 205) // Excited.
+            {
+                data = Blank(55000);
+                Data.Dissipate(data, SampleData(0.5, 32000));
+                for (int i = 0; i < data.Length; i++) data[i] += 1000;
+            }
+            return data;
+        }
+
+        int[] Troa(int line)
+        {
+            int[] data = null;
+            if (line == 600) // Dark.
+            {
+                data = Dark(1000);
+            }
+            else if (line == 609 || line == 626 || line == 631) // Ground.
+            {
+                data = Blank(55000);
+                Data.Dissipate(data, SampleData(0.3333, 32000));
+                for (int i = 0; i < data.Length; i++) data[i] += 1000;
+            }
+            else // Excited.
+            {
+                data = Blank(55000);
+                Data.Dissipate(data, SampleData(0.6667, 32000));
+                for (int i = 0; i < data.Length; i++) data[i] += 1000;
+            }
+            return data;
+        }
+
+        int[] Calibrate(int line)
+        {
+            int[] data = null;
+            if (line == 207) // Dark.
+            {
+                data = Dark(1000);
+            }
+            else if (line == 223) // Blank.
+            {
+                data = Blank(55000);
+            }
+            else // Sample.
+            {
+                data = Blank(55000);
+                Data.Dissipate(data, SampleData(0.5, 32000));
+            }
+            return data;
+        }
+
+        int[] Residuals(int line)
+        {
+            return Blank(55000);
+        }
+
+        int[] LaserPower(int line)
+        {
+            int[] data = null;
+            if (line == 132) // Dark.
+            {
+                data = Dark(1000);
+            }
+            else if (line == 154) // Ground.
+            {
+                data = Blank(55000);
+                Data.Dissipate(data, SampleData(0.3333, 32000));
+                for (int i = 0; i < data.Length; i++) data[i] += 1000;
+            }
+            else // Excited.
+            {
+                data = Blank(55000);
+                Data.Dissipate(data, SampleData(0.6667, 32000));
+                for (int i = 0; i < data.Length; i++) data[i] += 1000;
             }
             return data;
         }

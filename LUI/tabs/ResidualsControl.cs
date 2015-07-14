@@ -265,6 +265,7 @@ namespace LUI.tabs
             base.OnTaskStarted(e);
             DdgConfigBox.Enabled = false;
             OptionsBox.Enabled = CameraExtras.Enabled = false;
+            LoadProfile.Enabled = SaveProfile.Enabled = SaveData.Enabled = false;
         }
 
         public override void OnTaskFinished(EventArgs e)
@@ -272,7 +273,7 @@ namespace LUI.tabs
             base.OnTaskFinished(e);
             DdgConfigBox.Enabled = CollectLaser.Checked;
             OptionsBox.Enabled = CameraExtras.Enabled = true;
-            SaveData.Enabled = true;
+            LoadProfile.Enabled = SaveProfile.Enabled = SaveData.Enabled = true;
         }
 
         /// <summary>
@@ -656,9 +657,12 @@ namespace LUI.tabs
             SaveFileDialog saveFile = new SaveFileDialog();
             saveFile.Filter = "ALN File|*.aln|MAT File|*.mat|All Files|*.*";
             saveFile.Title = "Save As";
-            saveFile.ShowDialog();
+            
+            var result = saveFile.ShowDialog();
 
-            if (saveFile.FileName == "") return;
+            if (result != DialogResult.OK || saveFile.FileName == "") return;
+
+            if (File.Exists(saveFile.FileName)) File.Delete(saveFile.FileName);
 
             switch (saveFile.FilterIndex)
             {
@@ -865,9 +869,11 @@ namespace LUI.tabs
             SaveFileDialog saveFile = new SaveFileDialog();
             saveFile.Filter = "MAT File|*.mat|CSV File|*.csv";
             saveFile.Title = "Save As";
-            saveFile.ShowDialog();
+            var result = saveFile.ShowDialog();
 
-            if (saveFile.FileName == "") return;
+            if (result != DialogResult.OK || saveFile.FileName == "") return;
+
+            if (File.Exists(saveFile.FileName)) File.Delete(saveFile.FileName);
 
             switch (saveFile.FilterIndex)
             {
@@ -892,6 +898,7 @@ namespace LUI.tabs
                         {
                             int[,] Matrix = new int[RawData.Dims[0], RawData.Dims[1]];
                             RawData.Read(Matrix, new long[] { 0, 0 }, RawData.Dims);
+                            Matrix = Data.Transpose(Matrix);
                             FileIO.WriteMatrix(saveFile.FileName, Matrix);
                         }
 

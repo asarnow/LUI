@@ -140,6 +140,15 @@ namespace lasercom
             }
         }
 
+        public static T[,] Transpose<T>(T[,] Matrix)
+        {
+            T[,] TransposedMatrix = new T[Matrix.GetLength(1), Matrix.GetLength(0)];
+            for (int i = 0; i < Matrix.GetLength(0); i++)
+                for (int j = 0; j < Matrix.GetLength(1); j++)
+                    TransposedMatrix[j, i] = Matrix[i, j];
+            return TransposedMatrix;
+        }
+
         /// <summary>
         /// Computes OD from Sample and Blank counts, subtracting Dark counts from both.
         /// </summary>

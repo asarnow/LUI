@@ -114,7 +114,6 @@ namespace lasercom.io
             header[127] = Encoding.ASCII.GetBytes("M")[0];
 
             string tempfile = Path.GetTempFileName();
-
             using (var newFile = new FileStream(tempfile, FileMode.OpenOrCreate, FileAccess.Write))
             {
                 newFile.Write(header, 0, header.Length);
@@ -125,7 +124,7 @@ namespace lasercom.io
                 }
             }
             File.Copy(tempfile, filename, true);
-
+            File.Delete(tempfile);
             PrependOnClose = false;
         }
 

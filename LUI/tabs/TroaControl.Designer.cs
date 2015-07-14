@@ -31,7 +31,6 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.LoadTimes = new System.Windows.Forms.Button();
             this.TimesView = new System.Windows.Forms.DataGridView();
-            this.Value = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.SaveData = new System.Windows.Forms.Button();
             this.DdgConfigBox = new LUI.controls.DdgCommandPanel();
             this.PumpBox = new LUI.controls.ObjectCommandPanel();
@@ -43,6 +42,7 @@
             this.TimeProgress = new System.Windows.Forms.TextBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.label2 = new System.Windows.Forms.Label();
+            this.Value = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ParentPanel.SuspendLayout();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
@@ -83,7 +83,7 @@
             this.Graph.InitialYMax = 1F;
             this.Graph.InitialYMin = -1F;
             this.Graph.ScaleHeight = 2F;
-            this.Graph.Size = new System.Drawing.Size(1142, 583);
+            this.Graph.Size = new System.Drawing.Size(1176, 583);
             this.Graph.XLeft = 1F;
             this.Graph.XRight = 1024F;
             this.Graph.YMax = 1F;
@@ -94,7 +94,7 @@
             this.LeftChildArea.Controls.Add(this.panel2);
             this.LeftChildArea.Controls.Add(this.DdgConfigBox);
             this.LeftChildArea.Location = new System.Drawing.Point(0, 583);
-            this.LeftChildArea.Size = new System.Drawing.Size(1142, 238);
+            this.LeftChildArea.Size = new System.Drawing.Size(1176, 238);
             // 
             // RightChildArea
             // 
@@ -113,6 +113,8 @@
             // 
             // TimesView
             // 
+            this.TimesView.AllowUserToAddRows = false;
+            this.TimesView.AllowUserToDeleteRows = false;
             this.TimesView.AllowUserToOrderColumns = true;
             this.TimesView.AllowUserToResizeColumns = false;
             this.TimesView.AllowUserToResizeRows = false;
@@ -130,15 +132,6 @@
             this.TimesView.ShowEditingIcon = false;
             this.TimesView.Size = new System.Drawing.Size(136, 150);
             this.TimesView.TabIndex = 11;
-            // 
-            // Value
-            // 
-            this.Value.DataPropertyName = "Value";
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Value.DefaultCellStyle = dataGridViewCellStyle1;
-            this.Value.HeaderText = "Delay (s)";
-            this.Value.Name = "Value";
-            this.Value.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // SaveData
             // 
@@ -257,7 +250,7 @@
             this.panel2.Controls.Add(this.LoadTimes);
             this.panel2.Controls.Add(this.TimesView);
             this.panel2.Controls.Add(this.SaveData);
-            this.panel2.Location = new System.Drawing.Point(994, 3);
+            this.panel2.Location = new System.Drawing.Point(1028, 3);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(142, 232);
             this.panel2.TabIndex = 16;
@@ -270,6 +263,16 @@
             this.label2.Size = new System.Drawing.Size(35, 13);
             this.label2.TabIndex = 15;
             this.label2.Text = "Times";
+            // 
+            // Value
+            // 
+            this.Value.DataPropertyName = "Value";
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Value.DefaultCellStyle = dataGridViewCellStyle1;
+            this.Value.HeaderText = "Delay (s)";
+            this.Value.Name = "Value";
+            this.Value.ReadOnly = true;
+            this.Value.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // TroaControl
             // 
@@ -306,7 +309,6 @@
         private System.Windows.Forms.Button LoadTimes;
         private System.Windows.Forms.DataGridView TimesView;
         private System.Windows.Forms.Button SaveData;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Value;
         private controls.DdgCommandPanel DdgConfigBox;
         private controls.ObjectCommandPanel PumpBox;
         private System.Windows.Forms.Panel panel1;
@@ -317,6 +319,7 @@
         protected System.Windows.Forms.TextBox TimeProgress;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Value;
 
     }
 }

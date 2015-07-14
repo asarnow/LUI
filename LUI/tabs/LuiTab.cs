@@ -1,15 +1,15 @@
-﻿using Extensions;
+﻿using System;
+using System.ComponentModel;
+using System.Threading;
+using System.Windows.Forms;
+using System.Windows.Threading;
+using Extensions;
 using lasercom;
 using lasercom.camera;
 using lasercom.control;
 using lasercom.objects;
 using log4net;
 using LUI.config;
-using System;
-using System.ComponentModel;
-using System.Threading;
-using System.Windows.Forms;
-using System.Windows.Threading;
 
 namespace LUI.tabs
 {
@@ -346,7 +346,9 @@ namespace LUI.tabs
 
         public virtual void OnTaskStarted(EventArgs e)
         {
-            Collect.Enabled = NScan.Enabled = CameraGain.Enabled = false;
+            Collect.Enabled = NScan.Enabled = false;
+            CameraBox.Enabled = false;
+            BeamFlagBox.Objects.Enabled = false;
             Abort.Enabled = Pause.Enabled = true;
             Paused.Set(); // Set running/resumed.
             TaskStarted.Raise(this, e);
@@ -354,7 +356,9 @@ namespace LUI.tabs
 
         public virtual void OnTaskFinished(EventArgs e)
         {
-            Collect.Enabled = NScan.Enabled = CameraGain.Enabled = true;
+            Collect.Enabled = NScan.Enabled = true;
+            CameraBox.Enabled = true;
+            BeamFlagBox.Objects.Enabled = true;
             Abort.Enabled = Pause.Enabled = false;
             TaskFinished.Raise(this, e);
         }

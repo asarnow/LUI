@@ -1,24 +1,21 @@
-﻿using lasercom;
-using lasercom.camera;
-using lasercom.control;
-using lasercom.io;
-using LUI.config;
-using LUI.controls;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using CsvHelper;
+using lasercom;
+using lasercom.camera;
+using lasercom.control;
+using lasercom.io;
+using LUI.config;
+using LUI.controls;
 
 namespace LUI.tabs
 {
     public partial class SpecControl : LuiTab
     {
-
-        MatFile DataFile;
-        MatVar<int> RawData;
-
         double[] OD = null;
         int[] BlankBuffer = null;
 
@@ -63,6 +60,8 @@ namespace LUI.tabs
         public SpecControl(LuiConfig Config) : base(Config)
         {
             InitializeComponent();
+
+            CurvesView.Graph = Graph;
 
             SaveData.Click += (sender, e) => SaveOutput();
             SaveData.Enabled = false;
@@ -110,12 +109,16 @@ namespace LUI.tabs
         {
             base.OnTaskStarted(e);
             ClearBlank.Enabled = false;
+            PumpBox.Enabled = false;
+            SaveData.Enabled = false;
         }
 
         public override void OnTaskFinished(EventArgs e)
         {
             base.OnTaskFinished(e);
             ClearBlank.Enabled = true;
+            PumpBox.Enabled = true;
+            SaveData.Enabled = true;
         }
 
         protected override void Collect_Click(object sender, EventArgs e)
@@ -256,6 +259,7 @@ namespace LUI.tabs
             if (!e.Cancelled)
             {
                 OD = (double[])e.Result;
+                CurvesView.Add(OD);
                 for (int i = 0; i < OD.Length; i++) if (Double.IsNaN(OD[i]) || Double.IsInfinity(OD[i])) OD[i] = 0;
                 Graph.DrawPoints(Commander.Camera.Calibration, OD);
                 Graph.Invalidate();
@@ -293,6 +297,37 @@ namespace LUI.tabs
             ClearBlank.Enabled = false;
         }
 
+        void ExportCurvesToMat(string FileName)
+        {
+            MatFile DataFile = new MatFile(FileName);
+            foreach (string CurveName in CurvesView.SaveCurveNames)
+            {
+                var curve = CurvesView.FindCurveByName(CurveName);
+                var V = DataFile.CreateVariable<double>(CurveName, 1, curve.Length);
+                V.WriteNext(curve, 0);
+            }
+            DataFile.Dispose();
+        }
+
+        void ExportCurvesToCsv(string FileName)
+        {
+            TextWriter writer = new StreamWriter(FileName);
+            CsvWriter csv = new CsvWriter(writer);
+            var headers = CurvesView.SaveCurveNames.ToList();
+            var curves = CurvesView.SaveCurves.ToList();
+            foreach(string header in headers) csv.WriteField(header);
+            csv.NextRecord();
+            for (int i = 0; i < curves[0].Count; i++)
+            {
+                for (int j = 0; j < curves.Count; j++)
+                {
+                    csv.WriteField(curves[j][i]);
+                }
+                csv.NextRecord();
+            }
+            writer.Close();
+        }
+
         private void SaveOutput()
         {
             if (OD == null || OD.Length == 0)
@@ -302,47 +337,21 @@ namespace LUI.tabs
             }
 
             SaveFileDialog saveFile = new SaveFileDialog();
-            //saveFile.Filter = "MAT File|*.mat|CSV File|*.csv";
-            saveFile.Filter = "CSV File|*.csv";
+            saveFile.Filter = "MAT File|*.mat|CSV File|*.csv";
             saveFile.Title = "Save As";
-            saveFile.ShowDialog();
+            var result = saveFile.ShowDialog();
 
-            if (saveFile.FileName == "") return;
+            if (result != DialogResult.OK || saveFile.FileName == "") return;
+
+            if (File.Exists(saveFile.FileName)) File.Delete(saveFile.FileName);
 
             switch (saveFile.FilterIndex)
             {
-                case 1:
-                    FileIO.WriteVector(saveFile.FileName, OD);
+                case 1: // MAT file.
+                    ExportCurvesToMat(saveFile.FileName);
                     break;
-                case 2: // MAT file; just move temporary MAT file.
-                    throw new NotImplementedException();
-                    if (DataFile != null && !DataFile.Closed) DataFile.Close();
-                    try
-                    {
-                        File.Copy(DataFile.FileName, saveFile.FileName);
-                    }
-                    catch (IOException ex)
-                    {
-                        Log.Error(ex);
-                        MessageBox.Show(ex.Message);
-                    }
-                    break;
-                case 3: // CSV file; read LuiData to CSV file.
-                    throw new NotImplementedException();
-                    //if (DataFile != null)
-                    //{
-                    //    if (DataFile.Closed) DataFile.Reopen();
-                    //    //MatVar<double> luiData = (MatVar<double>)DataFile["LuiData"];
-
-                    //    if (!LuiData.Closed)
-                    //    {
-                    //        double[,] Matrix = new double[LuiData.Dims[0], LuiData.Dims[1]];
-                    //        LuiData.Read(Matrix, new long[] { 0, 0 }, LuiData.Dims);
-                    //        FileIO.WriteMatrix(saveFile.FileName, Matrix);
-                    //    }
-
-                    //    DataFile.Close();
-                    //}
+                case 2: // CSV file.
+                    ExportCurvesToCsv(saveFile.FileName);
                     break;
             }
         }

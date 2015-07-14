@@ -1,13 +1,13 @@
-﻿using lasercom;
-using lasercom.camera;
-using lasercom.control;
-using LUI.config;
-using LUI.controls;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using lasercom;
+using lasercom.camera;
+using lasercom.control;
+using LUI.config;
+using LUI.controls;
 
 namespace LUI.tabs
 {
@@ -106,6 +106,18 @@ namespace LUI.tabs
             worker.WorkerReportsProgress = true;
             worker.RunWorkerAsync(new WorkArgs(N, Pump, Discard.Checked));
             OnTaskStarted(EventArgs.Empty);
+        }
+
+        public override void OnTaskStarted(EventArgs e)
+        {
+            base.OnTaskStarted(e);
+            PumpBox.Enabled = false;
+        }
+
+        public override void OnTaskFinished(EventArgs e)
+        {
+            base.OnTaskFinished(e);
+            PumpBox.Enabled = true;
         }
 
         protected override void DoWork(object sender, DoWorkEventArgs e)

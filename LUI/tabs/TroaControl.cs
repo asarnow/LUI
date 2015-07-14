@@ -142,7 +142,7 @@ namespace LUI.tabs
             InitializeComponent();
             Init();
 
-            TimesList.AllowEdit = true;
+            TimesList.AllowEdit = false;
             TimesView.DefaultValuesNeeded += (sender, e) => { e.Row.Cells["Value"].Value = 0; };
             TimesView.DataSource = new BindingSource(TimesList, null);
             TimesView.CellValidating += TimesView_CellValidating;
@@ -301,6 +301,8 @@ namespace LUI.tabs
         {
             base.OnTaskStarted(e);
             DdgConfigBox.Enabled = false;
+            PumpBox.Enabled = false;
+            LoadTimes.Enabled = SaveData.Enabled = false;
             ScanProgress.Text = "0";
             TimeProgress.Text = "0";
         }
@@ -309,7 +311,8 @@ namespace LUI.tabs
         {
             base.OnTaskFinished(e);
             DdgConfigBox.Enabled = true;
-            SaveData.Enabled = true;
+            PumpBox.Enabled = true;
+            LoadTimes.Enabled = SaveData.Enabled = true;
         }
 
         [Obsolete("Deprecated, use DoWork instead.", true)]
@@ -787,9 +790,11 @@ namespace LUI.tabs
             SaveFileDialog saveFile = new SaveFileDialog();
             saveFile.Filter = "MAT File|*.mat|CSV File|*.csv";
             saveFile.Title = "Save As";
-            saveFile.ShowDialog();
+            var result = saveFile.ShowDialog();
 
-            if (saveFile.FileName == "") return;
+            if (result != DialogResult.OK || saveFile.FileName == "") return;
+
+            if (File.Exists(saveFile.FileName)) File.Delete(saveFile.FileName);
 
             switch (saveFile.FilterIndex)
             {
