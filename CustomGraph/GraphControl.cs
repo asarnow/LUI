@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Extensions;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
-using Extensions;
 
 namespace LUI.controls
 {
@@ -328,10 +328,14 @@ namespace LUI.controls
                 RescaleHandler(_Min, _Max);
                 for (int i = 0; i < Y.Count; i++)
                 {
-                    float x = (float)(i + 1) / Y.Count;
-                    if (!XAscending) x = 1 - x;
-                    float y = Math.Abs(YMax - (float)Y[i]) / ScaleHeight;
-                    DrawPoint(BitmapGraphics, B, MarkerFont, Axes, x, y);
+                    if ((float)Y[i] >= YMin && (float)Y[i] <= YMax)
+                    {
+                        // False if off-scale, infinite or NaN.
+                        float x = (float)(i + 1) / Y.Count;
+                        if (!XAscending) x = 1 - x;
+                        float y = Math.Abs(YMax - (float)Y[i]) / ScaleHeight;
+                        DrawPoint(BitmapGraphics, B, MarkerFont, Axes, x, y);
+                    }
                 }
             }
         }
@@ -362,9 +366,13 @@ namespace LUI.controls
                 RescaleHandler(_Min, _Max);
                 for (int i = 0; i < Y.Count; i++)
                 {
-                    float x = Math.Abs(XLeft - (float)X[i]) / XRange;
-                    float y = (YMax - (float)Y[i]) / ScaleHeight;
-                    DrawPoint(BitmapGraphics, B, MarkerFont, Axes, x, y);
+                    // False if off-scale, infinite or NaN.
+                    if ((float)Y[i] >= YMin && (float)Y[i] <= YMax)
+                    {
+                        float x = Math.Abs(XLeft - (float)X[i]) / XRange;
+                        float y = (YMax - (float)Y[i]) / ScaleHeight;
+                        DrawPoint(BitmapGraphics, B, MarkerFont, Axes, x, y);
+                    }
                 }
             }
         }

@@ -50,6 +50,7 @@
             this.DataGrid.Location = new System.Drawing.Point(0, 0);
             this.DataGrid.MultiSelect = false;
             this.DataGrid.Name = "DataGrid";
+            this.DataGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.DataGrid.Size = new System.Drawing.Size(456, 150);
             this.DataGrid.TabIndex = 0;
             // 

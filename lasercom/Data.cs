@@ -204,7 +204,7 @@ namespace lasercom
         {
             double[] OD = new double[Ground.Count];
             for (int i = 0; i < OD.Length; i++)
-                OD[i] = Math.Log10((double)(Trans[i] - Dark[i]) / (double)(Ground[i] - Dark[i]));
+                OD[i] = Math.Log10((Trans[i] - Dark[i]) / (Ground[i] - Dark[i]));
             return OD;
         }
 

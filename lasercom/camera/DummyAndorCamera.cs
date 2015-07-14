@@ -2,11 +2,11 @@
 #if x64
 using ATMCD64CS;
 #else
+using ATMCD32CS;
+using lasercom.objects;
 using System;
 using System.Diagnostics;
 using System.Linq;
-using ATMCD32CS;
-using lasercom.objects;
 
 
 #endif
@@ -358,15 +358,15 @@ namespace lasercom.camera
         int[] Spec(int line)
         {
             int[] data = null;
-            if (line == 161) // Dark.
+            if (line == 155) // Dark.
             {
                 data = Dark(1000);
             }
-            else if (line == 177) // Blank.
+            else if (line == 171) // Blank.
             {
                 data = Blank(55000);
             }
-            else if (line == 205) // Excited.
+            else if (line == 199) // Excited.
             {
                 data = Blank(55000);
                 Data.Dissipate(data, SampleData(0.5, 32000));

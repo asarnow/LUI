@@ -1,22 +1,20 @@
-﻿using System;
-using System.ComponentModel;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Windows.Forms;
-using CsvHelper;
+﻿using CsvHelper;
 using lasercom;
 using lasercom.camera;
 using lasercom.control;
 using lasercom.io;
 using LUI.config;
 using LUI.controls;
+using System;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
 
 namespace LUI.tabs
 {
     public partial class SpecControl : LuiTab
     {
-        double[] OD = null;
         int[] BlankBuffer = null;
 
         int _SelectedChannel = -1;
@@ -29,7 +27,8 @@ namespace LUI.tabs
             set
             {
                 _SelectedChannel = Math.Max(Math.Min(value, Commander.Camera.Width - 1), 0);
-                if (OD != null) CountsDisplay.Text = OD[_SelectedChannel].ToString("n");
+                if (CurvesView.SelectedCurve != null) 
+                    CountsDisplay.Text = CurvesView.SelectedCurve[_SelectedChannel].ToString("n4");
             }
         }
 
@@ -73,6 +72,7 @@ namespace LUI.tabs
         protected override void OnLoad(EventArgs e)
         {
             PumpBox.ObjectChanged += HandlePumpChanged;
+            CurvesView.SelectionChanged += CurvesView_SelectionChanged;
             base.OnLoad(e);
         }
 
@@ -123,11 +123,6 @@ namespace LUI.tabs
 
         protected override void Collect_Click(object sender, EventArgs e)
         {
-            //CameraStatus.Text = "";
-
-            Graph.ClearData();
-            Graph.Invalidate();
-
             int N = (int)NScan.Value;
             PumpMode Mode;
             if (PumpNever.Checked) Mode = PumpMode.NEVER;
@@ -135,12 +130,7 @@ namespace LUI.tabs
 
             Commander.BeamFlag.CloseLaserAndFlash();
 
-            worker = new BackgroundWorker();
-            worker.DoWork += new System.ComponentModel.DoWorkEventHandler(DoWork);
-            worker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(WorkProgress);
-            worker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(WorkComplete);
-            worker.WorkerSupportsCancellation = true;
-            worker.WorkerReportsProgress = true;
+            SetupWorker();
             worker.RunWorkerAsync(new WorkArgs(N, Mode, Discard.Checked));
             OnTaskStarted(EventArgs.Empty);
         }
@@ -258,14 +248,9 @@ namespace LUI.tabs
             Commander.Pump.SetClosed();
             if (!e.Cancelled)
             {
-                OD = (double[])e.Result;
-                CurvesView.Add(OD);
-                for (int i = 0; i < OD.Length; i++) if (Double.IsNaN(OD[i]) || Double.IsInfinity(OD[i])) OD[i] = 0;
-                Graph.DrawPoints(Commander.Camera.Calibration, OD);
-                Graph.Invalidate();
+                CurvesView.Add(Commander.Camera.Calibration, (double[])e.Result);
                 ProgressLabel.Text = "Complete";
                 SaveData.Enabled = true;
-                SelectedChannel = Commander.Camera.Width / 2;
             }
             else
             {
@@ -278,16 +263,19 @@ namespace LUI.tabs
         {
             // Selects a *physical channel* on the camera.
             SelectedChannel = Commander.Camera.CalibrationAscending ?
-                (int)Math.Round(Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y))).X * (Commander.Camera.Width - 1))
+                (int)Math.Round(Graph.AxesToNormalized(Graph.ScreenToAxes(
+                    new Point(e.X, e.Y))).X * (Commander.Camera.Width - 1))
                 :
-                (int)Math.Round((1 - Graph.AxesToNormalized(Graph.ScreenToAxes(new Point(e.X, e.Y))).X) * (Commander.Camera.Width - 1));
+                (int)Math.Round((1 - Graph.AxesToNormalized(Graph.ScreenToAxes(
+                    new Point(e.X, e.Y))).X) * (Commander.Camera.Width - 1));
             RedrawLines();
         }
 
         private void RedrawLines()
         {
             Graph.ClearAnnotation();
-            Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[0], Commander.Camera.Calibration[SelectedChannel]);
+            Graph.Annotate(GraphControl.Annotation.VERTLINE, Graph.ColorOrder[0], 
+                Commander.Camera.Calibration[SelectedChannel]);
             Graph.Invalidate();
         }
 
@@ -306,6 +294,10 @@ namespace LUI.tabs
                 var V = DataFile.CreateVariable<double>(CurveName, 1, curve.Length);
                 V.WriteNext(curve, 0);
             }
+            DataFile.CreateVariable<double>("Wavelength", 1, Commander.Camera.Calibration.Length)
+                .WriteNext(Commander.Camera.Calibration, 0);
+            DataFile.CreateVariable<int>("Blank", 1, BlankBuffer.Length)
+                .WriteNext(BlankBuffer, 0);
             DataFile.Dispose();
         }
 
@@ -315,10 +307,14 @@ namespace LUI.tabs
             CsvWriter csv = new CsvWriter(writer);
             var headers = CurvesView.SaveCurveNames.ToList();
             var curves = CurvesView.SaveCurves.ToList();
+            csv.WriteField("Wavelength");
+            csv.WriteField("Blank");
             foreach(string header in headers) csv.WriteField(header);
             csv.NextRecord();
             for (int i = 0; i < curves[0].Count; i++)
             {
+                csv.WriteField(Commander.Camera.Calibration[i]);
+                csv.WriteField(BlankBuffer[i]);
                 for (int j = 0; j < curves.Count; j++)
                 {
                     csv.WriteField(curves[j][i]);
@@ -330,7 +326,7 @@ namespace LUI.tabs
 
         private void SaveOutput()
         {
-            if (OD == null || OD.Length == 0)
+            if (CurvesView.Count == 0)
             {
                 MessageBox.Show("No data available.", "Error", MessageBoxButtons.OK);
                 return;
@@ -354,6 +350,12 @@ namespace LUI.tabs
                     ExportCurvesToCsv(saveFile.FileName);
                     break;
             }
+        }
+
+        void CurvesView_SelectionChanged(object sender, EventArgs e)
+        {
+            if (SelectedChannel != -1 && CurvesView.SelectedCurve != null)
+                CountsDisplay.Text = CurvesView.SelectedCurve[SelectedChannel].ToString("n4");
         }
     }
 }
