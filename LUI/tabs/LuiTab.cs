@@ -1,15 +1,15 @@
-﻿using System;
-using System.ComponentModel;
-using System.Threading;
-using System.Windows.Forms;
-using System.Windows.Threading;
-using Extensions;
+﻿using Extensions;
 using lasercom;
 using lasercom.camera;
 using lasercom.control;
 using lasercom.objects;
 using log4net;
 using LUI.config;
+using System;
+using System.ComponentModel;
+using System.Threading;
+using System.Windows.Forms;
+using System.Windows.Threading;
 
 namespace LUI.tabs
 {
@@ -211,8 +211,12 @@ namespace LUI.tabs
                 Commander.Pump.SetClosed();
                 WaitForResume();
                 if (OldPumpState == PumpState.Open) Commander.Pump.SetOpen();
-                if (OldFlashState == BeamFlagState.Open) Commander.BeamFlag.OpenFlash();
-                if (OldLaserState == BeamFlagState.Open) Commander.BeamFlag.OpenLaser();
+                if (OldFlashState == BeamFlagState.Open && OldLaserState == BeamFlagState.Open)
+                    Commander.BeamFlag.OpenLaserAndFlash();
+                else if (OldFlashState == BeamFlagState.Open) 
+                    Commander.BeamFlag.OpenFlash();
+                else if (OldLaserState == BeamFlagState.Open) 
+                    Commander.BeamFlag.OpenLaser();
                 worker.ReportProgress(percentProgress, progress);
             }
             return false;

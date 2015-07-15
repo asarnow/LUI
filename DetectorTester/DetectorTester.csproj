@@ -111,6 +111,10 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Extensions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Extensions\bin\Debug\Extensions.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Forms.DataVisualization" />
@@ -193,6 +197,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CustomGraph\CustomGraph.csproj">
+      <Project>{C539C69E-8B11-43F7-B807-1C998BF6D779}</Project>
+      <Name>CustomGraph</Name>
+    </ProjectReference>
     <ProjectReference Include="..\lasercom\lasercom.csproj">
       <Project>{f77054ef-38f5-4303-9e65-aa033a17e215}</Project>
       <Name>lasercom</Name>

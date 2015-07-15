@@ -6,26 +6,28 @@ using lasercom.objects;
 using System;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Windows.Forms.DataVisualization.Charting;
 
 namespace DetectorTester
 {
     public partial class DetectorTestForm : Form
     {   
-        private int[] blank;
-        private int[] dark;
-        private int[] counts;
         private int[] image;
 
         CancellationTokenSource TemperatureCts = null;
         CancellationTokenSource WorkCts = null;
+        ManualResetEvent Paused;
 
         private MatFile DataFile;
         MatVar<int> RawData;
-        MatVar<double> LuiData;
+
+        int LastAcqWidth;
+        int LastVBin;
+        int SelectedRow;
+        ImageArea WorkImage;
 
         ICamera Camera;
         IBeamFlags Flags;
@@ -46,23 +48,29 @@ namespace DetectorTester
             }
         }
 
-        int SelectedRow;
-        ImageArea WorkImage;
-
         struct WorkParameters
         {
-            public int ReadMode { get; set; }
+            public string ReadMethod { get; set; }
             public int NScans { get; set; }
             public bool Excite { get; set; }
         }
 
+        struct ProgressObject
+        {
+            public int CurrentScan;
+            public int[] Data;
+        }
+
         public DetectorTestForm()
         {
+            Paused = new ManualResetEvent(true);
+
             var bfp = new BeamFlagsParameters(typeof(BeamFlags));
             bfp.Name = "BF";
             bfp.PortName = "COM1";
             bfp.Delay = 300; // ms.
-            Flags = new BeamFlags(bfp);
+            //Flags = new BeamFlags(bfp);
+            Flags = new DummyBeamFlags(bfp);
 
             var cp = new CameraParameters(typeof(CameraTempControlled));
             cp.Name = "Camera";
@@ -70,14 +78,15 @@ namespace DetectorTester
             cp.InitialGain = 10;
             cp.Temperature = 20;
             cp.ReadMode = AndorCamera.ReadModeFVB;
-            Camera = new CameraTempControlled(cp);
+            //Camera = new CameraTempControlled(cp);
+            Camera = new DummyAndorCamera(cp);
 
             Camera.AcquisitionMode = Constants.AcquisitionModeSingle;
             Camera.TriggerMode = Constants.TriggerModeExternalExposure;
             Camera.DDGTriggerMode = Constants.DDGTriggerModeExternal;
 
-            Init();
             InitializeComponent();
+            Init();
         }
 
         private void Init()
@@ -87,21 +96,46 @@ namespace DetectorTester
 
             CameraTemp.Minimum = CameraAs<CameraTempControlled>().MinTemp;
             CameraTemp.Maximum = CameraAs<CameraTempControlled>().MaxTemp;
+            UpdateCameraTemperature(); // Subscribes ValueChanged.
+
+            fvbButton.Checked = true;
 
             GraphScroll.Minimum = 0;
             VBin.Minimum = 1;
             FirstRow.Value = FirstRow.Minimum = 0;
             LastRow.Value = LastRow.Maximum = VBin.Maximum = GraphScroll.Maximum = Camera.Height - 1;
+            GraphScroll.Enabled = false;
 
             GraphScroll.ValueChanged += GraphScroll_ValueChanged;
             VBin.ValueChanged += CameraImage_ValueChanged;
             FirstRow.ValueChanged += CameraImage_ValueChanged;
             LastRow.ValueChanged += CameraImage_ValueChanged;
+
+            Graph.XLeft = (float)Math.Min(Camera.Calibration[0], 
+                Camera.Calibration[Camera.Calibration.Length - 1]);
+            Graph.XRight = (float)Math.Max(Camera.Calibration[0], 
+                Camera.Calibration[Camera.Calibration.Length - 1]);
+
+            Graph.Click += Graph_Click;
+
+            AcqMethods.SelectedIndex = 0;
+            
+            saveAsToolStripMenuItem.Enabled = false;
         }
 
         private P CameraAs<P>() where P : class
         {
             return Camera as P;
+        }
+
+        protected bool WillPause()
+        {
+            return !Paused.WaitOne(0);
+        }
+
+        protected bool WaitForResume()
+        {
+            return !Paused.WaitOne(Timeout.Infinite);
         }
 
         private void ShowImage(int[] image)
@@ -119,158 +153,133 @@ namespace DetectorTester
             imageBox.Image = picture;
         }
 
-        private void darkButton_Click(object sender, EventArgs e)
+        private async void darkButton_Click(object sender, EventArgs e)
         {
-            Flags.CloseLaserAndFlash();
-            dark = new int[Camera.AcqSize];
-            LastStatus = Camera.Acquire(dark);
-        }
-
-        private void blankButton_Click(object sender, EventArgs e)
-        {
-            Flags.CloseLaserAndFlash();
-            Flags.OpenFlash();
-            blank = new int[Camera.AcqSize];
-            LastStatus = Camera.Acquire(blank);
-            ApplyDark(blank);
-        }
-
-        private void ApplyBlank(int[] data)
-        {
-            if (blank != null)
+            TaskStart();
+            var progress = new Progress<ProgressObject>(ReportProgress);
+            var args = new WorkParameters()
             {
-                for (int i = 0; i < data.Length; i++)
-                {
-                    data[i] = blank[i] - data[i];
-                }
-            }
+                ReadMethod = (string)AcqMethods.SelectedItem,
+                NScans = (int)NScans.Value
+            };
+            await DoWorkAsync(DoDark, args, progress, WorkCts.Token);
+            TaskFinish();
         }
 
-        private void ApplyDark(int[] data)
+        private void saveButton_Click(object sender, EventArgs e)
         {
-            if (dark != null)
-            {
-                Data.Dissipate(data, dark);
-            }
-        }
-
-        private void AddSpec(int[] data)
-        {
-            for (int i = 0; i < data.Length; i++)
-                specGraph.Series["spec"].Points.AddXY(i, data[i]);
-
-            specGraph.Series["spec"].ChartArea = "specArea";
-
-            RescaleChart();
-        }
-
-        private void RescaleChart()
-        {
-            double max = Double.MinValue;
-            //double min = Double.MaxValue;
-            foreach (Series s in specGraph.Series)
-            {
-                foreach (DataPoint p in s.Points)
-                {
-                    max = p.YValues[0] > max ? p.YValues[0] : max;
-                    //min = p.YValues[0] < min ? p.YValues[0] : min;
-                }
-            }
-            ChartArea MainChart = specGraph.ChartAreas.FindByName("specArea");
-            //MainChart.AxisY.Minimum = min;
-            MainChart.AxisY.Maximum = max;
+            DoSave();
         }
 
         private void TaskStart()
         {
             CameraConfigBox.Enabled = false;
-            specButton.Enabled = blankButton.Enabled = darkButton.Enabled = false;
+            specButton.Enabled = saveButton.Enabled = darkButton.Enabled = false;
             Abort.Enabled = Pause.Enabled = true;
             WorkImage = Camera.Image;
+            GraphScroll.Enabled = imageAcqButton.Checked;
+            UpdateGraphScroll();
             WorkCts = new CancellationTokenSource();
+            Paused.Set();
         }
 
         private void TaskFinish()
         {
             CameraConfigBox.Enabled = true;
-            specButton.Enabled = blankButton.Enabled = darkButton.Enabled = true;
+            specButton.Enabled = saveButton.Enabled = darkButton.Enabled = true;
             Abort.Enabled = Pause.Enabled = false;
+            saveAsToolStripMenuItem.Enabled = true;
         }
 
-        private async void specButton_Click(object sender, EventArgs e)
+        private async void captureButton_Click(object sender, EventArgs e)
         {
             TaskStart();
-            var progress = new Progress<int>(ReportProgress);
-            await DoWorkAsync((int)NScans.Value, exciteCheck.Checked, progress, WorkCts.Token);
+            var progress = new Progress<ProgressObject>(ReportProgress);
+            var args = new WorkParameters()
+            {
+                ReadMethod = (string)AcqMethods.SelectedItem,
+                NScans = (int)NScans.Value,
+                Excite = exciteCheck.Checked
+            };
+            await DoWorkAsync(DoCapture, args, progress, WorkCts.Token);
             TaskFinish();
         }
 
-        private async Task DoWorkAsync(int NScans, bool ExciteSample, IProgress<int> progress, CancellationToken cancel)
+        private async Task DoWorkAsync(Action<WorkParameters, IProgress<ProgressObject>, CancellationToken> func, WorkParameters args, IProgress<ProgressObject> progress, CancellationToken cancel)
         {
-            await Task.Run(() => DoWork(NScans, ExciteSample, progress), cancel);
+            await Task.Run(() => func(args, progress, cancel), cancel);
         }
 
-        private void DoWork(int n, bool excite, IProgress<int> progress)
+        private void DoCapture(WorkParameters args, IProgress<ProgressObject> progress, CancellationToken cancel)
         {
-            if (dark == null) { }
-            if (blank == null) { }
-
-            if (excite)
-            {
+            InitDataFile(Camera.AcqSize, args.NScans);
+            if (args.Excite)
                 Flags.OpenLaserAndFlash();
-            }
             else
-            {
                 Flags.OpenFlash();
-            }
-
-            int[] DataBuffer = new int[Camera.AcqSize];
-            for (int i = 0; i < n; i++)
-            {
-                LastStatus = Camera.Acquire(DataBuffer);
-                progress.Report(0);
-            }
-
+            DoAcq(args, progress, cancel);
             Flags.CloseLaserAndFlash();
+        }
+
+        private void DoDark(WorkParameters args, IProgress<ProgressObject> progress, CancellationToken cancel)
+        {
+            InitDataFile(Camera.AcqSize, args.NScans);
+            Flags.CloseLaserAndFlash();
+            DoAcq(args, progress, cancel);
+        }
+
+        private void DoAcq(WorkParameters args, IProgress<ProgressObject> progress, CancellationToken cancel)
+        {
+            LastAcqWidth = Camera.AcqWidth;
+            LastVBin = Camera.Image.vbin;
+            int[] DataBuffer = new int[Camera.AcqSize];
+            for (int i = 0; i < args.NScans; i++)
+            {
+                if (args.ReadMethod == "GetAcquiredData")
+                    LastStatus = Camera.Acquire(DataBuffer);
+                else
+                    LastStatus = CameraAs<AndorCamera>().AcquireImage(DataBuffer);
+                RawData.WriteNext(DataBuffer, 0);
+                progress.Report(new ProgressObject()
+                {
+                    CurrentScan = i, Data = (int[])DataBuffer.Clone()
+                });
+                DoPause();
+                if (cancel.IsCancellationRequested) return;
+            }
+        }
+
+        private void DoPause()
+        {
+            if (WillPause())
+            {
+                // Going to pause.
+                var OldFlashState = Flags.FlashState;
+                var OldLaserState = Flags.LaserState;
+                Flags.CloseLaserAndFlash();
+                WaitForResume();
+                if (OldFlashState == BeamFlagState.Open && OldLaserState == BeamFlagState.Open)
+                    Flags.OpenLaserAndFlash();
+                else if (OldFlashState == BeamFlagState.Open)
+                    Flags.OpenFlash();
+                else if (OldLaserState == BeamFlagState.Open)
+                    Flags.OpenLaser();
+            }
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             base.OnFormClosing(e);
+            if (DataFile != null) DataFile.Dispose();
+            File.Delete(DataFile.FileName);
             ((ILuiObject)Flags).Dispose();
             ((ILuiObject)Camera).Dispose();
         }
 
         private void clearButton_Click(object sender, EventArgs e)
         {
-            specGraph.Series["spec"].Points.Clear();
-        }
-
-        private bool BlankDialog(int readMode)
-        {
-            DialogResult result = MessageBox.Show("Please insert blank",
-                "Blank",
-                MessageBoxButtons.OKCancel);
-
-            if (result == DialogResult.OK)
-            {
-                Flags.CloseLaserAndFlash();
-                Flags.OpenFlash();
-                blank = new int[Camera.AcqSize];
-                LastStatus = Camera.Acquire(blank);
-            }
-            else
-            {
-                return false;
-            }
-
-            result = MessageBox.Show("Continue when ready",
-                "Continue",
-                MessageBoxButtons.OKCancel);
-
-            if (result == DialogResult.Cancel) return false;
-
-            return true;
+            Graph.Clear();
+            Graph.Invalidate();
         }
 
         /// <summary>
@@ -279,18 +288,35 @@ namespace DetectorTester
         /// <param name="NumChannels"></param>
         /// <param name="NumScans"></param>
         /// <param name="NumTimes"></param>
-        private void InitDataFile(int NumChannels, int NumScans, int NumTimes)
+        private void InitDataFile(int NumChannels, int NumScans)
         {
-            string TempFileName = Path.GetTempFileName();
-            TempFileName = TempFileName.Replace(".tmp", ".mat");
+            string TempFileName;
+            if (DataFile != null)
+            {
+                DataFile.Dispose();
+                TempFileName = DataFile.FileName;
+            }
+            else
+            {
+                TempFileName = Path.GetTempFileName();
+            }
             DataFile = new MatFile(TempFileName);
             RawData = DataFile.CreateVariable<int>("rawdata", NumScans, NumChannels);
-            LuiData = DataFile.CreateVariable<double>("luidata", NumTimes + 1, NumChannels + 1);
         }
 
-        private void ReportProgress(int value)
+        private void ReportProgress(ProgressObject progress)
         {
-
+            ScanProgress.Text =
+                (progress.CurrentScan + 1).ToString() + "/" + NScans.Value.ToString();
+            if (progress.Data != null)
+            {
+                int start = LastAcqWidth * SelectedRow;
+                int count = LastAcqWidth;
+                double[] Light = progress.Data.Cast<double>().ToArray();
+                Graph.MarkerColor = Graph.ColorOrder[0];
+                Graph.DrawPoints(Camera.Calibration, new ArraySegment<double>(Light, start, count));
+                Graph.Invalidate();
+            }
         }
 
         private void fvbButton_CheckedChanged(object sender, EventArgs e)
@@ -298,6 +324,14 @@ namespace DetectorTester
             if (fvbButton.Checked)
             {
                 Camera.ReadMode = AndorCamera.ReadModeFVB;
+            }
+        }
+
+        private void imageAcqButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (imageAcqButton.Checked)
+            {
+                Camera.ReadMode = AndorCamera.ReadModeImage;
             }
         }
 
@@ -367,17 +401,112 @@ namespace DetectorTester
 
         private void GraphScroll_Scroll(object sender, ScrollEventArgs e)
         {
-            
+            ScrollTip.SetToolTip(GraphScroll, SelectedRow.ToString() + " (" + GraphScroll.Value.ToString() + ")");
         }
 
         void GraphScroll_ValueChanged(object sender, EventArgs e)
         {
             UpdateSelectedRow();
+            // if not busy replot.
         }
 
         private void Abort_Click(object sender, EventArgs e)
         {
             WorkCts.Cancel();
         }
+
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DoSave();
+        }
+
+        private void DoSave()
+        {
+            SaveFileDialog saveFile = new SaveFileDialog();
+            saveFile.Filter = "MAT File|*.mat|CSV File|*.csv";
+            saveFile.Title = "Save As";
+            var result = saveFile.ShowDialog();
+
+            if (result != DialogResult.OK || saveFile.FileName == "") return;
+
+            if (File.Exists(saveFile.FileName)) File.Delete(saveFile.FileName);
+
+            switch (saveFile.FilterIndex)
+            {
+                case 1: // MAT file; just move temporary MAT file.
+                    if (DataFile != null && !DataFile.Closed) DataFile.Close();
+                    try
+                    {
+                        File.Copy(DataFile.FileName, saveFile.FileName);
+                    }
+                    catch (IOException ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
+                    break;
+                case 2: // CSV file; copy data to CSV file.
+                    if (DataFile != null)
+                    {
+                        if (DataFile.Closed) DataFile.Reopen();
+                        if (!RawData.Closed)
+                        {
+                            int[,] Matrix = new int[RawData.Dims[0], RawData.Dims[1]];
+                            RawData.Read(Matrix, new long[] { 0, 0 }, RawData.Dims);
+                            Matrix = Data.Transpose(Matrix);
+                            FileIO.WriteMatrix(saveFile.FileName, Matrix);
+                        }
+                        DataFile.Close();
+                    }
+                    break;
+            }
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void Pause_Click(object sender, EventArgs e)
+        {
+            if (Paused.WaitOne(0)) // True if set (running/resumed).
+            {
+                Paused.Reset(); // Signal pause.
+                Pause.Text = "Resume";
+            }
+            else
+            {
+                Paused.Set(); // Signal resume.
+                Pause.Text = "Pause";
+            }
+        }
+
+        private void Graph_Click(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void UpdateGraphScroll()
+        {
+            if (GraphScroll.Enabled)
+            {
+                GraphScroll.ValueChanged -= GraphScroll_ValueChanged;
+                GraphScroll.Minimum = Camera.Image.vstart;
+                GraphScroll.Maximum = (Camera.Image.vstart + Camera.Image.vcount - 1);
+                GraphScroll.LargeChange = Camera.Image.vbin;
+                GraphScroll.Value = GraphScroll.Value > GraphScroll.Maximum ||
+                    GraphScroll.Value <= GraphScroll.Minimum
+                    ?
+                    GraphScroll.Minimum + (GraphScroll.Maximum - GraphScroll.Minimum) / 2
+                    :
+                    GraphScroll.Value;
+                UpdateSelectedRow();
+                GraphScroll.ValueChanged += GraphScroll_ValueChanged;
+            }
+            else
+            {
+                SelectedRow = 0;
+            }
+        }
+
     }
 }

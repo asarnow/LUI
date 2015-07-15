@@ -7,13 +7,15 @@ using lasercom.objects;
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 
 #endif
 
 namespace lasercom.camera
 {
-    public class DummyAndorCamera : AndorCamera
+    public class DummyAndorCamera : CameraTempControlled
     {
         new AndorSDK AndorSdk = null;
 
@@ -199,6 +201,47 @@ namespace lasercom.camera
             }
         }
 
+        private float _Temperature;
+        public override int Temperature
+        {
+            get
+            {
+                return (int)_Temperature;
+            }
+        }
+
+        public override float TemperatureF
+        {
+            get
+            {
+                return _Temperature;
+            }
+        }
+
+        public override uint TemperatureStatus
+        {
+            get
+            {
+                if (Math.Round(_Temperature) == Math.Round(_TargetTemperature))
+                    return AndorSDK.DRV_TEMP_NOT_STABILIZED;
+                else if (Math.Abs(_Temperature - _TargetTemperature) <= 3)
+                    return AndorSDK.DRV_TEMP_NOT_STABILIZED;
+                else
+                    return AndorSDK.DRV_TEMP_NOT_REACHED;
+            }
+        }
+
+        private float _TargetTemperature;
+        private int TargetTemperature
+        {
+            set
+            {
+                _TargetTemperature = (float)value;
+            }
+        }
+
+        CancellationTokenSource Cts;
+
         public DummyAndorCamera(LuiObjectParameters p) : this(p as CameraParameters) { }
 
         public DummyAndorCamera(CameraParameters p)
@@ -206,6 +249,8 @@ namespace lasercom.camera
             if (p == null) 
                 throw new ArgumentException("Non-null CameraParameters instance required");
 
+            _MinTemp = -100;
+            _MaxTemp = 100;
             _Width = 1024;
             _Height = 256;
             _Image = new ImageArea(1, 1, 0, Width, 0, Height);
@@ -216,9 +261,20 @@ namespace lasercom.camera
             MaxIntensifierGain = 4095;
             IntensifierGain = p.InitialGain;
             ReadMode = p.ReadMode;
-
             p.Image = Image;
             p.ReadMode = ReadMode;
+            _Temperature = 25.0F; // Room temperature.
+            TargetTemperature = p.Temperature;
+            Cts = new CancellationTokenSource();
+            Task.Run(() =>
+            {
+                while (true)
+                {
+                    if (Cts.IsCancellationRequested) break;
+                    _Temperature = _Temperature + 0.01F * (_TargetTemperature - _Temperature);
+                    Thread.Sleep(50);
+                }
+            }, Cts.Token);
         }
 
         public override int[] FullResolutionImage()
@@ -272,9 +328,18 @@ namespace lasercom.camera
             {
                 data = LaserPower(line);
             }
+            else if (caller.Contains("DetectorTestForm"))
+            {
+                data = Blank();
+            }
 
             if (data != null) data.CopyTo(DataBuffer, 0);
             return AndorSDK.DRV_SUCCESS;
+        }
+
+        public override uint AcquireImage(int[] DataBuffer)
+        {
+            return base.Acquire(DataBuffer);
         }
 
         private int[] Dark(int scale = 1000)
@@ -445,6 +510,71 @@ namespace lasercom.camera
 
         public override void Close()
         {
+            Cts.Cancel();
+        }
+
+        public void EquilibrateTemperature(int targetTemperature)
+        {
+            if (targetTemperature < MinTemp || targetTemperature > MaxTemp)
+            {
+                throw new ArgumentException("Temperature out of range.");
+            }
+            TargetTemperature = targetTemperature;
+            while (Math.Abs(_Temperature - _TargetTemperature) > TemperatureEps)
+            {
+                Thread.Sleep(50);
+            }
+        }
+
+        public void EquilibrateTemperature()
+        {
+            while (TemperatureStatus != AndorSDK.DRV_TEMP_STABILIZED)
+            {
+                Thread.Sleep(50);
+            }
+        }
+
+        public async Task EquilibrateTemperatureAsync(int targetTemperature)
+        {
+            await Task.Run(() => EquilibrateTemperature(targetTemperature));
+        }
+
+        public async Task EquilibrateTemperatureAsync(int targetTemperature, CancellationToken token)
+        {
+            await Task.Run(() => EquilibrateTemperature(targetTemperature), token);
+        }
+
+        public async Task EquilibrateTemperatureAsync()
+        {
+            await Task.Run(() => EquilibrateTemperature());
+        }
+
+        public async Task EquilibrateTemperatureAsync(CancellationToken token)
+        {
+            await Task.Run(() => EquilibrateTemperature(), token);
+        }
+
+        public bool EquilibrateUntil(Func<bool> BreakoutCondition)
+        {
+            return EquilibrateUntil(BreakoutCondition, 200);
+        }
+
+        public bool EquilibrateUntil(Func<bool> BreakoutCondition, int PollDelayMs)
+        {
+            while (TemperatureStatus != AndorSDK.DRV_TEMP_STABILIZED)
+            {
+                if (BreakoutCondition()) return true;
+                Thread.Sleep(PollDelayMs);
+            }
+            return false;
+        }
+
+        public void WaitForTemperatureIncrease(int thresholdTemperature)
+        {
+            while (Temperature < (thresholdTemperature - TemperatureEps))
+            {
+                Thread.Sleep(50);
+            }
         }
     }
 }

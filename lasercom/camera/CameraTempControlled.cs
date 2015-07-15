@@ -25,7 +25,7 @@ namespace lasercom.camera
         public const uint TemperatureStabilized = AndorSDK.DRV_TEMP_STABILIZED;
         public const uint TemperatureNotStabilized = AndorSDK.DRV_TEMP_NOT_STABILIZED;
 
-        private int _MinTemp;
+        protected int _MinTemp;
         public int MinTemp
         {
             get
@@ -34,7 +34,7 @@ namespace lasercom.camera
             }
         }
 
-        private int _MaxTemp;
+        protected int _MaxTemp;
         public int MaxTemp
         {
             get
@@ -43,7 +43,7 @@ namespace lasercom.camera
             }
         }
 
-        public int Temperature
+        public virtual int Temperature
         {
             get
             {
@@ -53,7 +53,7 @@ namespace lasercom.camera
             }
         }
 
-        public float TemperatureF
+        public virtual float TemperatureF
         {
             get
             {
@@ -63,7 +63,7 @@ namespace lasercom.camera
             }
         }
 
-        public uint TemperatureStatus
+        public virtual uint TemperatureStatus
         {
             get
             {
@@ -71,6 +71,8 @@ namespace lasercom.camera
                 return AndorSdk.GetTemperature(ref currentTemperature);
             }
         }
+
+        public CameraTempControlled() { }
 
         public CameraTempControlled(LuiObjectParameters p) : this(p as CameraParameters) { }
 

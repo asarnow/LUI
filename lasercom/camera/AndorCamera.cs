@@ -508,6 +508,17 @@ namespace lasercom.camera
             return ret;
         }
 
+        public virtual uint AcquireImage(int[] DataBuffer)
+        {
+            uint npx = (uint)DataBuffer.Length;
+            AndorSdk.StartAcquisition();
+            AndorSdk.WaitForAcquisition();
+            uint ret = AndorSdk.GetMostRecentImage(DataBuffer, npx);
+            Log.Debug("Camera returned " + DecodeStatus(ret));
+            ThrowIfSaturated(DataBuffer);
+            return ret;
+        }
+
         public override string DecodeStatus(uint status)
         {
             switch (status)
