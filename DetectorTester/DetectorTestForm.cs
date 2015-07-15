@@ -104,17 +104,24 @@ namespace DetectorTester
             VBin.Minimum = 1;
             FirstRow.Value = FirstRow.Minimum = 0;
             LastRow.Value = LastRow.Maximum = VBin.Maximum = GraphScroll.Maximum = Camera.Height - 1;
+            GraphScroll.LargeChange = 1;
             GraphScroll.Enabled = false;
+            SelectedRow = 0;
 
             GraphScroll.ValueChanged += GraphScroll_ValueChanged;
+            GraphScroll.Scroll += GraphScroll_Scroll;
             VBin.ValueChanged += CameraImage_ValueChanged;
             FirstRow.ValueChanged += CameraImage_ValueChanged;
             LastRow.ValueChanged += CameraImage_ValueChanged;
 
+            Graph.YLabelFormat = "g";
             Graph.XLeft = (float)Math.Min(Camera.Calibration[0], 
                 Camera.Calibration[Camera.Calibration.Length - 1]);
             Graph.XRight = (float)Math.Max(Camera.Calibration[0], 
                 Camera.Calibration[Camera.Calibration.Length - 1]);
+
+            Graph.YMax = 1;
+            Graph.YMin = 0;
 
             Graph.Clear();
             Graph.Invalidate();

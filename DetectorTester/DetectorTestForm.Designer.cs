@@ -541,8 +541,8 @@
             this.Graph.InitialScaleHeight = 0F;
             this.Graph.InitialXLeft = 0F;
             this.Graph.InitialXRight = 1023F;
-            this.Graph.InitialYMax = float.PositiveInfinity;
-            this.Graph.InitialYMin = float.NegativeInfinity;
+            this.Graph.InitialYMax = float.NegativeInfinity;
+            this.Graph.InitialYMin = float.PositiveInfinity;
             this.Graph.Location = new System.Drawing.Point(0, 0);
             this.Graph.Marker = "*";
             this.Graph.MarkerColor = System.Drawing.Color.Blue;
@@ -597,14 +597,14 @@
             // saveAsToolStripMenuItem
             // 
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.saveAsToolStripMenuItem.Text = "Save As...";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
