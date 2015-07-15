@@ -89,7 +89,7 @@ namespace lasercom.camera
             EquilibrateTemperature(p.Temperature);
         }
 
-        public void EquilibrateTemperature(int targetTemperature)
+        public virtual void EquilibrateTemperature(int targetTemperature, CancellationToken? token = null)
         {
             if (targetTemperature < MinTemp || targetTemperature > MaxTemp)
             {
@@ -100,16 +100,18 @@ namespace lasercom.camera
             AndorSdk.GetTemperatureF(ref currentTemperature);
             while ( Math.Abs(currentTemperature - targetTemperature) > TemperatureEps )
             {
+                if (token.HasValue && token.Value.IsCancellationRequested) break;
                 AndorSdk.GetTemperatureF(ref currentTemperature);
             }
         }
 
-        public void EquilibrateTemperature()
+        public virtual void EquilibrateTemperature(CancellationToken? token = null)
         {
             int currentTemperature = 0;
             uint status = AndorSDK.DRV_TEMP_NOT_STABILIZED;
             while (status != AndorSDK.DRV_TEMP_STABILIZED)
             {
+                if (token.HasValue && token.Value.IsCancellationRequested) break;
                 status = AndorSdk.GetTemperature(ref currentTemperature);
             }
         }
@@ -121,7 +123,7 @@ namespace lasercom.camera
 
         public async Task EquilibrateTemperatureAsync(int targetTemperature, CancellationToken token)
         {
-            await Task.Run(() => EquilibrateTemperature(targetTemperature), token);
+            await Task.Run(() => EquilibrateTemperature(targetTemperature, token));
         }
 
         public async Task EquilibrateTemperatureAsync()
@@ -131,7 +133,7 @@ namespace lasercom.camera
 
         public async Task EquilibrateTemperatureAsync(CancellationToken token)
         {
-            await Task.Run(() => EquilibrateTemperature(), token);
+            await Task.Run(() => EquilibrateTemperature(token));
         }
 
         public bool EquilibrateUntil(Func<bool> BreakoutCondition)
@@ -139,7 +141,7 @@ namespace lasercom.camera
             return EquilibrateUntil(BreakoutCondition, 200);
         }
 
-        public bool EquilibrateUntil(Func<bool> BreakoutCondition, int PollDelayMs)
+        public virtual bool EquilibrateUntil(Func<bool> BreakoutCondition, int PollDelayMs)
         {
             int currentTemperature = 0;
             uint status = AndorSDK.DRV_TEMP_NOT_STABILIZED;
@@ -152,7 +154,7 @@ namespace lasercom.camera
             return false;
         }
 
-        public void WaitForTemperatureIncrease(int thresholdTemperature)
+        public virtual void WaitForTemperatureIncrease(int thresholdTemperature)
         {
             float currentTemperature = 0;
             AndorSdk.GetTemperatureF(ref currentTemperature);

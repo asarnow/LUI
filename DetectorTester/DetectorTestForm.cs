@@ -1,15 +1,15 @@
-﻿using lasercom;
-using lasercom.camera;
-using lasercom.control;
-using lasercom.io;
-using lasercom.objects;
-using System;
+﻿using System;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using lasercom;
+using lasercom.camera;
+using lasercom.control;
+using lasercom.io;
+using lasercom.objects;
 
 namespace DetectorTester
 {
@@ -116,6 +116,9 @@ namespace DetectorTester
             Graph.XRight = (float)Math.Max(Camera.Calibration[0], 
                 Camera.Calibration[Camera.Calibration.Length - 1]);
 
+            Graph.Clear();
+            Graph.Invalidate();
+
             Graph.Click += Graph_Click;
 
             AcqMethods.SelectedIndex = 0;
@@ -207,7 +210,7 @@ namespace DetectorTester
 
         private async Task DoWorkAsync(Action<WorkParameters, IProgress<ProgressObject>, CancellationToken> func, WorkParameters args, IProgress<ProgressObject> progress, CancellationToken cancel)
         {
-            await Task.Run(() => func(args, progress, cancel), cancel);
+            await Task.Run(() => func(args, progress, cancel));
         }
 
         private void DoCapture(WorkParameters args, IProgress<ProgressObject> progress, CancellationToken cancel)
@@ -312,8 +315,8 @@ namespace DetectorTester
             {
                 int start = LastAcqWidth * SelectedRow;
                 int count = LastAcqWidth;
-                double[] Light = progress.Data.Cast<double>().ToArray();
-                Graph.MarkerColor = Graph.ColorOrder[0];
+                double[] Light = progress.Data.Select((x) => (double)x).ToArray();
+                Graph.MarkerColor = Graph.NextColor;
                 Graph.DrawPoints(Camera.Calibration, new ArraySegment<double>(Light, start, count));
                 Graph.Invalidate();
             }

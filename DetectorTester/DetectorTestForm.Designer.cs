@@ -355,16 +355,26 @@
             this.panel6.Controls.Add(this.label6);
             this.panel6.Location = new System.Drawing.Point(6, 43);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(85, 21);
+            this.panel6.Size = new System.Drawing.Size(97, 21);
             this.panel6.TabIndex = 16;
             // 
             // NScans
             // 
             this.NScans.Location = new System.Drawing.Point(43, -1);
             this.NScans.Margin = new System.Windows.Forms.Padding(2);
+            this.NScans.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
             this.NScans.Name = "NScans";
-            this.NScans.Size = new System.Drawing.Size(40, 20);
+            this.NScans.Size = new System.Drawing.Size(52, 20);
             this.NScans.TabIndex = 14;
+            this.NScans.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             // 
             // label6
             // 
@@ -408,7 +418,7 @@
             // exciteCheck
             // 
             this.exciteCheck.AutoSize = true;
-            this.exciteCheck.Location = new System.Drawing.Point(96, 43);
+            this.exciteCheck.Location = new System.Drawing.Point(108, 43);
             this.exciteCheck.Margin = new System.Windows.Forms.Padding(2);
             this.exciteCheck.Name = "exciteCheck";
             this.exciteCheck.Size = new System.Drawing.Size(94, 17);
@@ -582,7 +592,7 @@
             this.exitToolStripMenuItem});
             this.fIleToolStripMenuItem.Name = "fIleToolStripMenuItem";
             this.fIleToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-            this.fIleToolStripMenuItem.Text = "FIle";
+            this.fIleToolStripMenuItem.Text = "File";
             // 
             // saveAsToolStripMenuItem
             // 
