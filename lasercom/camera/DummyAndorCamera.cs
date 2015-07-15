@@ -264,7 +264,6 @@ namespace lasercom.camera
             p.Image = Image;
             p.ReadMode = ReadMode;
             _Temperature = 25.0F; // Room temperature.
-            TargetTemperature = p.Temperature;
             Cts = new CancellationTokenSource();
             Task.Run(() =>
             {
@@ -272,9 +271,10 @@ namespace lasercom.camera
                 {
                     if (Cts.IsCancellationRequested) break;
                     _Temperature = _Temperature + 0.01F * (_TargetTemperature - _Temperature);
-                    Thread.Sleep(50);
+                    Thread.Sleep(10);
                 }
             }, Cts.Token);
+            EquilibrateTemperature(p.Temperature);
         }
 
         public override int[] FullResolutionImage()
