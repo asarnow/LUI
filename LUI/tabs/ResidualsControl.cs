@@ -326,7 +326,6 @@ namespace LUI.tabs
             for (int i = 0; i < args.NScans; i++)
             {
                 TryAcquire(DataBuffer);
-                RawData.WriteNext(DataBuffer, 0);
 
                 int sum = 0;
                 int peak = int.MinValue;
@@ -377,6 +376,8 @@ namespace LUI.tabs
                 Array.Clear(BinnedDataBuffer, 0, BinnedDataBuffer.Length);
                 Data.ColumnSum(BinnedDataBuffer, DataBuffer);
                 Data.Accumulate(CumulativeDataBuffer, BinnedDataBuffer);
+
+                RawData.WriteNext(BinnedDataBuffer, 0);
 
                 var progress = new ProgressObject(
                     Array.ConvertAll((int[])BinnedDataBuffer, x => (double)x / nrows), 
