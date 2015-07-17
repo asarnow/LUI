@@ -14,12 +14,13 @@ using lasercom.objects;
 namespace DetectorTester
 {
     public partial class DetectorTestForm : Form
-    {   
-        private int[] image;
+    {
+        double[] Light;
 
         CancellationTokenSource TemperatureCts = null;
         CancellationTokenSource WorkCts = null;
         ManualResetEvent Paused;
+        Task Work;
 
         private MatFile DataFile;
         MatVar<int> RawData;
@@ -163,24 +164,6 @@ namespace DetectorTester
             imageBox.Image = picture;
         }
 
-        private async void darkButton_Click(object sender, EventArgs e)
-        {
-            TaskStart();
-            var progress = new Progress<ProgressObject>(ReportProgress);
-            var args = new WorkParameters()
-            {
-                ReadMethod = (string)AcqMethods.SelectedItem,
-                NScans = (int)NScans.Value
-            };
-            await DoWorkAsync(DoDark, args, progress, WorkCts.Token);
-            TaskFinish();
-        }
-
-        private void saveButton_Click(object sender, EventArgs e)
-        {
-            DoSave();
-        }
-
         private void TaskStart()
         {
             CameraConfigBox.Enabled = false;
@@ -189,6 +172,9 @@ namespace DetectorTester
             WorkImage = Camera.Image;
             GraphScroll.Enabled = imageAcqButton.Checked;
             UpdateGraphScroll();
+            Graph.ClearData();
+            Graph.MarkerColor = Graph.ColorOrder[0];
+            Graph.Invalidate();
             WorkCts = new CancellationTokenSource();
             Paused.Set();
         }
@@ -201,6 +187,20 @@ namespace DetectorTester
             saveAsToolStripMenuItem.Enabled = true;
         }
 
+        private async void darkButton_Click(object sender, EventArgs e)
+        {
+            TaskStart();
+            var progress = new Progress<ProgressObject>(ReportProgress);
+            var args = new WorkParameters()
+            {
+                ReadMethod = (string)AcqMethods.SelectedItem,
+                NScans = (int)NScans.Value
+            };
+            Work = DoWorkAsync(DoDark, args, progress, WorkCts.Token);
+            await Work;
+            TaskFinish();
+        }
+
         private async void captureButton_Click(object sender, EventArgs e)
         {
             TaskStart();
@@ -211,7 +211,8 @@ namespace DetectorTester
                 NScans = (int)NScans.Value,
                 Excite = exciteCheck.Checked
             };
-            await DoWorkAsync(DoCapture, args, progress, WorkCts.Token);
+            Work = DoWorkAsync(DoCapture, args, progress, WorkCts.Token);
+            await Work;
             TaskFinish();
         }
 
@@ -280,8 +281,11 @@ namespace DetectorTester
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             base.OnFormClosing(e);
-            if (DataFile != null) DataFile.Dispose();
-            File.Delete(DataFile.FileName);
+            if (DataFile != null)
+            {
+                DataFile.Dispose();
+                File.Delete(DataFile.FileName);
+            }
             ((ILuiObject)Flags).Dispose();
             ((ILuiObject)Camera).Dispose();
         }
@@ -322,9 +326,9 @@ namespace DetectorTester
             {
                 int start = LastAcqWidth * SelectedRow;
                 int count = LastAcqWidth;
-                double[] Light = progress.Data.Select((x) => (double)x).ToArray();
-                Graph.MarkerColor = Graph.NextColor;
+                Light = progress.Data.Select((x) => (double)x).ToArray();
                 Graph.DrawPoints(Camera.Calibration, new ArraySegment<double>(Light, start, count));
+                Graph.MarkerColor = Graph.NextColor;
                 Graph.Invalidate();
             }
         }
@@ -417,7 +421,15 @@ namespace DetectorTester
         void GraphScroll_ValueChanged(object sender, EventArgs e)
         {
             UpdateSelectedRow();
-            // if not busy replot.
+            if (Work == null || Work.Status != TaskStatus.Running)
+            {
+                int start = LastAcqWidth * SelectedRow;
+                int count = LastAcqWidth;
+                Graph.ClearData();
+                Graph.MarkerColor = Graph.ColorOrder[0];
+                Graph.DrawPoints(Camera.Calibration, new ArraySegment<double>(Light, start, count));
+                Graph.Invalidate();
+            }
         }
 
         private void Abort_Click(object sender, EventArgs e)
@@ -426,6 +438,11 @@ namespace DetectorTester
         }
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DoSave();
+        }
+
+        private void saveButton_Click(object sender, EventArgs e)
         {
             DoSave();
         }
@@ -516,6 +533,25 @@ namespace DetectorTester
             {
                 SelectedRow = 0;
             }
+        }
+
+        private void propertiesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var andor = CameraAs<AndorCamera>();
+            var tempcontrol = CameraAs<CameraTempControlled>();
+            var text = "Width: " + Camera.Width + ", " + "Height: " + Camera.Height + "\n" +
+                "Min gain: " + Camera.MinIntensifierGain + ", " + "Max gain: " + Camera.MaxIntensifierGain + "\n";
+            if (andor != null)
+            {
+                text += "Bit depth: " + andor.BitDepth + ", " + "AD channels: " + andor.NumberADChannels + "\n" +
+                    "Max horizontal bin size: " + andor.MaxHorizontalBinSize + ", " + "Max vertical bin size: " + andor.MaxVerticalBinSize + "\n";
+                if (tempcontrol != null)
+                {
+                    text += "Min temperature: " + tempcontrol.MinTemp + ", " + "Max temperature: " + tempcontrol.MaxTemp + "\n";
+                }
+            }
+            
+            MessageBox.Show(text, "Camera Detail");
         }
 
     }
