@@ -24,7 +24,7 @@ namespace LUI.tabs
         private double[] CumulativeLight = null;
 
         int LastAcqWidth;
-        int LastVBin;
+        ImageArea LastImage;
 
         private double[] _DiffLight = null;
         private double[] DiffLight
@@ -122,6 +122,8 @@ namespace LUI.tabs
             GraphScroll.Scroll += GraphScroll_Scroll;
             GraphScroll.ValueChanged += GraphScroll_ValueChanged;
             GraphScroll.Enabled = false;
+            GraphScroll.Minimum = 0;
+            GraphScroll.Maximum = Commander.Camera.Height - 1;
             GraphScroll.LargeChange = 1;
             SelectedRow = 0;
 
@@ -245,7 +247,7 @@ namespace LUI.tabs
                 DdgConfigBox.ApplyPrimaryDelayValue();
 
             LastAcqWidth = Commander.Camera.AcqWidth;
-            LastVBin = Commander.Camera.Image.vbin;
+            LastImage = Commander.Camera.Image;
 
             GraphScroll.Enabled = ImageMode.Checked;
             UpdateGraphScroll();
@@ -719,13 +721,15 @@ namespace LUI.tabs
 
         void UpdateSelectedRow()
         {
-            SelectedRow = (int)(GraphScroll.Value - GraphScroll.Minimum - 0.5) / LastVBin;
+            SelectedRow = GraphScroll.Value;
         }
 
         void GraphScroll_Scroll(object sender, ScrollEventArgs e)
         {
-            ScrollTip.SetToolTip(GraphScroll, SelectedRow.ToString() + " (" + GraphScroll.Value.ToString() + ")");
-            //ScrollTip.Show(GraphScroll.Value.ToString(), GraphScroll, 10000);
+
+            var first = (LastImage.vstart + SelectedRow * LastImage.vbin);
+            var last = (LastImage.vstart + SelectedRow * LastImage.vbin + LastImage.vbin - 1);
+            ScrollTip.SetToolTip(GraphScroll, SelectedRow.ToString() + " (" + first.ToString() + " - " + last.ToString() + ")");
         }
 
         async void CameraTemperature_ValueChanged(object sender, EventArgs e)
@@ -784,11 +788,8 @@ namespace LUI.tabs
             if (GraphScroll.Enabled)
             {
                 GraphScroll.ValueChanged -= GraphScroll_ValueChanged;
-                GraphScroll.Minimum = Commander.Camera.Image.vstart;
-                GraphScroll.Maximum = (Commander.Camera.Image.vstart + Commander.Camera.Image.vcount - 1);
-                GraphScroll.LargeChange = Commander.Camera.Image.vbin;
-                GraphScroll.Value = GraphScroll.Value > GraphScroll.Maximum ||
-                    GraphScroll.Value <= GraphScroll.Minimum
+                GraphScroll.Maximum = LastImage.Height - 1;
+                GraphScroll.Value = GraphScroll.Value > GraphScroll.Maximum
                     ?
                     GraphScroll.Minimum + (GraphScroll.Maximum - GraphScroll.Minimum) / 2
                     :
@@ -816,10 +817,18 @@ namespace LUI.tabs
 
         private void CameraImage_ValueChanged(object sender, EventArgs e)
         {
-            Commander.Camera.Image = new ImageArea(Commander.Camera.Image.hbin, (int)VBin.Value,
-                Commander.Camera.Image.hstart, Commander.Camera.Image.hcount,
-                (int)VStart.Value, (int)(VEnd.Value - VStart.Value + 1));
-            UpdateCameraImage();
+            if ((VEnd.Value - VStart.Value + 1) % VBin.Value != 0)
+            {
+                VEnd.ForeColor = Color.Red;
+            }
+            else
+            {
+                VEnd.ForeColor = Color.Black;
+                Commander.Camera.Image = new ImageArea(Commander.Camera.Image.hbin, (int)VBin.Value,
+                    Commander.Camera.Image.hstart, Commander.Camera.Image.hcount,
+                    (int)VStart.Value, (int)(VEnd.Value - VStart.Value + 1));
+                UpdateCameraImage();
+            }
         }
 
         void SoftFvbMode_CheckedChanged(object sender, EventArgs e)
