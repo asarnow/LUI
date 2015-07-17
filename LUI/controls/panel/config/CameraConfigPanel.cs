@@ -13,6 +13,8 @@ namespace LUI.controls
         LabeledControl<ComboBox> ReadMode;
         LabeledControl<NumericUpDown> SaturationLevel;
 
+        ToolTip BinTip;
+
         public CameraConfigPanel() : base()
         {
             this.SuspendLayout();
@@ -42,16 +44,18 @@ namespace LUI.controls
             VBin = new LabeledControl<NumericUpDown>(new NumericUpDown(), "Vertical bin size:");
             VBin.Control.Minimum = -1;
             VBin.Control.Width = 54;
+            VBin.Control.ValueChanged += VBin_ValueChanged;
+            VBin.Control.ValueChanged += OnOptionsChanged;
             VStart = new LabeledControl<NumericUpDown>(new NumericUpDown(), "First row:");
             VStart.Control.Minimum = -1;
             VStart.Control.Width = VBin.Control.Width;
-            //VStart.Control.ValueChanged += VStart_ValueChanged;
+            VStart.Control.ValueChanged += VStart_ValueChanged;
             VStart.Control.ValueChanged += OnOptionsChanged;
             VEnd = new LabeledControl<NumericUpDown>(new NumericUpDown(), "Last row:");
             VEnd.Control.Minimum = -1;
             VEnd.Control.Maximum = int.MaxValue;
             VEnd.Control.Width = VBin.Control.Width;
-            //VEnd.Control.ValueChanged += VEnd_ValueChanged;
+            VEnd.Control.ValueChanged += VEnd_ValueChanged;
             VEnd.Control.ValueChanged += OnOptionsChanged;
             ImagePanel.Controls.Add(VBin);
             ImagePanel.Controls.Add(VStart);
@@ -67,6 +71,12 @@ namespace LUI.controls
             ReadMode.Control.SelectedIndex = 0;
             ReadMode.Control.SelectedIndexChanged += OnOptionsChanged;
             this.Controls.Add(ReadMode);
+
+            BinTip = new ToolTip();
+            BinTip.SetToolTip(VEnd.Control, "Row count should be a multiple of bin size.");
+            BinTip.SetToolTip(VStart.Control, "Row count should be a multiple of bin size.");
+            BinTip.SetToolTip(VBin.Control, "Row count should be a multiple of bin size.");
+
             this.ResumeLayout();
         }
 
@@ -74,12 +84,43 @@ namespace LUI.controls
         {
             VStart.Control.Maximum = VEnd.Control.Value;
             VBin.Control.Maximum = VEnd.Control.Value - VStart.Control.Value + 1;
+            ImageCheck();
         }
 
         private void VStart_ValueChanged(object sender, System.EventArgs e)
         {
             VEnd.Control.Minimum = VStart.Control.Value;
             VBin.Control.Maximum = VEnd.Control.Value - VStart.Control.Value + 1;
+            ImageCheck();
+        }
+
+        private void VBin_ValueChanged(object sender, System.EventArgs e)
+        {
+            ImageCheck();
+        }
+
+        private void ImageCheck()
+        {
+            if (VBin.Control.Value == 0 || ((VEnd.Control.Value - VStart.Control.Value + 1) % VBin.Control.Value != 0))
+                BinMultipleBad();
+            else
+                BinMultipleOk();
+        }
+
+        private void BinMultipleBad()
+        {
+            VStart.Control.ForeColor = System.Drawing.Color.Red;
+            VEnd.Control.ForeColor = System.Drawing.Color.Red;
+            VBin.Control.ForeColor = System.Drawing.Color.Red;
+            BinTip.Active = true;
+        }
+
+        private void BinMultipleOk()
+        {
+            VStart.Control.ForeColor = System.Drawing.Color.Black;
+            VEnd.Control.ForeColor = System.Drawing.Color.Black;
+            VBin.Control.ForeColor = System.Drawing.Color.Black;
+            BinTip.Active = false;
         }
 
         private void Browse_Click(object sender, System.EventArgs e)

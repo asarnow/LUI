@@ -142,6 +142,10 @@ namespace LUI.tabs
             DdgConfigBox.AllowZero = true;
             DdgConfigBox.Enabled = false;
             DdgConfigBox.HandleParametersChanged(this, EventArgs.Empty);
+
+            WarnTip.SetToolTip(VEnd, "Row count should be a multiple of bin size.");
+            WarnTip.SetToolTip(VStart, "Row count should be a multiple of bin size.");
+            WarnTip.SetToolTip(VBin, "Row count should be a multiple of bin size.");
         }
 
         /// <summary> 
@@ -820,15 +824,21 @@ namespace LUI.tabs
             if ((VEnd.Value - VStart.Value + 1) % VBin.Value != 0)
             {
                 VEnd.ForeColor = Color.Red;
+                VBin.ForeColor = Color.Red;
+                VStart.ForeColor = Color.Red;
+                WarnTip.Active = true;
             }
             else
             {
                 VEnd.ForeColor = Color.Black;
-                Commander.Camera.Image = new ImageArea(Commander.Camera.Image.hbin, (int)VBin.Value,
-                    Commander.Camera.Image.hstart, Commander.Camera.Image.hcount,
-                    (int)VStart.Value, (int)(VEnd.Value - VStart.Value + 1));
-                UpdateCameraImage();
+                VBin.ForeColor = Color.Black;
+                VStart.ForeColor = Color.Black;
+                WarnTip.Active = false;
             }
+            Commander.Camera.Image = new ImageArea(Commander.Camera.Image.hbin, (int)VBin.Value,
+                Commander.Camera.Image.hstart, Commander.Camera.Image.hcount,
+                (int)VStart.Value, (int)(VEnd.Value - VStart.Value + 1));
+            UpdateCameraImage();
         }
 
         void SoftFvbMode_CheckedChanged(object sender, EventArgs e)

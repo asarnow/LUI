@@ -55,6 +55,7 @@
             this.ScrollTip = new System.Windows.Forms.ToolTip(this.components);
             this.SaveData = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.WarnTip = new System.Windows.Forms.ToolTip(this.components);
             label1 = new System.Windows.Forms.Label();
             DiffSumLabel = new System.Windows.Forms.Label();
             NAverageLabel = new System.Windows.Forms.Label();
@@ -88,7 +89,7 @@
             // 
             // Graph
             // 
-            this.Graph.Size = new System.Drawing.Size(1125, 543);
+            this.Graph.Size = new System.Drawing.Size(1159, 543);
             this.Graph.XLeft = 1F;
             this.Graph.XRight = 1024F;
             // 
@@ -99,7 +100,7 @@
             this.LeftChildArea.Controls.Add(this.DdgConfigBox);
             this.LeftChildArea.Controls.Add(this.groupBox1);
             this.LeftChildArea.Location = new System.Drawing.Point(0, 543);
-            this.LeftChildArea.Size = new System.Drawing.Size(1142, 278);
+            this.LeftChildArea.Size = new System.Drawing.Size(1176, 278);
             // 
             // RightChildArea
             // 
@@ -379,7 +380,7 @@
             // GraphScroll
             // 
             this.GraphScroll.Dock = System.Windows.Forms.DockStyle.Right;
-            this.GraphScroll.Location = new System.Drawing.Point(1125, 0);
+            this.GraphScroll.Location = new System.Drawing.Point(1159, 0);
             this.GraphScroll.Name = "GraphScroll";
             this.GraphScroll.Size = new System.Drawing.Size(17, 543);
             this.GraphScroll.TabIndex = 14;
@@ -539,7 +540,7 @@
             this.panel2.Controls.Add(this.LoadProfile);
             this.panel2.Controls.Add(this.SaveData);
             this.panel2.Controls.Add(this.SaveProfile);
-            this.panel2.Location = new System.Drawing.Point(994, 3);
+            this.panel2.Location = new System.Drawing.Point(1028, 3);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(142, 114);
             this.panel2.TabIndex = 24;
@@ -616,5 +617,6 @@
         private System.Windows.Forms.NumericUpDown VEnd;
         private System.Windows.Forms.Button SaveData;
         private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.ToolTip WarnTip;
     }
 }
