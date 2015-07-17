@@ -835,20 +835,21 @@ namespace LUI.tabs
         {
             if (SoftFvbMode.Checked)
                 Commander.Camera.ReadMode = AndorCamera.ReadModeImage;
+            UpdateCollectText();
         }
 
         void FvbMode_CheckedChanged(object sender, EventArgs e)
         {
             if (FvbMode.Checked)
-            {
                 Commander.Camera.ReadMode = AndorCamera.ReadModeFVB;
-            }
+            UpdateCollectText();
         }
 
         void ImageMode_CheckedChanged(object sender, EventArgs e)
         {
             if (ImageMode.Checked)
                 Commander.Camera.ReadMode = AndorCamera.ReadModeImage;
+            UpdateCollectText();
         }
 
         /// <summary>

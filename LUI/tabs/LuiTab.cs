@@ -128,13 +128,17 @@ namespace LUI.tabs
             // Replace the Camera property in the Commander.
             if (CameraBox.SelectedObject != null) 
                 Commander.Camera = (ICamera)Config.GetObject(CameraBox.SelectedObject);
-            
-            if (Commander.Camera != null && Commander.Camera.HasIntensifier)
+
+            if (Commander.Camera != null)
             {
-                CameraGain.Enabled = true;
-                CameraGain.Minimum = Commander.Camera.MinIntensifierGain;
-                CameraGain.Maximum = Commander.Camera.MaxIntensifierGain;
-                CameraGain.Value = Commander.Camera.IntensifierGain;
+                UpdateCollectText();
+                if (Commander.Camera.HasIntensifier)
+                {
+                    CameraGain.Enabled = true;
+                    CameraGain.Minimum = Commander.Camera.MinIntensifierGain;
+                    CameraGain.Maximum = Commander.Camera.MaxIntensifierGain;
+                    CameraGain.Value = Commander.Camera.IntensifierGain;
+                }
             }
             else
             {
@@ -170,8 +174,7 @@ namespace LUI.tabs
         {
             if (Commander.Camera != null)
             {
-                Collect.Text = Commander.Camera.ReadMode == AndorCamera.ReadModeFVB ?
-                    "Collect (FVB)" : "Collect (Image)";
+                UpdateCollectText();
                 if (Commander.Camera.HasIntensifier)
                     CameraGain.Value = Commander.Camera.IntensifierGain;
             }
@@ -437,6 +440,12 @@ namespace LUI.tabs
                 if (worker != null && worker.IsBusy) worker.CancelAsync();
                 BeginInvoke(new Action(() => MessageBox.Show("Sensor saturation occurred. Aborting run.", "Error", MessageBoxButtons.OK)));
             }
+        }
+
+        protected void UpdateCollectText()
+        {
+            Collect.Text = Commander.Camera.ReadMode == AndorCamera.ReadModeFVB ?
+                    "Collect (FVB)" : "Collect (Image)";
         }
     }
 }
