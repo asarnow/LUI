@@ -612,6 +612,9 @@ namespace LUI.tabs
             double[] Excited = new double[AcqWidth];
             double[] Dark = new double[AcqWidth];
 
+            // Set delay for GS before dark in case old delay still on DG.
+            Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, args.GsDelay);
+
             // Collect dark.
             if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS_DARK))) return;
             Commander.BeamFlag.CloseLaserAndFlash();
@@ -622,25 +625,25 @@ namespace LUI.tabs
 
             // Run data collection scheme.
             if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS_FLASH))) return;
+            Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, args.GsDelay); // Set delay for GS.
             if (args.Pump == PumpMode.ALWAYS) OpenPump(args.DiscardFirst);
             Commander.BeamFlag.OpenFlash();
-            Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, args.GsDelay); // Set delay for GS (avoids laser tail).
             DoAcq(AcqBuffer, AcqRow, Gnd1, half, (p) => PauseCancelProgress(e, p, new ProgressObject(null, 0, Dialog.PROGRESS_FLASH)));
             if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
 
             for (int i = 0; i < Times.Count; i++)
             {
                 double Delay = Times[i];
+                Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, Delay); // Set delay time.
                 if (args.Pump == PumpMode.TRANS) OpenPump(args.DiscardFirst);
                 Commander.BeamFlag.OpenLaserAndFlash();
-                Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, Delay); // Set delay time.
                 if (PauseCancelProgress(e, -1, new ProgressObject(null, Delay, Dialog.PROGRESS_TIME))) return;
                 DoAcq(AcqBuffer, AcqRow, Exc, N, (p) => PauseCancelProgress(e, p, new ProgressObject(null, Delay, Dialog.PROGRESS_TRANS)));
                 if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
                 if (args.Pump == PumpMode.TRANS) Commander.Pump.SetClosed();
                 if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS_FLASH))) return;
                 Commander.BeamFlag.OpenFlash();
-                Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, args.GsDelay); // Set delay for GS (avoids laser tail).
+                Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, args.GsDelay); // Set delay for GS.
                 if (i % 2 == 0) // Alternate between Gnd1 and Gnd2.
                 {
                     DoAcq(AcqBuffer, AcqRow, Gnd2, half, (p) => PauseCancelProgress(e, p % half + half, new ProgressObject(null, 0, Dialog.PROGRESS_FLASH)));
@@ -664,6 +667,7 @@ namespace LUI.tabs
             }
             Commander.BeamFlag.CloseLaserAndFlash();
             if (args.Pump != PumpMode.NEVER) Commander.Pump.SetClosed();
+            Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, args.GsDelay); // Don't leave last delay on DG.
         }
 
         protected override void WorkProgress(object sender, ProgressChangedEventArgs e)
