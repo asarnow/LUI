@@ -357,10 +357,20 @@ namespace DetectorTester
 
         private void CameraImage_ValueChanged(object sender, EventArgs e)
         {
-            Camera.Image = new ImageArea(Camera.Image.hbin, (int)VBin.Value,
-                Camera.Image.hstart, Camera.Image.hcount,
-                (int)FirstRow.Value, (int)(LastRow.Value - FirstRow.Value + 1));
-            UpdateCameraImage();
+            if ((LastRow.Value - FirstRow.Value + 1) % VBin.Value != 0)
+            {
+                LastRow.ForeColor = Color.Red;
+                //LastRow.Font = new Font(LastRow.Font, FontStyle.Bold);
+            }
+            else
+            {
+                LastRow.ForeColor = Color.Black;
+                //LastRow.Font = new Font(LastRow.Font, FontStyle.Regular);
+                Camera.Image = new ImageArea(Camera.Image.hbin, (int)VBin.Value,
+                    Camera.Image.hstart, Camera.Image.hcount,
+                    (int)FirstRow.Value, (int)(LastRow.Value - FirstRow.Value + 1));
+                UpdateCameraImage();
+            }
         }
 
         private void UpdateCameraImage()
@@ -411,12 +421,16 @@ namespace DetectorTester
 
         void UpdateSelectedRow()
         {
-            SelectedRow = (int)(GraphScroll.Value - GraphScroll.Minimum - 0.5) / WorkImage.vbin;
+            //SelectedRow = (int)(GraphScroll.Value - GraphScroll.Minimum + 0.5) / WorkImage.vbin;
+            SelectedRow = GraphScroll.Value;
         }
 
         private void GraphScroll_Scroll(object sender, ScrollEventArgs e)
         {
-            ScrollTip.SetToolTip(GraphScroll, SelectedRow.ToString() + " (" + GraphScroll.Value.ToString() + ")");
+            //ScrollTip.SetToolTip(GraphScroll, SelectedRow.ToString() + " (" + GraphScroll.Value.ToString() + ")");
+            var first = (WorkImage.vstart + SelectedRow * WorkImage.vbin);
+            var last = (WorkImage.vstart + SelectedRow * WorkImage.vbin + WorkImage.vbin - 1);
+            ScrollTip.SetToolTip(GraphScroll, SelectedRow.ToString() + " (" + first.ToString() + " - " + last.ToString() + ")");
         }
 
         void GraphScroll_ValueChanged(object sender, EventArgs e)
@@ -518,11 +532,8 @@ namespace DetectorTester
             if (GraphScroll.Enabled)
             {
                 GraphScroll.ValueChanged -= GraphScroll_ValueChanged;
-                GraphScroll.Minimum = Camera.Image.vstart;
-                GraphScroll.Maximum = (Camera.Image.vstart + Camera.Image.vcount - 1);
-                GraphScroll.LargeChange = Camera.Image.vbin;
-                GraphScroll.Value = GraphScroll.Value > GraphScroll.Maximum ||
-                    GraphScroll.Value <= GraphScroll.Minimum
+                GraphScroll.Maximum = Camera.Image.Height - 1;
+                GraphScroll.Value = GraphScroll.Value > GraphScroll.Maximum
                     ?
                     GraphScroll.Minimum + (GraphScroll.Maximum - GraphScroll.Minimum) / 2
                     :

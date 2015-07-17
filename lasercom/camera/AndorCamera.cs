@@ -267,7 +267,7 @@ namespace lasercom.camera
                 uint ret = AndorSdk.SetImage(
                     _Image.hbin, _Image.vbin,
                     _Image.hstart + 1, _Image.hstart + _Image.hcount,
-                    _Image.vstart + 1, _Image.vstart + _Image.vstart);
+                    _Image.vstart + 1, _Image.vstart + _Image.vcount);
                 Log.Debug(DecodeStatus(ret));
             }
         }
