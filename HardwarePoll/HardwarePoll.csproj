@@ -98,10 +98,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ATMCD32CS">
-      <HintPath>..\lasercom\lib\ATMCD32CS.dll</HintPath>
+      <HintPath>..\lib\ATMCD32CS.dll</HintPath>
     </Reference>
     <Reference Include="ATMCD64CS">
-      <HintPath>..\lasercom\lib\ATMCD64CS.dll</HintPath>
+      <HintPath>..\lib64\ATMCD64CS.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
