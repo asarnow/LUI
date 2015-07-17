@@ -28,9 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this.LoadTimes = new System.Windows.Forms.Button();
             this.TimesView = new System.Windows.Forms.DataGridView();
+            this.Value = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.SaveData = new System.Windows.Forms.Button();
             this.DdgConfigBox = new LUI.controls.DdgCommandPanel();
             this.PumpBox = new LUI.controls.ObjectCommandPanel();
@@ -42,7 +43,9 @@
             this.TimeProgress = new System.Windows.Forms.TextBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.label2 = new System.Windows.Forms.Label();
-            this.Value = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.GsDelay = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.ParentPanel.SuspendLayout();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
@@ -56,6 +59,7 @@
             this.PumpBox.Flow.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // StatusBox
@@ -91,6 +95,7 @@
             // 
             // LeftChildArea
             // 
+            this.LeftChildArea.Controls.Add(this.groupBox1);
             this.LeftChildArea.Controls.Add(this.panel2);
             this.LeftChildArea.Controls.Add(this.DdgConfigBox);
             this.LeftChildArea.Location = new System.Drawing.Point(0, 583);
@@ -132,6 +137,16 @@
             this.TimesView.ShowEditingIcon = false;
             this.TimesView.Size = new System.Drawing.Size(136, 150);
             this.TimesView.TabIndex = 11;
+            // 
+            // Value
+            // 
+            this.Value.DataPropertyName = "Value";
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Value.DefaultCellStyle = dataGridViewCellStyle4;
+            this.Value.HeaderText = "Delay (s)";
+            this.Value.Name = "Value";
+            this.Value.ReadOnly = true;
+            this.Value.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // SaveData
             // 
@@ -264,15 +279,34 @@
             this.label2.TabIndex = 15;
             this.label2.Text = "Times";
             // 
-            // Value
+            // groupBox1
             // 
-            this.Value.DataPropertyName = "Value";
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Value.DefaultCellStyle = dataGridViewCellStyle1;
-            this.Value.HeaderText = "Delay (s)";
-            this.Value.Name = "Value";
-            this.Value.ReadOnly = true;
-            this.Value.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.groupBox1.AutoSize = true;
+            this.groupBox1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.groupBox1.Controls.Add(this.GsDelay);
+            this.groupBox1.Controls.Add(this.label3);
+            this.groupBox1.Location = new System.Drawing.Point(370, 3);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(197, 52);
+            this.groupBox1.TabIndex = 17;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Experiment Configuraton";
+            // 
+            // GsDelay
+            // 
+            this.GsDelay.Location = new System.Drawing.Point(126, 13);
+            this.GsDelay.Name = "GsDelay";
+            this.GsDelay.Size = new System.Drawing.Size(65, 20);
+            this.GsDelay.TabIndex = 0;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 16);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(114, 13);
+            this.label3.TabIndex = 1;
+            this.label3.Text = "Ground State Delay (s)";
             // 
             // TroaControl
             // 
@@ -300,6 +334,8 @@
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -320,6 +356,9 @@
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Value;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox GsDelay;
 
     }
 }

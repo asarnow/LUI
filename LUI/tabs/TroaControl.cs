@@ -64,7 +64,7 @@ namespace LUI.tabs
 
         struct WorkArgs
         {
-            public WorkArgs(int N, IList<double> Times, string PrimaryDelayName, string PrimaryDelayTrigger, PumpMode Pump, bool DiscardFirst)
+            public WorkArgs(int N, IList<double> Times, string PrimaryDelayName, string PrimaryDelayTrigger, PumpMode Pump, bool DiscardFirst, double GsDelay)
             {
                 this.N = N;
                 this.Times = new List<double>(Times);
@@ -80,6 +80,7 @@ namespace LUI.tabs
                 this.GateDelay = double.NaN;
                 this.Pump = Pump;
                 this.DiscardFirst = DiscardFirst;
+                this.GsDelay = GsDelay;
             }
             public readonly int N;
             public readonly IList<double> Times;
@@ -91,6 +92,7 @@ namespace LUI.tabs
             public readonly double Gate;
             public readonly PumpMode Pump;
             public readonly bool DiscardFirst;
+            public readonly double GsDelay;
         }
 
         struct ProgressObject
@@ -137,6 +139,8 @@ namespace LUI.tabs
         MatVar<int> RawData;
         MatVar<double> LuiData;
 
+        public const double DefaultGsDelay = 3.2E-8;
+
         public TroaControl(LuiConfig Config) : base(Config)
         {
             InitializeComponent();
@@ -154,6 +158,9 @@ namespace LUI.tabs
             DdgConfigBox.Commander = Commander;
             DdgConfigBox.AllowZero = false;
             DdgConfigBox.HandleParametersChanged(this, EventArgs.Empty);
+
+            GsDelay.TextChanged += GsDelay_TextChanged;
+            GsDelay.LostFocus += GsDelay_LostFocus;
         }
 
         private void Init()
@@ -171,6 +178,8 @@ namespace LUI.tabs
             };
 
             SaveData.Enabled = false;
+
+            GsDelay.Text = DefaultGsDelay.ToString("E3");
 
             ResumeLayout();
         }
@@ -227,6 +236,8 @@ namespace LUI.tabs
                     typeof(DelayGeneratorParameters), value);
             if (Settings.TryGetValue("PrimaryDelayDelay", out value) && value != null && value != "")
                 DdgConfigBox.PrimaryDelayDelay = value;
+            if (Settings.TryGetValue("GsDelay", out value) && value != null && value != "")
+                GsDelay.Text = value;
         }
 
         protected override void SaveSettings()
@@ -235,6 +246,7 @@ namespace LUI.tabs
             var Settings = Config.TabSettings[this.GetType().Name];
             Settings["PrimaryDelayDdg"] = DdgConfigBox.PrimaryDelayDdg != null ? DdgConfigBox.PrimaryDelayDdg.Name : null;
             Settings["PrimaryDelayDelay"] = DdgConfigBox.PrimaryDelayDelay != null ? DdgConfigBox.PrimaryDelayDelay : null;
+            Settings["GsDelay"] = GsDelay.Text;
         }
 
         /// <summary>
@@ -293,7 +305,8 @@ namespace LUI.tabs
             Commander.BeamFlag.CloseLaserAndFlash();
 
             SetupWorker();
-            worker.RunWorkerAsync(new WorkArgs(N, Times, DdgConfigBox.PrimaryDelayDelay, DdgConfigBox.PrimaryDelayTrigger, Mode, Discard.Checked));
+            worker.RunWorkerAsync(new WorkArgs(N, Times, DdgConfigBox.PrimaryDelayDelay, DdgConfigBox.PrimaryDelayTrigger, 
+                Mode, Discard.Checked, double.Parse(GsDelay.Text)));
             OnTaskStarted(EventArgs.Empty);
         }
 
@@ -608,7 +621,7 @@ namespace LUI.tabs
             // Run data collection scheme.
             if (args.Pump == PumpMode.ALWAYS) OpenPump(args.DiscardFirst);
             Commander.BeamFlag.OpenFlash();
-            Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, 3.2E-8); // Set delay for GS (avoids laser tail).
+            Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, args.GsDelay); // Set delay for GS (avoids laser tail).
             DoAcq(AcqBuffer, AcqRow, Gnd1, half, (p) => PauseCancelProgress(e, p, new ProgressObject(null, 0, Dialog.PROGRESS_FLASH)));
             if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
 
@@ -623,7 +636,7 @@ namespace LUI.tabs
                 if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
                 if (args.Pump == PumpMode.TRANS) Commander.Pump.SetClosed();
                 Commander.BeamFlag.OpenFlash();
-                Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, 3.2E-8); // Set delay for GS (avoids laser tail).
+                Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, args.GsDelay); // Set delay for GS (avoids laser tail).
                 if (i % 2 == 0) // Alternate between Gnd1 and Gnd2.
                 {
                     DoAcq(AcqBuffer, AcqRow, Gnd2, half, (p) => PauseCancelProgress(e, p % half + half, new ProgressObject(null, 0, Dialog.PROGRESS_FLASH)));
@@ -841,6 +854,28 @@ namespace LUI.tabs
                 return true;
             }
             return false;
+        }
+
+        void GsDelay_LostFocus(object sender, EventArgs e)
+        {
+            double value;
+            if (!double.TryParse(GsDelay.Text, out value))
+            {
+                GsDelay.Text = DefaultGsDelay.ToString("E3");
+            }
+        }
+
+        void GsDelay_TextChanged(object sender, EventArgs e)
+        {
+            double value;
+            if (!double.TryParse(GsDelay.Text, out value))
+            {
+                GsDelay.ForeColor = Color.Red;
+            }
+            else
+            {
+                GsDelay.ForeColor = Color.Black;
+            }
         }
 
     }
