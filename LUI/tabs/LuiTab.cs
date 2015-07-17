@@ -1,15 +1,15 @@
-﻿using Extensions;
+﻿using System;
+using System.ComponentModel;
+using System.Threading;
+using System.Windows.Forms;
+using System.Windows.Threading;
+using Extensions;
 using lasercom;
 using lasercom.camera;
 using lasercom.control;
 using lasercom.objects;
 using log4net;
 using LUI.config;
-using System;
-using System.ComponentModel;
-using System.Threading;
-using System.Windows.Forms;
-using System.Windows.Threading;
 
 namespace LUI.tabs
 {
@@ -168,8 +168,13 @@ namespace LUI.tabs
 
         public virtual void HandleContainingTabSelected(object sender, EventArgs e)
         {
-            if (Commander.Camera != null && Commander.Camera.HasIntensifier)
-                CameraGain.Value = Commander.Camera.IntensifierGain;
+            if (Commander.Camera != null)
+            {
+                Collect.Text = Commander.Camera.ReadMode == AndorCamera.ReadModeFVB ?
+                    "Collect (FVB)" : "Collect (Image)";
+                if (Commander.Camera.HasIntensifier)
+                    CameraGain.Value = Commander.Camera.IntensifierGain;
+            }
         }
 
         public void HandleExit(object sender, EventArgs e)

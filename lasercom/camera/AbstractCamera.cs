@@ -1,7 +1,7 @@
-﻿using lasercom.io;
-using lasercom.objects;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
+using lasercom.io;
+using lasercom.objects;
 
 namespace lasercom.camera
 {
@@ -100,6 +100,19 @@ namespace lasercom.camera
             }
         }
 
+        private int _SaturationLevel;
+        public virtual int SaturationLevel
+        {
+            get
+            {
+                return _SaturationLevel;
+            }
+            set
+            {
+                _SaturationLevel = value;
+            }
+        }
+
         public abstract ImageArea Image { get; set; }
 
         public abstract int[] CountsFvb();
@@ -117,6 +130,7 @@ namespace lasercom.camera
             LoadCalibration(p.CalFile);
             ReadMode = p.ReadMode;
             Image = p.Image;
+            SaturationLevel = p.SaturationLevel;
             if (HasIntensifier) IntensifierGain = p.InitialGain;
         }
 

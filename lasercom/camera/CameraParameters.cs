@@ -30,6 +30,9 @@ namespace lasercom.camera
         [DataMember]
         public int InitialGain { get; set; }
 
+        [DataMember]
+        public int SaturationLevel { get; set; }
+
         public int HBin = -1;
         public int VBin = -1;
         public int HStart = -1;
@@ -89,6 +92,7 @@ namespace lasercom.camera
             this.InitialGain = other.InitialGain;
             this.Image = other.Image;
             this.ReadMode = other.ReadMode;
+            this.SaturationLevel = other.SaturationLevel;
         }
 
         public override bool NeedsReinstantiation(CameraParameters other)
@@ -118,6 +122,7 @@ namespace lasercom.camera
                 iseq &= other.HCount == HCount;
                 iseq &= other.VStart == VStart;
                 iseq &= other.VCount == VCount;
+                iseq &= other.SaturationLevel == SaturationLevel;
             }
             if (Type == typeof(CameraTempControlled))
             {

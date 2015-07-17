@@ -11,6 +11,7 @@ namespace LUI.controls
         LabeledControl<NumericUpDown> VStart;
         LabeledControl<NumericUpDown> VEnd;
         LabeledControl<ComboBox> ReadMode;
+        LabeledControl<NumericUpDown> SaturationLevel;
 
         public CameraConfigPanel() : base()
         {
@@ -27,6 +28,12 @@ namespace LUI.controls
             Browse.Click += Browse_Click;
             CalFile.Controls.Add(Browse);
             this.Controls.Add(CalFile);
+
+            SaturationLevel = new LabeledControl<NumericUpDown>(new NumericUpDown(), "Saturation level:");
+            SaturationLevel.Control.Minimum = 0;
+            SaturationLevel.Control.Maximum = (int)Math.Pow(2, 16);
+            SaturationLevel.Control.ValueChanged += OnOptionsChanged;
+            this.Controls.Add(SaturationLevel);
 
             var ImagePanel = new FlowLayoutPanel();
             ImagePanel.FlowDirection = FlowDirection.LeftToRight;
@@ -89,6 +96,7 @@ namespace LUI.controls
             VStart.Control.Value = other.VStart;
             VEnd.Control.Value = Math.Max(-1, other.VStart + other.VCount - 1);
             ReadMode.Control.SelectedIndex = other.ReadMode == AndorCamera.ReadModeFVB ? 0 : 1;
+            SaturationLevel.Control.Value = other.SaturationLevel;
 
         }
 
@@ -99,6 +107,7 @@ namespace LUI.controls
             other.VStart = (int)VStart.Control.Value;
             other.VCount = (int)Math.Max(-1, VEnd.Control.Value - VStart.Control.Value + 1);
             other.ReadMode = ReadMode.Control.SelectedItem != null ? ((Tuple<string,int>)ReadMode.Control.SelectedItem).Item2 : AndorCamera.ReadModeFVB;
+            other.SaturationLevel = (int)SaturationLevel.Control.Value;
         }
     }
 }

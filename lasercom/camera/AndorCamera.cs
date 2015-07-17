@@ -400,7 +400,7 @@ namespace lasercom.camera
         }
 
         private int _SaturationLevel;
-        public int SaturationLevel
+        public override int SaturationLevel
         {
             get
             {
@@ -432,7 +432,7 @@ namespace lasercom.camera
                 AndorSdk.GetNumberADChannels(ref _NumberADChannels);
                 CurrentADChannel = DefaultADChannel;
                 AndorSdk.GetBitDepth(CurrentADChannel, ref _BitDepth);
-                SaturationLevel = (int)Math.Pow(2, BitDepth) - 1;
+                SaturationLevel = p.SaturationLevel;
 
                 AndorSdk.GetMaximumBinning(ReadModeImage, 0, ref _MaxHorizontalBinSize);
                 AndorSdk.GetMaximumBinning(ReadModeImage, 1, ref _MaxVerticalBinSize);
