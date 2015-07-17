@@ -247,7 +247,7 @@ namespace lasercom.camera
                 else
                 {
                     hbin = Math.Max(1, value.hbin); // At least 1.
-                    hbin = Math.Min(hbin, hcount); // At most image width.
+                    hbin = Math.Min(Math.Min(hbin, hcount), MaxHorizontalBinSize); // At most lesser of image width and max hbin.
                 }
 
                 if (value.vbin == -1)
@@ -257,7 +257,7 @@ namespace lasercom.camera
                 else
                 {
                     vbin = Math.Max(1, value.vbin); // At least 1.
-                    vbin = Math.Min(vbin, vcount); // At most image height.
+                    vbin = Math.Min(Math.Min(vbin, vcount), MaxVerticalBinSize); // At most lesser of image height and max vbin.
                 }
 
                 _Image = new ImageArea(hbin, vbin,
@@ -321,6 +321,24 @@ namespace lasercom.camera
                 //TODO ALL properties in this class need this fix and code reorder to reflect
                 AndorSdk.SetADChannel(value);
                 _CurrentADChannel = value;
+            }
+        }
+
+        private int _MaxHorizontalBinSize;
+        public int MaxHorizontalBinSize
+        {
+            get
+            {
+                return _MaxHorizontalBinSize;
+            }
+        }
+
+        private int _MaxVerticalBinSize;
+        public int MaxVerticalBinSize
+        {
+            get
+            {
+                return _MaxVerticalBinSize;
             }
         }
 
@@ -416,6 +434,9 @@ namespace lasercom.camera
                 AndorSdk.GetBitDepth(CurrentADChannel, ref _BitDepth);
                 SaturationLevel = (int)Math.Pow(2, BitDepth) - 1;
 
+                AndorSdk.GetMaximumBinning(ReadModeImage, 0, ref _MaxHorizontalBinSize);
+                AndorSdk.GetMaximumBinning(ReadModeImage, 1, ref _MaxVerticalBinSize);
+                
                 _Image = new ImageArea(1, 1, 0, Width, 0, Height);
                 Image = p.Image;
 

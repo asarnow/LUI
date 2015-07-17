@@ -339,7 +339,7 @@ namespace lasercom.camera
 
         public override uint AcquireImage(int[] DataBuffer)
         {
-            return base.Acquire(DataBuffer);
+            return Acquire(DataBuffer);
         }
 
         private int[] Dark(int scale = 1000)
