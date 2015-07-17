@@ -70,8 +70,8 @@ namespace DetectorTester
             bfp.Name = "BF";
             bfp.PortName = "COM1";
             bfp.Delay = 300; // ms.
-            //Flags = new BeamFlags(bfp);
-            Flags = new DummyBeamFlags(bfp);
+            Flags = new BeamFlags(bfp);
+            //Flags = new DummyBeamFlags(bfp);
 
             var cp = new CameraParameters(typeof(CameraTempControlled));
             cp.Name = "Camera";
@@ -79,8 +79,8 @@ namespace DetectorTester
             cp.InitialGain = 10;
             cp.Temperature = 20;
             cp.ReadMode = AndorCamera.ReadModeFVB;
-            //Camera = new CameraTempControlled(cp);
-            Camera = new DummyAndorCamera(cp);
+            Camera = new CameraTempControlled(cp);
+            //Camera = new DummyAndorCamera(cp);
 
             Camera.AcquisitionMode = Constants.AcquisitionModeSingle;
             Camera.TriggerMode = Constants.TriggerModeExternalExposure;
@@ -94,6 +94,7 @@ namespace DetectorTester
         {
             CameraGain.Minimum = 0;
             CameraGain.Maximum = Camera.MaxIntensifierGain;
+            CameraGain.Value = AndorCamera.DefaultMCPGain;
 
             CameraTemp.Minimum = CameraAs<CameraTempControlled>().MinTemp;
             CameraTemp.Maximum = CameraAs<CameraTempControlled>().MaxTemp;
