@@ -161,6 +161,7 @@ namespace LUI.tabs
 
             GsDelay.TextChanged += GsDelay_TextChanged;
             GsDelay.LostFocus += GsDelay_LostFocus;
+            GsDelay.KeyPress += GsDelay_KeyPress;
         }
 
         private void Init()
@@ -612,6 +613,7 @@ namespace LUI.tabs
             double[] Dark = new double[AcqWidth];
 
             // Collect dark.
+            if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS_DARK))) return;
             Commander.BeamFlag.CloseLaserAndFlash();
             DoAcq(AcqBuffer, AcqRow, Drk, N, (p) => PauseCancelProgress(e, p, new ProgressObject(null, 0, Dialog.PROGRESS_DARK)));
             if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
@@ -619,6 +621,7 @@ namespace LUI.tabs
             Data.DivideArray(Dark, N);
 
             // Run data collection scheme.
+            if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS_FLASH))) return;
             if (args.Pump == PumpMode.ALWAYS) OpenPump(args.DiscardFirst);
             Commander.BeamFlag.OpenFlash();
             Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, args.GsDelay); // Set delay for GS (avoids laser tail).
@@ -635,6 +638,7 @@ namespace LUI.tabs
                 DoAcq(AcqBuffer, AcqRow, Exc, N, (p) => PauseCancelProgress(e, p, new ProgressObject(null, Delay, Dialog.PROGRESS_TRANS)));
                 if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
                 if (args.Pump == PumpMode.TRANS) Commander.Pump.SetClosed();
+                if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS_FLASH))) return;
                 Commander.BeamFlag.OpenFlash();
                 Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, args.GsDelay); // Set delay for GS (avoids laser tail).
                 if (i % 2 == 0) // Alternate between Gnd1 and Gnd2.
@@ -861,7 +865,7 @@ namespace LUI.tabs
             double value;
             if (!double.TryParse(GsDelay.Text, out value))
             {
-                GsDelay.Text = DefaultGsDelay.ToString("E3");
+                GsDelay.Text = GsDelay.Tag != null ? (string)GsDelay.Tag : DefaultGsDelay.ToString("E3");
             }
         }
 
@@ -875,6 +879,22 @@ namespace LUI.tabs
             else
             {
                 GsDelay.ForeColor = Color.Black;
+                GsDelay.Tag = value.ToString("E3");
+            }
+        }
+
+         void GsDelay_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            Keys key = (Keys)e.KeyChar;
+            if (key == Keys.Enter)
+            {
+                GsDelay.Text = GsDelay.Tag != null ? (string)GsDelay.Tag : DefaultGsDelay.ToString("E3");
+                e.Handled = true;
+            }
+            if (key == Keys.Escape)
+            {
+                GsDelay.Text = GsDelay.Tag != null ? (string)GsDelay.Tag : DefaultGsDelay.ToString("E3");
+                e.Handled = true;
             }
         }
 

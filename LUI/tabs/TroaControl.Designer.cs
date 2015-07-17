@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.LoadTimes = new System.Windows.Forms.Button();
             this.TimesView = new System.Windows.Forms.DataGridView();
             this.Value = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -141,8 +141,8 @@
             // Value
             // 
             this.Value.DataPropertyName = "Value";
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Value.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Value.DefaultCellStyle = dataGridViewCellStyle1;
             this.Value.HeaderText = "Delay (s)";
             this.Value.Name = "Value";
             this.Value.ReadOnly = true;
@@ -287,14 +287,14 @@
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Location = new System.Drawing.Point(370, 3);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(197, 52);
+            this.groupBox1.Size = new System.Drawing.Size(197, 58);
             this.groupBox1.TabIndex = 17;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Experiment Configuraton";
             // 
             // GsDelay
             // 
-            this.GsDelay.Location = new System.Drawing.Point(126, 13);
+            this.GsDelay.Location = new System.Drawing.Point(126, 19);
             this.GsDelay.Name = "GsDelay";
             this.GsDelay.Size = new System.Drawing.Size(65, 20);
             this.GsDelay.TabIndex = 0;
@@ -302,7 +302,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 16);
+            this.label3.Location = new System.Drawing.Point(6, 22);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(114, 13);
             this.label3.TabIndex = 1;
