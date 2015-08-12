@@ -95,16 +95,12 @@ namespace PumpToggle
 
         private void rtsCheck_CheckedChanged(object sender, EventArgs e)
         {
-            DisposePort();
-            CreatePort();
-            SetClosed();
+            if (_port != null) _port.RtsEnable = rtsCheck.Checked;
         }
 
         private void dtrCheck_CheckedChanged(object sender, EventArgs e)
         {
-            DisposePort();
-            CreatePort();
-            SetClosed();
+            if (_port != null) _port.DtrEnable = dtrCheck.Checked;
         }
 
         private void xonxoffCheck_CheckedChanged(object sender, EventArgs e)
