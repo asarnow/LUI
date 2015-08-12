@@ -35,7 +35,10 @@
             this.PumpAlways = new System.Windows.Forms.RadioButton();
             this.PumpTs = new System.Windows.Forms.RadioButton();
             this.PumpNever = new System.Windows.Forms.RadioButton();
-            this.Discard = new System.Windows.Forms.CheckBox();
+            this.Discard = new System.Windows.Forms.NumericUpDown();
+            this.label4 = new System.Windows.Forms.Label();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.ParentPanel.SuspendLayout();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NScan)).BeginInit();
@@ -43,9 +46,15 @@
             this.LeftChildArea.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CameraGain)).BeginInit();
             this.RightChildArea.SuspendLayout();
+            this.LeftPanel.SuspendLayout();
             this.PumpBox.Flow.SuspendLayout();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Discard)).BeginInit();
+            this.panel3.SuspendLayout();
             this.SuspendLayout();
+            this.StatusBox.Controls.SetChildIndex(this.ProgressLabel, 0);
+            this.StatusBox.Controls.SetChildIndex(this.CameraStatus, 0);
+            this.StatusBox.Controls.SetChildIndex(this.ScanProgress, 0);
             // 
             // Graph
             // 
@@ -93,17 +102,17 @@
             this.PumpBox.Flow.AutoSize = true;
             this.PumpBox.Flow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.PumpBox.Flow.Controls.Add(this.panel1);
-            this.PumpBox.Flow.Controls.Add(this.Discard);
+            this.PumpBox.Flow.Controls.Add(this.panel3);
             this.PumpBox.Flow.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PumpBox.Flow.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.PumpBox.Flow.Location = new System.Drawing.Point(3, 16);
             this.PumpBox.Flow.Name = "Flow";
-            this.PumpBox.Flow.Size = new System.Drawing.Size(294, 92);
+            this.PumpBox.Flow.Size = new System.Drawing.Size(294, 101);
             this.PumpBox.Flow.TabIndex = 0;
             this.PumpBox.Location = new System.Drawing.Point(0, 0);
             this.PumpBox.Name = "PumpBox";
             this.PumpBox.SelectedObject = null;
-            this.PumpBox.Size = new System.Drawing.Size(300, 111);
+            this.PumpBox.Size = new System.Drawing.Size(300, 120);
             this.PumpBox.TabIndex = 1;
             this.PumpBox.Text = "Syringe Pump";
             // 
@@ -154,18 +163,42 @@
             // 
             // Discard
             // 
-            this.Discard.AutoSize = true;
-            this.Discard.Location = new System.Drawing.Point(3, 72);
+            this.Discard.Location = new System.Drawing.Point(71, 3);
+            this.Discard.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
             this.Discard.Name = "Discard";
-            this.Discard.Size = new System.Drawing.Size(84, 17);
-            this.Discard.TabIndex = 3;
-            this.Discard.Text = "Discard First";
-            this.Discard.UseVisualStyleBackColor = true;
+            this.Discard.Size = new System.Drawing.Size(35, 20);
+            this.Discard.TabIndex = 1;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(3, 5);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(62, 13);
+            this.label4.TabIndex = 0;
+            this.label4.Text = "Discard first";
+            // 
+            // panel3
+            // 
+            this.panel3.AutoSize = true;
+            this.panel3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.panel3.Controls.Add(this.Discard);
+            this.panel3.Controls.Add(this.label4);
+            this.panel3.Location = new System.Drawing.Point(3, 72);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(109, 26);
+            this.panel3.TabIndex = 4;
             // 
             // LaserPowerControl
             // 
             this.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.Name = "LaserPowerControl";
+            this.ParentPanel.ResumeLayout(false);
+            this.ParentPanel.PerformLayout();
             this.StatusBox.ResumeLayout(false);
             this.StatusBox.PerformLayout();
             this.CommandsBox.ResumeLayout(false);
@@ -178,10 +211,15 @@
             ((System.ComponentModel.ISupportInitialize)(this.CameraGain)).EndInit();
             this.RightChildArea.ResumeLayout(false);
             this.RightChildArea.PerformLayout();
+            this.LeftPanel.ResumeLayout(false);
+            this.LeftPanel.PerformLayout();
             this.PumpBox.Flow.ResumeLayout(false);
             this.PumpBox.Flow.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Discard)).EndInit();
+            this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -195,6 +233,8 @@
         private System.Windows.Forms.RadioButton PumpAlways;
         private System.Windows.Forms.RadioButton PumpTs;
         private System.Windows.Forms.RadioButton PumpNever;
-        private System.Windows.Forms.CheckBox Discard;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.NumericUpDown Discard;
+        private System.Windows.Forms.Label label4;
     }
 }

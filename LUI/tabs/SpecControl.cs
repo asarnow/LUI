@@ -1,15 +1,15 @@
-﻿using CsvHelper;
+﻿using System;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
+using CsvHelper;
 using lasercom;
 using lasercom.camera;
 using lasercom.control;
 using lasercom.io;
 using LUI.config;
 using LUI.controls;
-using System;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Windows.Forms;
 
 namespace LUI.tabs
 {
@@ -34,15 +34,15 @@ namespace LUI.tabs
 
         struct WorkArgs
         {
-            public WorkArgs(int N, PumpMode Pump, bool DiscardFirst)
+            public WorkArgs(int N, PumpMode Pump, int Discard)
             {
                 this.N = N;
                 this.Pump = Pump;
-                this.DiscardFirst = DiscardFirst;
+                this.Discard = Discard;
             }
             public readonly int N;
             public readonly PumpMode Pump;
-            public readonly bool DiscardFirst;
+            public readonly int Discard;
         }
 
         public enum PumpMode
@@ -131,7 +131,7 @@ namespace LUI.tabs
             Commander.BeamFlag.CloseLaserAndFlash();
 
             SetupWorker();
-            worker.RunWorkerAsync(new WorkArgs(N, Mode, Discard.Checked));
+            worker.RunWorkerAsync(new WorkArgs(N, Mode, (int)Discard.Value));
             OnTaskStarted(EventArgs.Empty);
         }
 
@@ -190,7 +190,7 @@ namespace LUI.tabs
 
             if (args.Pump == PumpMode.ALWAYS)
             {
-                OpenPump(args.DiscardFirst);
+                OpenPump(args.Discard);
             }
 
             int[] SampleBuffer = new int[finalSize];

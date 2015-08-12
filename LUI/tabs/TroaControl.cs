@@ -64,7 +64,7 @@ namespace LUI.tabs
 
         struct WorkArgs
         {
-            public WorkArgs(int N, IList<double> Times, string PrimaryDelayName, string PrimaryDelayTrigger, PumpMode Pump, bool DiscardFirst, double GsDelay)
+            public WorkArgs(int N, IList<double> Times, string PrimaryDelayName, string PrimaryDelayTrigger, PumpMode Pump, int Discard, double GsDelay)
             {
                 this.N = N;
                 this.Times = new List<double>(Times);
@@ -79,7 +79,7 @@ namespace LUI.tabs
                 this.Gate = double.NaN;
                 this.GateDelay = double.NaN;
                 this.Pump = Pump;
-                this.DiscardFirst = DiscardFirst;
+                this.Discard = Discard;
                 this.GsDelay = GsDelay;
             }
             public readonly int N;
@@ -91,7 +91,7 @@ namespace LUI.tabs
             public readonly double GateDelay;
             public readonly double Gate;
             public readonly PumpMode Pump;
-            public readonly bool DiscardFirst;
+            public readonly int Discard;
             public readonly double GsDelay;
         }
 
@@ -307,7 +307,7 @@ namespace LUI.tabs
 
             SetupWorker();
             worker.RunWorkerAsync(new WorkArgs(N, Times, DdgConfigBox.PrimaryDelayDelay, DdgConfigBox.PrimaryDelayTrigger, 
-                Mode, Discard.Checked, double.Parse(GsDelay.Text)));
+                Mode, (int)Discard.Value, double.Parse(GsDelay.Text)));
             OnTaskStarted(EventArgs.Empty);
         }
 
@@ -327,212 +327,6 @@ namespace LUI.tabs
             DdgConfigBox.Enabled = true;
             PumpBox.Enabled = true;
             LoadTimes.Enabled = SaveData.Enabled = true;
-        }
-
-        [Obsolete("Deprecated, use DoWork instead.", true)]
-        protected void DoWorkOld(object sender, DoWorkEventArgs e)
-        {
-            ProgressObject progress;
-            
-            progress = new ProgressObject(null, 0, Dialog.TEMPERATURE);
-            DoTempCheck(() => PauseCancelProgress(e, 0, progress));
-
-            progress = new ProgressObject(null, 0, Dialog.INITIALIZE);
-            if (PauseCancelProgress(e, 0, progress)) return; // Show zero progress.
-
-            var args = (WorkArgs)e.Argument;
-            int N = args.N; // Save typing for later.
-            int half = N / 2; // Integer division rounds down.
-            IList<double> Times = args.Times;
-            int AcqSize = Commander.Camera.AcqSize;
-            int finalSize = Commander.Camera.ReadMode == AndorCamera.ReadModeImage ?
-                AcqSize / Commander.Camera.Image.Height : AcqSize;
-
-            // Total scans = dark scans + ground state scans + plus time series scans.
-            int TotalScans = 2*N + Times.Count * N;
-
-            // Create the data store.
-            InitDataFile(finalSize, TotalScans, Times.Count);
-
-            // Measure dark current.
-            progress = new ProgressObject(null, 0, Dialog.PROGRESS_DARK);
-            if (PauseCancelProgress(e, 0, progress)) return;
-
-            // Buffer for acuisition data.
-            int[] DataBuffer = new int[AcqSize];
-            int[] DataRow = new int[finalSize];
-
-            // Dark buffers.
-            int[] Dark = new int[finalSize];
-
-            // Dark scans.
-            Commander.BeamFlag.CloseLaserAndFlash();
-            for (int i = 0; i < N; i++)
-            {
-                TryAcquire(DataBuffer);
-                Data.ColumnSum(DataRow, DataBuffer);
-                RawData.WriteNext(DataRow, 0);
-                Data.Accumulate(Dark, DataRow);
-                Array.Clear(DataRow, 0, finalSize);
-                progress = new ProgressObject(null, 0, Dialog.PROGRESS_DARK);
-                if (PauseCancelProgress(e, (i + 1) * 99 / TotalScans, progress)) return;
-            }
-            Data.DivideArray(Dark, N); // Average dark current.
-
-            // Set delays for GS.
-            Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, 3.2E-8); // Set delay time.
-
-            double[] Ground = new double[finalSize];
-
-            // Flow-flash.
-            if (args.Pump == PumpMode.ALWAYS)
-            {
-                Commander.Pump.SetOpen();
-                if (args.DiscardFirst)
-                {
-                    TryAcquire(DataBuffer);
-                }
-            }
-
-            // Ground state scans - first half.
-            Commander.BeamFlag.OpenFlash();
-            for (int i = 0; i < half; i++)
-            {
-                TryAcquire(DataBuffer);
-                Data.ColumnSum(DataRow, DataBuffer);
-                RawData.WriteNext(DataRow, 0);
-                Data.Accumulate(Ground, DataRow);
-                Array.Clear(DataRow, 0, finalSize);
-                progress = new ProgressObject(null, 0, Dialog.PROGRESS_FLASH);
-                if (PauseCancelProgress(e, (N + (i + 1)) * 99 / TotalScans, progress)) return; // Handle new data.
-            }
-
-            Commander.BeamFlag.CloseLaserAndFlash();
-
-            Data.DivideArray(Ground, half); // Average GS for first half.
-            Data.Dissipate(Ground, Dark); // Subtract average dark from average GS.
-
-
-            // Excited state buffer.
-            double[] Excited = new double[finalSize];
-
-            // Flow-flash.
-            if (args.Pump == PumpMode.TRANS)
-            {
-                Commander.Pump.SetOpen();
-                if (args.DiscardFirst)
-                {
-                    TryAcquire(DataBuffer);
-                }
-            }
-
-            // Excited state scans.
-            Commander.BeamFlag.OpenLaserAndFlash();
-            for (int i = 0; i < Times.Count; i++)
-            {
-                double Delay = Times[i];
-                progress = new ProgressObject(null, Delay, Dialog.PROGRESS_TIME);
-                if (PauseCancelProgress(e, (half + i * N) * 99 / TotalScans, progress)) return; // Display current delay.
-                for (int j = 0; j < N; j++)
-                {
-                    Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, Delay); // Set delay time.
-                    
-                    TryAcquire(DataBuffer);
-                    Data.ColumnSum(DataRow, DataBuffer);
-                    RawData.WriteNext(DataRow, 0);
-                    Data.Accumulate(Excited, DataRow);
-                    Array.Clear(DataRow, 0, finalSize);
-                    progress = new ProgressObject(null, Delay, Dialog.PROGRESS_TRANS);
-                    if (PauseCancelProgress(e, (N + half + (i + 1) * (j + 1)) * 99 / TotalScans, progress)) return; // Handle new data.
-                }
-                
-                Data.DivideArray(Excited, N); // Average ES for time point.
-                Data.Dissipate(Excited, Dark); // Subtract average dark from time point average.
-                double[] Difference = Data.DeltaOD(Ground, Excited); // Time point diff. spec. w/ current GS average.
-                Array.Clear(Excited, 0, finalSize);
-                progress = new ProgressObject(Difference, Delay, Dialog.PROGRESS_TIME_COMPLETE);
-                if (PauseCancelProgress(e, (N + half + N * Times.Count) * 99 / TotalScans, progress)) return;
-            }
-            
-            Commander.BeamFlag.CloseLaserAndFlash();
-
-            // Set delays for GS.
-            Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, 3.2E-8); // Set delay time.
-
-            // Flow-flash.
-            if (args.Pump == PumpMode.TRANS) // Could close pump before last collect.
-            {
-                Commander.Pump.SetClosed();
-            }
-
-            // Ground state scans - second half.
-            Commander.BeamFlag.OpenFlash();
-            int half2 = N % 2 == 0 ? half : half + 1; // If N is odd, need 1 more GS scan in the second half.
-            for (int i = 0; i < half2; i++)
-            {
-                TryAcquire(DataBuffer);
-                Data.ColumnSum(DataRow, DataBuffer);
-                RawData.WriteNext(DataRow, 0);
-                Array.Clear(DataRow, 0, finalSize);
-                progress = new ProgressObject(null, 0, Dialog.PROGRESS_FLASH);
-                if (PauseCancelProgress(e, (N + half + (N * Times.Count) + (i + 1)) * 99 / TotalScans, progress)) return;
-            }
-            Commander.BeamFlag.CloseLaserAndFlash();
-
-            // Flow-flash.
-            if (args.Pump == PumpMode.ALWAYS)
-            {
-                Commander.Pump.SetClosed(); // Could close pump before last collect.
-            }
-
-            // Calculate LuiData matrix
-            progress = new ProgressObject(null, 0, Dialog.CALCULATE);
-            if (PauseCancelProgress(e, 99, progress)) return;
-            // Write dummy value (number of scans).
-            LuiData.Write((double)args.N, new long[] { 0, 0 });
-            // Write wavelengths.
-            long[] RowSize = { 1, finalSize };
-            LuiData.Write(Commander.Camera.Calibration, new long[] { 0, 1 }, RowSize);
-            // Write times.
-            long[] ColSize = { Times.Count, 1 };
-            LuiData.Write(Times.ToArray(), new long[] { 1, 0 }, ColSize);
-            
-            // Read ground state values and average.
-            Array.Clear(Ground, 0, Ground.Length); // Zero ground state buffer.
-            // Read 1st half
-            for (int i = 0; i < half; i++)
-            {
-                RawData.Read(DataRow, new long[] { i, 0 }, RowSize);
-                Data.Accumulate(Ground, DataRow);
-            }
-            // Read 2nd half
-            for (int i = (N + half + N * Times.Count); i < TotalScans; i++)
-            {
-                RawData.Read(DataRow, new long[] { i, 0 }, RowSize);
-                Data.Accumulate(Ground, DataRow);
-            }
-            Data.DivideArray(Ground, N); // Average ground state.
-            Data.Dissipate(Ground, Dark); // Subtract average dark.
-
-            // Read excited state values, average and compute delta OD.
-            Array.Clear(Excited, 0, Excited.Length); // Zero excited state buffer.
-            for (int i = 0; i < Times.Count; i++ )
-            {
-                for (int j = 0; j < N; j++)
-                {
-                    // Read time point j
-                    int idx = N + half + (i * N) + j;
-                    RawData.Read(DataRow, new long[] { idx, 0 }, RowSize);
-                    Data.Accumulate(Excited, DataRow);
-                }
-                Data.DivideArray(Excited, N); // Average excited state for time point.
-                Data.Dissipate(Excited, Dark); // Subtract average dark.
-                // Write the final difference spectrum for time point.
-                LuiData.Write(Data.DeltaOD(Ground, Excited),
-                    new long[] { i + 1, 1 }, RowSize);
-            }
-
-            // Done with everything.
         }
 
         private void DoTempCheck(Func<bool> Breakout)
@@ -626,7 +420,7 @@ namespace LUI.tabs
             // Run data collection scheme.
             if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS_FLASH))) return;
             Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, args.GsDelay); // Set delay for GS.
-            if (args.Pump == PumpMode.ALWAYS) OpenPump(args.DiscardFirst);
+            if (args.Pump == PumpMode.ALWAYS) OpenPump(args.Discard);
             Commander.BeamFlag.OpenFlash();
             DoAcq(AcqBuffer, AcqRow, Gnd1, half, (p) => PauseCancelProgress(e, p, new ProgressObject(null, 0, Dialog.PROGRESS_FLASH)));
             if (PauseCancelProgress(e, -1, new ProgressObject(null, 0, Dialog.PROGRESS))) return;
@@ -635,7 +429,7 @@ namespace LUI.tabs
             {
                 double Delay = Times[i];
                 Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, Delay); // Set delay time.
-                if (args.Pump == PumpMode.TRANS) OpenPump(args.DiscardFirst);
+                if (args.Pump == PumpMode.TRANS) OpenPump(args.Discard);
                 Commander.BeamFlag.OpenLaserAndFlash();
                 if (PauseCancelProgress(e, -1, new ProgressObject(null, Delay, Dialog.PROGRESS_TIME))) return;
                 DoAcq(AcqBuffer, AcqRow, Exc, N, (p) => PauseCancelProgress(e, p, new ProgressObject(null, Delay, Dialog.PROGRESS_TRANS)));
@@ -665,8 +459,8 @@ namespace LUI.tabs
                 Array.Clear(Ground, 0, Ground.Length);
                 Array.Clear(Excited, 0, Excited.Length);
             }
-            Commander.BeamFlag.CloseLaserAndFlash();
             if (args.Pump != PumpMode.NEVER) Commander.Pump.SetClosed();
+            Commander.BeamFlag.CloseLaserAndFlash();
             Commander.DDG.SetDelay(args.PrimaryDelayName, args.TriggerName, args.GsDelay); // Don't leave last delay on DG.
         }
 
