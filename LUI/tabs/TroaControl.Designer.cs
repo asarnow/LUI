@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.LoadTimes = new System.Windows.Forms.Button();
             this.TimesView = new System.Windows.Forms.DataGridView();
             this.Value = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -39,15 +39,15 @@
             this.PumpAlways = new System.Windows.Forms.RadioButton();
             this.PumpTs = new System.Windows.Forms.RadioButton();
             this.PumpNever = new System.Windows.Forms.RadioButton();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.Discard = new System.Windows.Forms.NumericUpDown();
+            this.label4 = new System.Windows.Forms.Label();
             this.TimeProgress = new System.Windows.Forms.TextBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.label2 = new System.Windows.Forms.Label();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.ExperimentConfigBox = new System.Windows.Forms.GroupBox();
             this.GsDelay = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.panel3 = new System.Windows.Forms.Panel();
-            this.label4 = new System.Windows.Forms.Label();
-            this.Discard = new System.Windows.Forms.NumericUpDown();
             this.ParentPanel.SuspendLayout();
             this.StatusBox.SuspendLayout();
             this.CommandsBox.SuspendLayout();
@@ -60,10 +60,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.TimesView)).BeginInit();
             this.PumpBox.Flow.SuspendLayout();
             this.panel1.SuspendLayout();
-            this.panel2.SuspendLayout();
-            this.groupBox1.SuspendLayout();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Discard)).BeginInit();
+            this.panel2.SuspendLayout();
+            this.ExperimentConfigBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // StatusBox
@@ -99,7 +99,7 @@
             // 
             // LeftChildArea
             // 
-            this.LeftChildArea.Controls.Add(this.groupBox1);
+            this.LeftChildArea.Controls.Add(this.ExperimentConfigBox);
             this.LeftChildArea.Controls.Add(this.panel2);
             this.LeftChildArea.Controls.Add(this.DdgConfigBox);
             this.LeftChildArea.Location = new System.Drawing.Point(0, 583);
@@ -145,8 +145,8 @@
             // Value
             // 
             this.Value.DataPropertyName = "Value";
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Value.DefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Value.DefaultCellStyle = dataGridViewCellStyle1;
             this.Value.HeaderText = "Delay (s)";
             this.Value.Name = "Value";
             this.Value.ReadOnly = true;
@@ -242,6 +242,38 @@
             this.PumpNever.Text = "Never";
             this.PumpNever.UseVisualStyleBackColor = true;
             // 
+            // panel3
+            // 
+            this.panel3.AutoSize = true;
+            this.panel3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.panel3.Controls.Add(this.Discard);
+            this.panel3.Controls.Add(this.label4);
+            this.panel3.Location = new System.Drawing.Point(3, 72);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(109, 26);
+            this.panel3.TabIndex = 3;
+            // 
+            // Discard
+            // 
+            this.Discard.Location = new System.Drawing.Point(71, 3);
+            this.Discard.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.Discard.Name = "Discard";
+            this.Discard.Size = new System.Drawing.Size(35, 20);
+            this.Discard.TabIndex = 1;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(3, 5);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(62, 13);
+            this.label4.TabIndex = 0;
+            this.label4.Text = "Discard first";
+            // 
             // TimeProgress
             // 
             this.TimeProgress.Location = new System.Drawing.Point(151, 37);
@@ -273,18 +305,18 @@
             this.label2.TabIndex = 15;
             this.label2.Text = "Times";
             // 
-            // groupBox1
+            // ExperimentConfigBox
             // 
-            this.groupBox1.AutoSize = true;
-            this.groupBox1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.groupBox1.Controls.Add(this.GsDelay);
-            this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Location = new System.Drawing.Point(370, 3);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(197, 58);
-            this.groupBox1.TabIndex = 17;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Experiment Configuraton";
+            this.ExperimentConfigBox.AutoSize = true;
+            this.ExperimentConfigBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.ExperimentConfigBox.Controls.Add(this.GsDelay);
+            this.ExperimentConfigBox.Controls.Add(this.label3);
+            this.ExperimentConfigBox.Location = new System.Drawing.Point(370, 3);
+            this.ExperimentConfigBox.Name = "ExperimentConfigBox";
+            this.ExperimentConfigBox.Size = new System.Drawing.Size(197, 58);
+            this.ExperimentConfigBox.TabIndex = 17;
+            this.ExperimentConfigBox.TabStop = false;
+            this.ExperimentConfigBox.Text = "Experiment Configuraton";
             // 
             // GsDelay
             // 
@@ -301,38 +333,6 @@
             this.label3.Size = new System.Drawing.Size(114, 13);
             this.label3.TabIndex = 1;
             this.label3.Text = "Ground State Delay (s)";
-            // 
-            // panel3
-            // 
-            this.panel3.AutoSize = true;
-            this.panel3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.panel3.Controls.Add(this.Discard);
-            this.panel3.Controls.Add(this.label4);
-            this.panel3.Location = new System.Drawing.Point(3, 72);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(109, 26);
-            this.panel3.TabIndex = 3;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(3, 5);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(62, 13);
-            this.label4.TabIndex = 0;
-            this.label4.Text = "Discard first";
-            // 
-            // Discard
-            // 
-            this.Discard.Location = new System.Drawing.Point(71, 3);
-            this.Discard.Maximum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.Discard.Name = "Discard";
-            this.Discard.Size = new System.Drawing.Size(35, 20);
-            this.Discard.TabIndex = 1;
             // 
             // TroaControl
             // 
@@ -359,12 +359,12 @@
             this.PumpBox.Flow.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            this.panel2.ResumeLayout(false);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Discard)).EndInit();
+            this.panel2.ResumeLayout(false);
+            this.ExperimentConfigBox.ResumeLayout(false);
+            this.ExperimentConfigBox.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -384,7 +384,7 @@
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Value;
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox ExperimentConfigBox;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox GsDelay;
         private System.Windows.Forms.Panel panel3;

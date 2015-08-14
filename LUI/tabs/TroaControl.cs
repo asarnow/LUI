@@ -316,6 +316,7 @@ namespace LUI.tabs
             base.OnTaskStarted(e);
             DdgConfigBox.Enabled = false;
             PumpBox.Enabled = false;
+            ExperimentConfigBox.Enabled = false;
             LoadTimes.Enabled = SaveData.Enabled = false;
             ScanProgress.Text = "0";
             TimeProgress.Text = "0";
@@ -326,6 +327,7 @@ namespace LUI.tabs
             base.OnTaskFinished(e);
             DdgConfigBox.Enabled = true;
             PumpBox.Enabled = true;
+            ExperimentConfigBox.Enabled = true;
             LoadTimes.Enabled = SaveData.Enabled = true;
         }
 
