@@ -189,7 +189,8 @@ namespace lasercom
         {
             double[] OD = new double[Ground.Count];
             for (int i = 0; i < OD.Length; i++)
-                OD[i] = Math.Log10((double)(Trans[i] - Dark[i]) / (double)(Ground[i] - Dark[i]));
+                //OD[i] = Math.Log10((double)(Trans[i] - Dark[i]) / (double)(Ground[i] - Dark[i]));
+                OD[i] = Math.Log10((double)(Ground[i] - Dark[i]) / (double)(Trans[i] - Dark[i]));
             return OD;
         }
 
@@ -204,7 +205,8 @@ namespace lasercom
         {
             double[] OD = new double[Ground.Count];
             for (int i = 0; i < OD.Length; i++)
-                OD[i] = Math.Log10((Trans[i] - Dark[i]) / (Ground[i] - Dark[i]));
+                //OD[i] = Math.Log10((Trans[i] - Dark[i]) / (Ground[i] - Dark[i]));
+                OD[i] = Math.Log10((Ground[i] - Dark[i]) / (Trans[i] - Dark[i]));
             return OD;
         }
 
@@ -218,7 +220,8 @@ namespace lasercom
         {
             double[] OD = new double[Ground.Count];
             for (int i = 0; i < OD.Length; i++)
-                OD[i] = Math.Log10((double)(Trans[i]) / (double)(Ground[i]));
+                //OD[i] = Math.Log10((double)(Trans[i]) / (double)(Ground[i]));
+                OD[i] = Math.Log10((double)(Ground[i]) / (double)(Trans[i]));
             return OD;
         }
 
@@ -227,7 +230,7 @@ namespace lasercom
             double[] OD = new double[Ground.Count];
             for (int i = 0; i < OD.Length; i++)
                 //OD[i] = Math.Log10((Trans[i]) / (Ground[i]));
-                OD[i] = Math.Log10(Trans[i]) - Math.Log10(Ground[i]);
+                OD[i] = Math.Log10(Ground[i] / Trans[i]);
             return OD;
         }
 
